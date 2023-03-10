@@ -38,8 +38,8 @@ func Deserialize[E runtime.ErrorHandler, T any](body io.ReadCloser) (T, *runtime
 Testing Http calls is implemented through a proxy design pattern: a context.Context interface that contains an http.Client.Do() call.
 
 ~~~
-// Exchange - interface for Http request/response interaction
-type Exchange interface {
+// HttpExchange - interface for Http request/response interaction
+type HttpExchange interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 ~~~
