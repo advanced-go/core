@@ -94,7 +94,7 @@ func ContextWithHttpExchange(ctx context.Context, do func(*http.Request) (*http.
 [runix]: <https://en.wikipedia.org/wiki/Research_Unix>
 [tutorialspoint]: <https://www.tutorialspoint.com/cplusplus/cpp_templates.htm>
 [boost]: <https://www.boost.org/>
-[exchangepkg]: <https://pkg.go.dev/github.com/idiomatic-go/motif/exchange>
-[runtimepkg]: <https://pkg.go.dev/github.com/idiomatic-go/motif/runtime>
+[exchangepkg]: <https://pkg.go.dev/github.com/gotemplates/core/exchange>
+[runtimepkg]: <https://pkg.go.dev/github.com/gotemplates/core/runtime>
 
 
