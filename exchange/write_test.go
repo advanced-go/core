@@ -8,6 +8,10 @@ import (
 	"net/http/httptest"
 )
 
+const (
+	ContentTypeJson = "application/json"
+)
+
 type commandTag struct {
 	Sql          string
 	RowsAffected int64
