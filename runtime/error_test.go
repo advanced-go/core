@@ -98,7 +98,7 @@ func ExampleErrorHandleFn() {
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 
 	//Output:
-	//[[] github.com/gotemplates/motif/runtime/ErrorHandleFn [debug - error message]]
+	//[[] github.com/gotemplates/core/runtime/ErrorHandleFn [debug - error message]]
 	//test: Handle[DebugErrorHandler]()
 	//test: Handle[LogErrorHandler]()
 
@@ -117,7 +117,7 @@ func ExampleErrorHandleStatus() {
 	fmt.Printf("test: StatusHandle[LogErrorHandler]() [status:%v] [errors:%v]\n", status, status.IsErrors())
 
 	//Output:
-	//[[] github.com/gotemplates/motif/runtime/ErrorHandleStatus [debug - error message]]
+	//[[] github.com/gotemplates/core/runtime/ErrorHandleStatus [debug - error message]]
 	//test: StatusHandle[DebugErrorHandler]() [status:Internal] [errors:false]
 	//test: StatusHandle[LogErrorHandler]() [status:Internal] [errors:false]
 
