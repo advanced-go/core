@@ -64,7 +64,7 @@ func ContextWithProxy(ctx context.Context, proxy any) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
-		if pCtx, ok := any(ctx).(proxyable); ok {
+		if pCtx, ok := any(ctx).(*proxyContext); ok {
 			pCtx.add(proxy)
 			return ctx
 		}
@@ -82,7 +82,7 @@ func ContextWithValue(ctx context.Context, key any, val any) context.Context {
 	if ctx == nil {
 		return nil
 	}
-	if pCtx, ok := any(ctx).(proxyable); ok {
+	if pCtx, ok := any(ctx).(*proxyContext); ok {
 		return pCtx.withValue(key, val)
 	}
 	return context.WithValue(ctx, key, val)
@@ -93,7 +93,7 @@ func IsProxyable(ctx context.Context) ([]any, bool) {
 	if ctx == nil {
 		return nil, false
 	}
-	if pCtx, ok := any(ctx).(proxyable); ok {
+	if pCtx, ok := any(ctx).(*proxyContext); ok {
 		return pCtx.getProxies(), true
 	}
 	return nil, false

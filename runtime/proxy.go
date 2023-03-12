@@ -5,12 +5,6 @@ import (
 	"time"
 )
 
-type proxyable interface {
-	add(proxy any)
-	getProxies() []any
-	withValue(key, val any) context.Context
-}
-
 type proxyContext struct {
 	ctx     context.Context
 	proxies []any

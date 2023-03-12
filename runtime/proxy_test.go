@@ -8,10 +8,15 @@ import (
 )
 
 func testProxyContext(ctx context.Context) bool {
-	if _, ok := any(ctx).(proxyable); ok {
+	if _, ok := any(ctx).(*proxyContext); ok {
 		return true
 	}
 	return false
+}
+
+func proxyGet(uri string) (*http.Response, error) {
+	fmt.Printf("test: testDo() -> \n")
+	return nil, errors.New("test error")
 }
 
 func proxyDo(req *http.Request) (*http.Response, error) {
@@ -57,7 +62,8 @@ func ExampleProxyContext() {
 }
 
 func ExampleProxyContext_Proxy() {
-	ctx := ContextWithProxy(nil, proxyDo)
+	ctx0 := ContextWithProxy(nil, proxyGet)
+	ctx := ContextWithProxy(ctx0, proxyDo)
 	ok1 := testProxyContext(ctx)
 
 	fmt.Printf("test: isProxyContext(ctx) -> %v\n", ok1)
@@ -65,7 +71,12 @@ func ExampleProxyContext_Proxy() {
 		for _, p := range proxies {
 			if fn, ok2 := p.(func(*http.Request) (*http.Response, error)); ok2 {
 				if fn != nil {
-					fmt.Printf("test: IsProxyable(ctx) -> %v\n", true)
+					fmt.Printf("test: proxyDo(*http.Request) -> %v\n", true)
+				}
+			}
+			if fn, ok2 := p.(func(string) (*http.Response, error)); ok2 {
+				if fn != nil {
+					fmt.Printf("test: proxyGet(*http.Request) -> %v\n", true)
 				}
 			}
 		}
@@ -73,6 +84,7 @@ func ExampleProxyContext_Proxy() {
 
 	//Output:
 	//test: isProxyContext(ctx) -> true
-	//test: IsProxyable(ctx) -> true
-
+	//test: proxyGet(*http.Request) -> true
+	//test: proxyDo(*http.Request) -> true
+	
 }
