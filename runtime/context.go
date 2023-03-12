@@ -59,17 +59,42 @@ func ContextRequestId(ctx context.Context) string {
 	return ""
 }
 
-// ContextWithValue - create a new context with a value, updating the context if it is an HttpExchange context
+// ContextWithProxy - create a new Context interface, containing a proxy
+func ContextWithProxy(ctx context.Context, proxy any) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	} else {
+		if pCtx, ok := any(ctx).(proxyable); ok {
+			pCtx.add(proxy)
+			return ctx
+		}
+	}
+	mux := new(proxyContext)
+	mux.ctx = ctx
+	if proxy != nil {
+		mux.proxies = append(mux.proxies, proxy)
+	}
+	return mux
+}
+
+// ContextWithValue - create a new context with a value, updating the context if it is a Proxy context
 func ContextWithValue(ctx context.Context, key any, val any) context.Context {
 	if ctx == nil {
 		return nil
 	}
-	if curr, ok := any(ctx).(withValue); ok {
-		//ctx2 := curr.t()
-		//ctx2.ctx = context.WithValue(ctx2.ctx, key, val)
-		//ctx2.ctx = context.WithValue(ctx2.ctx, key, val)
-		//return ctx2
-		return curr.withValue(key, val)
+	if pCtx, ok := any(ctx).(proxyable); ok {
+		return pCtx.withValue(key, val)
 	}
 	return context.WithValue(ctx, key, val)
+}
+
+// IsProxyable - determine if the context is a ProxyContext, and return proxies
+func IsProxyable(ctx context.Context) ([]any, bool) {
+	if ctx == nil {
+		return nil, false
+	}
+	if pCtx, ok := any(ctx).(proxyable); ok {
+		return pCtx.getProxies(), true
+	}
+	return nil, false
 }
