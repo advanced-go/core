@@ -1,14 +1,12 @@
 package exchange
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/gotemplates/core/exchange/httptest"
 	"github.com/gotemplates/core/runtime"
 	"io"
 	"net/http"
-	"time"
 )
 
 const (
@@ -17,55 +15,13 @@ const (
 	http503FileName       = "resource/http/http-503.txt"
 )
 
-//var doCtx = ContextWithDo(context.Background(), doProxy)
-//type exchangeContext interface {
-//	context.Context
-//	Exchange
-//}
-
-type exchangeData struct {
-	ctx  context.Context
-	exec HttpExchange
-}
-
-func newContext(ctx context.Context, exec HttpExchange) context.Context {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	return &exchangeData{ctx: ctx, exec: exec}
-}
-
-func (c *exchangeData) Deadline() (deadline time.Time, ok bool) {
-	return c.ctx.Deadline()
-}
-
-func (c *exchangeData) Done() <-chan struct{} {
-	return c.ctx.Done()
-}
-
-func (c *exchangeData) Err() error {
-	return c.ctx.Err()
-}
-
-func (c *exchangeData) Value(key any) any {
-	return c.ctx.Value(key)
-}
-
-func (c *exchangeData) Do(req *http.Request) (*http.Response, error) {
-	if c.exec == nil {
-		return nil, errors.New("invalid argument: Exchange interface is nil")
-	}
-	return c.exec.Do(req)
-}
-
-var exchangeCtx = runtime.ContextWithHttpExchange(nil, exchangeProxy)
+var exchangeCtx = runtime.ContextWithProxy(nil, exchangeProxy)
 
 //
 // When reading http from a text file, be sure you have the expected blank line between header and body.
 // If there is not a blank line after the header section, even if there is not a body, you will receive an
 // Unexpected EOF error when calling the golang http.ReadResponse function.
 //
-
 func exchangeProxy(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
 		return nil, errors.New("request or request URL is nil")

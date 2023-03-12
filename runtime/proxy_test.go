@@ -86,5 +86,5 @@ func ExampleProxyContext_Proxy() {
 	//test: isProxyContext(ctx) -> true
 	//test: proxyGet(*http.Request) -> true
 	//test: proxyDo(*http.Request) -> true
-	
+
 }

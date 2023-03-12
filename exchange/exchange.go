@@ -1,9 +1,9 @@
 package exchange
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
+	"github.com/gotemplates/core/runtime"
 	"net/http"
 	"time"
 )
@@ -19,8 +19,11 @@ func (Default) Do(req *http.Request) (*http.Response, error) {
 	if req == nil {
 		return nil, errors.New("request is nil") //NewStatus(StatusInvalidArgument, doLocation, errors.New("request is nil"))
 	}
-	if e, ok := Cast(req.Context()); ok {
-		return e.Do(req)
+	if proxies, ok := runtime.IsProxyable(req.Context()); ok {
+		do := findProxy(proxies)
+		if do != nil {
+			return do(req)
+		}
 	}
 	return Client.Do(req)
 }
@@ -41,12 +44,11 @@ func init() {
 	}
 }
 
-func Cast(ctx context.Context) (HttpExchange, bool) {
-	if ctx == nil {
-		return nil, false
+func findProxy(proxies []any) func(*http.Request) (*http.Response, error) {
+	for _, p := range proxies {
+		if fn, ok := p.(func(*http.Request) (*http.Response, error)); ok {
+			return fn
+		}
 	}
-	if e, ok := any(ctx).(HttpExchange); ok {
-		return e, true
-	}
-	return nil, false
+	return nil
 }
