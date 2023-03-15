@@ -21,7 +21,7 @@ What follows is a description of the packages in Motif, highlighting specific pa
 template paramters for error processing, deserialization type, and the function for processing the http.Client.Do():
 
 ~~~
-func DoT[E runtime.ErrorHandler, T any, H Exchange](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func Do[E runtime.ErrorHandler, T any, H Exchange](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
     // implementation details
 }
 ~~~
@@ -72,7 +72,7 @@ type OutputHandler interface {
 }
 ~~~
 
-Context functionality is provied for a request Id, and Http exchange testing:
+Context functionality is provied for a request Id, and a ProxyContext used for testing:
 
 ~~~
 // ContextWithRequestId - creates a new Context with a request id
@@ -80,8 +80,8 @@ func ContextWithRequestId(ctx context.Context, requestId string) context.Context
     // implementation details
 }
 
-// ContextWithHttpExchange - create a new Context interface, containing a Http exchange function
-func ContextWithHttpExchange(ctx context.Context, do func(*http.Request) (*http.Response, error)) context.Context {
+// ContextWithProxy - create a new Context interface, containing a proxy
+func ContextWithProxy(ctx context.Context, proxy any) context.Context {
     // implementation details
 }
 ~~~
