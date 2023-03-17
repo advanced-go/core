@@ -20,7 +20,7 @@ What follows is a description of the packages in Motif, highlighting specific pa
 template paramters for error processing, deserialization type, and the function for processing the http.Client.Do():
 
 ~~~
-func Do[E runtime.ErrorHandler, T any, H Exchange](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func Do[E runtime.ErrorHandler, H Exchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
     // implementation details
 }
 ~~~
