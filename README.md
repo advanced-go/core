@@ -1,8 +1,7 @@
-# go-templates/core
+# core
 
-Go Templates/Core was inspired to capitalize on the Go language for application development. Determining the patterns, or motifs, that need to be employed, is critical for writing clear idiomatic Go code. This YouTube video [Edward Muller - Go Anti-Patterns][emuller], does an excellent job of framing idiomatic go. 
-[Robert Griesemer - The Evolution of Go][rgriesemer] also presents an important analogy between Go packages and LEGO® bricks. Reviewing the Go standard
-library packaging structure provides a blueprint for an application architecture, and underscores how essential package design is for idiomatic Go. 
+Core was inspired to capitalize on the Go language for application development. Determining the patterns, that need to be employed, is critical for writing clear idiomatic Go code. This YouTube video [Edward Muller - Go Anti-Patterns][emuller], does an excellent job of framing idiomatic go. 
+[Robert Griesemer - The Evolution of Go][rgriesemer], @ 4:00 minutes, also presents an important analogy between Go packages and LEGO® bricks. Reviewing the Go standard library packaging structure provides a blueprint for an application architecture, and underscores how essential package design is for idiomatic Go. 
 
 Package dependencies also need to be obsessively managed. Rob Pike lists an important deign goal relating copying to dependency in [Go Proverbs][rpike], #8. Larger dependencies can be imported for test only to insure that the copied code is correct. Kent Beck's book on [Test Driven Development][kbeck], states, "Dependency is the key problem in software development of all scales." Lessening dependencies reduces complexity and increases reliability. [Doug McIlroy][dmcilroy] describes the early approach taken at Bell Labs when developing and revising [Research Unix][runix]: 
 
@@ -21,7 +20,7 @@ What follows is a description of the packages in Motif, highlighting specific pa
 template paramters for error processing, deserialization type, and the function for processing the http.Client.Do():
 
 ~~~
-func Do[E runtime.ErrorHandler, T any, H Exchange](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func Do[E runtime.ErrorHandler, H Exchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
     // implementation details
 }
 ~~~
