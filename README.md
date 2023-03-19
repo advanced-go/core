@@ -1,7 +1,7 @@
 # core
 
 Core was inspired to capitalize on the Go language for application development. Determining the patterns, that need to be employed, is critical for writing clear idiomatic Go code. This YouTube video [Edward Muller - Go Anti-Patterns][emuller], does an excellent job of framing idiomatic go. 
-[Robert Griesemer - The Evolution of Go][rgriesemer], @ 4:00 minutes, also presents an important analogy between Go packages and LEGO® bricks. Reviewing the Go standard library packaging structure provides a blueprint for an application architecture, and underscores how essential package design is for idiomatic Go. 
+[Robert Griesemer - The Evolution of Go][rgriesemer], @ 4:00 minutes, also presents an important analogy between Go modules, packages, closures, and LEGO® bricks. Reviewing the Go standard library packaging structure provides a blueprint for an application architecture, and underscores how essential package design is for idiomatic Go. 
 
 Package dependencies also need to be obsessively managed. Rob Pike lists an important deign goal relating copying to dependency in [Go Proverbs][rpike], #8. Larger dependencies can be imported for test only to insure that the copied code is correct. Kent Beck's book on [Test Driven Development][kbeck], states, "Dependency is the key problem in software development of all scales." Lessening dependencies reduces complexity and increases reliability. [Doug McIlroy][dmcilroy] describes the early approach taken at Bell Labs when developing and revising [Research Unix][runix]: 
 
@@ -11,7 +11,7 @@ Package dependencies also need to be obsessively managed. Rob Pike lists an impo
 
 With the release of Go generics, a new paradigm has emerged: [templates][tutorialspoint]. Templates are not new, having been available in  C++ since 1991, and have become a standard through the work of teams like [boost][boost]. The term templates is used over generics, as templates are a paradigm, and generics connotes a class of implementations. Templates in C++ also support value parameters, which if implemented in Go, would allow passing a function as a template parameter. This functionality would allow further customization of templated code.
 
-What follows is a description of the packages in Motif, highlighting specific patterns and template implementations.  
+What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
 
 
