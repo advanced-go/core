@@ -9,7 +9,7 @@ Package dependencies also need to be obsessively managed. Rob Pike lists an impo
 	    is some deficiency in the basic design — you didn't really hit the right design point. Instead of adding an option, think 
 	    about what was forcing you to add that option.
 
-With the release of Go generics, a new paradigm has emerged: generic behaviors. Generic behaviors refere to the ability to use a type parameter to modify the behavoir of a function. The type parameters that convey behaviors Templates are not new, having been available in  C++ since 1991, and have become a standard through the work of teams like [boost][boost]. The term templates is used over generics, as templates are a paradigm, and generics connotes a class of implementations. Templates in C++ also support value parameters, which if implemented in Go, would allow passing a function as a template parameter. This functionality would allow further customization of templated code.
+With the release of Go generics, a new paradigm has emerged: generic behaviors. Generic behaviors refere to the ability to use a type parameter to modify the behavoir of a function. Semantically, the type parameters that convey behaviors can be analogous to the "control plane" concept, and the type parameters the refer to data can be analogous to the "data plane" concept. 
 
 What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
