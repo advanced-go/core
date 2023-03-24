@@ -1,7 +1,7 @@
 package exchange
 
 import (
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/runtime"
 	"net/http"
 )
 

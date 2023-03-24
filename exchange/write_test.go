@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-http-utils/headers"
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/runtime"
 	"net/http/httptest"
 )
 

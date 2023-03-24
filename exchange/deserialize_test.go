@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gotemplates/core/exchange/httptest"
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/exchange/httptest"
+	"github.com/go-sre/core/runtime"
 	"net/http"
 	"strings"
 )

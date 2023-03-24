@@ -3,8 +3,8 @@ package exchange
 import (
 	"errors"
 	"fmt"
-	"github.com/gotemplates/core/exchange/httptest"
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/exchange/httptest"
+	"github.com/go-sre/core/runtime"
 	"io"
 	"net/http"
 )

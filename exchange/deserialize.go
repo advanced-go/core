@@ -3,7 +3,7 @@ package exchange
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/runtime"
 	"io"
 )
 

@@ -3,7 +3,7 @@ package exchange
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/gotemplates/core/runtime"
+	"github.com/go-sre/core/runtime"
 	"net/http"
 	"time"
 )
