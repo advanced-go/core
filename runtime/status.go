@@ -93,7 +93,7 @@ func NewStatus(code codes.Code, location string, errs ...error) *Status {
 
 func NewStatusWithContext(code codes.Code, location string, ctx context.Context, errs ...error) *Status {
 	s := NewStatus(code, location, errs...)
-	s.SetContext(ctx)
+	//s.SetContext(ctx)
 	return s
 }
 
@@ -176,8 +176,14 @@ func (s *Status) SetContext(ctx context.Context) *Status {
 	s.requestId = ContextRequestId(ctx)
 	return s
 }
+
 func (s *Status) RequestId() string {
 	return s.requestId
+}
+
+func (s *Status) SetRequestId(requestId string) *Status {
+	s.requestId = requestId
+	return s
 }
 
 func (s *Status) MetadataValue(key string) string {

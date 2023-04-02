@@ -86,7 +86,7 @@ func ExampleLogHandler_Handle() {
 }
 
 func ExampleErrorHandleFn() {
-	loc := pkgPath + "/ErrorHandleFn"
+	loc := PkgUrl + "/ErrorHandleFn"
 	err := errors.New("debug - error message")
 
 	fn := Handle[DebugError]()
@@ -105,7 +105,7 @@ func ExampleErrorHandleFn() {
 }
 
 func ExampleErrorHandleStatus() {
-	loc := pkgPath + "/ErrorHandleStatus"
+	loc := PkgUrl + "/ErrorHandleStatus"
 	err := errors.New("debug - error message")
 
 	fn := StatusHandle[DebugError]()

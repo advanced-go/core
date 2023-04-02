@@ -47,14 +47,16 @@ func ContextWithRequest(req *http.Request) context.Context {
 	return ContextWithRequestId(req.Context(), req.Header.Get(xRequestIdName))
 }
 
-// ContextRequestId - return the requestId from a Context
-func ContextRequestId(ctx context.Context) string {
+// ContextRequestId - return the requestId from a context
+func ContextRequestId(ctx any) string {
 	if ctx == nil {
 		return ""
 	}
-	i := ctx.Value(requestContextKey)
-	if requestId, ok := i.(string); ok {
-		return requestId
+	if ctx2, ok := ctx.(context.Context); ok {
+		i := ctx2.Value(requestContextKey)
+		if requestId, ok2 := i.(string); ok2 {
+			return requestId
+		}
 	}
 	return ""
 }
