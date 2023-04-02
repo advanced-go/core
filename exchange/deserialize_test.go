@@ -32,19 +32,19 @@ type addressV2 struct {
 }
 
 func ExampleDeserialize() {
-	result, status := Deserialize[runtime.DebugError2, []byte](nil, nil)
+	result, status := Deserialize[runtime.DebugError, []byte](nil, nil)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](nil) -> [%v] [status:%v]\n", string(result), status)
 
 	resp := new(http.Response)
-	result, status = Deserialize[runtime.DebugError2, []byte](nil, resp.Body)
+	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
 	resp.Body = &httptest.ReaderCloser{Reader: strings.NewReader("Hello World String"), Err: nil}
-	result, status = Deserialize[runtime.DebugError2, []byte](nil, resp.Body)
+	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
 	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader([]byte("Hello World []byte")), Err: nil}
-	result2, status2 := Deserialize[runtime.DebugError2, []byte](nil, resp.Body)
+	result2, status2 := Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
 	//Output:
@@ -70,7 +70,7 @@ func ExampleDeserialize_Decode() {
 	resp := new(http.Response)
 	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV1), Err: nil}
 
-	result, status := Deserialize[runtime.DebugError2, addressV1](nil, resp.Body)
+	result, status := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result, status)
 
 	addrV2 := addressV2{
@@ -84,13 +84,13 @@ func ExampleDeserialize_Decode() {
 	resp = new(http.Response)
 	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV2), Err: nil}
 
-	result2, status2 := Deserialize[runtime.DebugError2, addressV2](nil, resp.Body)
+	result2, status2 := Deserialize[runtime.DebugError, addressV2](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV2](resp) -> [%v] [status:%v]\n", result2, status2)
 
 	resp = new(http.Response)
 	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV2), Err: nil}
 
-	result3, status3 := Deserialize[runtime.DebugError2, addressV1](nil, resp.Body)
+	result3, status3 := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result3, status3)
 
 	//Output:
@@ -98,5 +98,5 @@ func ExampleDeserialize_Decode() {
 	//test: Deserialize[DebugError,addressV2](resp) -> [{Bob Smith 123 Oak Avenue New Orleans Louisiana {12345 1234}}] [status:OK]
 	//[[] github.com/go-sre/core/exchange/deserialize [json: cannot unmarshal object into Go struct field addressV1.Zip of type string]]
 	//test: Deserialize[DebugError,addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans  }] [status:Json Decode Failure]
-	
+
 }

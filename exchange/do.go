@@ -8,7 +8,7 @@ import (
 
 var doLocation = pkgPath + "/do"
 
-func Do[E runtime.ErrorHandler2, H HttpExchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func Do[E runtime.ErrorHandler, H HttpExchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
 	var e E
 	var h H
 
