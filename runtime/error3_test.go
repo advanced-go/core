@@ -85,15 +85,15 @@ func ExampleLogHandler3_Handle() {
 
 }
 
-func ExampleErrorHandleFn() {
+func ExampleErrorHandleFn3() {
 	loc := PkgUrl + "/ErrorHandleFn"
 	err := errors.New("debug - error message")
 
-	fn := Handle[DebugError3]()
+	fn := Handle3[DebugError3]()
 	fn(loc, err)
 	fmt.Printf("test: Handle[DebugErrorHandler]()\n")
 
-	fn = Handle[LogError3]()
+	fn = Handle3[LogError3]()
 	fn(loc, errors.New("log - error message"))
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 
@@ -104,15 +104,15 @@ func ExampleErrorHandleFn() {
 
 }
 
-func ExampleErrorHandleStatus() {
+func ExampleErrorHandleStatus3() {
 	loc := PkgUrl + "/ErrorHandleStatus"
 	err := errors.New("debug - error message")
 
-	fn := StatusHandle[DebugError3]()
+	fn := StatusHandle3[DebugError3]()
 	status := fn(NewStatusError(loc, err))
 	fmt.Printf("test: StatusHandle[DebugErrorHandler]() [status:%v] [errors:%v]\n", status, status.IsErrors())
 
-	fn = StatusHandle[LogError3]()
+	fn = StatusHandle3[LogError3]()
 	status = fn(NewStatusError(loc, errors.New("log - error message")))
 	fmt.Printf("test: StatusHandle[LogErrorHandler]() [status:%v] [errors:%v]\n", status, status.IsErrors())
 

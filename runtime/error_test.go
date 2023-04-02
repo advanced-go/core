@@ -62,3 +62,22 @@ func ExampleLogHandler_Handle() {
 	//test: HandleStatus(nil,s) -> [prev:Internal] [prev-errors:true] [curr:Internal] [curr-errors:false]
 
 }
+
+func ExampleErrorHandleFn() {
+	loc := PkgUrl + "/ErrorHandleFn"
+	err := errors.New("debug - error message")
+
+	fn := Handle[DebugError]()
+	fn(nil, loc, err)
+	fmt.Printf("test: Handle[DebugErrorHandler]()\n")
+
+	fn = Handle[LogError]()
+	fn(nil, loc, errors.New("log - error message"))
+	fmt.Printf("test: Handle[LogErrorHandler]()\n")
+
+	//Output:
+	//[[] github.com/go-sre/core/runtime/ErrorHandleFn [debug - error message]]
+	//test: Handle[DebugErrorHandler]()
+	//test: Handle[LogErrorHandler]()
+
+}

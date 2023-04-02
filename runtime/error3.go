@@ -6,16 +6,16 @@ import (
 	"log"
 )
 
-// ErrorHandleFn - function type for error handling
-type ErrorHandleFn func(location string, errs ...error) *Status
+// ErrorHandleFn3 - function type for error handling
+type ErrorHandleFn3 func(location string, errs ...error) *Status
 
-// ErrorHandleWithContextFn - function type for error handling with context
-type ErrorHandleWithContextFn func(ctx context.Context, location string, errs ...error) *Status
+// ErrorHandleWithContextFn3 - function type for error handling with context
+type ErrorHandleWithContextFn3 func(ctx context.Context, location string, errs ...error) *Status
 
-// ErrorStatusHandleFn - function type for error status handling
-type ErrorStatusHandleFn func(s *Status) *Status
+// ErrorStatusHandleFn3 - function type for error status handling
+type ErrorStatusHandleFn3 func(s *Status) *Status
 
-// ErrorHandler - template parameter error handler interface
+// ErrorHandler3 - template parameter error handler interface
 type ErrorHandler3 interface {
 	Handle(location string, errs ...error) *Status
 	HandleWithContext(ctx context.Context, location string, errs ...error) *Status
@@ -97,24 +97,24 @@ func (h LogError3) HandleStatus(s *Status) *Status {
 	return s
 }
 
-// Handle - templated function providing an error handle function via a closure
-func Handle[E ErrorHandler3]() ErrorHandleFn {
+// Handle3 - templated function providing an error handle function via a closure
+func Handle3[E ErrorHandler3]() ErrorHandleFn3 {
 	var e E
 	return func(location string, errs ...error) *Status {
 		return e.Handle(location, errs...)
 	}
 }
 
-// HandleWithContext - templated function providing an error handle function with context via a closure
-func HandleWithContext[E ErrorHandler3]() ErrorHandleWithContextFn {
+// HandleWithContext3 - templated function providing an error handle function with context via a closure
+func HandleWithContext3[E ErrorHandler3]() ErrorHandleWithContextFn3 {
 	var e E
 	return func(ctx context.Context, location string, errs ...error) *Status {
 		return e.HandleWithContext(ctx, location, errs...)
 	}
 }
 
-// StatusHandle - templated function providing an error status handle function via a closure
-func StatusHandle[E ErrorHandler3]() ErrorStatusHandleFn {
+// StatusHandle3 - templated function providing an error status handle function via a closure
+func StatusHandle3[E ErrorHandler3]() ErrorStatusHandleFn3 {
 	var e E
 	return func(s *Status) *Status {
 		return e.HandleStatus(s)

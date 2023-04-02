@@ -9,10 +9,12 @@ const (
 	emptyArg = "[]"
 )
 
+// ErrorHandleFn - function type for error handling
+type ErrorHandleFn func(ctx any, location string, errs ...error) *Status
+
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
 	Handle(ctx any, location string, errs ...error) *Status
-	//HandleStatus(ctx any, s *Status) *Status
 }
 
 // DebugError - debug error handler
@@ -60,4 +62,12 @@ func ifElse(s string, def string) string {
 		return def
 	}
 	return s
+}
+
+// Handle - templated function providing an error handle function via a closure
+func Handle[E ErrorHandler]() ErrorHandleFn {
+	var e E
+	return func(ctx any, location string, errs ...error) *Status {
+		return e.Handle(ctx, location, errs...)
+	}
 }
