@@ -46,18 +46,6 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 	return nil, nil
 }
 
-func ExampleClient() {
-	cp := Client()
-	if cp != nil {
-		cp = nil
-	}
-	fmt.Printf("test: Client()  [!nil:%v]\n", Client() != nil)
-
-	//Output:
-	//test: Client()  [!nil:true]
-
-}
-
 func ExampleDo_InvalidArgument() {
 	var t Default
 

@@ -25,14 +25,11 @@ func (Default) Do(req *http.Request) (*http.Response, error) {
 			return do(req)
 		}
 	}
-	return client.Do(req)
+	return Client.Do(req)
 }
 
-var client = http.DefaultClient
+var Client = http.DefaultClient
 
-func Client() *http.Client {
-	return client
-}
 func init() {
 	t, ok := http.DefaultTransport.(*http.Transport)
 	if ok {
@@ -41,9 +38,9 @@ func init() {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		transport.MaxIdleConns = 200
 		transport.MaxIdleConnsPerHost = 100
-		client = &http.Client{Transport: transport, Timeout: time.Second * 5}
+		Client = &http.Client{Transport: transport, Timeout: time.Second * 5}
 	} else {
-		client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
+		Client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
 	}
 }
 

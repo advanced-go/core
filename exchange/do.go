@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-var doLocation = pkgPath + "/do"
+var doLocation = PkgUrl + "/do"
 
 func Do[E runtime.ErrorHandler, H HttpExchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
 	var e E

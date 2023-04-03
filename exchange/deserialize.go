@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-var deserializeLoc = pkgPath + "/deserialize"
+var deserializeLoc = PkgUrl + "/deserialize"
 
 // Deserialize - templated function, providing deserialization of a request/response body
 func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T, *runtime.Status) {
