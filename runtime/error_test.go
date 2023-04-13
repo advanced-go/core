@@ -67,11 +67,11 @@ func ExampleErrorHandleFn() {
 	loc := PkgUrl + "/ErrorHandleFn"
 	err := errors.New("debug - error message")
 
-	fn := Handle[DebugError]()
+	fn := NewErrorHandler[DebugError]()
 	fn(nil, loc, err)
 	fmt.Printf("test: Handle[DebugErrorHandler]()\n")
 
-	fn = Handle[LogError]()
+	fn = NewErrorHandler[LogError]()
 	fn(nil, loc, errors.New("log - error message"))
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 

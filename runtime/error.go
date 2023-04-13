@@ -64,8 +64,8 @@ func ifElse(s string, def string) string {
 	return s
 }
 
-// Handle - templated function providing an error handle function via a closure
-func Handle[E ErrorHandler]() ErrorHandleFn {
+// NewErrorHandler - templated function providing an error handle function via a closure
+func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	var e E
 	return func(ctx any, location string, errs ...error) *Status {
 		return e.Handle(ctx, location, errs...)
