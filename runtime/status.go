@@ -308,7 +308,7 @@ func (s *Status) ServiceUnavailable() bool {
 }
 
 func (s *Status) Http() int {
-	var code = int(s.code)
+	var code = http.StatusInternalServerError
 	switch s.code {
 	case StatusOK:
 		code = http.StatusOK
@@ -322,7 +322,6 @@ func (s *Status) Http() int {
 		code = http.StatusNotFound
 	case StatusRateLimited:
 		code = http.StatusTooManyRequests
-
 	case StatusInternal:
 		code = http.StatusInternalServerError
 	case StatusUnavailable:
