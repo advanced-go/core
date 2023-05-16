@@ -67,6 +67,7 @@ func TestParseLine(t *testing.T) {
 		{"KeyValue", args{line: "key  : value\r\n"}, "key", "value", false},
 		{"KeyValueLeadingSpaces", args{line: "key:      value"}, "key", "value", false},
 		{"KeyValueTrailingSpaces", args{line: "key :value    "}, "key", "value    ", false},
+		{"KeyValueEmptyLine", args{line: "key :value\r\n\r\n    "}, "key", "value", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

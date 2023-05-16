@@ -46,9 +46,6 @@ func ParseMap(buf []byte) (map[string]string, error) {
 	var err error
 	for {
 		line, err = reader.ReadString('\n')
-		if line == "\r\n" {
-			continue
-		}
 		k, v, err0 := parseLine(line)
 		if err0 != nil {
 			return m, err0
@@ -72,7 +69,7 @@ func parseLine(line string) (string, string, error) {
 		return "", "", nil
 	}
 	line = strings.TrimLeft(line, " ")
-	if len(line) == 0 || strings.HasPrefix(line, comment) {
+	if isEmpty(line) || isComment(line) {
 		return "", "", nil
 	}
 	i := strings.Index(line, delimiter)
@@ -90,4 +87,12 @@ func parseLine(line string) (string, string, error) {
 		val = val[:index]
 	}
 	return strings.TrimSpace(key), strings.TrimLeft(val, " "), nil
+}
+
+func isEmpty(line string) bool {
+	return len(line) == 0 || line == "" || line == "\r\n" || line == "\n"
+}
+
+func isComment(line string) bool {
+	return strings.HasPrefix(line, comment)
 }
