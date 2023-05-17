@@ -14,6 +14,11 @@ const (
 	delimiter = ":"
 )
 
+type TextPair struct {
+	Key   string
+	Value string
+}
+
 // ValidateMap - validates a configuration map, iterating through all keys
 func ValidateMap(m map[string]string, err error, keys ...string) (errs []error) {
 	if m == nil {
@@ -34,11 +39,12 @@ func ValidateMap(m map[string]string, err error, keys ...string) (errs []error) 
 	return
 }
 
-// ParseMap - create a map from a []byte
-func ParseMap(buf []byte) (map[string]string, error) {
-	m := make(map[string]string)
+// TextToSlice - create a TextPari slice from a []byte
+func TextToSlice(buf []byte) ([]TextPair, error) {
+	var list []TextPair
+
 	if len(buf) == 0 {
-		return m, nil
+		return list, nil
 	}
 	r := bytes.NewReader(buf)
 	reader := bufio.NewReader(r)
@@ -46,12 +52,12 @@ func ParseMap(buf []byte) (map[string]string, error) {
 	var err error
 	for {
 		line, err = reader.ReadString('\n')
-		k, v, err0 := parseLine(line)
+		k, v, err0 := parseLine(line, false)
 		if err0 != nil {
-			return m, err0
+			return list, err0
 		}
 		if len(k) > 0 {
-			m[k] = v
+			list = append(list, TextPair{k, v})
 		}
 		if err == io.EOF {
 			break
@@ -61,10 +67,28 @@ func ParseMap(buf []byte) (map[string]string, error) {
 			}
 		}
 	}
+	return list, nil
+}
+
+// TextToMap - create a map from a []byte
+func TextToMap(buf []byte) (map[string]string, error) {
+	m := make(map[string]string)
+	if len(buf) == 0 {
+		return m, nil
+	}
+	l, err := TextToSlice(buf)
+	if err != nil {
+		return m, err
+	}
+	if len(l) > 0 {
+		for _, p := range l {
+			m[p.Key] = p.Value
+		}
+	}
 	return m, nil
 }
 
-func parseLine(line string) (string, string, error) {
+func parseLine(line string, isMap bool) (string, string, error) {
 	if len(line) == 0 {
 		return "", "", nil
 	}
@@ -72,19 +96,18 @@ func parseLine(line string) (string, string, error) {
 	if isEmpty(line) || isComment(line) {
 		return "", "", nil
 	}
+	var key string
+	var val string
 	i := strings.Index(line, delimiter)
-	if i == -1 {
-		return "", "", fmt.Errorf("invalid argument : line does not contain the ':' delimeter : [%v]", line)
-	}
-	key := line[:i]
-	val := line[i+1:]
-	index := strings.Index(val, "\r")
-	if index != -1 {
-		val = val[:index]
-	}
-	index = strings.Index(val, "\n")
-	if index != -1 {
-		val = val[:index]
+	if isMap {
+		if i == -1 {
+			return "", "", fmt.Errorf("invalid argument : line does not contain the ':' delimeter : [%v]", line)
+		}
+		key = line[:i]
+		val = line[i+1:]
+		val = removeCrLf(val)
+	} else {
+		key = removeCrLf(line)
 	}
 	return strings.TrimSpace(key), strings.TrimLeft(val, " "), nil
 }
@@ -95,4 +118,16 @@ func isEmpty(line string) bool {
 
 func isComment(line string) bool {
 	return strings.HasPrefix(line, comment)
+}
+
+func removeCrLf(s string) string {
+	index := strings.Index(s, "\r")
+	if index != -1 {
+		s = s[:index]
+	}
+	index = strings.Index(s, "\n")
+	if index != -1 {
+		s = s[:index]
+	}
+	return s
 }
