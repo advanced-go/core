@@ -28,35 +28,44 @@ func ExampleValidateMap() {
 
 }
 
-func ExampleParse() {
+func ExampleParseLine() {
 	line := "key\r\n"
-	key, val, err := parseLine(line, false)
-	fmt.Printf("test: parseLine(keyCrLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
+	key := parseLine(line)
+	fmt.Printf("test: parseLine(keyCrLf) -> [key:%v]\n", key)
 
 	line = "key\n"
-	key, val, err = parseLine(line, false)
-	fmt.Printf("test: parseLine(keyLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
+	key = parseLine(line)
+	fmt.Printf("test: parseLine(keyLf) -> [key:%v]\n", key)
 
 	line = "key : value\r\n"
-	key, val, err = parseLine(line, true)
-	fmt.Printf("test: parseLine(key : valueCrLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
+	key1, val, err := parseMapLine(line)
+	fmt.Printf("test: parseMapLine(key : valueCrLf) -> [key:%v] [val:%v] [error:%v]\n", key1, val, err)
 
 	line = "key : value\n"
-	key, val, err = parseLine(line, true)
-	fmt.Printf("test: parseLine(key : valueLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
+	key1, val, err = parseMapLine(line)
+	fmt.Printf("test: parseMapLine(key : valueLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
 
 	//Output:
-	//test: parseLine(keyCrLf) -> [key:key] [val:] [error:<nil>]
-	//test: parseLine(keyLf) -> [key:key] [val:] [error:<nil>]
-	//test: parseLine(key : valueCrLf) -> [key:key] [val:value] [error:<nil>]
-	//test: parseLine(key : valueLf) -> [key:key] [val:value] [error:<nil>]
+	//test: parseLine(keyCrLf) -> [key:key]
+	//test: parseLine(keyLf) -> [key:key]
+	//test: parseMapLine(key : valueCrLf) -> [key:key] [val:value] [error:<nil>]
+	//test: parseMapLine(key : valueLf) -> [key:key] [val:value] [error:<nil>]
+
+}
+
+func ExampleListToTextPair() {
+	s := []string{"key", "key1,value1", "key2,value2"}
+	pair := ListToTextPair(s)
+	fmt.Printf("test: ListToTextPari() -> %v", pair)
+
+	//Output:
+	//test: ListToTextPari() -> [{key } {key1 value1} {key2 value2}]
 
 }
 
 func TestTextToMap(t *testing.T) {
 	type args struct {
-		line  string
-		isMap bool
+		line string
 	}
 	tests := []struct {
 		name    string
@@ -66,25 +75,25 @@ func TestTextToMap(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
-		{"BlankLine", args{line: "", isMap: true}, "", "", false},
-		{"LeadingSpace", args{line: " ", isMap: true}, "", "", false},
-		{"LeadingSpaces", args{line: "       ", isMap: true}, "", "", false},
+		{"BlankLine", args{line: ""}, "", "", false},
+		{"LeadingSpace", args{line: " "}, "", "", false},
+		{"LeadingSpaces", args{line: "       "}, "", "", false},
 
-		{"Comment", args{line: comment, isMap: true}, "", "", false},
-		{"LeadingSpaceComment", args{line: " " + comment, isMap: true}, "", "", false},
-		{"LeadingSpacesComment", args{line: "       " + comment, isMap: true}, "", "", false},
+		{"Comment", args{line: comment}, "", "", false},
+		{"LeadingSpaceComment", args{line: " " + comment}, "", "", false},
+		{"LeadingSpacesComment", args{line: "       " + comment}, "", "", false},
 
-		{"MissingDelimiter", args{line: "missing delimiter", isMap: true}, "", "", true},
+		{"MissingDelimiter", args{line: "missing delimiter"}, "", "", true},
 
-		{"KeyOnly", args{line: "key-only :", isMap: true}, "key-only", "", false},
-		{"KeyValue", args{line: "key  : value\r\n", isMap: true}, "key", "value", false},
-		{"KeyValueLeadingSpaces", args{line: "key:      value", isMap: true}, "key", "value", false},
-		{"KeyValueTrailingSpaces", args{line: "key :value    ", isMap: true}, "key", "value    ", false},
-		{"KeyValueEmptyLine", args{line: "key :value\r\n\r\n    ", isMap: true}, "key", "value", false},
+		{"KeyOnly", args{line: "key-only :"}, "key-only", "", false},
+		{"KeyValue", args{line: "key  : value\r\n"}, "key", "value", false},
+		{"KeyValueLeadingSpaces", args{line: "key:      value"}, "key", "value", false},
+		{"KeyValueTrailingSpaces", args{line: "key :value    "}, "key", "value    ", false},
+		{"KeyValueEmptyLine", args{line: "key :value\r\n\r\n    "}, "key", "value", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := parseLine(tt.args.line, tt.args.isMap)
+			got, got1, err := parseMapLine(tt.args.line)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseLine() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -99,6 +108,7 @@ func TestTextToMap(t *testing.T) {
 	}
 }
 
+/*
 func TestTextToSlice(t *testing.T) {
 	type args struct {
 		line  string
@@ -140,3 +150,6 @@ func TestTextToSlice(t *testing.T) {
 		})
 	}
 }
+
+
+*/
