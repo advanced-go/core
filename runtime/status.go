@@ -223,7 +223,7 @@ func (s *Status) SetMetadataFromResponse(resp *http.Response, keys ...string) *S
 }
 
 func (s *Status) AddMetadata(h http.Header, keys ...string) *Status {
-	if h == nil {
+	if h == nil || len(keys) == 0 {
 		return s
 	}
 	for _, key := range keys {

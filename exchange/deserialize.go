@@ -35,6 +35,9 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 
 // ReadAll - read all the body, with a deferred close
 func ReadAll(body io.ReadCloser) ([]byte, error) {
+	if body == nil {
+		return nil, nil
+	}
 	defer body.Close()
 	return io.ReadAll(body)
 }
