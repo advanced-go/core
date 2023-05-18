@@ -14,13 +14,11 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, s
 }
 
 // WriteResponseCopy - write a http.Response, utilizing the data, status, and response for controlling the content
-func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http.Response, status *runtime.Status, headers ...string) {
+func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http.Response, headers ...string) {
 	var e E
 	var buf []byte
 
-	if status == nil {
-		status = runtime.NewStatusOK()
-	}
+	status := runtime.NewHttpStatusCode(resp.StatusCode)
 	CreateHeaders(w.Header(), resp, headers...)
 	if status.OK() {
 		var err error
