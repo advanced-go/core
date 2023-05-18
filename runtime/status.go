@@ -308,6 +308,11 @@ func (s *Status) ServiceUnavailable() bool {
 }
 
 func (s *Status) Http() int {
+	if s.code >= http.StatusContinue {
+		return int(s.code)
+	}
+	//return http.StatusInternalServerError
+
 	var code = http.StatusInternalServerError
 	switch s.code {
 	case StatusOK:

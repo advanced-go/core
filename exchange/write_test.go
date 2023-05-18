@@ -97,20 +97,23 @@ func ExampleWriteResponseCopy() {
 	w := httptest.NewRecorder()
 
 	resp := http.Response{Header: http.Header{}}
+	resp.StatusCode = 504
 	resp.Header.Add("key", "value")
 	resp.Header.Add("key1", "value1")
 	resp.Header.Add("key2", "value2")
 
+	resp.Body = ioutil.NopCloser(bytes.NewReader([]byte("error content")))
 	WriteResponseCopy[runtime.DebugError](w, &resp, "key")
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	resp.Body = ioutil.NopCloser(bytes.NewReader([]byte("foo")))
 	w = httptest.NewRecorder()
+	resp.StatusCode = 200
 	WriteResponseCopy[runtime.DebugError](w, &resp, "*")
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	//Output:
-	//test: WriteResponse(w,resp,status) -> [status:200] [body:] [header:map[Key:[value]]]
+	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Key:[value]]]
 	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Key:[value] Key1:[value1] Key2:[value2]]]
 
 }
