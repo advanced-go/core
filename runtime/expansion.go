@@ -17,11 +17,10 @@ type Resolver interface {
 }
 
 // Expand - templated function to expand a template string, utilizing a resolver
-func Expand[T Resolver](t string) (string, error) {
-	var r T
+func Expand(fn func(string) (string, error), t string) (string, error) {
 
-	if t == "" {
-		return "", nil
+	if fn == nil || len(t) == 0 {
+		return t, nil
 	}
 	var buf strings.Builder
 	tokens := strings.Split(t, BeginDelimiter)
@@ -39,7 +38,7 @@ func Expand[T Resolver](t string) (string, error) {
 			continue
 		}
 		// Have a valid end delimiter, so lookup the variable
-		t, err := r.Lookup(sub[0])
+		t, err := fn(sub[0])
 		if err != nil {
 			return "", err
 		}
