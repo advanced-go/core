@@ -73,24 +73,24 @@ func (r *Request) String() string {
 	return r.Template
 }
 
-func NewQueryRequest(nid, region, zone, resource, template string, where []Attr) *Request {
-	return &Request{Cmd: SelectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: where}
+func NewQueryRequest(uri, template string, where []Attr) *Request {
+	return &Request{Cmd: SelectCmd, Uri: uri, Template: template, Where: where}
 }
 
-func NewQueryRequestFromValues(nid, region, zone, resource, template string, values map[string][]string) *Request {
-	return &Request{Cmd: SelectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: BuildWhere(values)}
+func NewQueryRequestFromValues(uri, template string, values map[string][]string) *Request {
+	return &Request{Cmd: SelectCmd, Uri: uri, Template: template, Where: BuildWhere(values)}
 }
 
-func NewInsertRequest(nid, region, zone, resource, template string, values [][]any) *Request {
-	return &Request{Cmd: InsertCmd, Uri: BuildInsertUri(nid, region, zone, resource), Template: template, Values: values}
+func NewInsertRequest(uri, template string, values [][]any) *Request {
+	return &Request{Cmd: InsertCmd, Uri: uri, Template: template, Values: values}
 }
 
-func NewUpdateRequest(nid, region, zone, resource, template string, attrs []Attr, where []Attr) *Request {
-	return &Request{Cmd: UpdateCmd, Uri: BuildUpdateUri(nid, region, zone, resource), Template: template, Attrs: attrs, Where: where}
+func NewUpdateRequest(uri, template string, attrs []Attr, where []Attr) *Request {
+	return &Request{Cmd: UpdateCmd, Uri: uri, Template: template, Attrs: attrs, Where: where}
 }
 
-func NewDeleteRequest(nid, region, zone, resource, template string, where []Attr) *Request {
-	return &Request{Cmd: DeleteCmd, Uri: BuildDeleteUri(nid, region, zone, resource), Template: template, Attrs: nil, Where: where}
+func NewDeleteRequest(uri, template string, where []Attr) *Request {
+	return &Request{Cmd: DeleteCmd, Uri: uri, Template: template, Attrs: nil, Where: where}
 }
 
 // BuildWhere - build the []Attr based on the URL query parameters
