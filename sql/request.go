@@ -16,10 +16,10 @@ const (
 	//PingUri = "urn:" + PostgresNID + ":" + PingNSS
 	//StatUri = "urn:" + PostgresNID + ":" + StatNSS
 
-	selectCmd = 0
-	insertCmd = 1
-	updateCmd = 2
-	deleteCmd = 3
+	SelectCmd = 0
+	InsertCmd = 1
+	UpdateCmd = 2
+	DeleteCmd = 3
 
 	variableReference = "$1"
 )
@@ -50,7 +50,7 @@ func BuildDeleteUri(nid, region, zone, resource string) string {
 
 // Request - contains data needed to build the SQL statement related to the uri
 type Request struct {
-	cmd      int
+	Cmd      int
 	Uri      string
 	Template string
 	Values   [][]any
@@ -74,26 +74,26 @@ func (r *Request) String() string {
 }
 
 func NewQueryRequest(nid, region, zone, resource, template string, where []Attr) *Request {
-	return &Request{cmd: selectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: where}
+	return &Request{Cmd: SelectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: where}
 }
 
 func NewQueryRequestFromValues(nid, region, zone, resource, template string, values map[string][]string) *Request {
-	return &Request{cmd: selectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: BuildWhere(values)}
+	return &Request{Cmd: SelectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: BuildWhere(values)}
 }
 
 func NewInsertRequest(nid, region, zone, resource, template string, values [][]any) *Request {
-	return &Request{cmd: insertCmd, Uri: BuildInsertUri(nid, region, zone, resource), Template: template, Values: values}
+	return &Request{Cmd: InsertCmd, Uri: BuildInsertUri(nid, region, zone, resource), Template: template, Values: values}
 }
 
 func NewUpdateRequest(nid, region, zone, resource, template string, attrs []Attr, where []Attr) *Request {
-	return &Request{cmd: updateCmd, Uri: BuildUpdateUri(nid, region, zone, resource), Template: template, Attrs: attrs, Where: where}
+	return &Request{Cmd: UpdateCmd, Uri: BuildUpdateUri(nid, region, zone, resource), Template: template, Attrs: attrs, Where: where}
 }
 
 func NewDeleteRequest(nid, region, zone, resource, template string, where []Attr) *Request {
-	return &Request{cmd: deleteCmd, Uri: BuildDeleteUri(nid, region, zone, resource), Template: template, Attrs: nil, Where: where}
+	return &Request{Cmd: DeleteCmd, Uri: BuildDeleteUri(nid, region, zone, resource), Template: template, Attrs: nil, Where: where}
 }
 
-// BbuildWhere - build the []Attr based on the URL query parameters
+// BuildWhere - build the []Attr based on the URL query parameters
 func BuildWhere(values map[string][]string) []Attr {
 	if len(values) == 0 {
 		return nil
