@@ -24,28 +24,28 @@ const (
 	variableReference = "$1"
 )
 
-func buildUri(nid, region, zone, nss, resource string) string {
+func BuildUri(nid, region, zone, nss, resource string) string {
 	return fmt.Sprintf("urn:%v.%v.%v:%v.%v", nid, region, zone, nss, resource)
 }
 
 // BuildQueryUri - build an uri with the Query NSS
 func BuildQueryUri(nid, region, zone, resource string) string {
-	return buildUri(nid, region, zone, QueryNSS, resource)
+	return BuildUri(nid, region, zone, QueryNSS, resource)
 }
 
 // BuildInsertUri - build an uri with the Insert NSS
 func BuildInsertUri(nid, region, zone, resource string) string {
-	return buildUri(nid, region, zone, InsertNSS, resource)
+	return BuildUri(nid, region, zone, InsertNSS, resource)
 }
 
 // BuildUpdateUri - build an uri with the Update NSS
 func BuildUpdateUri(nid, region, zone, resource string) string {
-	return buildUri(nid, region, zone, UpdateNSS, resource)
+	return BuildUri(nid, region, zone, UpdateNSS, resource)
 }
 
 // BuildDeleteUri - build an uri with the Delete NSS
 func BuildDeleteUri(nid, region, zone, resource string) string {
-	return buildUri(nid, region, zone, DeleteNSS, resource)
+	return BuildUri(nid, region, zone, DeleteNSS, resource)
 }
 
 // Request - contains data needed to build the SQL statement related to the uri
@@ -78,7 +78,7 @@ func NewQueryRequest(nid, region, zone, resource, template string, where []Attr)
 }
 
 func NewQueryRequestFromValues(nid, region, zone, resource, template string, values map[string][]string) *Request {
-	return &Request{cmd: selectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: buildWhere(values)}
+	return &Request{cmd: selectCmd, Uri: BuildQueryUri(nid, region, zone, resource), Template: template, Where: BuildWhere(values)}
 }
 
 func NewInsertRequest(nid, region, zone, resource, template string, values [][]any) *Request {
@@ -93,8 +93,8 @@ func NewDeleteRequest(nid, region, zone, resource, template string, where []Attr
 	return &Request{cmd: deleteCmd, Uri: BuildDeleteUri(nid, region, zone, resource), Template: template, Attrs: nil, Where: where}
 }
 
-// buildWhere - build the []Attr based on the URL query parameters
-func buildWhere(values map[string][]string) []Attr {
+// BbuildWhere - build the []Attr based on the URL query parameters
+func BuildWhere(values map[string][]string) []Attr {
 	if len(values) == 0 {
 		return nil
 	}
