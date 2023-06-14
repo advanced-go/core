@@ -46,5 +46,5 @@ func ExampleLookupRequest() {
 	//test: LookupRequest() -> [err:<nil>] [/base-path/resource]
 	//test: LookupRequest() -> [err:<nil>] [first=false]
 	//test: LookupRequest() -> [err:<nil>] [DEV]
-	
+
 }
