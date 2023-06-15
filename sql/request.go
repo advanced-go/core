@@ -13,15 +13,12 @@ const (
 	PingNSS   = "ping"
 	StatNSS   = "stat"
 
-	//PingUri = "urn:" + PostgresNID + ":" + PingNSS
-	//StatUri = "urn:" + PostgresNID + ":" + StatNSS
-
 	SelectCmd = 0
 	InsertCmd = 1
 	UpdateCmd = 2
 	DeleteCmd = 3
 
-	variableReference = "$1"
+	NullExpectedCount = int64(-1)
 )
 
 func BuildUri(nid, region, zone, nss, resource string) string {
@@ -50,13 +47,14 @@ func BuildDeleteUri(nid, region, zone, resource string) string {
 
 // Request - contains data needed to build the SQL statement related to the uri
 type Request struct {
-	Cmd      int
-	Uri      string
-	Template string
-	Values   [][]any
-	Attrs    []Attr
-	Where    []Attr
-	Error    error
+	ExpectedCount int64
+	Cmd           int
+	Uri           string
+	Template      string
+	Values        [][]any
+	Attrs         []Attr
+	Where         []Attr
+	Error         error
 }
 
 func (r *Request) Validate() error {
@@ -74,23 +72,23 @@ func (r *Request) String() string {
 }
 
 func NewQueryRequest(uri, template string, where []Attr) *Request {
-	return &Request{Cmd: SelectCmd, Uri: uri, Template: template, Where: where}
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: where}
 }
 
 func NewQueryRequestFromValues(uri, template string, values map[string][]string) *Request {
-	return &Request{Cmd: SelectCmd, Uri: uri, Template: template, Where: BuildWhere(values)}
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: BuildWhere(values)}
 }
 
 func NewInsertRequest(uri, template string, values [][]any) *Request {
-	return &Request{Cmd: InsertCmd, Uri: uri, Template: template, Values: values}
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: InsertCmd, Uri: uri, Template: template, Values: values}
 }
 
 func NewUpdateRequest(uri, template string, attrs []Attr, where []Attr) *Request {
-	return &Request{Cmd: UpdateCmd, Uri: uri, Template: template, Attrs: attrs, Where: where}
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: UpdateCmd, Uri: uri, Template: template, Attrs: attrs, Where: where}
 }
 
 func NewDeleteRequest(uri, template string, where []Attr) *Request {
-	return &Request{Cmd: DeleteCmd, Uri: uri, Template: template, Attrs: nil, Where: where}
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: DeleteCmd, Uri: uri, Template: template, Attrs: nil, Where: where}
 }
 
 // BuildWhere - build the []Attr based on the URL query parameters
