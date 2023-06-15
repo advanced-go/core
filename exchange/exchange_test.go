@@ -3,8 +3,8 @@ package exchange
 import (
 	"errors"
 	"fmt"
-	"github.com/go-sre/core/exchange/httptest"
-	"github.com/go-sre/core/runtime"
+	"github.com/go-ai-agent/core/exchange/httptest"
+	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
 )

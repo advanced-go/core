@@ -2,7 +2,7 @@ package exchange
 
 import (
 	"errors"
-	"github.com/go-sre/core/runtime"
+	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 	"strings"
 )

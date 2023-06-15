@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-sre/core/exchange/httptest"
-	"github.com/go-sre/core/runtime"
+	"github.com/go-ai-agent/core/exchange/httptest"
+	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 	"strings"
 )
@@ -48,9 +48,9 @@ func ExampleDeserialize() {
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
 	//Output:
-	//[[] github.com/go-sre/core/exchange/deserialize [body is nil]]
+	//[[] github.com/go-ai-agent/core/exchange/deserialize [body is nil]]
 	//test: Deserialize[DebugError,[]byte](nil) -> [] [status:Invalid Content]
-	//[[] github.com/go-sre/core/exchange/deserialize [body is nil]]
+	//[[] github.com/go-ai-agent/core/exchange/deserialize [body is nil]]
 	//test: Deserialize[DebugError,[]byte](resp) -> [] [status:Invalid Content]
 	//test: Deserialize[DebugError,[]byte](resp) -> [Hello World String] [status:OK]
 	//test: Deserialize[DebugError,[]byte](resp) -> [Hello World []byte] [status:OK]
@@ -96,7 +96,7 @@ func ExampleDeserialize_Decode() {
 	//Output:
 	//test: Deserialize[DebugError,addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans LA 12345}] [status:OK]
 	//test: Deserialize[DebugError,addressV2](resp) -> [{Bob Smith 123 Oak Avenue New Orleans Louisiana {12345 1234}}] [status:OK]
-	//[[] github.com/go-sre/core/exchange/deserialize [json: cannot unmarshal object into Go struct field addressV1.Zip of type string]]
+	//[[] github.com/go-ai-agent/core/exchange/deserialize [json: cannot unmarshal object into Go struct field addressV1.Zip of type string]]
 	//test: Deserialize[DebugError,addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans  }] [status:Json Decode Failure]
 
 }

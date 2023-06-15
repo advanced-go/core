@@ -3,7 +3,6 @@ package runtime
 import (
 	"errors"
 	"fmt"
-	"github.com/go-http-utils/headers"
 	"net/http"
 )
 
@@ -87,15 +86,15 @@ func ExampleStatus_Content() {
 	s := NewStatusOK()
 
 	s.SetContent(str)
-	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(headers.ContentType))
+	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(ContentType))
 
 	s.RemoveContent()
 	s.SetContent([]byte(str))
-	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(headers.ContentType))
+	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(ContentType))
 
 	s.RemoveContent()
 	s.SetContent(12345)
-	fmt.Printf("test: SetContent(12345) -> [content:%v] [type:%v]\n", string(s.Content()), s.MetadataValue(headers.ContentType))
+	fmt.Printf("test: SetContent(12345) -> [content:%v] [type:%v]\n", string(s.Content()), s.MetadataValue(ContentType))
 
 	s.RemoveContent()
 	s.SetContent(address{
@@ -105,12 +104,12 @@ func ExampleStatus_Content() {
 		Zip:    "01234",
 	})
 
-	fmt.Printf("test: SetContent(address) -> [content:%v] [type:%v]\n", string(s.Content()), s.MetadataValue(headers.ContentType))
+	fmt.Printf("test: SetContent(address) -> [content:%v] [type:%v]\n", string(s.Content()), s.MetadataValue(ContentType))
 
 	s.RemoveContent()
 	str = "error message"
 	s.SetContent(errors.New(str))
-	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(headers.ContentType))
+	fmt.Printf("test: SetContent(%v) -> [content:%v] [type:%v]\n", str, string(s.Content()), s.MetadataValue(ContentType))
 
 	//Output:
 	//test: SetContent(test string content) -> [content:test string content] [type:text/plain]

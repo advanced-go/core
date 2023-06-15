@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-http-utils/headers"
-	"github.com/go-sre/core/runtime"
+	"github.com/go-ai-agent/core/runtime"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +12,7 @@ import (
 
 const (
 	ContentTypeJson = "application/json"
+	ContentType     = "Content-Type"
 )
 
 type commandTag struct {
@@ -45,8 +45,8 @@ func ExampleWriteResponse_StatusOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatusCode(runtime.StatusOK)
-	status.SetMetadata(headers.ContentType, ContentTypeJson)
-	WriteResponse[runtime.DebugError](w, []byte(str), status, headers.ContentType)
+	status.SetMetadata(ContentType, ContentTypeJson)
+	WriteResponse[runtime.DebugError](w, []byte(str), status, ContentType)
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [body:%v] [header:%v]\n", str, w.Code, w.Body.String(), resp.Header)
 
@@ -60,18 +60,18 @@ func ExampleWriteResponse_StatusNotOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatusCode(runtime.StatusUnavailable).SetContent(str)
-	WriteResponse[runtime.DebugError](w, nil, status, headers.ContentType)
+	WriteResponse[runtime.DebugError](w, nil, status, ContentType)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	w = httptest.NewRecorder()
 	status = runtime.NewStatusCode(runtime.StatusNotFound).SetContent([]byte("not found"))
-	WriteResponse[runtime.DebugError](w, nil, status, headers.ContentType)
+	WriteResponse[runtime.DebugError](w, nil, status, ContentType)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
 	status = runtime.NewStatusCode(runtime.StatusDeadlineExceeded).SetContent(errors.New(str))
-	WriteResponse[runtime.DebugError](w, nil, status, headers.ContentType)
+	WriteResponse[runtime.DebugError](w, nil, status, ContentType)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	w = httptest.NewRecorder()
@@ -82,7 +82,7 @@ func ExampleWriteResponse_StatusNotOK() {
 		Update:       false,
 		Delete:       false,
 	})
-	WriteResponse[runtime.DebugError](w, nil, status, headers.ContentType)
+	WriteResponse[runtime.DebugError](w, nil, status, ContentType)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	//Output:

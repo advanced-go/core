@@ -3,7 +3,7 @@ package sql
 import (
 	"errors"
 	"fmt"
-	"github.com/go-sre/core/runtime"
+	"github.com/go-ai-agent/core/runtime"
 )
 
 const (

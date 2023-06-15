@@ -2,6 +2,17 @@ package exchange
 
 import "net/http"
 
+const (
+	ContentLocation = "Content-Location"
+)
+
+func GetContentLocation(req *http.Request) string {
+	if req != nil && req.Header != nil {
+		return req.Header.Get(ContentLocation)
+	}
+	return ""
+}
+
 func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 	if resp == nil || len(keys) == 0 {
 		return
