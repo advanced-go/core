@@ -54,6 +54,7 @@ type Request struct {
 	Values        [][]any
 	Attrs         []Attr
 	Where         []Attr
+	Args          []any
 	Error         error
 }
 
@@ -71,24 +72,24 @@ func (r *Request) String() string {
 	return r.Template
 }
 
-func NewQueryRequest(uri, template string, where []Attr) *Request {
-	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: where}
+func NewQueryRequest(uri, template string, where []Attr, args ...any) *Request {
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: where, Args: args}
 }
 
-func NewQueryRequestFromValues(uri, template string, values map[string][]string) *Request {
-	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: BuildWhere(values)}
+func NewQueryRequestFromValues(uri, template string, values map[string][]string, args ...any) *Request {
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: SelectCmd, Uri: uri, Template: template, Where: BuildWhere(values), Args: args}
 }
 
-func NewInsertRequest(uri, template string, values [][]any) *Request {
-	return &Request{ExpectedCount: NullExpectedCount, Cmd: InsertCmd, Uri: uri, Template: template, Values: values}
+func NewInsertRequest(uri, template string, values [][]any, args ...any) *Request {
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: InsertCmd, Uri: uri, Template: template, Values: values, Args: args}
 }
 
-func NewUpdateRequest(uri, template string, attrs []Attr, where []Attr) *Request {
-	return &Request{ExpectedCount: NullExpectedCount, Cmd: UpdateCmd, Uri: uri, Template: template, Attrs: attrs, Where: where}
+func NewUpdateRequest(uri, template string, attrs []Attr, where []Attr, args ...any) *Request {
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: UpdateCmd, Uri: uri, Template: template, Attrs: attrs, Where: where, Args: args}
 }
 
-func NewDeleteRequest(uri, template string, where []Attr) *Request {
-	return &Request{ExpectedCount: NullExpectedCount, Cmd: DeleteCmd, Uri: uri, Template: template, Attrs: nil, Where: where}
+func NewDeleteRequest(uri, template string, where []Attr, args ...any) *Request {
+	return &Request{ExpectedCount: NullExpectedCount, Cmd: DeleteCmd, Uri: uri, Template: template, Attrs: nil, Where: where, Args: args}
 }
 
 // BuildWhere - build the []Attr based on the URL query parameters
