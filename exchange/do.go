@@ -8,7 +8,25 @@ import (
 
 var doLocation = PkgUrl + "/do"
 
-func Do[E runtime.ErrorHandler, H HttpExchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status *runtime.Status) {
+	var e E
+	var h Default
+
+	if req == nil {
+		return nil, e.Handle(nil, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
+	}
+	var err error
+	resp, err = h.Do(req)
+	if err != nil {
+		return nil, e.Handle(req.Context(), doLocation, err).SetCode(http.StatusInternalServerError)
+	}
+	if resp == nil {
+		return nil, e.Handle(req.Context(), doLocation, errors.New("invalid argument : response is nil")).SetCode(http.StatusInternalServerError)
+	}
+	return resp, runtime.NewHttpStatusCode(resp.StatusCode)
+}
+
+func DoT[E runtime.ErrorHandler, H HttpExchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
 	var e E
 	var h H
 
