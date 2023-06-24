@@ -60,7 +60,7 @@ func ExampleAccessControllerApply() {
 
 }
 
-func ExampleNewStatusCodeFny() {
+func ExampleNewStatusCodeFn() {
 	var status *runtime.Status
 
 	fn := NewStatusCode(&status)
