@@ -30,7 +30,7 @@ func (t *testStatus) Code() uint32 {
 }
 
 func init() {
-	defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, statusCode int, routeName string, timeout int, limit rate.Limit, burst int, rateThreshold, statusFlags string) {
+	defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, limit rate.Limit, burst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
 		_, host, path := runtime.ParseUri(req.URL.String())
 		s := fmt.Sprintf("traffic:%v ,"+
 			"route:%v ,"+
@@ -44,10 +44,13 @@ func init() {
 			"rate-limit:%v, "+
 			"rate-burst:%v, "+
 			"rate-threshold:%v, "+
+			"proxy:%v, "+
+			"proxy-threshold:%v, "+
 			"status-flags:%v",
-			traffic, routeName, req.Header.Get(RequestIdHeaderName), statusCode, req.Method, req.URL.String(), host, path,
+			traffic, routeName, req.Header.Get(RequestIdHeaderName), resp.StatusCode, req.Method, req.URL.String(), host, path,
 			timeout,
 			limit, burst, rateThreshold,
+			proxy, proxyThreshold,
 			statusFlags)
 		fmt.Printf("{%v}\n", s)
 	}
@@ -66,9 +69,9 @@ func ExampleEgressApply_RateLimit() {
 	egressTable = NewEgressTable()
 
 	route := NewRoute(name, EgressTraffic, "", false, NewRateLimiterConfig(true, 503, 1, 0, ""))
-	errs := CtrlTable().AddController(route)
+	errs := EgressTable().AddController(route)
 	fmt.Printf("test: CtrlTable().AddController(route) [errs:%v]\n", errs)
-	CtrlTable().SetUriMatcher(func(uri string, method string) (string, bool) {
+	EgressTable().SetUriMatcher(func(uri string, method string) (string, bool) {
 		return name, true
 	})
 
@@ -85,8 +88,8 @@ func ExampleEgressApply_Timeout() {
 	egressTable = NewEgressTable()
 
 	route := NewRoute(name, EgressTraffic, "", false, NewTimeoutConfig(true, 504, time.Second))
-	CtrlTable().AddController(route)
-	CtrlTable().SetUriMatcher(func(uri string, method string) (string, bool) {
+	EgressTable().AddController(route)
+	EgressTable().SetUriMatcher(func(uri string, method string) (string, bool) {
 		return name, true
 	})
 

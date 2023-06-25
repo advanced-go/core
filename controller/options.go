@@ -7,11 +7,14 @@ import (
 	"time"
 )
 
+// HttpMatcher - type for Ingress/Egress table lookups by request
+type HttpMatcher func(req *http.Request) (routeName string, ok bool)
+
 // UriMatcher - type for control table lookups by uri
 type UriMatcher func(uri string, method string) (routeName string, ok bool)
 
 // OutputHandler - type for output handling
-type OutputHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, statusCode int, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, statusFlags string)
+type OutputHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string)
 
 // SetLogFn - configuration for logging function
 func SetLogFn(fn OutputHandler) {
@@ -20,8 +23,8 @@ func SetLogFn(fn OutputHandler) {
 	}
 }
 
-var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, statusCode int, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, statusFlags string) {
-	s := FmtLog(traffic, start, duration, req, statusCode, routeName, timeout, rateLimit, rateBurst, rateThreshold, statusFlags)
+var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
+	s := FmtLog(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags)
 	fmt.Printf("{%v}\n", s)
 }
 

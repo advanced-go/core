@@ -42,7 +42,7 @@ func AddRoutes(buf []byte) ([]Route, []error) {
 	for _, r := range routes {
 		switch r.Name {
 		default:
-			errs = CtrlTable().AddController(r)
+			errs = EgressTable().AddController(r)
 		}
 		if len(errs) > 0 {
 			return nil, errs
@@ -70,6 +70,14 @@ func InitControllers(read func() ([]byte, error), update func(routes []Route) er
 	return nil
 }
 
+func SetAction(name string, action Actuator) {
+	EgressTable().SetAction(name, action)
+}
+
 func SetUriMatcher(fn UriMatcher) {
-	CtrlTable().SetUriMatcher(fn)
+	EgressTable().SetUriMatcher(fn)
+}
+
+func SetHttpMatcher(fn HttpMatcher) {
+	EgressTable().SetHttpMatcher(fn)
 }

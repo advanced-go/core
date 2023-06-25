@@ -41,7 +41,7 @@ func Apply(ctx context.Context, statusCode func() int, uri, requestId, method st
 	newCtx := ctx
 	var cancelCtx context.CancelFunc
 
-	ctrl := CtrlTable().LookupUri(uri, method)
+	ctrl := EgressTable().LookupUri(uri, method)
 	if rlc := ctrl.RateLimiter(); rlc.IsEnabled() && !rlc.Allow() {
 		limited = true
 		statusFlags = RateLimitFlag

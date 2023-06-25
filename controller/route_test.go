@@ -42,7 +42,7 @@ func ExampleNewRoute() {
 }
 
 func ExampleConfig_Marshal() {
-	config := Route{Name: "test-route", Pattern: "google.com",
+	config := Route{Name: "test-route", Pattern: "google.com", Traffic: IngressTraffic, Protocol: "HTTP11", Ping: true,
 		Timeout: &TimeoutConfig{
 			StatusCode: 504,
 			Duration:   20000,
@@ -52,12 +52,16 @@ func ExampleConfig_Marshal() {
 			Burst:      25,
 			StatusCode: 503,
 		},
+		Proxy: &ProxyConfig{
+			Enabled: false,
+			Pattern: "http:",
+		},
 	}
 	buf, err := json.Marshal(config)
 	fmt.Printf("test: Config{} -> [error:%v] %v\n", err, string(buf))
 
 	//Output:
-	//test: Config{} -> [error:<nil>] {"Name":"test-route","Pattern":"google.com","Timeout":{"Enabled":false,"StatusCode":504,"Duration":20000},"RateLimiter":{"Enabled":false,"StatusCode":503,"Limit":100,"Burst":25,"Threshold":""}}
+	//test: Config{} -> [error:<nil>] {"Name":"test-route","Pattern":"google.com","Traffic":"ingress","Ping":true,"Protocol":"HTTP11","Timeout":{"Enabled":false,"StatusCode":504,"Duration":20000},"RateLimiter":{"Enabled":false,"StatusCode":503,"Limit":100,"Burst":25,"Threshold":""},"Proxy":{"Enabled":false,"Pattern":"http:","Headers":null,"Action":null,"Threshold":""}}
 
 }
 
@@ -71,20 +75,22 @@ func ExampleNewRouteFromConfig() {
 			StatusCode: 5040,
 		},
 		RateLimiter: nil,
+		Proxy:       nil,
 	}
 	route, err := NewRouteFromConfig(config)
-	//fmt.Printf("test: NewRouteFromConfig() [err:%v] [route:%v]\n", err, route)
+	fmt.Printf("test: NewRouteFromConfig() [err:%v] [route:%v]\n", err, route.Name)
 
 	//config.Retry.Wait = "245s"
 	//route, err = NewRouteFromConfig(config)
-	//fmt.Printf("test: NewRouteFromConfig() [err:%v] [timeout:%v]\n", err, route.Timeout)
+	//fmt.Printf("test: NewRouteFromConfig() [err:%v] [timeout:%v] [retry:%v]\n", err, route.Timeout, route.Retry)
 
 	config.Timeout.Duration = "x34"
 	route, err = NewRouteFromConfig(config)
 	fmt.Printf("test: NewRouteFromConfig() [err:%v] [route:%v]\n", err, route)
 
 	//Output:
-	//test: NewRouteFromConfig() [err:strconv.Atoi: parsing "x34": invalid syntax] [route:{  <nil> <nil>}]
+	//test: NewRouteFromConfig() [err:<nil>] [route:test-route]
+	//test: NewRouteFromConfig() [err:strconv.Atoi: parsing "x34": invalid syntax] [route:{   false  <nil> <nil> <nil>}]
 
 }
 

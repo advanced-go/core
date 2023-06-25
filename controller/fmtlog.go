@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func FmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, statusCode int, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, statusFlags string) string {
+func FmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
 	d := int(duration / time.Duration(1e6))
 	s := fmt.Sprintf("start:%v ,"+
 		"duration:%v ,"+
@@ -25,6 +25,8 @@ func FmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"rate-limit:%v, "+
 		"rate-burst:%v, "+
 		"rate-threshold:%v, "+
+		"proxy:%v, "+
+		"proxy-threshold:%v, "+
 		"status-flags:%v",
 		FmtTimestamp(start), //l.Value(StartTimeOperator),
 		strconv.Itoa(d),     //l.Value(DurationOperator),
@@ -38,7 +40,7 @@ func FmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		req.URL.Host,                        //l.Value(RequestHostOperator),
 		req.URL.Path,                        //l.Value(RequestPathOperator),
 
-		statusCode, //l.Value(ResponseStatusCodeOperator),
+		resp.StatusCode, //l.Value(ResponseStatusCodeOperator),
 
 		timeout, //Tl.Value(TimeoutDurationOperator),
 
@@ -46,6 +48,9 @@ func FmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		rateBurst, //l.Value(RateBurstOperator),
 		rateThreshold,
 
+		//retry,
+		proxy,
+		proxyThreshold,
 		statusFlags, //l.Value(StatusFlagsOperator),
 	)
 
