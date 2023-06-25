@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"context"
 	"github.com/go-ai-agent/core/runtime"
 )
 
@@ -15,9 +14,6 @@ type Credentials func() (username string, password string, err error)
 type DatabaseUrl struct {
 	Url string
 }
-
-// ControllerApply - type for applying a controller
-type ControllerApply func(ctx context.Context, statusCode func() int, uri, requestId, method string) (fn func(), newCtx context.Context, rateLimited bool)
 
 func NewStatusCode(status **runtime.Status) func() int {
 	return func() int {
@@ -49,17 +45,4 @@ func AccessDatabaseUrl(msg *Message) DatabaseUrl {
 		}
 	}
 	return DatabaseUrl{}
-}
-
-// AccessControllerApply - access function for ControllerApply in a message
-func AccessControllerApply(msg *Message) ControllerApply {
-	if msg == nil || msg.Content == nil {
-		return nil
-	}
-	for _, c := range msg.Content {
-		if fn, ok := c.(ControllerApply); ok {
-			return fn
-		}
-	}
-	return nil
 }
