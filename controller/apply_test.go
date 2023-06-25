@@ -60,7 +60,7 @@ func ExampleEgressApply() {
 	function(context.Background())
 
 	//Output:
-	//{traffic:egress ,route:* ,request-id:123-456-7890, status-code:0, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:-1, rate-limit:-1, rate-burst:-1, rate-threshold:, status-flags:}
+	//{traffic:egress ,route:* ,request-id:123-456-7890, status-code:0, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:-1, rate-limit:-1, rate-burst:-1, rate-threshold:, proxy:, proxy-threshold:, status-flags:}
 
 }
 
@@ -79,7 +79,7 @@ func ExampleEgressApply_RateLimit() {
 
 	//Output:
 	//test: CtrlTable().AddController(route) [errs:[]]
-	//{traffic:egress ,route:rate-limit-route ,request-id:123-456-7890, status-code:94, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:-1, rate-limit:1, rate-burst:0, rate-threshold:, status-flags:RL}
+	//{traffic:egress ,route:rate-limit-route ,request-id:123-456-7890, status-code:94, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:-1, rate-limit:1, rate-burst:0, rate-threshold:, proxy:, proxy-threshold:, status-flags:RL}
 
 }
 
@@ -96,7 +96,7 @@ func ExampleEgressApply_Timeout() {
 	functionTimeout(context.Background())
 
 	//Output:
-	//{traffic:egress ,route:timeout-route ,request-id:123-456-7890, status-code:4, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:1000, rate-limit:-1, rate-burst:-1, rate-threshold:, status-flags:UT}
+	//{traffic:egress ,route:timeout-route ,request-id:123-456-7890, status-code:4, method:GET, url:urn:postgresql.us-test-1:query.access-log, host:postgresql.us-test-1, path:query.access-log, timeout:1000, rate-limit:-1, rate-burst:-1, rate-threshold:, proxy:, proxy-threshold:, status-flags:UT}
 
 }
 

@@ -21,7 +21,7 @@ type Handler interface {
 type NilHandler struct{}
 
 // Apply - function to be used to apply a controller
-func (e *NilHandler) Apply(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
+func (NilHandler) Apply(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
 	return nil, nil, false
 }
 
@@ -29,7 +29,7 @@ func (e *NilHandler) Apply(ctx context.Context, statusCode func() int, uri, requ
 type DefaultHandler struct{}
 
 // Apply - function to be used to apply a controller
-func (e *DefaultHandler) Apply(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
+func (DefaultHandler) Apply(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
 	return Apply(ctx, statusCode, uri, requestId, method)
 }
 
