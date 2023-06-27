@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+const (
+	UrnScheme = "urn"
+)
+
 // ParseUri - urn safe Uri parser
 func ParseUri(uri string) (scheme, host, path string) {
 	if uri == "" {
@@ -14,7 +18,7 @@ func ParseUri(uri string) (scheme, host, path string) {
 	if err != nil {
 		return err.Error(), "", ""
 	}
-	if u.Scheme == "urn" && u.Host == "" {
+	if u.Scheme == UrnScheme && u.Host == "" {
 		t := strings.Split(u.Opaque, ":")
 		if len(t) == 1 {
 			return u.Scheme, t[0], ""
