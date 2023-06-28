@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/go-ai-agent/core/runtime"
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"
@@ -24,7 +25,7 @@ func SetLogFn(fn OutputHandler) {
 }
 
 var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
-	s := FmtLog(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags)
+	s := runtime.FormatLogText(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags)
 	fmt.Printf("{%v}\n", s)
 }
 
