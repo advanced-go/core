@@ -15,6 +15,25 @@ const (
 	markupString        = "\"%v\":\"%v\""
 	markupValue         = "\"%v\":%v"
 	RequestIdHeaderName = "X-REQUEST-ID"
+
+	Start          = "start"
+	DurationMs     = "duration-ms"
+	Traffic        = "traffic"
+	Route          = "route"
+	RequestId      = "request-id"
+	Protocol       = "protocol"
+	Method         = "method"
+	Uri            = "uri"
+	Host           = "host"
+	Path           = "path"
+	StatusCode     = "status-code"
+	TimeoutMs      = "timeout-ms"
+	RateLimit      = "rate-limit"
+	RateBurst      = "rate-burst"
+	RateThreshold  = "rate-threshold"
+	Proxy          = "proxy"
+	ProxyThreshold = "proxy-threshold"
+	StatusFlags    = "status-flags"
 )
 
 // AccessLogHandler - template access log handler interface
@@ -22,15 +41,15 @@ type AccessLogHandler interface {
 	Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string)
 }
 
-type StdioWriter struct{}
+type StdioAccessLog struct{}
 
-func (StdioWriter) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
+func (StdioAccessLog) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
 	fmt.Println(FormatLogJson(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
 }
 
-type LogWriter struct{}
+type LogAccessLog struct{}
 
-func (LogWriter) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
+func (LogAccessLog) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
 	log.Println(FormatLogJson(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
 }
 
@@ -38,28 +57,28 @@ func FormatLogJson(traffic string, start time.Time, duration time.Duration, req 
 	d := int(duration / time.Duration(1e6))
 	sb := strings.Builder{}
 
-	writeMarkup(&sb, "start", FmtTimestamp(start), true)
-	writeMarkup(&sb, "duration-ms", strconv.Itoa(d), false)
-	writeMarkup(&sb, "traffic", traffic, true)
-	writeMarkup(&sb, "route", routeName, true)
-	writeMarkup(&sb, "request-id", req.Header.Get(RequestIdHeaderName), true)
-	writeMarkup(&sb, "protocol", req.Proto, true)
-	writeMarkup(&sb, "method", req.Method, true)
-	writeMarkup(&sb, "uri", req.URL.String(), true)
-	writeMarkup(&sb, "host", req.URL.Host, true)
-	writeMarkup(&sb, "path", req.URL.Path, true)
-	writeMarkup(&sb, "status-code", strconv.Itoa(resp.StatusCode), false)
+	writeMarkup(&sb, Start, FmtTimestamp(start), true)
+	writeMarkup(&sb, DurationMs, strconv.Itoa(d), false)
+	writeMarkup(&sb, Traffic, traffic, true)
+	writeMarkup(&sb, Route, routeName, true)
+	writeMarkup(&sb, RequestId, req.Header.Get(RequestIdHeaderName), true)
+	writeMarkup(&sb, Protocol, req.Proto, true)
+	writeMarkup(&sb, Method, req.Method, true)
+	writeMarkup(&sb, Uri, req.URL.String(), true)
+	writeMarkup(&sb, Host, req.URL.Host, true)
+	writeMarkup(&sb, Path, req.URL.Path, true)
+	writeMarkup(&sb, StatusCode, strconv.Itoa(resp.StatusCode), false)
 
-	writeMarkup(&sb, "timeout-ms", strconv.Itoa(timeout), false)
+	writeMarkup(&sb, TimeoutMs, strconv.Itoa(timeout), false)
 
-	writeMarkup(&sb, "rate-limit", fmt.Sprintf("%v", rateLimit), false)
-	writeMarkup(&sb, "rate-burst", strconv.Itoa(rateBurst), false)
-	writeMarkup(&sb, "rate-threshold", rateThreshold, true)
+	writeMarkup(&sb, RateLimit, fmt.Sprintf("%v", rateLimit), false)
+	writeMarkup(&sb, RateBurst, strconv.Itoa(rateBurst), false)
+	writeMarkup(&sb, RateThreshold, rateThreshold, true)
 
-	writeMarkup(&sb, "proxy", proxy, false)
-	writeMarkup(&sb, "proxy-threshold", proxyThreshold, true)
+	writeMarkup(&sb, Proxy, proxy, false)
+	writeMarkup(&sb, ProxyThreshold, proxyThreshold, true)
 
-	writeMarkup(&sb, "status-flags", statusFlags, true)
+	writeMarkup(&sb, StatusFlags, statusFlags, true)
 
 	sb.WriteString("}")
 	return sb.String()
@@ -67,24 +86,24 @@ func FormatLogJson(traffic string, start time.Time, duration time.Duration, req 
 
 func FormatLogText(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
 	d := int(duration / time.Duration(1e6))
-	s := fmt.Sprintf("start:%v, "+
-		"duration-ms:%v, "+
-		"traffic:%v, "+
-		"route:%v, "+
-		"request-id:%v, "+
-		"protocol:%v, "+
-		"method:%v, "+
-		"url:%v, "+
-		"host:%v, "+
-		"path:%v, "+
-		"status-code:%v, "+
-		"timeout-ms:%v, "+
-		"rate-limit:%v, "+
-		"rate-burst:%v, "+
-		"rate-threshold:%v, "+
-		"proxy:%v, "+
-		"proxy-threshold:%v, "+
-		"status-flags:%v",
+	s := fmt.Sprintf(Start+":%v, "+
+		DurationMs+":%v, "+
+		Traffic+":%v, "+
+		Route+":%v, "+
+		RequestId+":%v, "+
+		Protocol+":%v, "+
+		Method+":%v, "+
+		Uri+":%v, "+
+		Host+":%v, "+
+		Path+":%v, "+
+		StatusCode+":%v, "+
+		TimeoutMs+":%v, "+
+		RateLimit+":%v, "+
+		RateBurst+":%v, "+
+		RateThreshold+":%v, "+
+		Proxy+":%v, "+
+		ProxyThreshold+":%v, "+
+		StatusFlags+":%v",
 		FmtTimestamp(start),
 		strconv.Itoa(d),
 		traffic,
