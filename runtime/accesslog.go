@@ -19,29 +19,29 @@ const (
 
 // AccessLogHandler - template access log handler interface
 type AccessLogHandler interface {
-	Handle(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string)
+	Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string)
 }
 
-type StdAccess struct{}
+type StdioWriter struct{}
 
-func (StdAccess) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
-	fmt.Println(FormatLogText(traffic, start, duration, req, resp, controllerName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
+func (StdioWriter) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
+	fmt.Println(FormatLogJson(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
 }
 
-type LogAccess struct{}
+type LogWriter struct{}
 
-func (LogAccess) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
-	log.Println(FormatLogJson(traffic, start, duration, req, resp, controllerName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
+func (LogWriter) Write(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) {
+	log.Println(FormatLogJson(traffic, start, duration, req, resp, routeName, timeout, rateLimit, rateBurst, rateThreshold, proxy, proxyThreshold, statusFlags))
 }
 
-func FormatLogJson(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
+func FormatLogJson(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
 	d := int(duration / time.Duration(1e6))
 	sb := strings.Builder{}
 
 	writeMarkup(&sb, "start", FmtTimestamp(start), true)
 	writeMarkup(&sb, "duration-ms", strconv.Itoa(d), false)
 	writeMarkup(&sb, "traffic", traffic, true)
-	writeMarkup(&sb, "controller", controllerName, true)
+	writeMarkup(&sb, "route", routeName, true)
 	writeMarkup(&sb, "request-id", req.Header.Get(RequestIdHeaderName), true)
 	writeMarkup(&sb, "protocol", req.Proto, true)
 	writeMarkup(&sb, "method", req.Method, true)
@@ -65,12 +65,12 @@ func FormatLogJson(traffic string, start time.Time, duration time.Duration, req 
 	return sb.String()
 }
 
-func FormatLogText(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
+func FormatLogText(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, timeout int, rateLimit rate.Limit, rateBurst int, rateThreshold, proxy, proxyThreshold, statusFlags string) string {
 	d := int(duration / time.Duration(1e6))
 	s := fmt.Sprintf("start:%v, "+
 		"duration-ms:%v, "+
 		"traffic:%v, "+
-		"controller:%v, "+
+		"route:%v, "+
 		"request-id:%v, "+
 		"protocol:%v, "+
 		"method:%v, "+
@@ -88,7 +88,7 @@ func FormatLogText(traffic string, start time.Time, duration time.Duration, req 
 		FmtTimestamp(start),
 		strconv.Itoa(d),
 		traffic,
-		controllerName,
+		routeName,
 
 		req.Header.Get(RequestIdHeaderName),
 		req.Proto,
