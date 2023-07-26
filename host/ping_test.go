@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"errors"
@@ -43,7 +43,7 @@ func ExamplePing() {
 
 	//Output:
 	//test: Ping(good) -> [OK] [duration:0s]
-	//[[] github.com/go-ai-agent/core/resource/ping [ping response time out: [urn:ping:bad]]]
+	//[[] github.com/go-ai-agent/core/host/ping [ping response time out: [urn:ping:bad]]]
 	//test: Ping(bad) -> [DeadlineExceeded] [duration:0s]
 	//test: Ping(error) -> [Internal [ping depends error message]] [duration:0s]
 	//test: Ping(delay) -> [OK] [duration:0s]

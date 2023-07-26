@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-// MessageCache - message cache by resource uri
+// MessageCache - message cache by host uri
 type MessageCache struct {
 	m  map[string]Message
 	mu sync.RWMutex

@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"context"
@@ -14,12 +14,12 @@ const (
 
 var pingLocation = PkgUrl + "/ping"
 
-// Ping - templated function to "ping" a resource
+// Ping - templated function to "ping" a host
 func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runtime.Status) {
 	var e E
 
 	if uri == "" {
-		return e.Handle(ctx, pingLocation, errors.New("invalid argument: resource uri is empty"))
+		return e.Handle(ctx, pingLocation, errors.New("invalid argument: host uri is empty"))
 	}
 	cache := NewMessageCache()
 	msg := Message{To: uri, From: HostName, Event: PingEvent, Status: nil, ReplyTo: NewMessageCacheHandler(cache)}

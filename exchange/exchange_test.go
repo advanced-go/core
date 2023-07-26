@@ -12,16 +12,14 @@ import (
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "resource/http/http-503.txt"
+	http503FileName       = "host/http/http-503.txt"
 )
 
 var exchangeCtx = runtime.ContextWithProxy(nil, exchangeProxy)
 
-//
 // When reading http from a text file, be sure you have the expected blank line between header and body.
 // If there is not a blank line after the header section, even if there is not a body, you will receive an
 // Unexpected EOF error when calling the golang http.ReadResponse function.
-//
 func exchangeProxy(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
 		return nil, errors.New("request or request URL is nil")

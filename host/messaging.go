@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"github.com/go-ai-agent/core/runtime"

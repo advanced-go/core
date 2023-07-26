@@ -43,7 +43,7 @@ func ExampleLookupRequest() {
 	//test: LookupRequest() -> [err:<nil>] [GET]
 	//test: LookupRequest() -> [err:<nil>] [http]
 	//test: LookupRequest() -> [err:<nil>] [localhost:8080]
-	//test: LookupRequest() -> [err:<nil>] [/base-path/resource]
+	//test: LookupRequest() -> [err:<nil>] [/base-path/host]
 	//test: LookupRequest() -> [err:<nil>] [first=false]
 	//test: LookupRequest() -> [err:<nil>] [DEV]
 

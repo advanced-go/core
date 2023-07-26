@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"errors"
@@ -14,8 +14,8 @@ var credFn Credentials = func() (string, string, error) {
 var start time.Time
 
 func ExampleCreateToSend() {
-	none := "/resource/none"
-	one := "/resource/one"
+	none := "/host/none"
+	one := "/host/one"
 
 	registerUnchecked(none, nil)
 	registerUnchecked(one, nil)
@@ -30,8 +30,8 @@ func ExampleCreateToSend() {
 	fmt.Printf("test: createToSend(map,nil) -> [to:%v] [from:%v] [credentials:%v]\n", msg.To, msg.From, AccessCredentials(&msg) != nil)
 
 	//Output:
-	//test: createToSend(nil,nil) -> [to:/resource/none] [from:host]
-	//test: createToSend(map,nil) -> [to:/resource/one] [from:host] [credentials:true]
+	//test: createToSend(nil,nil) -> [to:/host/none] [from:host]
+	//test: createToSend(map,nil) -> [to:/host/one] [from:host] [credentials:true]
 
 }
 
@@ -89,7 +89,7 @@ func ExampleStartup_Failure() {
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//[[] github.com/go-ai-agent/core/resource/startup [startup failure error message]]
+	//[[] github.com/go-ai-agent/core/host/startup [startup failure error message]]
 	//test: Startup() -> [Internal]
 
 }

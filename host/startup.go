@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ var startupLocation = PkgUrl + "/startup"
 
 var directory = NewEntryDirectory()
 
-// Register - function to register a resource uri
+// Register - function to register a host uri
 func Register(uri string, c chan Message) error {
 	if uri == "" {
 		return errors.New("invalid argument: uri is empty")
@@ -30,7 +30,7 @@ func registerUnchecked(uri string, c chan Message) error {
 	return nil
 }
 
-// Shutdown - resource shutdown
+// Shutdown - host shutdown
 func Shutdown() {
 	directory.Shutdown()
 }
@@ -110,7 +110,7 @@ func handleStatus[O runtime.OutputHandler](cache *MessageCache) {
 			continue
 		}
 		if msg.Status != nil {
-			o.Write(fmt.Sprintf("startup successful for resource [%v] : %s", uri, msg.Status.Duration()))
+			o.Write(fmt.Sprintf("startup successful for host [%v] : %s", uri, msg.Status.Duration()))
 		}
 	}
 }

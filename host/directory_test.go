@@ -1,4 +1,4 @@
-package resource
+package host
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 )
 
 /*
-func createTestEntry(uri string, status int32) *entry {
-	entry := createEntry(uri, nil)
-	entry.msgs.add(CreateMessage(VirtualHost, VirtualHost, StartupEvent, status, nil))
-	return entry
-}
+	func createTestEntry(uri string, status int32) *entry {
+		entry := createEntry(uri, nil)
+		entry.msgs.add(CreateMessage(VirtualHost, VirtualHost, StartupEvent, status, nil))
+		return entry
+	}
 */
 var directoryTest = NewEntryDirectory()
 
