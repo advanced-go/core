@@ -76,7 +76,7 @@ func ExampleErrorHandleFn() {
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 
 	//Output:
-	//[[] github.com/go-sre/core/runtime/ErrorHandleFn [debug - error message]]
+	//[[] github.com/go-ai-agent/core/runtime/ErrorHandleFn [debug - error message]]
 	//test: Handle[DebugErrorHandler]()
 	//test: Handle[LogErrorHandler]()
 

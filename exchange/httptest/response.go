@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-//go:embed host/*
+//go:embed resource/*
 var fsys embed.FS
 
 // NewResponse - create a new response from the provided parameters
