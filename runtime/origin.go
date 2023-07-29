@@ -2,6 +2,14 @@ package runtime
 
 import "fmt"
 
+const (
+	OriginRegionKey     = "ORIGIN-REGION"
+	OriginZoneKey       = "ORIGIN-ZONE"
+	OriginSubZoneKey    = "ORIGIN-SUB-ZONE"
+	OriginServiceKey    = "ORIGIN-SERVICE"
+	OriginInstanceIdKey = "ORIGIN-INSTANCE-ID"
+)
+
 // Origin - struct for origin information
 type Origin struct {
 	Region     string
