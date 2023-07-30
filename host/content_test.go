@@ -1,6 +1,7 @@
 package host
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
@@ -18,7 +19,10 @@ var msgTest = Message{To: "to-uri", From: "from-uri", Content: []any{
 	func() bool { return false },
 	runtime.NewStatusError("location", errors.New("error message")).SetDuration(time.Second * 2),
 	//runtime.HandleWithContext[runtime.DebugError](),
-	DatabaseUrl{"postgres://username:password@database.cloud.timescale.com/database?sslmode=require"},
+	ControllerApply(func(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
+		return func() {}, ctx, false
+	}),
+	Resource{"postgres://username:password@database.cloud.timescale.com/database?sslmode=require"},
 }}
 
 func ExampleAccessCredentials() {
@@ -32,15 +36,27 @@ func ExampleAccessCredentials() {
 	//test: AccessCredentials(msg) -> true
 }
 
-func ExampleAccessDatabaseUrl() {
-	fmt.Printf("test: AccessDatabaseUrl(nil) -> %v\n", AccessDatabaseUrl(nil))
-	fmt.Printf("test: AccessDatabaseUrl(msg) -> %v\n", AccessDatabaseUrl(&Message{To: "to-uri"}))
-	fmt.Printf("test: AccessDatabaseUrl(msg) -> %v\n", AccessDatabaseUrl(&msgTest))
+func ExampleAccessResource() {
+	fmt.Printf("test: AccessResource(nil) -> %v\n", AccessResource(nil))
+	fmt.Printf("test: AccessResource(msg) -> %v\n", AccessResource(&Message{To: "to-uri"}))
+	fmt.Printf("test: AccessResource(msg) -> %v\n", AccessResource(&msgTest))
 
 	//Output:
-	//test: AccessDatabaseUrl(nil) -> {}
-	//test: AccessDatabaseUrl(msg) -> {}
-	//test: AccessDatabaseUrl(msg) -> {postgres://username:password@database.cloud.timescale.com/database?sslmode=require}
+	//test: AccessResource(nil) -> {}
+	//test: AccessResource(msg) -> {}
+	//test: AccessResource(msg) -> {postgres://username:password@database.cloud.timescale.com/database?sslmode=require}
+
+}
+
+func ExampleAccessControllerApply() {
+	fmt.Printf("test: AccessControllerApply(nil) -> [valid:%v]\n", AccessControllerApply(nil) != nil)
+	fmt.Printf("test: AccessControllerApply(msg) -> [valid:%v]\n", AccessControllerApply(&Message{To: "to-uri"}) != nil)
+	fmt.Printf("test: AccessControllerApply(msg) -> [valid:%v]\n", AccessControllerApply(&msgTest) != nil)
+
+	//Output:
+	//test: AccessControllerApply(nil) -> [valid:false]
+	//test: AccessControllerApply(msg) -> [valid:false]
+	//test: AccessControllerApply(msg) -> [valid:true]
 
 }
 
