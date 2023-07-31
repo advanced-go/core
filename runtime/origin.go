@@ -34,6 +34,26 @@ func SetOrigin(region, zone, subZone, service, instanceId string) {
 	origin.InstanceId = instanceId
 }
 
+func OriginRegion() string {
+	return origin.Region
+}
+
+func OriginZone() string {
+	return origin.Zone
+}
+
+func OriginSubZone() string {
+	return origin.SubZone
+}
+
+func OriginService() string {
+	return origin.Service
+}
+
+func OriginInstanceId() string {
+	return origin.InstanceId
+}
+
 func OriginString() string {
 	return fmt.Sprintf("%s:%s:%s:%s:%s", origin.Region, origin.Zone, origin.SubZone, origin.Service, origin.InstanceId)
 }
