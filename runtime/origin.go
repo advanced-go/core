@@ -10,6 +10,8 @@ const (
 	OriginInstanceIdKey = "ORIGIN-INSTANCE-ID"
 )
 
+var origin Origin
+
 // Origin - struct for origin information
 type Origin struct {
 	Region     string
@@ -19,16 +21,23 @@ type Origin struct {
 	InstanceId string
 }
 
-func (o *Origin) String() string {
-	return fmt.Sprintf("%s:%s:%s:%s:%s", o.Region, o.Zone, o.SubZone, o.Service, o.InstanceId)
+func init() {
+	origin.Region = "region"
+	origin.Zone = "zone"
 }
 
-func (o *Origin) String2() string {
-	return fmt.Sprintf(OriginRegionKey+"%s:%s:%s:%s:%s", o.Region, o.Zone, o.SubZone, o.Service, o.InstanceId)
+func SetOrigin(region, zone, subZone, service, instanceId string) {
+	origin.Region = region
+	origin.Zone = zone
+	origin.SubZone = subZone
+	origin.Service = service
+	origin.InstanceId = instanceId
 }
 
-func NewOrigin(s string) *Origin {
-	o := new(Origin)
-	o.Region = s
-	return o
+func OriginString() string {
+	return fmt.Sprintf("%s:%s:%s:%s:%s", origin.Region, origin.Zone, origin.SubZone, origin.Service, origin.InstanceId)
+}
+
+func OriginUrn(nid string, nss, resource string) string {
+	return fmt.Sprintf("urn:%v.%v.%v:%v.%v", nid, origin.Region, origin.Zone, nss, resource)
 }
