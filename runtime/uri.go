@@ -1,6 +1,8 @@
 package runtime
 
 import (
+	"errors"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -26,4 +28,32 @@ func ParseUri(uri string) (scheme, host, path string) {
 		return u.Scheme, t[0], t[1]
 	}
 	return u.Scheme, u.Host, u.Path
+}
+
+func BuildUrl(req *http.Request, template string) (*url.URL, error) {
+	if req == nil || req.URL == nil {
+		return nil, errors.New("invalid parameter: Route request or request URL are nil")
+	}
+	if template == "" {
+		return req.URL, nil
+	}
+	url2, err := Expand(func(name string) (string, error) {
+		return LookupRequest(name, req)
+	},
+		template,
+	)
+	if err != nil {
+		return nil, err
+	}
+	// Removing trailing "?" which happens if the template has a query variable, and the request URL does not
+	// contain a query
+	length := len(url2)
+	if url2[length-1:] == "?" {
+		url2 = url2[:length-1]
+	}
+	u, err1 := url.Parse(url2)
+	if err1 != nil {
+		return nil, err1
+	}
+	return u, nil
 }
