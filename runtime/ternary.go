@@ -1,9 +1,9 @@
 package runtime
 
-// IfElse - templated function implementation of "C" ternary operator : conditional ? [true value] : [false value]
-func IfElse[T any](cond bool, true T, false T) T {
+// IfElseOp - templated function implementation of "C" ternary operator : conditional ? [true value] : [false value]
+func IfElseOp[T any](cond bool, trueT T, falseT T) T {
 	if cond {
-		return true
+		return trueT
 	}
-	return false
+	return falseT
 }

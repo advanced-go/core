@@ -7,10 +7,10 @@ import (
 func ExamplePrimer() {
 	current := true
 
-	result := IfElse[bool](current, current, true)
+	result := IfElseOp[bool](current, current, true)
 	fmt.Printf("test: T[bool](true,false,true) -> %v\n", result)
 
-	result = IfElse[bool](!current, current, true)
+	result = IfElseOp[bool](!current, current, true)
 	fmt.Printf("test: T[bool](false,false,true) -> %v\n", result)
 
 	//Output:
@@ -23,15 +23,15 @@ func ExampleInt() {
 	num := 99
 	var num2 int
 
-	num2 = IfElse[int](bval, 45, 145)
+	num2 = IfElseOp[int](bval, 45, 145)
 	if num2 > 0 {
 
 	}
 
-	result := IfElse[int](num < 100, 45, 145)
+	result := IfElseOp[int](num < 100, 45, 145)
 	fmt.Printf("test: T[int](num<100, 45, 145) -> [cond:%v] [result:%v]\n", num < 100, result)
 
-	result = IfElse[int](num >= 100, 55, 155)
+	result = IfElseOp[int](num >= 100, 55, 155)
 	fmt.Printf("test: T[int](num>=100, 45, 145) -> [cond:%v] [result:%v]\n", num >= 100, result)
 
 	//Output:

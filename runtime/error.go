@@ -57,6 +57,11 @@ func (h LogError) HandleStatus(_ any, s *Status) *Status {
 	return s
 }
 
+/*
+
+
+ */
+
 func ifElse(s string, def string) string {
 	if len(s) == 0 {
 		return def
