@@ -19,7 +19,7 @@ func ExampleLookupEnv() {
 	fmt.Printf("test: LookupEnv(%v) -> [err:%v][%v]\n", name, err, s)
 
 	//Output:
-	//test: LookupEnv() -> [err:invalid argument : template variable is invalid: ][]
+	//test: LookupEnv() -> [err:invalid argument : LookupEnv() template variable is invalid: ][]
 	//test: LookupEnv() -> [err:<nil>][]
 	//test: LookupEnv() -> [err:<nil>][DEV]
 

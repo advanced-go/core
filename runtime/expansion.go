@@ -18,7 +18,6 @@ type Resolver interface {
 
 // Expand - templated function to expand a template string, utilizing a resolver
 func Expand(fn func(string) (string, error), t string) (string, error) {
-
 	if fn == nil || len(t) == 0 {
 		return t, nil
 	}

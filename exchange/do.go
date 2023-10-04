@@ -6,17 +6,19 @@ import (
 	"net/http"
 )
 
-var doLocation = PkgUrl + "/do"
+var (
+	doLocation = PkgUrl + "/do"
+	hdr        Default
+)
 
 func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status *runtime.Status) {
 	var e E
-	var h Default
 
 	if req == nil {
 		return nil, e.Handle(nil, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
-	resp, err = h.Do(req)
+	resp, err = hdr.Do(req)
 	if err != nil {
 		return nil, e.Handle(req.Context(), doLocation, err).SetCode(http.StatusInternalServerError)
 	}

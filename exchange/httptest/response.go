@@ -27,7 +27,7 @@ func NewResponse(httpStatus int, content []byte, kv ...string) *http.Response {
 	return resp
 }
 
-// ReadResponse - create a response by reading the content from ad embedded file system
+// ReadResponse - create a response by reading the content from an embedded file system
 func ReadResponse(f fs.FS, name string) (*http.Response, error) {
 	buf, err := fs.ReadFile(f, name)
 	if err != nil {

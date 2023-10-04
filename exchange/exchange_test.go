@@ -12,7 +12,7 @@ import (
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "host/http/http-503.txt"
+	http503FileName       = "resource/http/http-503.txt"
 )
 
 var exchangeCtx = runtime.ContextWithProxy(nil, exchangeProxy)

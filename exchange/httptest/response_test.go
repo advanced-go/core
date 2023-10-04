@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleHtmlResponse() {
-	resp, err0 := ReadResponse(fsys, "host/http/html-response.html")
+	resp, err0 := ReadResponse(fsys, "resource/http/html-response.html")
 	if err0 != nil {
 		fmt.Printf("test: ReadResponse() -> %v\n", err0)
 	} else {
