@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	doLocation = PkgUrl + "/do"
-	hdr        Default
+	doLocation              = PkgUrl + "/do"
+	Hdr        HttpExchange = Default{}
 )
 
 func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status *runtime.Status) {
@@ -18,7 +18,7 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 		return nil, e.Handle(nil, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
-	resp, err = hdr.Do(req)
+	resp, err = Hdr.Do(req)
 	if err != nil {
 		return nil, e.Handle(req.Context(), doLocation, err).SetCode(http.StatusInternalServerError)
 	}
