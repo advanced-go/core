@@ -11,7 +11,7 @@ const (
 	HostName   = "host"
 	PathName   = "path"
 	QueryName  = "query"
-	MethodName = "method"
+	//MethodName = "method"
 )
 
 func LookupUrl(name string, url *url.URL) (string, error) {
