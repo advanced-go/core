@@ -50,32 +50,32 @@ func Example_BuildUrl() {
 	uri := "http://localhost:8080/base-path/resource?first=false"
 	req, _ := http.NewRequest("", uri, nil)
 
-	url, err := BuildUrl(req.URL, req.Method, template)
+	url, err := BuildUrl(req.URL, template)
 	fmt.Printf("test: OriginalUrl() -> %v\n", url)
 
 	// Scheme
 	template = "https://{host}{path}?{query}"
-	url, err = BuildUrl(req.URL, req.Method, template)
+	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(scheme) -> [error:%v] [%v]\n", err, url)
 
 	// Exclude query
 	template = "{scheme}://{host}{path}"
-	url, err = BuildUrl(req.URL, req.Method, template)
+	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(exclude-query) -> [error:%v] [%v]\n", err, url)
 
 	// Host only
 	template = "{scheme}://{host}"
-	url, err = BuildUrl(req.URL, req.Method, template)
+	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(host-only) -> [error:%v] [%v]\n", err, url)
 
 	// Scheme + host
 	template = "https://google.com{path}?{query}"
-	url, err = BuildUrl(req.URL, req.Method, template)
+	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(scheme+host) -> [error:%v] [%v]\n", err, url)
 
 	// Scheme + host + path
 	template = "https://google.com/search?{query}"
-	url, err = BuildUrl(req.URL, req.Method, template)
+	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(scheme+host+path) -> [error:%v] [%v]\n", err, url)
 
 	//Output:
@@ -93,7 +93,7 @@ func Example_BuildUrl_EmptyQuery() {
 	uri := "http://localhost:8080/base-path/resource"
 	req, _ := http.NewRequest("", uri, nil)
 
-	url, _ := BuildUrl(req.URL, req.Method, template)
+	url, _ := BuildUrl(req.URL, template)
 	fmt.Printf("test: OriginalUrl() -> %v\n", url)
 
 	//Output:

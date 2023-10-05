@@ -14,7 +14,7 @@ const (
 	MethodName = "method"
 )
 
-func LookupRequest(name string, url *url.URL, method string) (string, error) {
+func LookupUrl(name string, url *url.URL) (string, error) {
 	if url == nil {
 		return "", errors.New("invalid argument: Url is nil")
 	}
@@ -27,8 +27,8 @@ func LookupRequest(name string, url *url.URL, method string) (string, error) {
 		return url.Path, nil
 	case QueryName:
 		return url.RawQuery, nil
-	case MethodName:
-		return method, nil
+		//case MethodName:
+		//	return method, nil
 	}
 	return LookupEnv(name)
 }

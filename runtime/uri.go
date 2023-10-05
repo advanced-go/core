@@ -29,7 +29,7 @@ func ParseUri(uri string) (scheme, host, path string) {
 	return u.Scheme, u.Host, u.Path
 }
 
-func BuildUrl(url *url.URL, method string, template string) (*url.URL, error) {
+func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 	if url == nil {
 		return nil, errors.New("invalid parameter: URL is nil")
 	}
@@ -37,7 +37,7 @@ func BuildUrl(url *url.URL, method string, template string) (*url.URL, error) {
 		return url, nil
 	}
 	url2, err := Expand(func(name string) (string, error) {
-		return LookupRequest(name, url, method)
+		return LookupUrl(name, url)
 	},
 		template,
 	)

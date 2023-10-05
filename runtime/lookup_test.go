@@ -12,39 +12,44 @@ func ExampleLookupRequest() {
 
 	name := ""
 
-	s, err := LookupRequest("", nil, "")
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	s, err := LookupUrl("", nil)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("test", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	name = "test"
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("method", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	//s, err = LookupUrl("method", req.URL)
+	//fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("scheme", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	name = SchemeName
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("host", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	name = HostName
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("path", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	name = PathName
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("query", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	name = QueryName
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
+	name = "$RUNTIME"
 	os.Setenv("RUNTIME", "DEV")
-	s, err = LookupRequest("$RUNTIME", req.URL, req.Method)
-	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
+	s, err = LookupUrl(name, req.URL)
+	fmt.Printf("test: LookupUrl(%v) -> [err:%v] [%v]\n", name, err, s)
 
 	//Output:
-	//test: LookupRequest() -> [err:invalid argument: Request is nil] []
-	//test: LookupRequest() -> [err:invalid argument : LookupEnv() template variable is invalid: test] []
-	//test: LookupRequest() -> [err:<nil>] [GET]
-	//test: LookupRequest() -> [err:<nil>] [http]
-	//test: LookupRequest() -> [err:<nil>] [localhost:8080]
-	//test: LookupRequest() -> [err:<nil>] [/base-path/host]
-	//test: LookupRequest() -> [err:<nil>] [first=false]
-	//test: LookupRequest() -> [err:<nil>] [DEV]
+	//test: LookupUrl() -> [err:invalid argument: Url is nil] []
+	//test: LookupUrl(test) -> [err:invalid argument : LookupEnv() template variable is invalid: test] []
+	//test: LookupUrl(scheme) -> [err:<nil>] [http]
+	//test: LookupUrl(host) -> [err:<nil>] [localhost:8080]
+	//test: LookupUrl(path) -> [err:<nil>] [/base-path/resource]
+	//test: LookupUrl(query) -> [err:<nil>] [first=false]
+	//test: LookupUrl($RUNTIME) -> [err:<nil>] [DEV]
 
 }
