@@ -12,29 +12,29 @@ func ExampleLookupRequest() {
 
 	name := ""
 
-	s, err := LookupRequest("", nil)
+	s, err := LookupRequest("", nil, "")
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("test", req)
+	s, err = LookupRequest("test", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("method", req)
+	s, err = LookupRequest("method", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("scheme", req)
+	s, err = LookupRequest("scheme", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("host", req)
+	s, err = LookupRequest("host", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("path", req)
+	s, err = LookupRequest("path", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
-	s, err = LookupRequest("query", req)
+	s, err = LookupRequest("query", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
 	os.Setenv("RUNTIME", "DEV")
-	s, err = LookupRequest("$RUNTIME", req)
+	s, err = LookupRequest("$RUNTIME", req.URL, req.Method)
 	fmt.Printf("test: LookupRequest(%v) -> [err:%v] [%v]\n", name, err, s)
 
 	//Output:

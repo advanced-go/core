@@ -2,7 +2,7 @@ package runtime
 
 import (
 	"errors"
-	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -14,21 +14,21 @@ const (
 	MethodName = "method"
 )
 
-func LookupRequest(name string, req *http.Request) (string, error) {
-	if req == nil {
-		return "", errors.New("invalid argument: Request is nil")
+func LookupRequest(name string, url *url.URL, method string) (string, error) {
+	if url == nil {
+		return "", errors.New("invalid argument: Url is nil")
 	}
 	switch strings.ToLower(name) {
 	case SchemeName:
-		return req.URL.Scheme, nil
+		return url.Scheme, nil
 	case HostName:
-		return req.URL.Host, nil
+		return url.Host, nil
 	case PathName:
-		return req.URL.Path, nil
+		return url.Path, nil
 	case QueryName:
-		return req.URL.RawQuery, nil
+		return url.RawQuery, nil
 	case MethodName:
-		return req.Method, nil
+		return method, nil
 	}
 	return LookupEnv(name)
 }

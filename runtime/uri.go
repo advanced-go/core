@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"errors"
-	"net/http"
 	"net/url"
 	"strings"
 )
@@ -30,15 +29,15 @@ func ParseUri(uri string) (scheme, host, path string) {
 	return u.Scheme, u.Host, u.Path
 }
 
-func BuildUrl(req *http.Request, template string) (*url.URL, error) {
-	if req == nil || req.URL == nil {
-		return nil, errors.New("invalid parameter: Route request or request URL are nil")
+func BuildUrl(url *url.URL, method string, template string) (*url.URL, error) {
+	if url == nil {
+		return nil, errors.New("invalid parameter: URL is nil")
 	}
 	if template == "" {
-		return req.URL, nil
+		return url, nil
 	}
 	url2, err := Expand(func(name string) (string, error) {
-		return LookupRequest(name, req)
+		return LookupRequest(name, url, method)
 	},
 		template,
 	)
