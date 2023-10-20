@@ -1,6 +1,8 @@
 package exchange
 
-import "net/url"
+import (
+	"strings"
+)
 
 var defaultOrigin = "http://localhost:8080"
 
@@ -10,11 +12,11 @@ func SetDefaultOrigin(s string) {
 	}
 }
 
-type UrlResolver func(string) string
+type UrlTextResolver func(string) string
 
-var resolver UrlResolver = defaultResolver
+var resolver UrlTextResolver = defaultResolver
 
-func SetUrlResolver(f UrlResolver) {
+func SetUrlResolver(f UrlTextResolver) {
 	if f != nil {
 		resolver = f
 	}
@@ -25,11 +27,7 @@ func ResolveUrl(s string) string {
 }
 
 func defaultResolver(u string) string {
-	url, err := url.Parse(u)
-	if err != nil {
-		return err.Error()
-	}
-	if len(url.Host) == 0 {
+	if strings.HasPrefix(u, "/") {
 		return defaultOrigin + u
 	}
 	return u

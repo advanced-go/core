@@ -21,4 +21,9 @@ func Example_ResolveUrl() {
 	fmt.Printf("test: ResolveUrl(%v) -> [%v]\n", s, url)
 
 	//Output:
+	//test: ResolveUrl() -> []
+	//test: ResolveUrl(http://) -> [http://]
+	//test: ResolveUrl(/test/resource?env=dev&cust=1) -> [http://localhost:8080/test/resource?env=dev&cust=1]
+	//test: ResolveUrl(https://www.google.com/search?q=testing) -> [https://www.google.com/search?q=testing]
+	
 }
