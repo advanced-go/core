@@ -17,6 +17,20 @@ type ErrorHandler interface {
 	Handle(ctx any, location string, errs ...error) *Status
 }
 
+// BypassError - bypass error handler
+type BypassError struct{}
+
+func (h BypassError) Handle(ctx any, location string, errs ...error) *Status {
+	if !IsErrors(errs) {
+		return NewStatusOK()
+	}
+	return NewStatus(StatusInternal, location, errs...).SetRequestId(ContextRequestId(ctx))
+}
+
+func (h BypassError) HandleStatus(_ any, s *Status) *Status {
+	return s
+}
+
 // DebugError - debug error handler
 type DebugError struct{}
 
