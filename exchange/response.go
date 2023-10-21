@@ -3,7 +3,10 @@ package exchange
 import (
 	"bufio"
 	"bytes"
+	"errors"
+	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -30,12 +33,18 @@ func isHttpResponseMessage(buf []byte) bool {
 	return false
 }
 
-func createFileResponse(req *http.Request) (*http.Response, error) {
-	path := req.URL.Path
+func ReadResponse(uri *url.URL) (*http.Response, error) {
+	if uri == nil {
+		return nil, errors.New("error: Uri is nil")
+	}
+	if uri.Scheme != "file" {
+		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", uri.Scheme))
+	}
+	path := uri.Path
 	if strings.HasPrefix(path, "/") {
 		path = path[1:]
 	}
-	buf, err := ReadFileResource(req.URL)
+	buf, err := ReadFile(uri)
 	if err != nil {
 		if strings.Contains(err.Error(), "file does not exist") {
 			return &http.Response{StatusCode: http.StatusNotFound}, nil
@@ -43,7 +52,7 @@ func createFileResponse(req *http.Request) (*http.Response, error) {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, nil
 	}
 	if isHttpResponseMessage(buf) {
-		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), req)
+		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 	} else {
 		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: NewReaderCloser(bytes.NewReader(buf))}
 		if strings.HasSuffix(path, ".json") {

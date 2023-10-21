@@ -10,6 +10,12 @@ const (
 	UrnScheme = "urn"
 )
 
+// ParseRaw - parse without error
+func ParseRaw(rawUri string) *url.URL {
+	u, _ := url.Parse(rawUri)
+	return u
+}
+
 // ParseUri - urn safe Uri parser
 func ParseUri(uri string) (scheme, host, path string) {
 	if uri == "" {

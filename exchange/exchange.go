@@ -26,7 +26,7 @@ func (Default) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 	if req.URL.Scheme == "file" {
-		return createFileResponse(req)
+		return ReadResponse(req.URL)
 	}
 	return Client.Do(req)
 }
