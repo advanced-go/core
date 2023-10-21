@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -102,7 +103,7 @@ func ExampleWriteResponseCopy() {
 	resp.Header.Add("key1", "value1")
 	resp.Header.Add("key2", "value2")
 
-	resp.Body = ioutil.NopCloser(bytes.NewReader([]byte("error content")))
+	resp.Body = io.NopCloser(bytes.NewReader([]byte("error content")))
 	WriteResponseCopy[runtime.DebugError](w, &resp, "key")
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 

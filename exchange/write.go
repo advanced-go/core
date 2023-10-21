@@ -20,7 +20,11 @@ func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http
 	status := runtime.NewHttpStatusCode(resp.StatusCode)
 	CreateHeaders(w.Header(), resp, headers...)
 	if resp.Body != nil {
-		buf, status = ReadAll[E](resp.Body)
+		var status1 *runtime.Status
+		buf, status1 = ReadAll[E](resp.Body)
+		if !status1.OK() {
+			status = status1
+		}
 	}
 	writeResponse[E](w, buf, status)
 }

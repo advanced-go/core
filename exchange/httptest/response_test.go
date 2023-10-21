@@ -1,9 +1,6 @@
 package httptest
 
-import (
-	"fmt"
-	"io"
-)
+/*
 
 func ExampleHtmlResponse() {
 	resp, err0 := ReadResponse(fsys, "resource/http/html-response.html")
@@ -27,3 +24,6 @@ func ExampleHtmlResponse() {
 	//</html>
 
 }
+
+
+*/

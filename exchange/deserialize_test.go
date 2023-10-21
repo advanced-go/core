@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-ai-agent/core/exchange/httptest"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 	"strings"
@@ -39,11 +38,11 @@ func ExampleDeserialize() {
 	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
-	resp.Body = &httptest.ReaderCloser{Reader: strings.NewReader("Hello World String"), Err: nil}
+	resp.Body = NewReaderCloser(strings.NewReader("Hello World String"), nil)
 	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
-	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader([]byte("Hello World []byte")), Err: nil}
+	resp.Body = NewReaderCloser(bytes.NewReader([]byte("Hello World []byte")), nil)
 	result2, status2 := Deserialize[runtime.DebugError, []byte](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
@@ -68,7 +67,7 @@ func ExampleDeserialize_Decode() {
 	bufV1, _ := json.Marshal(&addrV1)
 
 	resp := new(http.Response)
-	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV1), Err: nil}
+	resp.Body = NewReaderCloser(bytes.NewReader(bufV1), nil)
 
 	result, status := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result, status)
@@ -82,13 +81,13 @@ func ExampleDeserialize_Decode() {
 	}
 	bufV2, _ := json.Marshal(&addrV2)
 	resp = new(http.Response)
-	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV2), Err: nil}
+	resp.Body = NewReaderCloser(bytes.NewReader(bufV2), nil)
 
 	result2, status2 := Deserialize[runtime.DebugError, addressV2](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV2](resp) -> [%v] [status:%v]\n", result2, status2)
 
 	resp = new(http.Response)
-	resp.Body = &httptest.ReaderCloser{Reader: bytes.NewReader(bufV2), Err: nil}
+	resp.Body = NewReaderCloser(bytes.NewReader(bufV2), nil)
 
 	result3, status3 := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result3, status3)

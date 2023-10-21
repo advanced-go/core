@@ -54,7 +54,7 @@ func ReadResponse(uri *url.URL) (*http.Response, error) {
 	if isHttpResponseMessage(buf) {
 		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 	} else {
-		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: NewReaderCloser(bytes.NewReader(buf))}
+		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: NewReaderCloser(bytes.NewReader(buf), nil)}
 		if strings.HasSuffix(path, ".json") {
 			resp.Header.Add("Content-Type", "application/json")
 		} else {

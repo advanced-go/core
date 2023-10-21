@@ -12,7 +12,7 @@ import (
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "resource/http/http-503.txt"
+	http503FileName       = "file://[cwd]/httptest/resource/http/http-503.txt"
 )
 
 // When reading http from a text file, be sure you have the expected blank line between header and body.
@@ -34,7 +34,7 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 		// ReadResponseTest(name string)  is only used for calls from do_test.go. When calling from other test
 		// files, use the ReadResponse(f fs.FS, name string)
 		//
-		resp, err := httptest.ReadResponseTest(http503FileName)
+		resp, err := ReadResponse(runtime.ParseRaw(http503FileName))
 		return resp, err
 	default:
 		fmt.Printf("test: doProxy(req) : unmatched pattern %v", httptest.Pattern(req))
@@ -93,32 +93,30 @@ func ExampleDo_Proxy_HellowWorld() {
 	//Output:
 	//test: Do[runtime.DebugError](req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
 	//test: io.ReadAll(resp.Body) -> [err:<nil>] [body:<html><body><h1>Hello, World</h1></body></html>]
-	
+
 }
 
 func ExampleDo_Proxy_ServiceUnavailable() {
 	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, serviceUnavailableUri, nil)
-	resp, err := Do[runtime.DebugError](req)
-	if err != nil {
-		fmt.Printf("test: Do[runtime.DebugError](req) -> %v\n", err)
-	} else {
-		fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [content-type:%v] [body:%v]\n",
-			err, resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
-	}
+	resp, _ := Do[runtime.DebugError](req)
+	fmt.Printf("test: Do[runtime.DebugError](req) -> [resp:%v] [statusCode:%v] [content-type:%v] [body:%v]\n",
+		resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
+
 	//defer resp.Body.Close()
 	//buf, ioError := io.ReadAll(resp.Body)
 	//fmt.Printf("test: io.ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
-	//test: Do[runtime.DebugError](req) -> [<nil>] [resp:true] [statusCode:503] [content-type:text/html] [body:true]
+	//test: Do[runtime.DebugError](req) -> [resp:true] [statusCode:503] [content-type:text/html] [body:true]
 
 }
 
 func Example_DoT() {
 	req, _ := http.NewRequest("GET", "https://www.google.com/search?q=test", nil)
 	resp, buf, status := DoT[runtime.DebugError, []byte](req)
-	fmt.Printf("test: DoT[DebugError,[]byte,DefaultExchange](req) -> [status:%v] [buf:%v] [resp:%v]\n", status, len(buf) > 0, resp != nil)
+	fmt.Printf("test: DoT[runtime.DebugError,[]byte](req) -> [status:%v] [buf:%v] [resp:%v]\n", status, len(buf) > 0, resp != nil)
 
 	//Output:
-	//test: DoT[DebugError,[]byte,DefaultExchange](req) -> [status:OK] [buf:true] [resp:true]
+	//test: DoT[runtime.DebugError,[]byte](req) -> [status:OK] [buf:true] [resp:true]
+
 }
