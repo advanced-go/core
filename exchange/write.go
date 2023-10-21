@@ -15,18 +15,12 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, s
 
 // WriteResponseCopy - write a http.Response, utilizing the data, status, and response for controlling the content
 func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http.Response, headers ...string) {
-	var e E
 	var buf []byte
 
 	status := runtime.NewHttpStatusCode(resp.StatusCode)
 	CreateHeaders(w.Header(), resp, headers...)
 	if resp.Body != nil {
-		var err error
-
-		buf, err = ReadAll(resp.Body)
-		if err != nil {
-			status = e.Handle(nil, writeLoc, err)
-		}
+		buf, status = ReadAll[E](resp.Body)
 	}
 	writeResponse[E](w, buf, status)
 }

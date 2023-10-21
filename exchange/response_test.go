@@ -2,6 +2,7 @@ package exchange
 
 import (
 	"fmt"
+	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 )
 
@@ -14,8 +15,8 @@ func _Example_createFileResponse() {
 	resp, err0 := createFileResponse(req)
 	fmt.Printf("test: createFileResponse() -> [err:%v] [status:%v]\n", err0, resp.StatusCode)
 
-	buf, err2 := ReadAll(resp.Body)
-	fmt.Printf("test: ReadAll() -> [err:%v] %v", err2, string(buf))
+	buf, status := ReadAll[runtime.DebugError](resp.Body)
+	fmt.Printf("test: ReadAll() -> [err:%v] %v", status.Code(), string(buf))
 
 	s = string(buf)
 

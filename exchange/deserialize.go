@@ -19,9 +19,9 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
-		buf, err := ReadAll(body)
-		if err != nil {
-			return t, e.Handle(ctx, deserializeLoc, err).SetCode(runtime.StatusIOError)
+		buf, status := ReadAll[E](body)
+		if !status.OK() {
+			return t, status
 		}
 		*ptr = buf
 	default:
@@ -31,13 +31,4 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 		}
 	}
 	return t, runtime.NewStatusOK()
-}
-
-// ReadAll - read all the body, with a deferred close
-func ReadAll(body io.ReadCloser) ([]byte, error) {
-	if body == nil {
-		return nil, nil
-	}
-	defer body.Close()
-	return io.ReadAll(body)
 }
