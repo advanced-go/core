@@ -1,15 +1,36 @@
 package exchange
 
 import (
+	"crypto/tls"
 	"errors"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
+	"time"
 )
 
+// HttpExchange - interface for Http request/response interaction
+type HttpExchange interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 var (
-	doLocation              = PkgUrl + "/do"
-	Hdr        HttpExchange = Default{}
+	doLocation = PkgUrl + "/do"
+	Client     = http.DefaultClient
 )
+
+func init() {
+	t, ok := http.DefaultTransport.(*http.Transport)
+	if ok {
+		// Used clone instead of assignment due to presence of sync.Mutex fields
+		var transport = t.Clone()
+		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		transport.MaxIdleConns = 200
+		transport.MaxIdleConnsPerHost = 100
+		Client = &http.Client{Transport: transport, Timeout: time.Second * 5}
+	} else {
+		Client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
+	}
+}
 
 func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status *runtime.Status) {
 	var e E
@@ -18,7 +39,19 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 		return nil, e.Handle(nil, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
-	resp, err = Hdr.Do(req)
+
+	if req.URL.Scheme == "file" {
+		resp, err = ReadResponse(req.URL)
+	} else {
+		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
+			do := findProxy(proxies)
+			if do != nil {
+				resp, err = do(req)
+			}
+		} else {
+			resp, err = Client.Do(req)
+		}
+	}
 	if err != nil {
 		return nil, e.Handle(req.Context(), doLocation, err).SetCode(http.StatusInternalServerError)
 	}
@@ -35,4 +68,13 @@ func DoT[E runtime.ErrorHandler, T any](req *http.Request) (resp *http.Response,
 	}
 	t, status = Deserialize[E, T](req.Context(), resp.Body)
 	return
+}
+
+func findProxy(proxies []any) func(*http.Request) (*http.Response, error) {
+	for _, p := range proxies {
+		if fn, ok := p.(func(*http.Request) (*http.Response, error)); ok {
+			return fn
+		}
+	}
+	return nil
 }
