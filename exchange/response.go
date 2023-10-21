@@ -3,7 +3,6 @@ package exchange
 import (
 	"bufio"
 	"bytes"
-	"github.com/go-ai-agent/core/exchange/httptest"
 	"net/http"
 	"strings"
 )
@@ -46,7 +45,7 @@ func createFileResponse(req *http.Request) (*http.Response, error) {
 	if isHttpResponseMessage(buf) {
 		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), req)
 	} else {
-		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: &httptest.ReaderCloser{Reader: bytes.NewReader(buf), Err: nil}}
+		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: NewReaderCloser(bytes.NewReader(buf))}
 		if strings.HasSuffix(path, ".json") {
 			resp.Header.Add("Content-Type", "application/json")
 		} else {

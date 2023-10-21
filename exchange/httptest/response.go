@@ -45,7 +45,7 @@ func ReadResponseTest(name string) (*http.Response, error) {
 	return ReadResponse(fsys, name)
 }
 
-// NewIOErrorResponse - create a respons that contains a body that will generate an I/O error when read
+// NewIOErrorResponse - create a response that contains a body that will generate an I/O error when read
 func NewIOErrorResponse() *http.Response {
 	resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Request: nil}
 	resp.Body = NewReaderCloser(nil, io.ErrUnexpectedEOF)
