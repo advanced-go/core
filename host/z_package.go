@@ -1,7 +1,13 @@
 package host
 
-import "reflect"
+import (
+	"github.com/go-ai-agent/core/runtime"
+	"reflect"
+)
 
 type pkg struct{}
 
-var PkgUrl = reflect.TypeOf(any(pkg{})).PkgPath()
+var (
+	PkgUrl = runtime.ParsePkgUrl(reflect.TypeOf(any(pkg{})).PkgPath())
+	PkgUri = PkgUrl.Host + PkgUrl.Path
+)

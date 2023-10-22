@@ -12,7 +12,7 @@ const (
 	maxWait = time.Second * 2
 )
 
-var pingLocation = PkgUrl + "/ping"
+var pingLocation = PkgUri + "/ping"
 
 // Ping - templated function to "ping" a host
 func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runtime.Status) {

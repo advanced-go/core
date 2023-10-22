@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var writeLoc = PkgUrl + "/write-response"
+var writeLoc = PkgUri + "/write-response"
 
 // WriteResponse - write a http.Response, utilizing the data, status, and headers for controlling the content
 func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headers ...string) {
