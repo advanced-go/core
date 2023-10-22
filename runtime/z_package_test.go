@@ -2,14 +2,16 @@ package runtime
 
 import (
 	"fmt"
-	"net/url"
 )
 
-func ExamplePackagePath() {
-	u, err := url.Parse(PkgUrl)
-
-	fmt.Printf("test: PackageUrl() -> %v %v %v", PkgUrl, err, u.String())
+func Example_PackageUri() {
+	fmt.Printf("test: PkgUrl -> %v\n", PkgUrl)
+	fmt.Printf("test: PkgUri -> %v\n", PkgUri)
+	fmt.Printf("test: PkgPath -> %v\n", PkgUrl.Path)
 
 	//Output:
-	//fail
+	//test: PkgUrl -> file://github.com/go-ai-agent/core/runtime
+	//test: PkgUri -> github.com/go-ai-agent/core/runtime
+	//test: PkgPath -> /go-ai-agent/core/runtime
+	
 }

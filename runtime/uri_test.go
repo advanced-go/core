@@ -5,14 +5,14 @@ import (
 	"net/http"
 )
 
-func Example_ParsePkgUri() {
+func Example_ParsePkgUrl() {
 	s := "github.com/go-ai-agent/core/runtime"
-	u := ParsePkgUri(s)
+	u := ParsePkgUrl(s)
 	fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
 
 	//Output:
 	//test: ParsePkgUri(github.com/go-ai-agent/core/runtime) file://github.com/go-ai-agent/core/runtime
-	
+
 }
 
 func ExampleParseUri_Url() {

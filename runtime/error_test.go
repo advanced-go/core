@@ -64,7 +64,7 @@ func ExampleLogHandler_Handle() {
 }
 
 func ExampleErrorHandleFn() {
-	loc := PkgUrl + "/ErrorHandleFn"
+	loc := PkgUri + "/ErrorHandleFn"
 	err := errors.New("debug - error message")
 
 	fn := NewErrorHandler[DebugError]()

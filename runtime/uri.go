@@ -11,8 +11,8 @@ const (
 	FileScheme = "file://"
 )
 
-// ParsePkgUri - parse a package raw Uri
-func ParsePkgUri(rawUri string) *url.URL {
+// ParsePkgUrl - parse a package raw Uri
+func ParsePkgUrl(rawUri string) *url.URL {
 	u, err := url.Parse(FileScheme + rawUri)
 	if err != nil {
 		return nil
