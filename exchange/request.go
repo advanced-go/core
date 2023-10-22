@@ -1,6 +1,13 @@
 package exchange
 
-import "net/http"
+import (
+	"bufio"
+	"bytes"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+)
 
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
 
@@ -36,4 +43,18 @@ func createValue(v []string) string {
 		value += item
 	}
 	return value
+}
+
+func ReadRequest(uri *url.URL) (*http.Request, error) {
+	if uri == nil {
+		return nil, errors.New("error: Uri is nil")
+	}
+	if uri.Scheme != "file" {
+		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", uri.Scheme))
+	}
+	buf, err := ReadFile(uri)
+	if err != nil {
+		return nil, err
+	}
+	return http.ReadRequest(bufio.NewReader(bytes.NewReader(buf)))
 }

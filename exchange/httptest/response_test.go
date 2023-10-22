@@ -3,7 +3,7 @@ package httptest
 /*
 
 func ExampleHtmlResponse() {
-	resp, err0 := ReadResponse(fsys, "resource/http/html-response.html")
+	resp, err0 := ReadResponse(fsys, "resource/http/html-response.txt")
 	if err0 != nil {
 		fmt.Printf("test: ReadResponse() -> %v\n", err0)
 	} else {
