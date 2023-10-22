@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
@@ -56,5 +57,16 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	return http.ReadRequest(bufio.NewReader(bytes.NewReader(buf)))
+	req, err1 := http.ReadRequest(bufio.NewReader(bytes.NewReader(buf)))
+	if err1 != nil {
+		return nil, err1
+	}
+	if len(req.Header.Get("Content-Length")) == 0 {
+		return req, nil
+	}
+	cnt, err2 := strconv.Atoi(req.Header.Get("Content-Length"))
+	if cnt <= 0 || err2 != nil {
+		return nil, errors.New("error: count <= 0")
+	}
+	return req, nil
 }
