@@ -5,10 +5,21 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 )
+
+const (
+	ContentLength = "Content-Length"
+)
+
+type nopCloser struct {
+	io.Reader
+}
+
+func (nopCloser) Close() error { return nil }
 
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
 
@@ -57,16 +68,63 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err1 := http.ReadRequest(bufio.NewReader(bytes.NewReader(buf)))
+	byteReader := bytes.NewReader(buf)
+	reader := bufio.NewReader(byteReader)
+	req, err1 := http.ReadRequest(reader)
 	if err1 != nil {
 		return nil, err1
 	}
-	if len(req.Header.Get("Content-Length")) == 0 {
+	cnt := contentLength(req)
+	if cnt <= 0 {
 		return req, nil
 	}
-	cnt, err2 := strconv.Atoi(req.Header.Get("Content-Length"))
-	if cnt <= 0 || err2 != nil {
-		return nil, errors.New("error: count <= 0")
+	bytes, err2 := readContent(buf)
+	if err2 != nil {
+		return req, err
+	}
+	if bytes != nil {
+		req.Body = nopCloser{bytes}
 	}
 	return req, nil
+}
+
+func contentLength(req *http.Request) int {
+	if req == nil {
+		return -1
+	}
+	s := req.Header.Get(ContentLength)
+	if len(s) == 0 {
+		return -1
+	}
+	cnt, err := strconv.Atoi(s)
+	if cnt <= 0 || err != nil {
+		return -1
+	}
+	return cnt
+}
+
+func readContent(buf []byte) (*bytes.Buffer, error) {
+	var content = new(bytes.Buffer)
+	var writeTo = false
+
+	reader := bufio.NewReader(bytes.NewReader(buf))
+	for {
+		line, err := reader.ReadString('\n')
+		if len(line) == 2 && !writeTo {
+			writeTo = true
+			continue
+		}
+		if writeTo {
+			//fmt.Printf("%v", line)
+			content.Write([]byte(line))
+		}
+		if err == io.EOF {
+			break
+		} else {
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return content, nil
 }
