@@ -46,16 +46,16 @@ func _Example_ReadRequest_Baseline() {
 
 func Example_ReadRequest_PUT() {
 	s := "file://[cwd]/httptest/resource/http/test-put-req.txt"
-	req, err := ReadRequest(runtime.ParseRaw(s))
+	req, _ := ReadRequest(runtime.ParseRaw(s))
 
 	buf, err1 := ReadAll[runtime.DebugError](req.Body)
 	if err1 != nil {
 	}
 	var entry []entryTest
 	json.Unmarshal(buf, &entry)
-	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [body:%v]\n", s, err, string(buf))
+	fmt.Printf("test: ReadRequest(%v) -> [cnt:%v] [fields:%v]\n", s, len(entry), entry)
 
 	//Output:
-	//test:
-
+	//test: ReadRequest(file://[cwd]/httptest/resource/http/test-put-req.txt) -> [cnt:1] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200}]]
+	
 }
