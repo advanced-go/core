@@ -57,5 +57,5 @@ func Example_ReadRequest_PUT() {
 
 	//Output:
 	//test: ReadRequest(file://[cwd]/httptest/resource/http/test-put-req.txt) -> [cnt:1] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200}]]
-	
+
 }
