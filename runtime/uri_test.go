@@ -5,6 +5,16 @@ import (
 	"net/http"
 )
 
+func Example_ParsePkgUri() {
+	s := "github.com/go-ai-agent/core/runtime"
+	u := ParsePkgUri(s)
+	fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
+
+	//Output:
+	//test: ParsePkgUri(github.com/go-ai-agent/core/runtime) file://github.com/go-ai-agent/core/runtime
+	
+}
+
 func ExampleParseUri_Url() {
 	uri := "www.google.com"
 	scheme, host, path := ParseUri(uri)

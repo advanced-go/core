@@ -7,10 +7,20 @@ import (
 )
 
 const (
-	UrnScheme = "urn"
+	UrnScheme  = "urn"
+	FileScheme = "file://"
 )
 
-// ParseRaw - parse without error
+// ParsePkgUri - parse a package raw Uri
+func ParsePkgUri(rawUri string) *url.URL {
+	u, err := url.Parse(FileScheme + rawUri)
+	if err != nil {
+		return nil
+	}
+	return u
+}
+
+// ParseRaw - parse a raw Uri without error
 func ParseRaw(rawUri string) *url.URL {
 	u, _ := url.Parse(rawUri)
 	return u
