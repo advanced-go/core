@@ -1,6 +1,8 @@
 package runtime
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type pkg struct{}
 
