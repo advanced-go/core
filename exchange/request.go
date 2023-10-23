@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 )
 
 const (
@@ -74,11 +73,7 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	if err1 != nil {
 		return nil, err1
 	}
-	cnt := contentLength(req)
-	if cnt <= 0 {
-		return req, nil
-	}
-	bytes, err2 := readContent(buf)
+	bytes, err2 := ReadContent(buf)
 	if err2 != nil {
 		return req, err
 	}
@@ -88,6 +83,7 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	return req, nil
 }
 
+/*
 func contentLength(req *http.Request) int {
 	if req == nil {
 		return -1
@@ -103,28 +99,5 @@ func contentLength(req *http.Request) int {
 	return cnt
 }
 
-func readContent(buf []byte) (*bytes.Buffer, error) {
-	var content = new(bytes.Buffer)
-	var writeTo = false
 
-	reader := bufio.NewReader(bytes.NewReader(buf))
-	for {
-		line, err := reader.ReadString('\n')
-		if len(line) == 2 && !writeTo {
-			writeTo = true
-			continue
-		}
-		if writeTo {
-			//fmt.Printf("%v", line)
-			content.Write([]byte(line))
-		}
-		if err == io.EOF {
-			break
-		} else {
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	return content, nil
-}
+*/
