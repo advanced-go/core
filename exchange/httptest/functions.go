@@ -87,20 +87,20 @@ func Content[T any](got *http.Response, want *http.Response, t *testing.T, fail 
 	test(gotT, wantT, t)
 }
 
-func ReadHttp(basePath, reqName, respName string, t *testing.T, fail Fail) (*http.Request, *http.Response) {
+func ReadHttp(basePath, reqName, respName string) (*http.Request, *http.Response, error) {
 	path := basePath + reqName
 	req, err := exchange.ReadRequest(runtime.ParseRaw(path))
 	if err != nil {
-		fail([]Args{{Item: "ReadRequest", Got: "", Want: "", Err: errors.New(fmt.Sprintf("ReadRequest(%v) failed : %v", path, err))}}, t)
-		return nil, nil
+		//	fail([]Args{{Item: "ReadRequest", Got: "", Want: "", Err: errors.New(fmt.Sprintf("ReadRequest(%v) failed : %v", path, err))}}, t)
+		return nil, nil, err
 	}
 	path = basePath + respName
 	resp, err1 := exchange.ReadResponse(runtime.ParseRaw(path))
 	if err1 != nil {
-		fail([]Args{{Item: "ReadResponse", Got: "", Want: "", Err: errors.New(fmt.Sprintf("ReadResponse(%v) failed : %v", path, err1))}}, t)
-		return nil, nil
+		//fail([]Args{{Item: "ReadResponse", Got: "", Want: "", Err: errors.New(fmt.Sprintf("ReadResponse(%v) failed : %v", path, err1))}}, t)
+		return nil, nil, err1
 	}
-	return req, resp
+	return req, resp, nil
 }
 
 func validateContentType(got *http.Response, want *http.Response, t *testing.T, fail Fail) (bool, string) {
