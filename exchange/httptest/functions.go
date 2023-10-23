@@ -7,7 +7,6 @@ import (
 	"github.com/go-ai-agent/core/exchange"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
-	"testing"
 )
 
 type Args struct {
@@ -17,100 +16,86 @@ type Args struct {
 	Err  error
 }
 
-type Fail func(a []Args, t *testing.T)
+func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
+	path := basePath + reqName
+	req, err := exchange.ReadRequest(runtime.ParseRaw(path))
+	if err != nil {
+		return []Args{{Item: "ReadRequest()", Got: "", Want: "", Err: err}}, nil, nil
+	}
+	path = basePath + respName
+	resp, err1 := exchange.ReadResponse(runtime.ParseRaw(path))
+	if err1 != nil {
+		return []Args{{Item: "ReadResponse()", Got: "", Want: "", Err: err1}}, nil, nil
+	}
+	return nil, req, resp
+}
 
-func Headers(got *http.Response, want *http.Response, t *testing.T, fail Fail, names ...string) (success bool) {
-	var failures []Args
-
+func Headers(got *http.Response, want *http.Response, names ...string) (failures []Args) {
 	for _, name := range names {
 		wantVal := want.Header.Get(name)
 		if wantVal == "" {
-			fail([]Args{{Item: name, Got: "", Want: "", Err: errors.New(fmt.Sprintf("want header [%v] is missing or empty", name))}}, t)
-			return false
+			return []Args{{Item: name, Got: "", Want: "", Err: errors.New(fmt.Sprintf("want header [%v] is missing or empty", name))}}
 		}
 		gotVal := got.Header.Get(name)
 		if wantVal != gotVal {
 			failures = append(failures, Args{Item: name, Got: gotVal, Want: wantVal, Err: nil})
 		}
 	}
-	if failures != nil {
-		fail(failures, t)
-		return false
-	}
-	return true
+	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response, t *testing.T, fail Fail, test func(got T, want T, t *testing.T) bool) (success bool) {
+func Content[T any](got *http.Response, want *http.Response) (failures []Args, gotT T, wantT T) {
 	// validate content type
-	valid, ct := validateContentType(got, want, t, fail)
-	if !valid {
-		return false
+	fails, ct := validateContentType(got, want)
+	if fails != nil {
+		failures = fails
+		return
 	}
 
 	// validate body IO
 	wantBytes, status := exchange.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
-		fail([]Args{{Item: "want.Body", Got: "", Want: "", Err: status.Errors()[0]}}, t)
-		return false
+		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Errors()[0]}}
+		return
 	}
 	gotBytes, status1 := exchange.ReadAll[runtime.BypassError](got.Body)
 	if status1.IsErrors() {
-		fail([]Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Errors()[0]}}, t)
-		return false
+		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Errors()[0]}}
+		return
 	}
 
 	// validate content length
 	if len(gotBytes) != len(wantBytes) {
-		fail([]Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}, t)
-		return false
+		failures = []Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}
+		return
 	}
 
 	// if no content or content type is no application/json, return
 	if len(wantBytes) == 0 || ct != runtime.ContentTypeJson {
-		return true
+		return
 	}
 
 	// unmarshal
-	var gotT T
-	var wantT T
-
 	err := json.Unmarshal(wantBytes, &wantT)
 	if err != nil {
-		fail([]Args{{Item: "want.Unmarshal()", Got: "", Want: "", Err: err}}, t)
-		return false
+		failures = []Args{{Item: "want.Unmarshal()", Got: "", Want: "", Err: err}}
+		return
 	}
 	err = json.Unmarshal(gotBytes, &gotT)
 	if err != nil {
-		fail([]Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}, t)
-		return false
+		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}
 	}
-	return test(gotT, wantT, t)
+	return
 }
 
-func ReadHttp(basePath, reqName, respName string) (*http.Request, *http.Response, error) {
-	path := basePath + reqName
-	req, err := exchange.ReadRequest(runtime.ParseRaw(path))
-	if err != nil {
-		return nil, nil, err
-	}
-	path = basePath + respName
-	resp, err1 := exchange.ReadResponse(runtime.ParseRaw(path))
-	if err1 != nil {
-		return nil, nil, err1
-	}
-	return req, resp, nil
-}
-
-func validateContentType(got *http.Response, want *http.Response, t *testing.T, fail Fail) (bool, string) {
-	ct := want.Header.Get(runtime.ContentType)
+func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
+	ct = want.Header.Get(runtime.ContentType)
 	if ct == "" {
-		fail([]Args{{Item: runtime.ContentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, t)
-		return false, ct
+		return []Args{{Item: runtime.ContentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
 	}
 	gotCt := got.Header.Get(runtime.ContentType)
 	if gotCt != ct {
-		fail([]Args{{Item: runtime.ContentType, Got: gotCt, Want: ct, Err: nil}}, t)
-		return false, ct
+		return []Args{{Item: runtime.ContentType, Got: gotCt, Want: ct, Err: nil}}, ct
 	}
-	return true, ct
+	return nil, ct
 }
