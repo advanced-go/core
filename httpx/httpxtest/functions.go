@@ -50,14 +50,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response) (failures []Args, gotT T, wantT T) {
-	// validate content type
-	fails, ct := validateContentType(got, want)
-	if fails != nil {
-		failures = fails
-		return
-	}
-
+func Content[T any](got *http.Response, want *http.Response) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
 	wantBytes, status := httpx.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
@@ -70,14 +63,27 @@ func Content[T any](got *http.Response, want *http.Response) (failures []Args, g
 		return
 	}
 
+	// if no content is wanted, return
+	if len(wantBytes) == 0 {
+		return
+	}
+
 	// validate content length
 	if len(gotBytes) != len(wantBytes) {
 		failures = []Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}
 		return
 	}
 
-	// if no content or content type is no application/json, return
-	if len(wantBytes) == 0 || ct != runtime.ContentTypeJson {
+	// validate content type
+	fails, ct := validateContentType(got, want)
+	if fails != nil {
+		failures = fails
+		return
+	}
+
+	// validate content type is application/json
+	if ct != runtime.ContentTypeJson {
+		failures = []Args{{Item: "Content-Type", Got: "", Want: "", Err: errors.New(fmt.Sprintf("invalid content type for serialization [%v]", ct))}}
 		return
 	}
 
@@ -90,6 +96,8 @@ func Content[T any](got *http.Response, want *http.Response) (failures []Args, g
 	err = json.Unmarshal(gotBytes, &gotT)
 	if err != nil {
 		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}
+	} else {
+		content = true
 	}
 	return
 }
