@@ -48,9 +48,11 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 			if do != nil {
 				resp, err = do(req)
 			}
-		} else {
-			resp, err = Client.Do(req)
 		}
+	}
+	// If an exchange has not already happened, then call the client.Do
+	if resp == nil && err == nil {
+		resp, err = Client.Do(req)
 	}
 	if err != nil {
 		return nil, e.Handle(req.Context(), doLocation, err).SetCode(http.StatusInternalServerError)
