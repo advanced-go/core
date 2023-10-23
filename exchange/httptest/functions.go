@@ -31,6 +31,11 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 }
 
 func Headers(got *http.Response, want *http.Response, names ...string) (failures []Args) {
+	if names == nil {
+		for _, name := range want.Header {
+			names = append(names, name[0])
+		}
+	}
 	for _, name := range names {
 		wantVal := want.Header.Get(name)
 		if wantVal == "" {
