@@ -1,4 +1,4 @@
-package httptest
+package httpx
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 func ExampleStringReader() {
 	s := "This is an example of content"
-	r := newReaderCloser(strings.NewReader(s), nil)
+	r := NewReaderCloser(strings.NewReader(s), nil)
 	var buf = make([]byte, len(s))
 	cnt, err := r.Read(buf)
 
@@ -21,7 +21,7 @@ func ExampleStringReader() {
 
 func ExampleIOError() {
 	s := "This is an example of content"
-	r := newReaderCloser(strings.NewReader(s), io.ErrUnexpectedEOF)
+	r := NewReaderCloser(strings.NewReader(s), io.ErrUnexpectedEOF)
 	var buf = make([]byte, len(s))
 	cnt, err := r.Read(buf)
 

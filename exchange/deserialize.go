@@ -3,6 +3,7 @@ package exchange
 import (
 	"encoding/json"
 	"errors"
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
 )
@@ -19,7 +20,7 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
-		buf, status := ReadAll[E](body)
+		buf, status := httpx.ReadAll[E](body)
 		if !status.OK() {
 			return t, status
 		}

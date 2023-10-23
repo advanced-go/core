@@ -1,10 +1,11 @@
-package httptest
+package httpxtest
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/exchange"
+
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 )
@@ -18,12 +19,12 @@ type Args struct {
 
 func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
 	path := basePath + reqName
-	req, err := exchange.ReadRequest(runtime.ParseRaw(path))
+	req, err := httpx.ReadRequest(runtime.ParseRaw(path))
 	if err != nil {
 		return []Args{{Item: "ReadRequest()", Got: "", Want: "", Err: err}}, nil, nil
 	}
 	path = basePath + respName
-	resp, err1 := exchange.ReadResponse(runtime.ParseRaw(path))
+	resp, err1 := httpx.ReadResponse(runtime.ParseRaw(path))
 	if err1 != nil {
 		return []Args{{Item: "ReadResponse()", Got: "", Want: "", Err: err1}}, nil, nil
 	}
@@ -58,12 +59,12 @@ func Content[T any](got *http.Response, want *http.Response) (failures []Args, g
 	}
 
 	// validate body IO
-	wantBytes, status := exchange.ReadAll[runtime.BypassError](want.Body)
+	wantBytes, status := httpx.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
 		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Errors()[0]}}
 		return
 	}
-	gotBytes, status1 := exchange.ReadAll[runtime.BypassError](got.Body)
+	gotBytes, status1 := httpx.ReadAll[runtime.BypassError](got.Body)
 	if status1.IsErrors() {
 		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Errors()[0]}}
 		return

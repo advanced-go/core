@@ -1,4 +1,4 @@
-package exchange
+package httpx
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 func Example_ReadContent() {
-	s := "file://[cwd]/httptest/resource/http/get-request.txt"
+	s := "file://[cwd]/httpxtest/resource/http/get-request.txt"
 	buf, err := ReadFile(runtime.ParseRaw(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)

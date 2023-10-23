@@ -1,4 +1,4 @@
-package exchange
+package httpx
 
 import (
 	"bufio"
@@ -8,10 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-)
-
-const (
-	ContentLength = "Content-Length"
 )
 
 type nopCloser struct {

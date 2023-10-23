@@ -3,6 +3,7 @@ package exchange
 import (
 	"crypto/tls"
 	"errors"
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 	"time"
@@ -41,7 +42,7 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 	var err error
 
 	if req.URL.Scheme == "file" {
-		resp, err = ReadResponse(req.URL)
+		resp, err = httpx.ReadResponse(req.URL)
 	} else {
 		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
 			do := findProxy(proxies)

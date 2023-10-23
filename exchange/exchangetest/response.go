@@ -1,4 +1,4 @@
-package httptest
+package exchangetest
 
 import (
 	"bytes"

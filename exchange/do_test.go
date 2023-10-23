@@ -3,7 +3,8 @@ package exchange
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/exchange/httptest"
+	"github.com/go-ai-agent/core/exchange/exchangetest"
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "file://[cwd]/httptest/resource/http/http-503.txt"
+	http503FileName       = "file://[cwd]/exchangetest/resource/http/http-503.txt"
 )
 
 // When reading http from a text file, be sure you have the expected blank line between header and body.
@@ -22,11 +23,11 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
 		return nil, errors.New("request or request URL is nil")
 	}
-	switch httptest.Pattern(req) {
-	case httptest.HttpErrorUri, httptest.BodyIOErrorUri:
-		return httptest.ErrorProxy(req)
+	switch exchangetest.Pattern(req) {
+	case exchangetest.HttpErrorUri, exchangetest.BodyIOErrorUri:
+		return exchangetest.ErrorProxy(req)
 	case helloWorldUri:
-		resp := httptest.NewResponse(http.StatusOK, []byte("<html><body><h1>Hello, World</h1></body></html>"), "content-type", "text/html", "content-length", "1234")
+		resp := exchangetest.NewResponse(http.StatusOK, []byte("<html><body><h1>Hello, World</h1></body></html>"), "content-type", "text/html", "content-length", "1234")
 		return resp, nil
 	case serviceUnavailableUri:
 		// Read the response from an embedded file system.
@@ -34,10 +35,10 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 		// ReadResponseTest(name string)  is only used for calls from do_test.go. When calling from other test
 		// files, use the ReadResponse(f fs.FS, name string)
 		//
-		resp, err := ReadResponse(runtime.ParseRaw(http503FileName))
+		resp, err := httpx.ReadResponse(runtime.ParseRaw(http503FileName))
 		return resp, err
 	default:
-		fmt.Printf("test: doProxy(req) : unmatched pattern %v", httptest.Pattern(req))
+		fmt.Printf("test: doProxy(req) : unmatched pattern %v", exchangetest.Pattern(req))
 	}
 	return nil, nil
 }
@@ -55,7 +56,7 @@ func ExampleDo_InvalidArgument() {
 }
 
 func ExampleDo_Proxy_HttpError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, httptest.HttpErrorUri, nil)
+	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, exchangetest.HttpErrorUri, nil)
 	resp, err := Do[runtime.DebugError](req)
 	fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [response:%v]\n", err, resp)
 
@@ -66,7 +67,7 @@ func ExampleDo_Proxy_HttpError() {
 }
 
 func ExampleDo_Proxy_IOError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, httptest.BodyIOErrorUri, nil)
+	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, exchangetest.BodyIOErrorUri, nil)
 	resp, err := Do[runtime.DebugError](req)
 	fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
 

@@ -1,6 +1,7 @@
 package exchange
 
 import (
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 )
@@ -18,10 +19,10 @@ func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http
 	var buf []byte
 
 	status := runtime.NewHttpStatusCode(resp.StatusCode)
-	CreateHeaders(w.Header(), resp, headers...)
+	httpx.CreateHeaders(w.Header(), resp, headers...)
 	if resp.Body != nil {
 		var status1 *runtime.Status
-		buf, status1 = ReadAll[E](resp.Body)
+		buf, status1 = httpx.ReadAll[E](resp.Body)
 		if !status1.OK() {
 			status = status1
 		}
