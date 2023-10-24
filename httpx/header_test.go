@@ -25,3 +25,18 @@ func ExampleSelect() {
 	//test: CreateHeaders() -> map[Key:[value] Key1:[value1] Key2:[value2]]
 
 }
+
+func Example_SetHeaders() {
+	r := NewRecorder()
+
+	err := SetHeaders(r, "key-only")
+	fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
+
+	r = NewRecorder()
+	err = SetHeaders(r, "key1", "val-1", "key-2", "val-2")
+	fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
+
+	//Output:
+	//test: SetHeaders() [err:invalid number of kv items: number is odd, possibly missing a value] [cnt:0]
+
+}

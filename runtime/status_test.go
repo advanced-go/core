@@ -48,6 +48,8 @@ func ExampleStatus_Http() {
 
 }
 
+/*
+
 func ExampleStatus_SetMetadata() {
 	s := NewStatusOK()
 
@@ -120,6 +122,8 @@ func ExampleStatus_Content() {
 
 }
 
+
+*/
 /*
 type Request[T template.ErrorHandler] interface {
 	Create(e T, req *http.Request) *http.Request

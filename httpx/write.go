@@ -8,9 +8,8 @@ import (
 var writeLoc = PkgUri + "/write-response"
 
 // WriteResponse - write a http.Response, utilizing the data, status, and headers for controlling the content
-func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headers ...string) {
-	status.AddMetadata(w.Header(), headers...)
-	writeResponse[E](w, data, status)
+func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headersKV ...string) {
+	writeResponse[E](w, data, status, headersKV...)
 }
 
 // WriteResponseCopy - write a http.Response, utilizing the data, status, and response for controlling the content
@@ -29,12 +28,18 @@ func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http
 	writeResponse[E](w, buf, status)
 }
 
-func writeResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status) {
+func writeResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headersKV ...string) {
 	var e E
 	if status == nil {
 		status = runtime.NewStatusOK()
 	}
 	w.WriteHeader(status.Http())
+	// if no data and there is content, then we need to set the ContentType
+	if data == nil && status.Content() != nil {
+		w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
+	} else {
+		SetHeaders(w, headersKV...)
+	}
 	var ioErr error
 	if data != nil {
 		_, ioErr = w.Write(data)
