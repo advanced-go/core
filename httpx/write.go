@@ -71,3 +71,22 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 	}
 	return e.Handle(nil, "WriteResponse", result)
 }
+
+// WriteResponseNoContent - write a http.Response, utilizing status and headers
+func WriteResponseNoContent[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status) *runtime.Status {
+	var e E
+	var result error
+
+	if status == nil {
+		status = runtime.NewStatusOK()
+	}
+	w.WriteHeader(status.Http())
+	if status.Content() != nil {
+		if w.Header().Get(runtime.ContentType) == "" {
+			w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
+		}
+		w.Header().Set(ContentLength, fmt.Sprintf("%v", len(status.Content())))
+		_, result = w.Write(status.Content())
+	}
+	return e.Handle(nil, "WriteNoContent", result)
+}
