@@ -72,15 +72,21 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 	return e.Handle(nil, "WriteResponse", result)
 }
 
-// WriteResponseNoContent - write a http.Response, utilizing status and headers
-func WriteResponseNoContent[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status) *runtime.Status {
+// WriteMinResponse - write a http.Response, with status and headers and optional status content
+func WriteMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headersKV ...string) *runtime.Status {
 	var e E
 	var result error
 
 	if status == nil {
 		status = runtime.NewStatusOK()
 	}
+	// if missing a header value for a key, then write an internal error
+	if (len(headersKV) & 1) == 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return e.Handle(nil, "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
+	}
 	w.WriteHeader(status.Http())
+	SetHeaders(w, headersKV...)
 	if status.Content() != nil {
 		if w.Header().Get(runtime.ContentType) == "" {
 			w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
