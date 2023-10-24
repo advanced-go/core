@@ -31,7 +31,7 @@ func ExampleContextWithRequest() {
 	fmt.Printf("test: ContextWithRequest(req) -> %v\n", ContextRequestId(ctx) != "")
 
 	req, _ = http.NewRequest("", "https.www.google.com", nil)
-	req.Header.Add(XRequestIdName, "x-request-id-value")
+	req.Header.Add(XRequestId, "x-request-id-value")
 	ctx = ContextWithRequest(req)
 	fmt.Printf("test: ContextWithRequest(req) -> %v\n", ContextRequestId(ctx))
 
