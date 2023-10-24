@@ -50,7 +50,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response) (failures []Args, content bool, gotT T, wantT T) {
+func Content[T any](got *http.Response, want *http.Response, debug func(got []byte, want []byte)) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
 	wantBytes, status := httpx.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
@@ -66,6 +66,11 @@ func Content[T any](got *http.Response, want *http.Response) (failures []Args, c
 	// if no content is wanted, return
 	if len(wantBytes) == 0 {
 		return
+	}
+
+	// debug
+	if debug != nil {
+		debug(gotBytes, wantBytes)
 	}
 
 	// validate content length
