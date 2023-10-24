@@ -50,7 +50,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response, debug func(got []byte, want []byte)) (failures []Args, content bool, gotT T, wantT T) {
+func Content[T any](got *http.Response, want *http.Response, testBytes func(got []byte, want []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
 	wantBytes, status := httpx.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
@@ -63,21 +63,24 @@ func Content[T any](got *http.Response, want *http.Response, debug func(got []by
 		return
 	}
 
+	// optional
+	if testBytes != nil {
+		failures = testBytes(gotBytes, wantBytes)
+		if failures != nil {
+			return
+		}
+	}
+
 	// if no content is wanted, return
 	if len(wantBytes) == 0 {
 		return
 	}
 
-	// debug
-	if debug != nil {
-		debug(gotBytes, wantBytes)
-	}
-
 	// validate content length
-	if len(gotBytes) != len(wantBytes) {
-		failures = []Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}
-		return
-	}
+	//if len(gotBytes) != len(wantBytes) {
+	//	failures = []Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}
+	//	return
+	//}
 
 	// validate content type matches
 	fails, ct := validateContentType(got, want)
