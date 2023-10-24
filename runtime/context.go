@@ -100,3 +100,14 @@ func IsProxyable(ctx context.Context) ([]any, bool) {
 	}
 	return nil, false
 }
+
+func RequestId(t any) string {
+	if ctx, ok := t.(context.Context); ok {
+		return ContextRequestId(ctx)
+	}
+	if req, ok := t.(*http.Request); ok {
+		return req.Header.Get(XRequestIdName)
+	}
+	s, _ := uuid.NewUUID()
+	return s.String()
+}

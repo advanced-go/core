@@ -1,10 +1,8 @@
 package runtime
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"net/http"
 )
 
 const (
@@ -86,14 +84,4 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	return func(requestId string, location string, errs ...error) *Status {
 		return e.Handle(requestId, location, errs...)
 	}
-}
-
-func RequestId(t any) string {
-	if ctx, ok := t.(context.Context); ok {
-		return ContextRequestId(ctx)
-	}
-	if req, ok := t.(*http.Request); ok {
-		return req.Header.Get(XRequestIdName)
-	}
-	return ""
 }
