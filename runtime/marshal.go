@@ -3,9 +3,6 @@ package runtime
 import "encoding/json"
 
 func MarshalType[E ErrorHandler, T any](t T) ([]byte, *Status) {
-	if t == nil {
-		return nil, NewStatusOK()
-	}
 	buf, err := json.Marshal(t)
 	if err != nil {
 		var e E
