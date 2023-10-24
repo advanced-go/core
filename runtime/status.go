@@ -67,7 +67,6 @@ type Status struct {
 func NewStatusCode(code codes.Code) *Status {
 	s := new(Status)
 	s.code = code
-	//s.md = make(metadata.MD, 16)
 	s.duration = NilDuration
 	return s
 }
@@ -184,110 +183,30 @@ func (s *Status) SetRequestId(requestId string) *Status {
 	return s
 }
 
-/*
-func (s *Status) MetadataValue(key string) string {
-	items := s.md.Get(key)
-	if len(items) > 0 {
-		return items[0]
-	}
-	return ""
-}
-
-func (s *Status) SetMetadata(kv ...string) *Status {
-	for i := 0; i < len(kv); i += 2 {
-		key := strings.ToLower(kv[i])
-		if i+1 >= len(kv) {
-			s.md[key] = append(s.md[key], "")
-		} else {
-			s.md[key] = append(s.md[key], kv[i+1])
-		}
-	}
-	return s
-}
-
-func (s *Status) SetMetadataFromResponse(resp *http.Response, keys ...string) *Status {
-	if resp == nil || resp.Header == nil {
-		return s
-	}
-	for _, key := range keys {
-		if key == "" {
-			continue
-		}
-		vals := resp.Header.Values(key)
-		if len(vals) > 0 {
-			s.md.Append(key, vals...)
-		}
-	}
-	return s
-}
-
-func (s *Status) AddMetadata(h http.Header, keys ...string) *Status {
-	if h == nil || len(keys) == 0 {
-		return s
-	}
-	for _, key := range keys {
-		if key == "" {
-			continue
-		}
-		for _, val := range s.md.Get(key) {
-			if val != "" {
-				h.Add(key, val)
-			}
-		}
-	}
-	return s
-}
-
-
-*/
-
 func (s *Status) IsContent() bool { return s.content != nil }
 func (s *Status) Content() []byte { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
-	//s.md.Delete(ContentType)
 }
 func (s *Status) SetContent(content any) *Status {
 	if content == nil {
 		return s
 	}
-	var empty bool
 
-	/*
-		if len(vals) == 0 || (len(vals) == 1 && vals[0] == "") {
-			empty = true
-		} else {
-			s.md.Append(ContentType, vals...)
-		}
-
-	*/
 	switch data := content.(type) {
 	case string:
 		buf := []byte(data)
 		s.content = buf
-		//if empty {
-		//	s.md.Append(ContentType, ContentTypeText)
-		//}
 	case []byte:
 		s.content = data
-		//if empty {
-		//	s.md.Append(ContentType, ContentTypeJson)
-		//}
 	case error:
 		s.content = []byte(data.Error())
-		//if empty {
-		//	s.md.Append(ContentType, ContentTypeText)
-		//}
 	default:
 		buf, err := json.Marshal(data)
 		if err != nil {
 			s.content = []byte("invalid non Json serializable type")
-			//s.md.Append(ContentType, ContentTypeText)
 		} else {
 			s.content = buf
-			if empty {
-				//s.md.Append(ContentType, ContentTypeJson)
-			}
 		}
 	}
 	return s

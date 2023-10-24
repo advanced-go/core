@@ -1,52 +1,73 @@
 package httpx
 
 import (
+	"errors"
+	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"io"
 	"net/http"
 )
 
 var writeLoc = PkgUri + "/write-response"
 
-// WriteResponse - write a http.Response, utilizing the data, status, and headers for controlling the content
-func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headersKV ...string) {
-	writeResponse[E](w, data, status, headersKV...)
-}
+const (
+	ContentLength = "Content-Length"
+)
 
-// WriteResponseCopy - write a http.Response, utilizing the data, status, and response for controlling the content
-func WriteResponseCopy[E runtime.ErrorHandler](w http.ResponseWriter, resp *http.Response, headers ...string) {
-	var buf []byte
-
-	status := runtime.NewHttpStatusCode(resp.StatusCode)
-	CreateHeaders(w.Header(), resp, headers...)
-	if resp.Body != nil {
-		var status1 *runtime.Status
-		buf, status1 = ReadAll[E](resp.Body)
-		if !status1.OK() {
-			status = status1
-		}
-	}
-	writeResponse[E](w, buf, status)
-}
-
-func writeResponse[E runtime.ErrorHandler](w http.ResponseWriter, data []byte, status *runtime.Status, headersKV ...string) {
+// WriteResponse - write a http.Response, utilizing the content, status, and headers
+func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content T, status *runtime.Status, headersKV ...string) *runtime.Status {
 	var e E
+	var result error
+
 	if status == nil {
 		status = runtime.NewStatusOK()
 	}
-	w.WriteHeader(status.Http())
-	// if no data and there is content, then we need to set the ContentType
-	if data == nil && status.Content() != nil {
-		w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
-	} else {
-		SetHeaders(w, headersKV...)
+	// if missing a header value for a key, then write an internal error
+	if (len(headersKV) & 1) == 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return e.Handle(nil, "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
 	}
-	var ioErr error
-	if data != nil {
-		_, ioErr = w.Write(data)
+
+	// always write status code and headers
+	w.WriteHeader(status.Http())
+	SetHeaders(w, headersKV...)
+
+	// if status.Content is available, then that takes precedence
+	if status.Content() != nil {
+		if w.Header().Get(runtime.ContentType) == "" {
+			w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
+		}
+		w.Header().Set(ContentLength, fmt.Sprintf("%v", len(status.Content())))
+		_, result = w.Write(status.Content())
 	} else {
-		if buf := status.Content(); buf != nil {
-			_, ioErr = w.Write(buf)
+		switch ptr := any(content).(type) {
+		case []byte:
+			if ptr != nil {
+				if w.Header().Get(ContentLength) == "" {
+					w.Header().Set(ContentLength, fmt.Sprintf("%v", len(ptr)))
+				}
+				_, result = w.Write(ptr)
+			}
+		case string:
+			if w.Header().Get(ContentLength) == "" {
+				w.Header().Set(ContentLength, fmt.Sprintf("%v", len(ptr)))
+			}
+			_, result = w.Write([]byte(ptr))
+		case io.ReadCloser:
+			if ptr != nil {
+				buf, status1 := ReadAll[E](ptr)
+				if status1.IsErrors() {
+					result = status1.Errors()[0]
+				} else {
+					if w.Header().Get(ContentLength) == "" {
+						w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
+					}
+					_, result = w.Write(buf)
+				}
+			}
+		default:
+			result = errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(content)))
 		}
 	}
-	e.Handle(nil, writeLoc, ioErr)
+	return e.Handle(nil, "WriteResponse", result)
 }

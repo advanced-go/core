@@ -10,6 +10,11 @@ import (
 
 var deserializeLoc = PkgUri + "/deserialize"
 
+// DeserializeConstraints - constraints for content type
+//type DeserializeConstraints interface {
+//	[]byte | io.ReadCloser
+//}
+
 // Deserialize - templated function, providing deserialization of a request/response body
 func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T, *runtime.Status) {
 	var e E
@@ -30,6 +35,7 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 		if err != nil {
 			return t, e.Handle(ctx, deserializeLoc, err).SetCode(runtime.StatusJsonDecodeError)
 		}
+		//return t, e.Handle(ctx, deserializeLoc, errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(t)))).SetCode(runtime.StatusInvalidArgument)
 	}
 	return t, runtime.NewStatusOK()
 }
