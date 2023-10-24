@@ -101,7 +101,7 @@ func IsProxyable(ctx context.Context) ([]any, bool) {
 	return nil, false
 }
 
-func RequestId(t any) string {
+func GetOrCreateRequestId(t any) string {
 	if ctx, ok := t.(context.Context); ok {
 		return ContextRequestId(ctx)
 	}
