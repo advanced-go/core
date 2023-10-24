@@ -13,7 +13,7 @@ import (
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "file://[cwd]/exchangetest/resource/http/http-503.txt"
+	http503FileName       = "file://[cwd]/exchangetest/resource/http-503.txt"
 )
 
 // When reading http from a text file, be sure you have the expected blank line between header and body.

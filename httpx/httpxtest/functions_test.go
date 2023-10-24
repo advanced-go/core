@@ -3,7 +3,7 @@ package httpxtest
 import "fmt"
 
 func Example_ReadHttp() {
-	base := "file://[cwd]/resource/http/"
+	base := "file://[cwd]/resource/"
 	in := "put-req.txt"
 	out := "put-resp.txt"
 	args, req, resp := ReadHttp(base, in, out)

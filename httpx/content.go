@@ -17,16 +17,16 @@ func ReadContent(rawHttp []byte) (*bytes.Buffer, error) {
 			writeTo = true
 			continue
 		}
-		if writeTo {
-			//fmt.Printf("%v", line)
-			content.Write([]byte(line))
-		}
 		if err == io.EOF {
 			break
 		} else {
 			if err != nil {
 				return nil, err
 			}
+		}
+		if writeTo {
+			//fmt.Printf("%v", line)
+			content.Write([]byte(line))
 		}
 	}
 	return content, nil
