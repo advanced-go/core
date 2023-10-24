@@ -50,7 +50,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response, testBytes func(got []byte, want []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
+func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
 	wantBytes, status := httpx.ReadAll[runtime.BypassError](want.Body)
 	if status.IsErrors() {
@@ -65,7 +65,7 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 
 	// optional
 	if testBytes != nil {
-		failures = testBytes(gotBytes, wantBytes)
+		failures = testBytes(got, gotBytes, want, wantBytes)
 		if failures != nil {
 			return
 		}
