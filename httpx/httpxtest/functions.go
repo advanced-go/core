@@ -21,12 +21,12 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 	path := basePath + reqName
 	req, err := httpx.ReadRequest(runtime.ParseRaw(path))
 	if err != nil {
-		return []Args{{Item: "ReadRequest()", Got: "", Want: "", Err: err}}, nil, nil
+		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
 	}
 	path = basePath + respName
 	resp, err1 := httpx.ReadResponse(runtime.ParseRaw(path))
 	if err1 != nil {
-		return []Args{{Item: "ReadResponse()", Got: "", Want: "", Err: err1}}, nil, nil
+		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: err1}}, nil, nil
 	}
 	return nil, req, resp
 }
@@ -74,7 +74,7 @@ func Content[T any](got *http.Response, want *http.Response) (failures []Args, c
 		return
 	}
 
-	// validate content type
+	// validate content type matches
 	fails, ct := validateContentType(got, want)
 	if fails != nil {
 		failures = fails
