@@ -1,7 +1,6 @@
 package httpx
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
@@ -26,7 +25,7 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 	// if missing a header value for a key, then write an internal error
 	if (len(headersKV) & 1) == 1 {
 		w.WriteHeader(http.StatusInternalServerError)
-		return e.Handle(nil, "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
+		return e.Handle(status.RequestId(), "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
 	}
 
 	// always write status code and headers
@@ -50,13 +49,16 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 				_, result = w.Write(ptr)
 			}
 		case string:
-			if w.Header().Get(ContentLength) == "" {
-				w.Header().Set(ContentLength, fmt.Sprintf("%v", len(ptr)))
+			buf := []byte(ptr)
+			if buf != nil {
+				if w.Header().Get(ContentLength) == "" {
+					w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
+				}
+				_, result = w.Write(buf)
 			}
-			_, result = w.Write([]byte(ptr))
 		case io.ReadCloser:
 			if ptr != nil {
-				buf, status1 := ReadAll[E](nil, ptr)
+				buf, status1 := ReadAll[E](status.RequestId(), ptr)
 				if status1.IsErrors() {
 					result = status1.Errors()[0]
 				} else {
@@ -70,11 +72,11 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 			result = errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(content)))
 		}
 	}
-	return e.Handle(nil, "WriteResponse", result)
+	return e.Handle(status.RequestId(), "WriteResponse", result)
 }
 
 // WriteMinResponse - write a http.Response, with status and headers and optional status content
-func WriteMinResponse[E runtime.ErrorHandler](ctx context.Context, w http.ResponseWriter, status *runtime.Status, headersKV ...string) *runtime.Status {
+func WriteMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headersKV ...string) *runtime.Status {
 	var e E
 	var result error
 
@@ -84,7 +86,7 @@ func WriteMinResponse[E runtime.ErrorHandler](ctx context.Context, w http.Respon
 	// if missing a header value for a key, then write an internal error
 	if (len(headersKV) & 1) == 1 {
 		w.WriteHeader(http.StatusInternalServerError)
-		return e.Handle(ctx, "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
+		return e.Handle(status.RequestId(), "WriteResponse", errors.New("invalid number of kv items: number is odd, possibly missing a value")).SetContent(http.StatusInternalServerError)
 	}
 	w.WriteHeader(status.Http())
 	SetHeaders(w, headersKV...)
@@ -95,5 +97,5 @@ func WriteMinResponse[E runtime.ErrorHandler](ctx context.Context, w http.Respon
 		w.Header().Set(ContentLength, fmt.Sprintf("%v", len(status.Content())))
 		_, result = w.Write(status.Content())
 	}
-	return e.Handle(ctx, "WriteNoContent", result)
+	return e.Handle(status.RequestId(), "WriteNoContent", result)
 }

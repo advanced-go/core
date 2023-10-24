@@ -11,18 +11,18 @@ func ExampleDebugHandler_Handle() {
 	err := errors.New("test error")
 	var h DebugError
 
-	s := h.Handle(ctx, location, nil)
+	s := h.Handle(RequestId(ctx), location, nil)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = h.Handle(ctx, location, err)
+	s = h.Handle(RequestId(ctx), location, err)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = NewStatus(StatusInternal, location, nil).SetContext(ctx)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(nil, s), s.IsErrors())
+	s = NewStatus(StatusInternal, nil).SetLocationAndId(location, RequestId(ctx))
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(s), s.IsErrors())
 
-	s = NewStatus(StatusInternal, location, err).SetContext(ctx)
+	s = NewStatus(StatusInternal, err).SetLocationAndId(location, RequestId(ctx))
 	errors := s.IsErrors()
-	s1 := h.HandleStatus(nil, s)
+	s1 := h.HandleStatus(s)
 	fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
 
 	//Output:
@@ -41,18 +41,18 @@ func ExampleLogHandler_Handle() {
 	err := errors.New("test error")
 	var h LogError
 
-	s := h.Handle(ctx, location, nil)
+	s := h.Handle(RequestId(ctx), location, nil)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = h.Handle(ctx, location, err)
+	s = h.Handle(RequestId(ctx), location, err)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = NewStatus(StatusInternal, location, nil).SetContext(ctx)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(nil, s), s.IsErrors())
+	s = NewStatus(StatusInternal, nil).SetLocationAndId(location, RequestId(ctx))
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(s), s.IsErrors())
 
-	s = NewStatus(StatusInternal, location, err).SetContext(ctx)
+	s = NewStatus(StatusInternal, err).SetLocationAndId(location, RequestId(ctx))
 	errors := s.IsErrors()
-	s1 := h.HandleStatus(nil, s)
+	s1 := h.HandleStatus(s)
 	fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
 
 	//Output:
@@ -68,11 +68,11 @@ func ExampleErrorHandleFn() {
 	err := errors.New("debug - error message")
 
 	fn := NewErrorHandler[DebugError]()
-	fn(nil, loc, err)
+	fn("", loc, err)
 	fmt.Printf("test: Handle[DebugErrorHandler]()\n")
 
 	fn = NewErrorHandler[LogError]()
-	fn(nil, loc, errors.New("log - error message"))
+	fn("", loc, errors.New("log - error message"))
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 
 	//Output:

@@ -7,34 +7,34 @@ import (
 )
 
 func Example_ReadFileRaw() {
-	s := "file://[cwd]/httpxtest/resource/http/html-response.txt"
+	s := "file://[cwd]/httpxtest/resource/html-response.txt"
 	buf, err := ReadFile(runtime.ParseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
-	s = "file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/http/html-response.txt"
+	s = "file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/html-response.txt"
 	buf, err = ReadFile(runtime.ParseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
-	//test: ReadFileRaw(file://[cwd]/httpxtest/resource/http/html-response.txt) -> [err:<nil>] [buf:188]
-	//test: ReadFileRaw(file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/http/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFileRaw(file://[cwd]/httpxtest/resource/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFileRaw(file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/html-response.txt) -> [err:<nil>] [buf:188]
 
 }
 
 func Example_ReadFile() {
-	s := "file://[cwd]/httpxtest/resource/http/html-response.txt"
+	s := "file://[cwd]/httpxtest/resource/html-response.txt"
 	u, _ := url.Parse(s)
 	buf, err := ReadFile(u)
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
-	s = "file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/http/html-response.txt"
+	s = "file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/html-response.txt"
 	u, _ = url.Parse(s)
 	buf, err = ReadFile(u)
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
-	//test: ReadFile(file://[cwd]/httpxtest/resource/http/html-response.txt) -> [err:<nil>] [buf:188]
-	//test: ReadFile(file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/http/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFile(file://[cwd]/httpxtest/resource/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFile(file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/html-response.txt) -> [err:<nil>] [buf:188]
 
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	xRequestIdName = "x-request-id"
+	XRequestIdName = "x-request-id"
 )
 
 type contextKey struct {
@@ -41,10 +41,10 @@ func ContextWithRequest(req *http.Request) context.Context {
 	if req == nil || req.Header == nil {
 		return context.Background()
 	}
-	if req.Header.Get(xRequestIdName) == "" {
-		req.Header.Add(xRequestIdName, uuid.New().String())
+	if req.Header.Get(XRequestIdName) == "" {
+		req.Header.Add(XRequestIdName, uuid.New().String())
 	}
-	return ContextWithRequestId(req.Context(), req.Header.Get(xRequestIdName))
+	return ContextWithRequestId(req.Context(), req.Header.Get(XRequestIdName))
 }
 
 // ContextRequestId - return the requestId from a context

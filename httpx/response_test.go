@@ -7,7 +7,7 @@ import (
 )
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/httpxtest/resource/http/html-response.txt"
+	s := "file://[cwd]/httpxtest/resource/html-response.txt"
 	u, _ := url.Parse(s)
 	//req, err := http.NewRequest("GET", s, nil)
 	//fmt.Printf("test: http.NewRequest() -> [err:%v]\n", err)
@@ -15,13 +15,13 @@ func Example_ReadResponse() {
 	resp, err0 := ReadResponse(u)
 	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, err0, resp.StatusCode)
 
-	buf, status := ReadAll[runtime.DebugError](nil, resp.Body)
+	buf, status := ReadAll[runtime.DebugError]("", resp.Body)
 	fmt.Printf("test: ReadAll() -> [status:%v] %v", status.Code(), string(buf))
 
 	s = string(buf)
 
 	//Output:
-	//test: ReadResponse(file://[cwd]/httpxtest/resource/http/html-response.txt) -> [err:<nil>] [status:200]
+	//test: ReadResponse(file://[cwd]/httpxtest/resource/html-response.txt) -> [err:<nil>] [status:200]
 	//test: ReadAll() -> [status:OK] <html>
 	//<body>
 	//<h1>Hello, World!</h1>

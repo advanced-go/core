@@ -18,10 +18,10 @@ func (a address) GetZip() string {
 }
 
 func ExampleStatus_String() {
-	s := NewStatus(StatusPermissionDenied, "", nil)
+	s := NewStatus(StatusPermissionDenied, nil)
 	fmt.Printf("test: NewStatus() -> [%v]\n", s)
 
-	s = NewStatus(StatusOutOfRange, "", errors.New("error - 1"), errors.New("error - 2"))
+	s = NewStatus(StatusOutOfRange, errors.New("error - 1"), errors.New("error - 2"))
 	fmt.Printf("test: NewStatus() -> [%v]\n", s)
 
 	//Output:
@@ -33,12 +33,12 @@ func ExampleStatus_String() {
 func ExampleStatus_Http() {
 	location := "test"
 	err := errors.New("http error")
-	fmt.Printf("test: NewHttpStatus(nil) -> [%v]\n", NewHttpStatus(nil, location, nil))
-	fmt.Printf("test: NewHttpStatus(nil) -> [%v]\n", NewHttpStatus(nil, location, err))
+	fmt.Printf("test: NewHttpStatus(nil) -> [%v]\n", NewHttpStatus(nil, nil).SetLocation(location))
+	fmt.Printf("test: NewHttpStatus(nil) -> [%v]\n", NewHttpStatus(nil, err).SetLocation(location))
 
 	resp := http.Response{StatusCode: http.StatusBadRequest}
-	fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, location, nil))
-	fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, location, err))
+	fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, nil).SetLocation(location))
+	fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, err).SetLocation(location))
 
 	//Output:
 	//test: NewHttpStatus(nil) -> [Invalid Content]

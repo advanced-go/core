@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"google.golang.org/grpc/codes"
@@ -77,9 +76,10 @@ func NewHttpStatusCode(code int) *Status {
 }
 
 // NewStatus - new Status from a code, location, and optional errors
-func NewStatus(code codes.Code, location string, errs ...error) *Status {
+// func NewStatus(code codes.Code, location string, errs ...error) *Status {
+func NewStatus(code codes.Code, errs ...error) *Status {
 	s := NewStatusCode(code)
-	s.location = location
+	//s.location = location
 	if !IsErrors(errs) {
 		s.code = StatusOK
 	} else {
@@ -88,14 +88,19 @@ func NewStatus(code codes.Code, location string, errs ...error) *Status {
 	return s
 }
 
+/*
 func NewStatusWithContext(code codes.Code, location string, ctx context.Context, errs ...error) *Status {
 	s := NewStatus(code, location, errs...)
 	//s.SetContext(ctx)
 	return s
 }
 
+
+*/
+
 // NewHttpStatus - new Status from a http.Response, location, and optional errors
-func NewHttpStatus(resp *http.Response, location string, errs ...error) *Status {
+// func NewHttpStatus(resp *http.Response, location string, errs ...error) *Status {
+func NewHttpStatus(resp *http.Response, errs ...error) *Status {
 	var code codes.Code
 	if resp == nil {
 		code = StatusInvalidContent
@@ -103,7 +108,7 @@ func NewHttpStatus(resp *http.Response, location string, errs ...error) *Status 
 		code = codes.Code(resp.StatusCode)
 	}
 	s := NewStatusCode(code)
-	s.location = location
+	//s.location = location
 	if IsErrors(errs) {
 		s.addErrors(errs...)
 		s.code = http.StatusInternalServerError
@@ -117,17 +122,17 @@ func NewStatusOK() *Status {
 }
 
 func NewStatusInvalidArgument(location string, err error) *Status {
-	return NewStatus(StatusInvalidArgument, location, err)
+	return NewStatus(StatusInvalidArgument, err)
 }
 
 // NewStatusError - new Internal status with location and errors
-func NewStatusError(location string, errs ...error) *Status {
-	return NewStatus(StatusInternal, location, errs...)
+// func NewStatusError(location string, errs ...error) *Status {
+func NewStatusError(errs ...error) *Status {
+	return NewStatus(StatusInternal, errs...)
 }
 
 func (s *Status) IsGRPCCode() bool { return s.code >= codes.OK && s.code <= _maxGRPCCode }
 func (s *Status) Code() codes.Code { return s.code }
-func (s *Status) Location() string { return s.location }
 func (s *Status) SetCode(code codes.Code) *Status {
 	s.code = code
 	return s
@@ -169,20 +174,41 @@ func (s *Status) SetDuration(duration time.Duration) *Status {
 	return s
 }
 
+// Request id and location
+func (s *Status) Location() string  { return s.location }
+func (s *Status) RequestId() string { return s.requestId }
+func (s *Status) SetLocation(location string) *Status {
+	s.location = location
+	return s
+}
+func (s *Status) SetRequestId(requestId string) *Status {
+	s.requestId = requestId
+	return s
+}
+func (s *Status) SetLocationAndId(location string, requestId string) *Status {
+	s.SetLocation(location)
+	s.SetRequestId(requestId)
+	return s
+}
+
+// func (s *Status) Location() string { return s.location }
+/*
 func (s *Status) SetContext(ctx context.Context) *Status {
 	s.requestId = ContextRequestId(ctx)
 	return s
 }
-
 func (s *Status) RequestId() string {
 	return s.requestId
 }
-
 func (s *Status) SetRequestId(requestId string) *Status {
 	s.requestId = requestId
 	return s
 }
 
+
+*/
+
+// Content
 func (s *Status) IsContent() bool { return s.content != nil }
 func (s *Status) Content() []byte { return s.content }
 func (s *Status) RemoveContent() {

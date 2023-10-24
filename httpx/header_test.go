@@ -38,5 +38,6 @@ func Example_SetHeaders() {
 
 	//Output:
 	//test: SetHeaders() [err:invalid number of kv items: number is odd, possibly missing a value] [cnt:0]
+	//test: SetHeaders() [err:<nil>] [cnt:2]
 
 }

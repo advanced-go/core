@@ -4,19 +4,19 @@ import "fmt"
 
 func Example_MarshalType() {
 	var i = 45
-	buf, status := MarshalType[DebugError](nil, i)
+	buf, status := MarshalType[DebugError]("", i)
 	fmt.Printf("test: MarshalType(int) [status:%v] %v\n", status, string(buf))
 
 	var str []string
-	buf, status = MarshalType[DebugError](nil, str)
+	buf, status = MarshalType[DebugError]("", str)
 	fmt.Printf("test: MarshalType([]string) [status:%v] %v\n", status, string(buf))
 
 	var ptr *int
-	buf, status = MarshalType[DebugError](nil, ptr)
+	buf, status = MarshalType[DebugError]("", ptr)
 	fmt.Printf("test: MarshalType(*int(nil)) [status:%v] %v\n", status, string(buf))
 
 	ptr = &i
-	buf, status = MarshalType[DebugError](nil, ptr)
+	buf, status = MarshalType[DebugError]("", ptr)
 	fmt.Printf("test: MarshalType(*int) [status:%v] %v\n", status, string(buf))
 
 	//Output:
@@ -29,16 +29,16 @@ func Example_MarshalType() {
 
 func Example_UnmarshalType() {
 	var i = 45
-	buf, status := MarshalType[DebugError](nil, i)
+	buf, status := MarshalType[DebugError]("", i)
 	if status != nil {
 	}
 
-	j, status1 := UnmarshalType[DebugError, int](nil, buf)
+	j, status1 := UnmarshalType[DebugError, int]("", buf)
 	fmt.Printf("test: UnmarshalType(int) [status:%v] %v\n", status1, j)
 
 	var str = []string{"test", "of", "[]string"}
-	buf, status = MarshalType[DebugError](nil, str)
-	strs, status2 := UnmarshalType[DebugError, []string](nil, buf)
+	buf, status = MarshalType[DebugError]("", str)
+	strs, status2 := UnmarshalType[DebugError, []string]("", buf)
 	fmt.Printf("test: UnmarshalType([]string) [status:%v] %v\n", status2, strs)
 
 	//fmt.Printf("test: MarshalType([]string) [status:%v] %v\n", status, string(buf))
@@ -58,5 +58,5 @@ func Example_UnmarshalType() {
 	//Output:
 	//test: UnmarshalType(int) [status:OK] 45
 	//test: UnmarshalType([]string) [status:OK] [test of []string]
-	
+
 }
