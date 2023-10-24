@@ -15,7 +15,7 @@ func Example_ReadResponse() {
 	resp, err0 := ReadResponse(u)
 	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, err0, resp.StatusCode)
 
-	buf, status := ReadAll[runtime.DebugError](resp.Body)
+	buf, status := ReadAll[runtime.DebugError](nil, resp.Body)
 	fmt.Printf("test: ReadAll() -> [status:%v] %v", status.Code(), string(buf))
 
 	s = string(buf)
