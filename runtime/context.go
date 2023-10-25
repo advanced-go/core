@@ -113,6 +113,9 @@ func RequestId(t any) string {
 			return req.Header.Get(XRequestId)
 		}
 	}
+	if status, ok := t.(*Status); ok {
+		return status.RequestId()
+	}
 	return ""
 }
 
