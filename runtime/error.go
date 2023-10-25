@@ -15,6 +15,7 @@ type ErrorHandleFn func(requestId string, location string, errs ...error) *Statu
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
 	Handle(requestId string, location string, errs ...error) *Status
+	HandleStatus(s *Status) *Status
 }
 
 // BypassError - bypass error handler
@@ -24,12 +25,12 @@ func (h BypassError) Handle(requestId string, location string, errs ...error) *S
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return NewStatus(StatusInternal, errs...) //.SetRequestId(requestId)
+	return NewStatus(StatusInternal, errs...)
 }
 
-//func (h BypassError) HandleStatus(_ any, s *Status) *Status {
-//	return s
-//}
+func (h BypassError) HandleStatus(s *Status) *Status {
+	return s
+}
 
 // DebugError - debug error handler
 type DebugError struct{}
@@ -38,7 +39,7 @@ func (h DebugError) Handle(requestId, location string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetRequestId(requestId).SetLocation(location))
+	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetLocationAndId(location, requestId))
 }
 
 func (h DebugError) HandleStatus(s *Status) *Status {
@@ -58,7 +59,7 @@ func (h LogError) Handle(requestId, location string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetRequestId(requestId).SetLocation(location))
+	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetLocationAndId(location, requestId))
 }
 
 func (h LogError) HandleStatus(s *Status) *Status {

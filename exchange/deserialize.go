@@ -10,22 +10,16 @@ import (
 
 var deserializeLoc = PkgUri + "/deserialize"
 
-// DeserializeConstraints - constraints for content type
-//type DeserializeConstraints interface {
-//	[]byte | io.ReadCloser
-//}
-
-// Deserialize - templated function, providing deserialization of a request/response body
-func Deserialize[E runtime.ErrorHandler, T any](requestId string, body io.ReadCloser) (T, *runtime.Status) {
-	var e E
+// Deserialize - provide deserialization of a request/response body
+func Deserialize[T any](body io.ReadCloser) (T, *runtime.Status) {
 	var t T
 
 	if body == nil {
-		return t, e.Handle(requestId, deserializeLoc, errors.New("body is nil")).SetCode(runtime.StatusInvalidContent)
+		return t, runtime.NewStatusError(errors.New("body is nil")).SetLocation(deserializeLoc).SetCode(runtime.StatusInvalidContent)
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
-		buf, status := httpx.ReadAll[E](requestId, body)
+		buf, status := httpx.ReadAll(body)
 		if !status.OK() {
 			return t, status
 		}
@@ -33,9 +27,8 @@ func Deserialize[E runtime.ErrorHandler, T any](requestId string, body io.ReadCl
 	default:
 		err := json.NewDecoder(body).Decode(&t)
 		if err != nil {
-			return t, e.Handle(requestId, deserializeLoc, err).SetCode(runtime.StatusJsonDecodeError)
+			return t, runtime.NewStatusError(err).SetLocation(deserializeLoc).SetCode(runtime.StatusJsonDecodeError)
 		}
-		//return t, e.Handle(ctx, deserializeLoc, errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(t)))).SetCode(runtime.StatusInvalidArgument)
 	}
 	return t, runtime.NewStatusOK()
 }

@@ -58,7 +58,9 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 			}
 		case io.ReadCloser:
 			if ptr != nil {
-				buf, status1 := ReadAll[E](status.RequestId(), ptr)
+				buf, status1 := ReadAll(ptr)
+				status1.SetRequestId(status.RequestId())
+				e.HandleStatus(status1)
 				if status1.IsErrors() {
 					result = status1.Errors()[0]
 				} else {

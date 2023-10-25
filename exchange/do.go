@@ -69,7 +69,11 @@ func DoT[E runtime.ErrorHandler, T any](req *http.Request) (resp *http.Response,
 	if !status.OK() {
 		return nil, t, status
 	}
-	t, status = Deserialize[E, T](runtime.RequestId(req), resp.Body)
+	t, status = Deserialize[T](resp.Body)
+	var e E
+	if !status.OK() {
+		e.HandleStatus(status.SetRequestId(runtime.RequestId(req)))
+	}
 	return
 }
 

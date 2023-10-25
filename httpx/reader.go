@@ -6,15 +6,14 @@ import (
 )
 
 // ReadAll - read all the body, with a deferred close
-func ReadAll[E runtime.ErrorHandler](requestId string, body io.ReadCloser) ([]byte, *runtime.Status) {
+func ReadAll(body io.ReadCloser) ([]byte, *runtime.Status) {
 	if body == nil {
 		return nil, runtime.NewStatusOK()
 	}
 	defer body.Close()
 	buf, err := io.ReadAll(body)
 	if err != nil {
-		var e E
-		return nil, e.Handle(requestId, "ReadAll", err).SetCode(runtime.StatusIOError)
+		return nil, runtime.NewStatusError(err).SetLocation("ReadAll").SetCode(runtime.StatusIOError)
 	}
 	return buf, runtime.NewStatusOK()
 }
