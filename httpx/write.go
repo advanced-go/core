@@ -72,9 +72,8 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 		_, result := w.Write(buf)
 		return e.Handle(status, writeLoc, result)
 	default:
-		return e.Handle(status, writeLoc, errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(content))))
 	}
-	//return runtime.NewStatusOK()
+	return e.Handle(status, writeLoc, errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(content))))
 }
 
 // WriteMinResponse - write a http.Response, with status, optional headers and optional status content
