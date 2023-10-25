@@ -119,12 +119,6 @@ func RequestId(t any) string {
 
 func GetOrCreateRequestId(t any) string {
 	requestId := RequestId(t)
-	if ctx, ok := t.(context.Context); ok {
-		return ContextRequestId(ctx)
-	}
-	if req, ok := t.(*http.Request); ok {
-		return req.Header.Get(XRequestId)
-	}
 	if requestId == "" {
 		s, _ := uuid.NewUUID()
 		requestId = s.String()
