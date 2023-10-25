@@ -15,7 +15,7 @@ type HttpExchange interface {
 }
 
 var (
-	doLocation = PkgUri + "/do"
+	doLocation = PkgUri + "/Do"
 	Client     = http.DefaultClient
 )
 

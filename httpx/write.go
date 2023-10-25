@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	writeLoc    = PkgUri + "/write-response"
-	minWriteLoc = PkgUri + "/write-min-response"
+	writeLoc    = PkgUri + "/WriteResponse"
+	minWriteLoc = PkgUri + "/WriteMinResponse"
 )
 
 const (
