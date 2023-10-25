@@ -21,7 +21,7 @@ type ErrorHandler interface {
 // BypassError - bypass error handler
 type BypassError struct{}
 
-func (h BypassError) Handle(requestId string, location string, errs ...error) *Status {
+func (h BypassError) Handle(requestId any, _ string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
