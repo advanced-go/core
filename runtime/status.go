@@ -289,8 +289,9 @@ func (s *Status) Http() int {
 		code = http.StatusServiceUnavailable
 	case StatusDeadlineExceeded:
 		code = http.StatusGatewayTimeout
-	case StatusInvalidContent,
-		StatusCancelled,
+	case StatusInvalidContent:
+		code = http.StatusNoContent
+	case StatusCancelled,
 		StatusUnknown,
 		StatusAlreadyExists,
 		StatusResourceExhausted,
