@@ -7,21 +7,21 @@ import (
 
 // OutputHandler - template parameter output handler interface
 type OutputHandler interface {
-	Write(s string)
+	Write(t any)
 }
 
 type NilOutput struct{}
 
-func (NilOutput) Write(s string) {}
+func (NilOutput) Write(t any) {}
 
 type StdOutput struct{}
 
-func (StdOutput) Write(s string) { fmt.Println(s) }
+func (StdOutput) Write(t any) { fmt.Println(t) }
 
 type LogOutput struct{}
 
-func (LogOutput) Write(s string) { log.Println(s) }
+func (LogOutput) Write(t any) { log.Println(t) }
 
 type TestOutput struct{}
 
-func (TestOutput) Write(s string) { fmt.Printf("test: Write() -> [%v]\n", s) }
+func (TestOutput) Write(t any) { fmt.Printf("test: Write() -> [%v]\n", t) }

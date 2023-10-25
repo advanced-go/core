@@ -37,7 +37,7 @@ func Example_SetHeaders() {
 	fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
 
 	//Output:
-	//test: SetHeaders() [err:invalid number of kv items: number is odd, possibly missing a value] [cnt:0]
+	//test: SetHeaders() [err:invalid number of kv items: number is odd, missing a value] [cnt:0]
 	//test: SetHeaders() [err:<nil>] [cnt:2]
 
 }

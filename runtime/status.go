@@ -181,11 +181,17 @@ func (s *Status) SetLocation(location string) *Status {
 	s.location = location
 	return s
 }
-func (s *Status) SetRequestId(requestId string) *Status {
-	s.requestId = requestId
+func (s *Status) SetRequestId(requestId any) *Status {
+	if str, ok := requestId.(string); ok {
+		s.requestId = str
+	} else {
+		if st, ok1 := requestId.(*Status); ok1 && st != nil {
+			s.requestId = st.RequestId()
+		}
+	}
 	return s
 }
-func (s *Status) SetLocationAndId(location string, requestId string) *Status {
+func (s *Status) SetLocationAndId(location string, requestId any) *Status {
 	s.SetLocation(location)
 	s.SetRequestId(requestId)
 	return s

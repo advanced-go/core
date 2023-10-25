@@ -37,8 +37,9 @@ func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 }
 
 func SetHeaders(w http.ResponseWriter, kv ...string) error {
-	if (len(kv) & 1) == 1 {
-		return errors.New("invalid number of kv items: number is odd, possibly missing a value")
+	err := ValidateKVHeaders(kv...)
+	if err != nil {
+		return err
 	}
 	for i := 0; i < len(kv); i += 2 {
 		key := strings.ToLower(kv[i])
@@ -47,6 +48,13 @@ func SetHeaders(w http.ResponseWriter, kv ...string) error {
 		} else {
 			w.Header().Set(key, kv[i+1])
 		}
+	}
+	return nil
+}
+
+func ValidateKVHeaders(kv ...string) error {
+	if (len(kv) & 1) == 1 {
+		return errors.New("invalid number of kv items: number is odd, missing a value")
 	}
 	return nil
 }

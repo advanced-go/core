@@ -2,7 +2,6 @@ package httpx
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
 	"net/url"
 )
 
@@ -15,8 +14,8 @@ func Example_ReadResponse() {
 	resp, err0 := ReadResponse(u)
 	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, err0, resp.StatusCode)
 
-	buf, status := ReadAll[runtime.DebugError]("", resp.Body)
-	fmt.Printf("test: ReadAll() -> [status:%v] %v", status.Code(), string(buf))
+	buf, status := ReadAll(resp.Body)
+	fmt.Printf("test: ReadAll() -> [status:%v] %v", status, string(buf))
 
 	s = string(buf)
 

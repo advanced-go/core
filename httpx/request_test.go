@@ -55,7 +55,7 @@ func Example_ReadRequest_PUT() {
 	if err != nil {
 		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
 	} else {
-		buf, err1 := ReadAll[runtime.DebugError]("", req.Body)
+		buf, err1 := ReadAll(req.Body)
 		if err1 != nil {
 		}
 		var entry []entryTest

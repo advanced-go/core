@@ -2,9 +2,9 @@ package runtime
 
 import "fmt"
 
-type OutputHandlerFn func(s string)
+type OutputHandlerFn func(t any)
 
-func (OutputHandlerFn) Write(s string) {
+func (OutputHandlerFn) Write(t any) {
 
 }
 

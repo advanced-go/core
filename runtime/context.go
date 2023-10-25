@@ -106,7 +106,9 @@ func RequestId(t any) string {
 		return ""
 	}
 	if ctx, ok := t.(context.Context); ok {
-		return ContextRequestId(ctx)
+		if ctx != nil {
+			return ContextRequestId(ctx)
+		}
 	}
 	if req, ok := t.(*http.Request); ok {
 		if req != nil {
@@ -114,7 +116,9 @@ func RequestId(t any) string {
 		}
 	}
 	if status, ok := t.(*Status); ok {
-		return status.RequestId()
+		if status != nil {
+			return status.RequestId()
+		}
 	}
 	return ""
 }

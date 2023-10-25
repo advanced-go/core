@@ -53,13 +53,13 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 	str := "text response"
 
 	w := httptest.NewRecorder()
-	status := runtime.NewStatusCode(runtime.StatusOK)
+	status := runtime.NewStatusCode(runtime.StatusOK).SetRequestId("123456-id")
 	status1 := WriteResponse[runtime.DebugError, string](w, str, status, runtime.ContentType)
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
 
 	//Output:
-	//[[] WriteResponse [invalid number of kv items: number is odd, possibly missing a value]]
+	//[123456-id github.com/go-ai-agent/core/httpx/write-response [invalid number of kv items: number is odd, missing a value]]
 	//test: WriteResponse(w,text response,status) -> [status:Internal] [status1:500] [body:] [header:map[]]
 
 }

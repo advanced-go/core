@@ -10,11 +10,11 @@ const (
 )
 
 // ErrorHandleFn - function type for error handling
-type ErrorHandleFn func(requestId string, location string, errs ...error) *Status
+type ErrorHandleFn func(requestId any, location string, errs ...error) *Status
 
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
-	Handle(requestId string, location string, errs ...error) *Status
+	Handle(requestId any, location string, errs ...error) *Status
 	HandleStatus(s *Status) *Status
 }
 
@@ -35,7 +35,7 @@ func (h BypassError) HandleStatus(s *Status) *Status {
 // DebugError - debug error handler
 type DebugError struct{}
 
-func (h DebugError) Handle(requestId, location string, errs ...error) *Status {
+func (h DebugError) Handle(requestId any, location string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
@@ -55,7 +55,7 @@ func (h DebugError) HandleStatus(s *Status) *Status {
 // LogError - debug error handler
 type LogError struct{}
 
-func (h LogError) Handle(requestId, location string, errs ...error) *Status {
+func (h LogError) Handle(requestId any, location string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
@@ -82,7 +82,7 @@ func ifElse(s string, def string) string {
 // NewErrorHandler - templated function providing an error handle function via a closure
 func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	var e E
-	return func(requestId string, location string, errs ...error) *Status {
+	return func(requestId any, location string, errs ...error) *Status {
 		return e.Handle(requestId, location, errs...)
 	}
 }
