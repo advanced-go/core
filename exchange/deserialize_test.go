@@ -32,19 +32,19 @@ type addressV2 struct {
 }
 
 func ExampleDeserialize() {
-	result, status := Deserialize[runtime.DebugError, []byte](nil, nil)
+	result, status := Deserialize[runtime.DebugError, []byte]("", nil)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](nil) -> [%v] [status:%v]\n", string(result), status)
 
 	resp := new(http.Response)
-	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
+	result, status = Deserialize[runtime.DebugError, []byte]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
 	resp.Body = httpx.NewReaderCloser(strings.NewReader("Hello World String"), nil)
-	result, status = Deserialize[runtime.DebugError, []byte](nil, resp.Body)
+	result, status = Deserialize[runtime.DebugError, []byte]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
 	resp.Body = httpx.NewReaderCloser(bytes.NewReader([]byte("Hello World []byte")), nil)
-	result2, status2 := Deserialize[runtime.DebugError, []byte](nil, resp.Body)
+	result2, status2 := Deserialize[runtime.DebugError, []byte]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
 	//Output:
@@ -70,7 +70,7 @@ func ExampleDeserialize_Decode() {
 	resp := new(http.Response)
 	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV1), nil)
 
-	result, status := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
+	result, status := Deserialize[runtime.DebugError, addressV1]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result, status)
 
 	addrV2 := addressV2{
@@ -84,13 +84,13 @@ func ExampleDeserialize_Decode() {
 	resp = new(http.Response)
 	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV2), nil)
 
-	result2, status2 := Deserialize[runtime.DebugError, addressV2](nil, resp.Body)
+	result2, status2 := Deserialize[runtime.DebugError, addressV2]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV2](resp) -> [%v] [status:%v]\n", result2, status2)
 
 	resp = new(http.Response)
 	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV2), nil)
 
-	result3, status3 := Deserialize[runtime.DebugError, addressV1](nil, resp.Body)
+	result3, status3 := Deserialize[runtime.DebugError, addressV1]("", resp.Body)
 	fmt.Printf("test: Deserialize[DebugError,addressV1](resp) -> [%v] [status:%v]\n", result3, status3)
 
 	//Output:

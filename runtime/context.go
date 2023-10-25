@@ -101,13 +101,32 @@ func IsProxyable(ctx context.Context) ([]any, bool) {
 	return nil, false
 }
 
+func RequestId(t any) string {
+	if t == nil {
+		return ""
+	}
+	if ctx, ok := t.(context.Context); ok {
+		return ContextRequestId(ctx)
+	}
+	if req, ok := t.(*http.Request); ok {
+		if req != nil {
+			return req.Header.Get(XRequestId)
+		}
+	}
+	return ""
+}
+
 func GetOrCreateRequestId(t any) string {
+	requestId := RequestId(t)
 	if ctx, ok := t.(context.Context); ok {
 		return ContextRequestId(ctx)
 	}
 	if req, ok := t.(*http.Request); ok {
 		return req.Header.Get(XRequestId)
 	}
-	s, _ := uuid.NewUUID()
-	return s.String()
+	if requestId == "" {
+		s, _ := uuid.NewUUID()
+		requestId = s.String()
+	}
+	return requestId
 }

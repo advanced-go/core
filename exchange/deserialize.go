@@ -16,16 +16,16 @@ var deserializeLoc = PkgUri + "/deserialize"
 //}
 
 // Deserialize - templated function, providing deserialization of a request/response body
-func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T, *runtime.Status) {
+func Deserialize[E runtime.ErrorHandler, T any](requestId string, body io.ReadCloser) (T, *runtime.Status) {
 	var e E
 	var t T
 
 	if body == nil {
-		return t, e.Handle(ctx, deserializeLoc, errors.New("body is nil")).SetCode(runtime.StatusInvalidContent)
+		return t, e.Handle(requestId, deserializeLoc, errors.New("body is nil")).SetCode(runtime.StatusInvalidContent)
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
-		buf, status := httpx.ReadAll[E](body)
+		buf, status := httpx.ReadAll[E](requestId, body)
 		if !status.OK() {
 			return t, status
 		}
@@ -33,7 +33,7 @@ func Deserialize[E runtime.ErrorHandler, T any](ctx any, body io.ReadCloser) (T,
 	default:
 		err := json.NewDecoder(body).Decode(&t)
 		if err != nil {
-			return t, e.Handle(ctx, deserializeLoc, err).SetCode(runtime.StatusJsonDecodeError)
+			return t, e.Handle(requestId, deserializeLoc, err).SetCode(runtime.StatusJsonDecodeError)
 		}
 		//return t, e.Handle(ctx, deserializeLoc, errors.New(fmt.Sprintf("error: content type is invalid [%v]", any(t)))).SetCode(runtime.StatusInvalidArgument)
 	}
