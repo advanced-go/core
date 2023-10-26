@@ -12,23 +12,26 @@ func SetDefaultOrigin(s string) {
 	}
 }
 
-type UrlTextResolver func(string) string
+type Resolver func(string) string
 
-var resolver UrlTextResolver = defaultResolver
+var resolver Resolver = defaultResolver
 
-func SetUrlResolver(f UrlTextResolver) {
+func SetResolver(f Resolver) {
 	if f != nil {
 		resolver = f
 	}
 }
 
-func ResolveUrl(s string) string {
+// Resolve - given a string, resolve the string to an url.
+func Resolve(s string) string {
 	return resolver(s)
 }
 
 func defaultResolver(u string) string {
+	// if an endpoint, then default to defaultOrigin
 	if strings.HasPrefix(u, "/") {
 		return defaultOrigin + u
 	}
+	// else pass through
 	return u
 }
