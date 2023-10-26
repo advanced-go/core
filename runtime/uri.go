@@ -11,6 +11,15 @@ const (
 	FileScheme = "file://"
 )
 
+// PathFromUri - return a path from a scheme less uri
+func PathFromUri(rawUri string) string {
+	i := strings.Index(rawUri, "/")
+	if i < 0 {
+		return "[uri invalid]"
+	}
+	return rawUri[i:]
+}
+
 // ParsePkgUrl - parse a package raw Uri
 func ParsePkgUrl(rawUri string) *url.URL {
 	u, err := url.Parse(FileScheme + rawUri)
