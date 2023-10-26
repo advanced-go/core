@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"github.com/go-ai-agent/core/runtime/runtimetest"
 	"time"
 )
 
@@ -55,7 +56,7 @@ func ExampleStartup_Success() {
 	Register(uri3, c)
 	go startupDepends(c, nil)
 
-	status := Startup[runtime.DebugError, runtime.NilOutput](time.Second*2, nil)
+	status := Startup[runtimetest.DebugError](time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
@@ -84,7 +85,7 @@ func ExampleStartup_Failure() {
 	Register(uri3, c)
 	go startupDepends(c, errors.New("startup failure error message"))
 
-	status := Startup[runtime.DebugError, runtime.StdOutput](time.Second*2, nil)
+	status := Startup[runtimetest.DebugError](time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 

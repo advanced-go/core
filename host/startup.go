@@ -36,7 +36,7 @@ func Shutdown() {
 }
 
 // Startup - templated function to start all registered resources.
-func Startup[E runtime.ErrorHandler, O runtime.OutputHandler](duration time.Duration, content ContentMap) (status *runtime.Status) {
+func Startup[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (status *runtime.Status) {
 	var e E
 	var failures []string
 	var count = directory.Count()
@@ -56,7 +56,7 @@ func Startup[E runtime.ErrorHandler, O runtime.OutputHandler](duration time.Dura
 		// Check for failed resources
 		failures = cache.Exclude(StartupEvent, runtime.StatusOK)
 		if len(failures) == 0 {
-			handleStatus[O](cache)
+			handleStatus(cache)
 			return runtime.NewStatusOK()
 		}
 		break
@@ -102,15 +102,14 @@ func handleErrors[E runtime.ErrorHandler](failures []string, cache *MessageCache
 	}
 }
 
-func handleStatus[O runtime.OutputHandler](cache *MessageCache) {
-	var o O
+func handleStatus(cache *MessageCache) {
 	for _, uri := range cache.Uri() {
 		msg, err := cache.Get(uri)
 		if err != nil {
 			continue
 		}
 		if msg.Status != nil {
-			o.Write(fmt.Sprintf("startup successful for host [%v] : %s", uri, msg.Status.Duration()))
+			fmt.Printf("startup successful for host [%v] : %s", uri, msg.Status.Duration())
 		}
 	}
 }
