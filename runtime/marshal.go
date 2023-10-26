@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 )
 
-
 func MarshalType(t any) ([]byte, *Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
-		return nil, NewStatusError(err).SetLocation(PkgUri + "/MarshalType")
+		return nil, NewStatusError(StatusJsonEncodeError, PkgUri+"/MarshalType", err)
 	}
 	return buf, NewStatusOK()
 }
@@ -18,7 +17,7 @@ func UnmarshalType[T any](buf []byte) (T, *Status) {
 
 	err := json.Unmarshal(buf, &t)
 	if err != nil {
-		return t, NewStatusError(err).SetLocation(PkgUri + "/UnmarshalType")
+		return t, NewStatusError(StatusJsonDecodeError, PkgUri+"/UnmarshalType", err)
 	}
 	return t, NewStatusOK()
 }

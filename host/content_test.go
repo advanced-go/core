@@ -17,7 +17,7 @@ var msgTest = Message{To: "to-uri", From: "from-uri", Content: []any{
 	//runtime.Handle[runtime.DebugError](),
 	errors.New("this is a content error message"),
 	func() bool { return false },
-	runtime.NewStatusError("location", errors.New("error message")).SetDuration(time.Second * 2),
+	runtime.NewStatusError(0, "location", errors.New("error message")).SetDuration(time.Second * 2),
 	//runtime.HandleWithContext[runtime.DebugError](),
 	ControllerApply(func(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
 		return func() {}, ctx, false
@@ -64,7 +64,7 @@ func ExampleNewStatusCodeFn() {
 	var status *runtime.Status
 
 	fn := NewStatusCode(&status)
-	status = runtime.NewStatusCode(runtime.StatusDeadlineExceeded)
+	status = runtime.NewStatus(runtime.StatusDeadlineExceeded)
 	fmt.Printf("test: NewStatusCode(&status) -> [statusCode:%v]\n", fn())
 
 	//Output:

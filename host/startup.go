@@ -9,7 +9,7 @@ import (
 
 type messageMap map[string]Message
 
-var startupLocation = PkgUri + "/startup"
+var startupLocation = PkgUri + "/Startup"
 
 var directory = NewEntryDirectory()
 
@@ -64,7 +64,7 @@ func Startup[E runtime.ErrorHandler, O runtime.OutputHandler](duration time.Dura
 	Shutdown()
 	if len(failures) > 0 {
 		handleErrors[E](failures, cache)
-		return runtime.NewStatusCode(runtime.StatusInternal)
+		return runtime.NewStatus(runtime.StatusInternal)
 	}
 	return e.Handle(nil, startupLocation, errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), directory.Count()))).SetCode(runtime.StatusDeadlineExceeded)
 }

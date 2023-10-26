@@ -64,7 +64,7 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 		}
 		buf, status1 := ReadAll(ptr)
 		if !status1.OK() {
-			return e.HandleStatus(status1.SetRequestId(status))
+			return e.HandleStatus(status1, status)
 		}
 		if w.Header().Get(ContentLength) == "" {
 			w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))

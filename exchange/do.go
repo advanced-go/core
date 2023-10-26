@@ -61,7 +61,7 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 	if resp == nil {
 		return nil, e.Handle(runtime.RequestId(req), doLocation, errors.New("invalid argument : response is nil")).SetCode(http.StatusInternalServerError)
 	}
-	return resp, runtime.NewHttpStatusCode(resp.StatusCode)
+	return resp, runtime.NewHttpStatus(resp.StatusCode)
 }
 
 func DoT[E runtime.ErrorHandler, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
@@ -72,7 +72,7 @@ func DoT[E runtime.ErrorHandler, T any](req *http.Request) (resp *http.Response,
 	t, status = Deserialize[T](resp.Body)
 	var e E
 	if !status.OK() {
-		e.HandleStatus(status.SetRequestId(runtime.RequestId(req)))
+		e.HandleStatus(status, req) //.SetRequestId(runtime.RequestId(req)))
 	}
 	return
 }

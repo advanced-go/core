@@ -43,9 +43,9 @@ func ExamplePing() {
 
 	//Output:
 	//test: Ping(good) -> [OK] [duration:0s]
-	//[[] github.com/go-ai-agent/core/host/ping [ping response time out: [urn:ping:bad]]]
+	//[[] github.com/go-ai-agent/core/host/Ping [ping response time out: [urn:ping:bad]]]
 	//test: Ping(bad) -> [DeadlineExceeded] [duration:0s]
-	//test: Ping(error) -> [Internal [ping depends error message]] [duration:0s]
+	//test: Ping(error) -> [Internal github.com/go-ai-agent/core/host/Ping [ping depends error message]] [duration:0s]
 	//test: Ping(delay) -> [OK] [duration:0s]
 
 }
@@ -86,7 +86,7 @@ func pingError(c chan Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				ReplyTo(msg, runtime.NewStatusError(pingLocation, err).SetDuration(time.Since(start)))
+				ReplyTo(msg, runtime.NewStatusError(0, pingLocation, err).SetDuration(time.Since(start)))
 			}
 		default:
 		}

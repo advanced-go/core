@@ -24,8 +24,9 @@ const (
 	StatusInvalidContent     = codes.Code(90)           // Content is not available, is nil, or is of the wrong type, usually found via unmarshalling
 	StatusIOError            = codes.Code(91)           // I/O operation failed
 	StatusJsonDecodeError    = codes.Code(92)           // Json decoding failed
-	StatusNotProvided        = codes.Code(93)           // No status is available
-	StatusRateLimited        = codes.Code(94)           // Rate limited
+	StatusJsonEncodeError    = codes.Code(93)           // Json decoding failed
+	StatusNotProvided        = codes.Code(94)           // No status is available
+	StatusRateLimited        = codes.Code(95)           // Rate limited
 	StatusOK                 = codes.OK                 // Not an error; returned on success.
 	StatusCancelled          = codes.Canceled           // The operation was cancelled, typically by the caller.
 	StatusUnknown            = codes.Unknown            // Unknown error. For example, this error may be returned when a Status value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error.
@@ -62,41 +63,47 @@ type Status struct {
 	//md        metadata.MD
 }
 
-// NewStatusCode - new Status from a code
-func NewStatusCode(code codes.Code) *Status {
+// NewStatus - new Status from a code
+func NewStatus(code codes.Code) *Status {
 	s := new(Status)
 	s.code = code
 	s.duration = NilDuration
 	return s
 }
 
-// NewHttpStatusCode - new Status from a http status code
-func NewHttpStatusCode(code int) *Status {
-	return NewStatusCode(codes.Code(code))
+// NewHttpStatus - new Status from a http status code
+func NewHttpStatus(code int) *Status {
+	return NewStatus(codes.Code(code))
 }
 
-// NewStatus - new Status from a code, location, and optional errors
-// func NewStatus(code codes.Code, location string, errs ...error) *Status {
-func NewStatus(code codes.Code, errs ...error) *Status {
-	s := NewStatusCode(code)
-	//s.location = location
+// NewStatusOK - new OK status
+func NewStatusOK() *Status {
+	return NewStatus(StatusOK)
+}
+
+// NewStatusError - new Status from a code, location, and optional errors
+func NewStatusError(code codes.Code, location string, errs ...error) *Status {
+	s := NewStatus(code)
+	s.location = location
 	if !IsErrors(errs) {
 		s.code = StatusOK
 	} else {
+		if code == 0 {
+			s.code = StatusInternal
+		}
 		s.addErrors(errs...)
 	}
 	return s
 }
 
 /*
+
+
 func NewStatusWithContext(code codes.Code, location string, ctx context.Context, errs ...error) *Status {
 	s := NewStatus(code, location, errs...)
 	//s.SetContext(ctx)
 	return s
 }
-
-
-*/
 
 // NewHttpStatus - new Status from a http.Response, location, and optional errors
 // func NewHttpStatus(resp *http.Response, location string, errs ...error) *Status {
@@ -108,17 +115,11 @@ func NewHttpStatus(resp *http.Response, errs ...error) *Status {
 		code = codes.Code(resp.StatusCode)
 	}
 	s := NewStatusCode(code)
-	//s.location = location
 	if IsErrors(errs) {
 		s.addErrors(errs...)
 		s.code = http.StatusInternalServerError
 	}
 	return s
-}
-
-// NewStatusOK - new OK status
-func NewStatusOK() *Status {
-	return NewStatusCode(StatusOK)
 }
 
 func NewStatusInvalidArgument(location string, err error) *Status {
@@ -131,6 +132,8 @@ func NewStatusError(errs ...error) *Status {
 	return NewStatus(StatusInternal, errs...)
 }
 
+*/
+
 func (s *Status) IsGRPCCode() bool { return s.code >= codes.OK && s.code <= _maxGRPCCode }
 func (s *Status) Code() codes.Code { return s.code }
 func (s *Status) SetCode(code codes.Code) *Status {
@@ -141,22 +144,36 @@ func (s *Status) SetCode(code codes.Code) *Status {
 func (s *Status) String() string {
 	if s.IsGRPCCode() {
 		if s.IsErrors() {
-			return fmt.Sprintf("%v %v", s.code, s.errs)
+			if s.location == "" {
+				return fmt.Sprintf("%v %v", s.code, s.errs)
+			} else {
+				return fmt.Sprintf("%v %v %v", s.code, s.location, s.errs)
+			}
 		} else {
 			return fmt.Sprintf("%v", s.code)
 		}
-
 	} else {
 		if s.IsErrors() {
-			return fmt.Sprintf("%v %v", s.Description(), s.errs)
+			if s.Location() == "" {
+				return fmt.Sprintf("%v %v", s.Description(), s.errs)
+			} else {
+				return fmt.Sprintf("%v %v %v", s.Description(), s.location, s.errs)
+			}
 		} else {
 			return fmt.Sprintf("%v", s.Description())
 		}
 	}
 }
 
+// IsErrors - determine errors status
 func (s *Status) IsErrors() bool  { return s.errs != nil && len(s.errs) > 0 }
 func (s *Status) Errors() []error { return s.errs }
+func (s *Status) FirstError() error {
+	if s.IsErrors() {
+		return s.errs[0]
+	}
+	return nil
+}
 func (s *Status) addErrors(errs ...error) *Status {
 	for _, e := range errs {
 		if e == nil {
@@ -168,6 +185,7 @@ func (s *Status) addErrors(errs ...error) *Status {
 }
 func (s *Status) RemoveErrors() { s.errs = nil }
 
+// Duration - get duration
 func (s *Status) Duration() time.Duration { return s.duration }
 func (s *Status) SetDuration(duration time.Duration) *Status {
 	s.duration = duration
@@ -311,6 +329,8 @@ func (s *Status) Description() string {
 		return "Invalid Content"
 	case StatusIOError:
 		return "I/O Failure"
+	case StatusJsonEncodeError:
+		return "Json Encode Failure"
 	case StatusJsonDecodeError:
 		return "Json Decode Failure"
 	case StatusNotProvided:

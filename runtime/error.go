@@ -15,7 +15,7 @@ type ErrorHandleFn func(requestId any, location string, errs ...error) *Status
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
 	Handle(requestId any, location string, errs ...error) *Status
-	HandleStatus(s *Status) *Status
+	HandleStatus(s *Status, requestId any) *Status
 }
 
 // BypassError - bypass error handler
@@ -25,10 +25,10 @@ func (h BypassError) Handle(requestId any, _ string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return NewStatus(StatusInternal, errs...)
+	return NewStatusError(StatusInternal, "", errs...)
 }
 
-func (h BypassError) HandleStatus(s *Status) *Status {
+func (h BypassError) HandleStatus(s *Status, _ any) *Status {
 	return s
 }
 
@@ -39,12 +39,15 @@ func (h DebugError) Handle(requestId any, location string, errs ...error) *Statu
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetLocationAndId(location, requestId))
+	return h.HandleStatus(NewStatusError(StatusInternal, location, errs...), requestId)
 }
 
-func (h DebugError) HandleStatus(s *Status) *Status {
+func (h DebugError) HandleStatus(s *Status, requestId any) *Status {
 	if s != nil && s.IsErrors() {
 		loc := ifElse(s.Location(), emptyArg)
+		if s.RequestId() == "" {
+			s.SetRequestId(requestId)
+		}
 		req := ifElse(s.RequestId(), emptyArg)
 		fmt.Printf("[%v %v %v]\n", req, loc, s.Errors())
 		s.RemoveErrors()
@@ -59,12 +62,15 @@ func (h LogError) Handle(requestId any, location string, errs ...error) *Status 
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatus(StatusInternal, errs...).SetLocationAndId(location, requestId))
+	return h.HandleStatus(NewStatusError(StatusInternal, location, errs...), requestId)
 }
 
-func (h LogError) HandleStatus(s *Status) *Status {
+func (h LogError) HandleStatus(s *Status, requestId any) *Status {
 	if s != nil && s.IsErrors() {
 		loc := ifElse(s.Location(), emptyArg)
+		if s.RequestId() == "" {
+			s.SetRequestId(requestId)
+		}
 		req := ifElse(s.RequestId(), emptyArg)
 		log.Println(req, loc, s.Errors())
 		s.RemoveErrors()

@@ -15,7 +15,7 @@ func Deserialize[T any](body io.ReadCloser) (T, *runtime.Status) {
 	var t T
 
 	if body == nil {
-		return t, runtime.NewStatusError(errors.New("body is nil")).SetLocation(deserializeLoc).SetCode(runtime.StatusInvalidContent)
+		return t, runtime.NewStatusError(runtime.StatusInvalidContent, deserializeLoc, errors.New("body is nil"))
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
@@ -27,7 +27,7 @@ func Deserialize[T any](body io.ReadCloser) (T, *runtime.Status) {
 	default:
 		err := json.NewDecoder(body).Decode(&t)
 		if err != nil {
-			return t, runtime.NewStatusError(err).SetLocation(deserializeLoc).SetCode(runtime.StatusJsonDecodeError)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, deserializeLoc, err)
 		}
 	}
 	return t, runtime.NewStatusOK()
