@@ -9,7 +9,7 @@ import (
 
 type messageMap map[string]Message
 
-var startupLocation = PkgUri + "/Startup"
+var startupLocation = pkgUri + "/Startup"
 
 var directory = NewEntryDirectory()
 

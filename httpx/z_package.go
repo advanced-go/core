@@ -7,5 +7,5 @@ import (
 type pkg struct{}
 
 var (
-	PkgUri = reflect.TypeOf(any(pkg{})).PkgPath()
+	pkgUri = reflect.TypeOf(any(pkg{})).PkgPath()
 )
