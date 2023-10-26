@@ -28,10 +28,10 @@ func ExampleDebugHandler_Handle() {
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
 	//[123-request-id /DebugHandler [test error]]
-	//test: Handle(ctx,location,err) -> [Internal] [errors:false]
+	//test: Handle(ctx,location,err) -> [Internal /DebugHandler [test error]] [errors:true]
 	//test: HandleStatus(nil,s) -> [OK] [errors:false]
 	//[123-request-id /DebugHandler [test error]]
-	//test: HandleStatus(nil,s) -> [prev:Internal] [prev-errors:true] [curr:Internal] [curr-errors:false]
+	//test: HandleStatus(nil,s) -> [prev:Internal /DebugHandler [test error]] [prev-errors:true] [curr:Internal /DebugHandler [test error]] [curr-errors:true]
 
 }
 
@@ -57,9 +57,9 @@ func ExampleLogHandler_Handle() {
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
-	//test: Handle(ctx,location,err) -> [Internal] [errors:false]
+	//test: Handle(ctx,location,err) -> [Internal /LogHandler [test error]] [errors:true]
 	//test: HandleStatus(nil,s) -> [OK] [errors:false]
-	//test: HandleStatus(nil,s) -> [prev:Internal] [prev-errors:true] [curr:Internal] [curr-errors:false]
+	//test: HandleStatus(nil,s) -> [prev:Internal /LogHandler [test error]] [prev-errors:true] [curr:Internal /LogHandler [test error]] [curr-errors:true]
 
 }
 

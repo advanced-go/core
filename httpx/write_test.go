@@ -60,7 +60,7 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 
 	//Output:
 	//[123456-id github.com/go-ai-agent/core/httpx/WriteResponse [invalid number of kv items: number is odd, missing a value]]
-	//test: WriteResponse(w,text response,status) -> [status:Internal] [status1:500] [body:] [header:map[]]
+	//test: WriteResponse(w,text response,status) -> [status:Internal github.com/go-ai-agent/core/httpx/WriteResponse [invalid number of kv items: number is odd, missing a value]] [status1:500] [body:] [header:map[]]
 
 }
 

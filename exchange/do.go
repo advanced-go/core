@@ -37,7 +37,7 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 	var e E
 
 	if req == nil {
-		return nil, e.Handle(runtime.RequestId(req), doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
+		return nil, e.Handle(req, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
 

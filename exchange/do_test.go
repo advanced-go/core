@@ -51,7 +51,7 @@ func ExampleDo_InvalidArgument() {
 
 	//Output:
 	//[[] github.com/go-ai-agent/core/exchange/Do [invalid argument : request is nil]]
-	//test: Do[runtime.DebugError](nil) -> [InvalidArgument]
+	//test: Do[runtime.DebugError](nil) -> [InvalidArgument github.com/go-ai-agent/core/exchange/Do [invalid argument : request is nil]]
 
 }
 
@@ -62,7 +62,7 @@ func ExampleDo_Proxy_HttpError() {
 
 	//Output:
 	//[[] github.com/go-ai-agent/core/exchange/Do [http: connection has been hijacked]]
-	//test: Do[runtime.DebugError](req) -> [Internal Error] [response:<nil>]
+	//test: Do[runtime.DebugError](req) -> [Internal Error github.com/go-ai-agent/core/exchange/Do [http: connection has been hijacked]] [response:<nil>]
 
 }
 

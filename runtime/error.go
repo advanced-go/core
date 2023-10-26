@@ -43,14 +43,15 @@ func (h DebugError) Handle(requestId any, location string, errs ...error) *Statu
 }
 
 func (h DebugError) HandleStatus(s *Status, requestId any) *Status {
-	if s != nil && s.IsErrors() {
+	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
 		loc := ifElse(s.Location(), emptyArg)
 		if s.RequestId() == "" {
 			s.SetRequestId(requestId)
 		}
 		req := ifElse(s.RequestId(), emptyArg)
 		fmt.Printf("[%v %v %v]\n", req, loc, s.Errors())
-		s.RemoveErrors()
+		//s.RemoveErrors()
+		s.ErrorsHandled()
 	}
 	return s
 }
@@ -66,14 +67,15 @@ func (h LogError) Handle(requestId any, location string, errs ...error) *Status 
 }
 
 func (h LogError) HandleStatus(s *Status, requestId any) *Status {
-	if s != nil && s.IsErrors() {
+	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
 		loc := ifElse(s.Location(), emptyArg)
 		if s.RequestId() == "" {
 			s.SetRequestId(requestId)
 		}
 		req := ifElse(s.RequestId(), emptyArg)
 		log.Println(req, loc, s.Errors())
-		s.RemoveErrors()
+		//s.RemoveErrors()
+		s.SetErrorsHandled()
 	}
 	return s
 }

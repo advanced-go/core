@@ -59,6 +59,7 @@ type Status struct {
 	location  string
 	requestId string
 	errs      []error
+	handled   bool
 	content   []byte
 	//md        metadata.MD
 }
@@ -134,6 +135,7 @@ func NewStatusError(errs ...error) *Status {
 
 */
 
+// IsGRPCCode - gRPC code functions
 func (s *Status) IsGRPCCode() bool { return s.code >= codes.OK && s.code <= _maxGRPCCode }
 func (s *Status) Code() codes.Code { return s.code }
 func (s *Status) SetCode(code codes.Code) *Status {
@@ -165,9 +167,11 @@ func (s *Status) String() string {
 	}
 }
 
-// IsErrors - determine errors status
-func (s *Status) IsErrors() bool  { return s.errs != nil && len(s.errs) > 0 }
-func (s *Status) Errors() []error { return s.errs }
+// ErrorsHandled - determine errors status
+func (s *Status) ErrorsHandled() bool { return s.handled }
+func (s *Status) SetErrorsHandled()   { s.handled = true }
+func (s *Status) IsErrors() bool      { return s.errs != nil && len(s.errs) > 0 }
+func (s *Status) Errors() []error     { return s.errs }
 func (s *Status) FirstError() error {
 	if s.IsErrors() {
 		return s.errs[0]
@@ -183,7 +187,8 @@ func (s *Status) addErrors(errs ...error) *Status {
 	}
 	return s
 }
-func (s *Status) RemoveErrors() { s.errs = nil }
+
+//func (s *Status) RemoveErrors() { s.errs = nil }
 
 // Duration - get duration
 func (s *Status) Duration() time.Duration { return s.duration }
@@ -192,13 +197,15 @@ func (s *Status) SetDuration(duration time.Duration) *Status {
 	return s
 }
 
-// Request id and location
-func (s *Status) Location() string  { return s.location }
-func (s *Status) RequestId() string { return s.requestId }
+// Location - location
+func (s *Status) Location() string { return s.location }
 func (s *Status) SetLocation(location string) *Status {
 	s.location = location
 	return s
 }
+
+// RequestId  - request id
+func (s *Status) RequestId() string { return s.requestId }
 func (s *Status) SetRequestId(requestId any) *Status {
 	if str, ok := requestId.(string); ok {
 		s.requestId = str
@@ -209,30 +216,18 @@ func (s *Status) SetRequestId(requestId any) *Status {
 	}
 	return s
 }
+
+/*
 func (s *Status) SetLocationAndId(location string, requestId any) *Status {
 	s.SetLocation(location)
 	s.SetRequestId(requestId)
 	return s
 }
 
-// func (s *Status) Location() string { return s.location }
-/*
-func (s *Status) SetContext(ctx context.Context) *Status {
-	s.requestId = ContextRequestId(ctx)
-	return s
-}
-func (s *Status) RequestId() string {
-	return s.requestId
-}
-func (s *Status) SetRequestId(requestId string) *Status {
-	s.requestId = requestId
-	return s
-}
-
 
 */
 
-// Content
+// IsContent - content
 func (s *Status) IsContent() bool { return s.content != nil }
 func (s *Status) Content() []byte { return s.content }
 func (s *Status) RemoveContent() {
