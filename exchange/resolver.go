@@ -14,7 +14,7 @@ func SetDefaultOrigin(s string) {
 
 type Resolver func(string) string
 
-var resolver Resolver = defaultResolver
+var resolver Resolver = DefaultResolver
 
 func SetResolver(f Resolver) {
 	if f != nil {
@@ -27,7 +27,7 @@ func Resolve(s string) string {
 	return resolver(s)
 }
 
-func defaultResolver(u string) string {
+func DefaultResolver(u string) string {
 	// if an endpoint, then default to defaultOrigin
 	if strings.HasPrefix(u, "/") {
 		return defaultOrigin + u

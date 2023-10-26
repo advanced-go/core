@@ -6,6 +6,7 @@ import (
 	"github.com/go-ai-agent/core/exchange/exchangetest"
 	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
+	"github.com/go-ai-agent/core/runtime/runtimetest"
 	"io"
 	"net/http"
 )
@@ -46,45 +47,45 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 var exchangeCtx = runtime.ContextWithProxy(nil, exchangeProxy)
 
 func ExampleDo_InvalidArgument() {
-	_, s := Do[runtime.DebugError](nil)
-	fmt.Printf("test: Do[runtime.DebugError](nil) -> [%v]\n", s)
+	_, s := Do[runtimetest.DebugError](nil)
+	fmt.Printf("test: Do[runtimetest.DebugError](nil) -> [%v]\n", s)
 
 	//Output:
 	//[[] github.com/go-ai-agent/core/exchange/Do [invalid argument : request is nil]]
-	//test: Do[runtime.DebugError](nil) -> [InvalidArgument github.com/go-ai-agent/core/exchange/Do [invalid argument : request is nil]]
+	//test: Do[runtimetest.DebugError](nil) -> [InvalidArgument github.com/go-ai-agent/core/exchange/Do [invalid argument : request is nil]]
 
 }
 
 func ExampleDo_Proxy_HttpError() {
 	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, exchangetest.HttpErrorUri, nil)
-	resp, err := Do[runtime.DebugError](req)
-	fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [response:%v]\n", err, resp)
+	resp, err := Do[runtimetest.DebugError](req)
+	fmt.Printf("test: Do[runtimetest.DebugError](req) -> [%v] [response:%v]\n", err, resp)
 
 	//Output:
 	//[[] github.com/go-ai-agent/core/exchange/Do [http: connection has been hijacked]]
-	//test: Do[runtime.DebugError](req) -> [Internal Error github.com/go-ai-agent/core/exchange/Do [http: connection has been hijacked]] [response:<nil>]
+	//test: Do[runtimetest.DebugError](req) -> [Internal Error github.com/go-ai-agent/core/exchange/Do [http: connection has been hijacked]] [response:<nil>]
 
 }
 
 func ExampleDo_Proxy_IOError() {
 	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, exchangetest.BodyIOErrorUri, nil)
-	resp, err := Do[runtime.DebugError](req)
-	fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
+	resp, err := Do[runtimetest.DebugError](req)
+	fmt.Printf("test: Do[runtimetest.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
 
 	defer resp.Body.Close()
 	buf, s2 := io.ReadAll(resp.Body)
 	fmt.Printf("test: io.ReadAll(resp.Body) -> [%v] [body:%v]\n", s2, string(buf))
 
 	//Output:
-	//test: Do[runtime.DebugError](req) -> [OK] [resp:true] [statusCode:200] [body:true]
+	//test: Do[runtimetest.DebugError](req) -> [OK] [resp:true] [statusCode:200] [body:true]
 	//test: io.ReadAll(resp.Body) -> [unexpected EOF] [body:]
 
 }
 
 func ExampleDo_Proxy_HellowWorld() {
 	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, helloWorldUri, nil)
-	resp, err := Do[runtime.DebugError](req)
-	fmt.Printf("test: Do[runtime.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [content-type:%v] [content-length:%v] [body:%v]\n",
+	resp, err := Do[runtimetest.DebugError](req)
+	fmt.Printf("test: Do[runtimetest.DebugError](req) -> [%v] [resp:%v] [statusCode:%v] [content-type:%v] [content-length:%v] [body:%v]\n",
 		err, resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Header.Get("content-length"), resp.Body != nil)
 
 	defer resp.Body.Close()
@@ -92,15 +93,15 @@ func ExampleDo_Proxy_HellowWorld() {
 	fmt.Printf("test: io.ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
-	//test: Do[runtime.DebugError](req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
+	//test: Do[runtimetest.DebugError](req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
 	//test: io.ReadAll(resp.Body) -> [err:<nil>] [body:<html><body><h1>Hello, World</h1></body></html>]
 
 }
 
 func ExampleDo_Proxy_ServiceUnavailable() {
 	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, serviceUnavailableUri, nil)
-	resp, _ := Do[runtime.DebugError](req)
-	fmt.Printf("test: Do[runtime.DebugError](req) -> [resp:%v] [statusCode:%v] [content-type:%v] [body:%v]\n",
+	resp, _ := Do[runtimetest.DebugError](req)
+	fmt.Printf("test: Do[runtimetest.DebugError](req) -> [resp:%v] [statusCode:%v] [content-type:%v] [body:%v]\n",
 		resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
 
 	//defer resp.Body.Close()
@@ -108,16 +109,16 @@ func ExampleDo_Proxy_ServiceUnavailable() {
 	//fmt.Printf("test: io.ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
-	//test: Do[runtime.DebugError](req) -> [resp:true] [statusCode:503] [content-type:text/html] [body:true]
+	//test: Do[runtimetest.DebugError](req) -> [resp:true] [statusCode:503] [content-type:text/html] [body:true]
 
 }
 
 func Example_DoT() {
 	req, _ := http.NewRequest("GET", "https://www.google.com/search?q=test", nil)
-	resp, buf, status := DoT[runtime.DebugError, []byte](req)
-	fmt.Printf("test: DoT[runtime.DebugError,[]byte](req) -> [status:%v] [buf:%v] [resp:%v]\n", status, len(buf) > 0, resp != nil)
+	resp, buf, status := DoT[runtimetest.DebugError, []byte](req)
+	fmt.Printf("test: DoT[runtimetest.DebugError,[]byte](req) -> [status:%v] [buf:%v] [resp:%v]\n", status, len(buf) > 0, resp != nil)
 
 	//Output:
-	//test: DoT[runtime.DebugError,[]byte](req) -> [status:OK] [buf:true] [resp:true]
+	//test: DoT[runtimetest.DebugError,[]byte](req) -> [status:OK] [buf:true] [resp:true]
 
 }
