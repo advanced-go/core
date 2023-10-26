@@ -1,8 +1,9 @@
-package httpx
+package httpxtest
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"time"
 )
@@ -23,18 +24,18 @@ type entryTest struct {
 }
 
 func Example_ReadRequest_GET() {
-	s := "file://[cwd]/httpxtest/resource/get-request.txt"
+	s := "file://[cwd]/resource/get-request.txt"
 	req, err := ReadRequest(runtime.ParseRaw(s))
 
 	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/httpxtest/resource/get-request.txt) -> [err:<nil>] [&{GET / HTTP/1.1 1 1 map[] {} <nil> 0 [] false foo.com map[] map[] <nil> map[]  / <nil> <nil> <nil> <nil>}]
+	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [&{GET / HTTP/1.1 1 1 map[] {} <nil> 0 [] false foo.com map[] map[] <nil> map[]  / <nil> <nil> <nil> <nil>}]
 
 }
 
 func Example_ReadRequest_Baseline() {
-	s := "file://[cwd]/httpxtest/resource/baseline-request.txt"
+	s := "file://[cwd]/resource/baseline-request.txt"
 	req, err := ReadRequest(runtime.ParseRaw(s))
 
 	if req != nil {
@@ -44,18 +45,18 @@ func Example_ReadRequest_Baseline() {
 	fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/httpxtest/resource/baseline-request.txt) -> [err:<nil>]
+	//test: ReadRequest(file://[cwd]/resource/baseline-request.txt) -> [err:<nil>]
 
 }
 
 func Example_ReadRequest_PUT() {
-	s := "file://[cwd]/httpxtest/resource/put-req.txt"
+	s := "file://[cwd]/resource/put-req.txt"
 	req, err := ReadRequest(runtime.ParseRaw(s))
 
 	if err != nil {
 		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
 	} else {
-		buf, err1 := ReadAll(req.Body)
+		buf, err1 := httpx.ReadAll(req.Body)
 		if err1 != nil {
 		}
 		var entry []entryTest
@@ -64,6 +65,6 @@ func Example_ReadRequest_PUT() {
 	}
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/httpxtest/resource/put-req.txt) -> [cnt:2] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200} {egress 100µs usa east  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry PUT 202}]]
+	//test: ReadRequest(file://[cwd]/resource/put-req.txt) -> [cnt:2] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200} {egress 100µs usa east  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry PUT 202}]]
 
 }

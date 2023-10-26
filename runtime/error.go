@@ -1,12 +1,11 @@
 package runtime
 
 import (
-	"fmt"
 	"log"
 )
 
 const (
-	emptyArg = "[]"
+	EmptyArg = "[]"
 )
 
 // ErrorHandleFn - function type for error handling
@@ -32,30 +31,6 @@ func (h BypassError) HandleStatus(s *Status, _ any) *Status {
 	return s
 }
 
-// DebugError - debug error handler
-type DebugError struct{}
-
-func (h DebugError) Handle(requestId any, location string, errs ...error) *Status {
-	if !IsErrors(errs) {
-		return NewStatusOK()
-	}
-	return h.HandleStatus(NewStatusError(StatusInternal, location, errs...), requestId)
-}
-
-func (h DebugError) HandleStatus(s *Status, requestId any) *Status {
-	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
-		loc := ifElse(s.Location(), emptyArg)
-		if s.RequestId() == "" {
-			s.SetRequestId(requestId)
-		}
-		req := ifElse(s.RequestId(), emptyArg)
-		fmt.Printf("[%v %v %v]\n", req, loc, s.Errors())
-		//s.RemoveErrors()
-		s.ErrorsHandled()
-	}
-	return s
-}
-
 // LogError - debug error handler
 type LogError struct{}
 
@@ -68,11 +43,11 @@ func (h LogError) Handle(requestId any, location string, errs ...error) *Status 
 
 func (h LogError) HandleStatus(s *Status, requestId any) *Status {
 	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
-		loc := ifElse(s.Location(), emptyArg)
+		loc := ifElse(s.Location(), EmptyArg)
 		if s.RequestId() == "" {
 			s.SetRequestId(requestId)
 		}
-		req := ifElse(s.RequestId(), emptyArg)
+		req := ifElse(s.RequestId(), EmptyArg)
 		log.Println(req, loc, s.Errors())
 		//s.RemoveErrors()
 		s.SetErrorsHandled()

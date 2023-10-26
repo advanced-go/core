@@ -19,7 +19,7 @@ type Args struct {
 
 func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
 	path := basePath + reqName
-	req, err := httpx.ReadRequest(runtime.ParseRaw(path))
+	req, err := ReadRequest(runtime.ParseRaw(path))
 	if err != nil {
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
 	}
