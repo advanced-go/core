@@ -48,13 +48,14 @@ func IsErrors(errs []error) bool {
 
 // Status - struct for status data
 type Status struct {
-	code      codes.Code
-	duration  time.Duration
-	handled   bool
-	location  string
-	requestId string
-	errs      []error
-	content   []byte
+	code        codes.Code
+	duration    time.Duration
+	handled     bool
+	locationUri string
+	originUri   string
+	requestId   string
+	errs        []error
+	content     []byte
 	//md        metadata.MD
 }
 
@@ -77,9 +78,9 @@ func NewStatusOK() *Status {
 }
 
 // NewStatusError - new Status from a code, location, and optional errors
-func NewStatusError(code codes.Code, location string, errs ...error) *Status {
+func NewStatusError(code codes.Code, locationUri string, errs ...error) *Status {
 	s := NewStatus(code)
-	s.location = location
+	s.locationUri = locationUri
 	if !IsErrors(errs) {
 		s.code = StatusOK
 	} else {
@@ -138,23 +139,17 @@ func (s *Status) SetCode(code codes.Code) *Status {
 }
 
 func (s *Status) String() string {
+	// Leave this as is, this is only for string conversions and just return description + errors
 	if s.IsGRPCCode() {
 		if s.IsErrors() {
-			if s.location == "" {
-				return fmt.Sprintf("%v %v", s.code, s.errs)
-			} else {
-				return fmt.Sprintf("%v %v %v", s.code, s.location, s.errs)
-			}
+			return fmt.Sprintf("%v %v", s.code, s.errs)
 		} else {
 			return fmt.Sprintf("%v", s.code)
 		}
+
 	} else {
 		if s.IsErrors() {
-			if s.Location() == "" {
-				return fmt.Sprintf("%v %v", s.Description(), s.errs)
-			} else {
-				return fmt.Sprintf("%v %v %v", s.Description(), s.location, s.errs)
-			}
+			return fmt.Sprintf("%v %v", s.Description(), s.errs)
 		} else {
 			return fmt.Sprintf("%v", s.Description())
 		}
@@ -191,13 +186,6 @@ func (s *Status) SetDuration(duration time.Duration) *Status {
 	return s
 }
 
-// Location - location
-func (s *Status) Location() string { return s.location }
-func (s *Status) SetLocation(location string) *Status {
-	s.location = location
-	return s
-}
-
 // RequestId  - request id
 func (s *Status) RequestId() string { return s.requestId }
 func (s *Status) SetRequestId(requestId any) *Status {
@@ -208,6 +196,20 @@ func (s *Status) SetRequestId(requestId any) *Status {
 			s.requestId = st.RequestId()
 		}
 	}
+	return s
+}
+
+// Location - location
+func (s *Status) Location() string { return s.locationUri }
+func (s *Status) SetLocation(locationUri string) *Status {
+	s.locationUri = locationUri
+	return s
+}
+
+// Origin - caller
+func (s *Status) Origin() string { return s.originUri }
+func (s *Status) SetOrigin(originUri string) *Status {
+	s.originUri = originUri
 	return s
 }
 

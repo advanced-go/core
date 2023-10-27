@@ -15,7 +15,7 @@ type HttpExchange interface {
 }
 
 var (
-	doLocation = pkgUri + "/Do"
+	doLocation = PkgUri + "/Do"
 	Client     = http.DefaultClient
 )
 
@@ -33,11 +33,9 @@ func init() {
 	}
 }
 
-func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status *runtime.Status) {
-	var e E
-
+func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
-		return nil, e.Handle(req, doLocation, errors.New("invalid argument : request is nil")).SetCode(runtime.StatusInvalidArgument)
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
 
@@ -56,24 +54,24 @@ func Do[E runtime.ErrorHandler](req *http.Request) (resp *http.Response, status 
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
-		return nil, e.Handle(runtime.RequestId(req), doLocation, err).SetCode(http.StatusInternalServerError)
+		return nil, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
 	}
 	if resp == nil {
-		return nil, e.Handle(runtime.RequestId(req), doLocation, errors.New("invalid argument : response is nil")).SetCode(http.StatusInternalServerError)
+		return nil, runtime.NewStatusError(http.StatusInternalServerError, doLocation, errors.New("invalid argument : response is nil"))
 	}
 	return resp, runtime.NewHttpStatus(resp.StatusCode)
 }
 
-func DoT[E runtime.ErrorHandler, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
-	resp, status = Do[E](req)
+func DoT[T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+	resp, status = Do(req)
 	if !status.OK() {
 		return nil, t, status
 	}
 	t, status = Deserialize[T](resp.Body)
-	var e E
-	if !status.OK() {
-		e.HandleStatus(status, req) //.SetRequestId(runtime.RequestId(req)))
-	}
+	//var e E
+	//if !status.OK() {
+	//	e.HandleStatus(status, req) //.SetRequestId(runtime.RequestId(req)))
+	//}
 	return
 }
 

@@ -9,12 +9,8 @@ import (
 )
 
 var (
-	writeLoc    = pkgUri + "/WriteResponse"
-	minWriteLoc = pkgUri + "/WriteMinResponse"
-)
-
-const (
-	ContentLength = "Content-Length"
+	writeLoc    = PkgUri + "/WriteResponse"
+	minWriteLoc = PkgUri + "/WriteMinResponse"
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
@@ -64,7 +60,7 @@ func WriteResponse[E runtime.ErrorHandler, T any](w http.ResponseWriter, content
 		}
 		buf, status1 := ReadAll(ptr)
 		if !status1.OK() {
-			return e.HandleStatus(status1, status)
+			return e.HandleStatus(status1, status, "")
 		}
 		if w.Header().Get(ContentLength) == "" {
 			w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))

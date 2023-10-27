@@ -13,7 +13,7 @@ func ReadAll(body io.ReadCloser) ([]byte, *runtime.Status) {
 	defer body.Close()
 	buf, err := io.ReadAll(body)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusIOError, pkgUri+"/ReadAll", err)
+		return nil, runtime.NewStatusError(runtime.StatusIOError, PkgUri+"/ReadAll", err)
 	}
 	return buf, runtime.NewStatusOK()
 }

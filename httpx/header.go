@@ -11,6 +11,7 @@ const (
 	ContentTypeText = "text/plain" // charset=utf-8
 	ContentTypeJson = "application/json"
 	ContentType     = "Content-Type"
+	ContentLength   = "Content-Length"
 )
 
 func GetContentLocation(req *http.Request) string {

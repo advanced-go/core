@@ -47,7 +47,7 @@ func ExampleLookupRequest() {
 	//test: LookupUrl() -> [err:invalid argument: Url is nil] []
 	//test: LookupUrl(test) -> [err:invalid argument : LookupEnv() template variable is invalid: test] []
 	//test: LookupUrl(scheme) -> [err:<nil>] [http]
-	//test: LookupUrl(startup) -> [err:<nil>] [localhost:8080]
+	//test: LookupUrl(host) -> [err:<nil>] [localhost:8080]
 	//test: LookupUrl(path) -> [err:<nil>] [/base-path/resource]
 	//test: LookupUrl(query) -> [err:<nil>] [first=false]
 	//test: LookupUrl($RUNTIME) -> [err:<nil>] [DEV]

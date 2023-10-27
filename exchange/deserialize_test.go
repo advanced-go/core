@@ -47,8 +47,8 @@ func ExampleDeserialize() {
 	fmt.Printf("test: Deserialize[[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
 	//Output:
-	//test: Deserialize[[]byte](nil) -> [] [status:Invalid Content github.com/go-ai-agent/core/exchange/Deserialize [body is nil]]
-	//test: Deserialize[[]byte](resp) -> [] [status:Invalid Content github.com/go-ai-agent/core/exchange/Deserialize [body is nil]]
+	//test: Deserialize[[]byte](nil) -> [] [status:Invalid Content [body is nil]]
+	//test: Deserialize[[]byte](resp) -> [] [status:Invalid Content [body is nil]]
 	//test: Deserialize[[]byte](resp) -> [Hello World String] [status:OK]
 	//test: Deserialize[[]byte](resp) -> [Hello World []byte] [status:OK]
 
@@ -93,6 +93,6 @@ func ExampleDeserialize_Decode() {
 	//Output:
 	//test: Deserialize[addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans LA 12345}] [status:OK]
 	//test: Deserialize[addressV2](resp) -> [{Bob Smith 123 Oak Avenue New Orleans Louisiana {12345 1234}}] [status:OK]
-	//test: Deserialize[addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans  }] [status:Json Decode Failure github.com/go-ai-agent/core/exchange/Deserialize [json: cannot unmarshal object into Go struct field addressV1.Zip of type string]]
+	//test: Deserialize[addressV1](resp) -> [{Bob Smith 123 Oak Avenue New Orleans  }] [status:Json Decode Failure [json: cannot unmarshal object into Go struct field addressV1.Zip of type string]]
 
 }

@@ -8,8 +8,8 @@ import (
 type pkg struct{}
 
 var (
-	pkgUri  = reflect.TypeOf(any(pkg{})).PkgPath()
-	pkgPath = PathFromUri(pkgUri)
+	PkgUri  = reflect.TypeOf(any(pkg{})).PkgPath()
+	pkgPath = PathFromUri(PkgUri)
 )
 
 // PathFromUri - return a path from a scheme less uri

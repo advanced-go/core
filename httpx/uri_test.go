@@ -57,7 +57,7 @@ func ExampleParseUri_Urn() {
 }
 
 func Example_BuildUrl() {
-	template := "{scheme}://{startup}{path}?{query}"
+	template := "{scheme}://{host}{path}?{query}"
 	uri := "http://localhost:8080/base-path/resource?first=false"
 	req, _ := http.NewRequest("", uri, nil)
 
@@ -70,12 +70,12 @@ func Example_BuildUrl() {
 	fmt.Printf("test: BuildUrl(scheme) -> [error:%v] [%v]\n", err, url)
 
 	// Exclude query
-	template = "{scheme}://{startup}{path}"
+	template = "{scheme}://{host}{path}"
 	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(exclude-query) -> [error:%v] [%v]\n", err, url)
 
 	// Host only
-	template = "{scheme}://{startup}"
+	template = "{scheme}://{host}"
 	url, err = BuildUrl(req.URL, template)
 	fmt.Printf("test: BuildUrl(startup-only) -> [error:%v] [%v]\n", err, url)
 
@@ -100,7 +100,7 @@ func Example_BuildUrl() {
 }
 
 func Example_BuildUrl_EmptyQuery() {
-	template := "{scheme}://{startup}{path}?{query}"
+	template := "{scheme}://{host}{path}?{query}"
 	uri := "http://localhost:8080/base-path/resource"
 	req, _ := http.NewRequest("", uri, nil)
 
