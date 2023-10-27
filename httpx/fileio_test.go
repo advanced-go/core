@@ -2,17 +2,16 @@ package httpx
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
 	"net/url"
 )
 
 func Example_ReadFileRaw() {
 	s := "file://[cwd]/httpxtest/resource/html-response.txt"
-	buf, err := ReadFile(runtime.ParseRaw(s))
+	buf, err := ReadFile(ParseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	s = "file:///c:/Users/markb/GitHub/core/httpx/httpxtest/resource/html-response.txt"
-	buf, err = ReadFile(runtime.ParseRaw(s))
+	buf, err = ReadFile(ParseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:

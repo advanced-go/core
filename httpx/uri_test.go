@@ -1,34 +1,21 @@
-package runtime
+package httpx
 
 import (
 	"fmt"
 	"net/http"
 )
 
-func Example_PathFromUri() {
-	s := "github.com/go-ai-agent/core/runtime"
-	p := PathFromUri(s)
-	fmt.Printf("test: PathFromUri(%v) %v\n", s, p)
+/*
+	func Example_ParsePkgUrl() {
+		s := "github.com/go-ai-agent/core/runtime"
+		u := ParsePkgUrl(s)
+		fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
 
-	s = "github.comgo-ai-agentcoreruntime"
-	p = PathFromUri(s)
-	fmt.Printf("test: PathFromUri(%v) %v\n", s, p)
-
-	//Output:
-	//test: PathFromUri(github.com/go-ai-agent/core/runtime) /go-ai-agent/core/runtime
-	//test: PathFromUri(github.comgo-ai-agentcoreruntime) [uri invalid]
+		//Output:
+		//test: ParsePkgUri(github.com/go-ai-agent/core/runtime) file://github.com/go-ai-agent/core/runtime
 
 }
-func Example_ParsePkgUrl() {
-	s := "github.com/go-ai-agent/core/runtime"
-	u := ParsePkgUrl(s)
-	fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
-
-	//Output:
-	//test: ParsePkgUri(github.com/go-ai-agent/core/runtime) file://github.com/go-ai-agent/core/runtime
-
-}
-
+*/
 func ExampleParseUri_Url() {
 	uri := "www.google.com"
 	scheme, host, path := ParseUri(uri)

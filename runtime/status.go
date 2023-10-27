@@ -56,10 +56,10 @@ func IsErrors(errs []error) bool {
 type Status struct {
 	code      codes.Code
 	duration  time.Duration
+	handled   bool
 	location  string
 	requestId string
 	errs      []error
-	handled   bool
 	content   []byte
 	//md        metadata.MD
 }
@@ -216,16 +216,6 @@ func (s *Status) SetRequestId(requestId any) *Status {
 	}
 	return s
 }
-
-/*
-func (s *Status) SetLocationAndId(location string, requestId any) *Status {
-	s.SetLocation(location)
-	s.SetRequestId(requestId)
-	return s
-}
-
-
-*/
 
 // IsContent - content
 func (s *Status) IsContent() bool { return s.content != nil }

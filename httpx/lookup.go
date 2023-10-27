@@ -1,7 +1,8 @@
-package runtime
+package httpx
 
 import (
 	"errors"
+	"github.com/go-ai-agent/core/runtime"
 	"net/url"
 	"strings"
 )
@@ -30,5 +31,5 @@ func LookupUrl(name string, url *url.URL) (string, error) {
 		//case MethodName:
 		//	return method, nil
 	}
-	return LookupEnv(name)
+	return runtime.LookupEnv(name)
 }

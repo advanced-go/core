@@ -1,7 +1,8 @@
-package runtime
+package httpx
 
 import (
 	"errors"
+	strings2 "github.com/go-ai-agent/core/strings"
 	"net/url"
 	"strings"
 )
@@ -11,16 +12,8 @@ const (
 	FileScheme = "file://"
 )
 
-// PathFromUri - return a path from a scheme less uri
-func PathFromUri(rawUri string) string {
-	i := strings.Index(rawUri, "/")
-	if i < 0 {
-		return "[uri invalid]"
-	}
-	return rawUri[i:]
-}
-
 // ParsePkgUrl - parse a package raw Uri
+/*
 func ParsePkgUrl(rawUri string) *url.URL {
 	u, err := url.Parse(FileScheme + rawUri)
 	if err != nil {
@@ -28,6 +21,9 @@ func ParsePkgUrl(rawUri string) *url.URL {
 	}
 	return u
 }
+
+
+*/
 
 // ParseRaw - parse a raw Uri without error
 func ParseRaw(rawUri string) *url.URL {
@@ -61,7 +57,7 @@ func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 	if template == "" {
 		return url, nil
 	}
-	url2, err := Expand(func(name string) (string, error) {
+	url2, err := strings2.Expand(func(name string) (string, error) {
 		return LookupUrl(name, url)
 	},
 		template,

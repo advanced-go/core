@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-ai-agent/core/httpx"
-	"github.com/go-ai-agent/core/runtime"
 	"time"
 )
 
@@ -25,7 +24,7 @@ type entryTest struct {
 
 func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
-	req, err := ReadRequest(runtime.ParseRaw(s))
+	req, err := ReadRequest(httpx.ParseRaw(s))
 
 	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
 
@@ -36,7 +35,7 @@ func Example_ReadRequest_GET() {
 
 func Example_ReadRequest_Baseline() {
 	s := "file://[cwd]/resource/baseline-request.txt"
-	req, err := ReadRequest(runtime.ParseRaw(s))
+	req, err := ReadRequest(httpx.ParseRaw(s))
 
 	if req != nil {
 	}
@@ -51,7 +50,7 @@ func Example_ReadRequest_Baseline() {
 
 func Example_ReadRequest_PUT() {
 	s := "file://[cwd]/resource/put-req.txt"
-	req, err := ReadRequest(runtime.ParseRaw(s))
+	req, err := ReadRequest(httpx.ParseRaw(s))
 
 	if err != nil {
 		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)

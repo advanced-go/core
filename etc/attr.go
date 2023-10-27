@@ -1,4 +1,4 @@
-package runtime
+package etc
 
 type Attr struct {
 	Key string

@@ -36,7 +36,7 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 		// ReadResponseTest(name string)  is only used for calls from do_test.go. When calling from other test
 		// files, use the ReadResponse(f fs.FS, name string)
 		//
-		resp, err := httpx.ReadResponse(runtime.ParseRaw(http503FileName))
+		resp, err := httpx.ReadResponse(httpx.ParseRaw(http503FileName))
 		return resp, err
 	default:
 		fmt.Printf("test: doProxy(req) : unmatched pattern %v", exchangetest.Pattern(req))
