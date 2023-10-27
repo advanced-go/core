@@ -1,4 +1,4 @@
-package host
+package startup
 
 import (
 	"github.com/go-ai-agent/core/runtime"
@@ -9,7 +9,7 @@ const (
 	ShutdownEvent = "event:shutdown"
 	PingEvent     = "event:ping"
 	StatusEvent   = "event:status"
-	HostName      = "host"
+	HostName      = "startup"
 )
 
 // MessageHandler - function type to process a Message

@@ -1,4 +1,4 @@
-package host
+package startup
 
 import (
 	"errors"
@@ -15,8 +15,8 @@ var credFn Credentials = func() (string, string, error) {
 var start time.Time
 
 func ExampleCreateToSend() {
-	none := "/host/none"
-	one := "/host/one"
+	none := "/startup/none"
+	one := "/startup/one"
 
 	registerUnchecked(none, nil)
 	registerUnchecked(one, nil)
@@ -31,8 +31,8 @@ func ExampleCreateToSend() {
 	fmt.Printf("test: createToSend(map,nil) -> [to:%v] [from:%v] [credentials:%v]\n", msg.To, msg.From, AccessCredentials(&msg) != nil)
 
 	//Output:
-	//test: createToSend(nil,nil) -> [to:/host/none] [from:host]
-	//test: createToSend(map,nil) -> [to:/host/one] [from:host] [credentials:true]
+	//test: createToSend(nil,nil) -> [to:/startup/none] [from:startup]
+	//test: createToSend(map,nil) -> [to:/startup/one] [from:startup] [credentials:true]
 
 }
 
@@ -56,7 +56,7 @@ func ExampleStartup_Success() {
 	Register(uri3, c)
 	go startupDepends(c, nil)
 
-	status := Startup[runtimetest.DebugError](time.Second*2, nil)
+	status := Run[runtimetest.DebugError](time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
@@ -85,12 +85,12 @@ func ExampleStartup_Failure() {
 	Register(uri3, c)
 	go startupDepends(c, errors.New("startup failure error message"))
 
-	status := Startup[runtimetest.DebugError](time.Second*2, nil)
+	status := Run[runtimetest.DebugError](time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//[[] github.com/go-ai-agent/core/host/Startup [startup failure error message]]
+	//[[] github.com/go-ai-agent/core/runtime/startup/Run [startup failure error message]]
 	//test: Startup() -> [Internal]
 
 }

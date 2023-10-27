@@ -1,4 +1,4 @@
-package host
+package startup
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-// MessageCache - message cache by host uri
+// MessageCache - message cache by startup uri
 type MessageCache struct {
 	m  map[string]Message
 	mu sync.RWMutex
