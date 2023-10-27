@@ -55,7 +55,7 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusOK).SetRequestId("123456-id")
-	status1 := WriteResponse[runtimetest.DebugError, string](w, str, status, runtime.ContentType)
+	status1 := WriteResponse[runtimetest.DebugError, string](w, str, status, ContentType)
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
 

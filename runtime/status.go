@@ -8,12 +8,6 @@ import (
 	"time"
 )
 
-const (
-	ContentTypeText = "text/plain" // charset=utf-8
-	ContentTypeJson = "application/json"
-	ContentType     = "Content-Type"
-)
-
 // https://grpc.github.io/grpc/core/md_doc_statuscodes.html
 
 const (

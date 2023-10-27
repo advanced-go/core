@@ -99,8 +99,8 @@ func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status *r
 	if status.Content() == nil {
 		return runtime.NewStatusOK()
 	}
-	if w.Header().Get(runtime.ContentType) == "" {
-		w.Header().Set(runtime.ContentType, http.DetectContentType(status.Content()))
+	if w.Header().Get(ContentType) == "" {
+		w.Header().Set(ContentType, http.DetectContentType(status.Content()))
 	}
 	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(status.Content())))
 	_, result := w.Write(status.Content())
