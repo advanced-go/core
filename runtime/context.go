@@ -105,14 +105,15 @@ func RequestId(t any) string {
 	if t == nil {
 		return ""
 	}
-	if ctx, ok := t.(context.Context); ok && ctx != nil {
-		return ContextRequestId(ctx)
-	}
-	if req, ok := t.(*http.Request); ok && req != nil {
-		return req.Header.Get(XRequestId)
-	}
-	if status, ok := t.(*Status); ok && status != nil {
-		return status.RequestId()
+	switch ptr := t.(type) {
+	case string:
+		return ptr
+	case context.Context:
+		return ContextRequestId(ptr)
+	case *http.Request:
+		return ptr.Header.Get(XRequestId)
+	case *Status:
+		return ptr.RequestId()
 	}
 	return ""
 }
