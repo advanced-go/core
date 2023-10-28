@@ -74,18 +74,18 @@ func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
 	w := httptest.NewRecorder()
-	status := runtime.NewStatus(runtime.StatusUnavailable).SetContent(str, "")
+	status := runtime.NewStatus(runtime.StatusUnavailable).SetContent(str, false)
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusNotFound).SetContent([]byte("not found"), "")
+	status = runtime.NewStatus(runtime.StatusNotFound).SetContent([]byte("not found"), false)
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), "")
+	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), false)
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
@@ -96,7 +96,7 @@ func ExampleWriteResponse_StatusNotOK() {
 		Insert:       true,
 		Update:       false,
 		Delete:       false,
-	}, "")
+	}, false)
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
@@ -105,7 +105,7 @@ func ExampleWriteResponse_StatusNotOK() {
 	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Length:[9] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Length:[19] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:400] [body:] [header:map[]]
-	
+
 }
 
 func Example_RequestBody() {
