@@ -189,19 +189,22 @@ func (s *Status) SetDuration(duration time.Duration) *Status {
 
 // RequestId  - request id
 func (s *Status) RequestId() string { return s.requestId }
-func (s *Status) SetRequestId(requestId string) *Status {
-	if len(s.requestId) == 0 {
-		s.requestId = requestId
+func (s *Status) SetRequestId(requestId any) *Status {
+	if len(s.requestId) != 0 {
+		return s
 	}
-
+	id := RequestId(requestId)
+	if len(id) > 0 {
+		s.requestId = id
+	}
 	/*
 		if str, ok := requestId.(string); ok {
-			s.requestId = str
-		} else {
-			if st, ok1 := requestId.(*Status); ok1 && st != nil {
-				s.requestId = st.RequestId()
+				s.requestId = str
+			} else {
+				if st, ok1 := requestId.(*Status); ok1 && st != nil {
+					s.requestId = st.RequestId()
+				}
 			}
-		}
 
 	*/
 	return s
