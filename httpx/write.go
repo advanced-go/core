@@ -24,7 +24,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		WriteMinResponse[E](w, status, headers)
 		return
 	}
-	buf, rc, status0 := WriteBytes(content, w.Header().Get(ContentType))
+	buf, rc, status0 := WriteBytes(content, GetContentType(headers))
 	if !status0.OK() {
 		e.HandleStatus(status0, status.RequestId(), writeLoc)
 		w.WriteHeader(http.StatusInternalServerError)

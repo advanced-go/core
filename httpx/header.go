@@ -21,6 +21,15 @@ func GetContentLocation(req *http.Request) string {
 	return ""
 }
 
+func GetContentType(attrs []Attr) string {
+	for _, attr := range attrs {
+		if attr.Key == ContentType {
+			return attr.Val
+		}
+	}
+	return ""
+}
+
 func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 	if resp == nil || len(keys) == 0 {
 		return
