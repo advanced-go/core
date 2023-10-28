@@ -23,15 +23,16 @@ func ExampleWriteResponse_NoStatus() {
 	str := "text response"
 
 	w := httptest.NewRecorder()
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, nil, nil)
+	WriteResponse[runtimetest.DebugError](w, nil, nil, nil)
 	fmt.Printf("test: WriteResponse(w,nil,nil) -> [status:%v] [body:%v]\n", w.Code, w.Body.String())
 
 	w = httptest.NewRecorder()
-	WriteResponse[runtimetest.DebugError, string](w, str, nil, nil)
+	WriteResponse[runtimetest.DebugError](w, str, nil, nil)
 	fmt.Printf("test: WriteResponse(w,%v,nil) -> [status:%v] [body:%v]\n", str, w.Code, w.Body.String())
 
 	//Output:
-	//test: WriteResponse(w,nil,nil) -> [status:200] [body:]
+	//{ "id":null, "l":"github.com/go-ai-agent/core/httpx/WriteBytes", "o":"github.com/go-ai-agent/core/httpx/WriteResponse" "err" : [ "error: content type is invalid: <nil>" ] }
+	//test: WriteResponse(w,nil,nil) -> [status:500] [body:]
 	//test: WriteResponse(w,text response,nil) -> [status:200] [body:text response]
 
 }
@@ -41,7 +42,7 @@ func ExampleWriteResponse_StatusOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusOK)
-	WriteResponse[runtimetest.DebugError, string](w, str, status, nil)
+	WriteResponse[runtimetest.DebugError](w, str, status, nil)
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [body:%v] [header:%v]\n", str, status, w.Body.String(), resp.Header)
 
@@ -73,19 +74,19 @@ func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
 	w := httptest.NewRecorder()
-	status := runtime.NewStatus(runtime.StatusUnavailable).SetContent(str)
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
+	status := runtime.NewStatus(runtime.StatusUnavailable).SetContent(str, "")
+	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusNotFound).SetContent([]byte("not found"))
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
+	status = runtime.NewStatus(runtime.StatusNotFound).SetContent([]byte("not found"), "")
+	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str))
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
+	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), "")
+	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
@@ -95,33 +96,33 @@ func ExampleWriteResponse_StatusNotOK() {
 		Insert:       true,
 		Update:       false,
 		Delete:       false,
-	})
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
+	}, "")
+	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
 	//test: WriteResponse(w,nil,status) -> [status:503] [body:server unavailable] [header:map[Content-Length:[18] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Length:[9] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Length:[19] Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,nil,status) -> [status:400] [body:{"Sql":"insert 1","RowsAffected":1,"Insert":true,"Update":false,"Delete":false}] [header:map[Content-Length:[79] Content-Type:[application/json]]]
-
+	//test: WriteResponse(w,nil,status) -> [status:400] [body:] [header:map[]]
+	
 }
 
 func Example_RequestBody() {
 	w := httptest.NewRecorder()
 
 	body := io.NopCloser(bytes.NewReader([]byte("error content")))
-	WriteResponse[runtimetest.DebugError, io.ReadCloser](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
+	WriteResponse[runtimetest.DebugError](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	body = io.NopCloser(bytes.NewReader([]byte("foo")))
 	w = httptest.NewRecorder()
-	WriteResponse[runtimetest.DebugError, io.ReadCloser](w, body, nil,
+	WriteResponse[runtimetest.DebugError](w, body, nil,
 		[]Attr{{"key", "value"}, {"key1", "value1"}, {"key2", "value2"}})
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
-	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Length:[13]]]
-	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Content-Length:[3] Key:[value] Key1:[value1] Key2:[value2]]]
+	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Length:[13] Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Content-Length:[3] Content-Type:[text/plain; charset=utf-8] Key:[value] Key1:[value1] Key2:[value2]]]
 
 }

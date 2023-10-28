@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"encoding/json"
 	"fmt"
 	"google.golang.org/grpc/codes"
 	"net/http"
@@ -55,8 +54,8 @@ type Status struct {
 	originUri   string
 	requestId   string
 	errs        []error
-	content     []byte
-	jsonContent bool
+	content     any
+	contentType string
 	//md        metadata.MD
 }
 
@@ -224,33 +223,37 @@ func (s *Status) SetOrigin(originUri string) *Status {
 }
 
 // IsContent - content
-func (s *Status) IsContent() bool   { return s.content != nil }
-func (s *Status) JsonContent() bool { return s.jsonContent }
-func (s *Status) Content() []byte   { return s.content }
+func (s *Status) IsContent() bool     { return s.content != nil }
+func (s *Status) ContentType() string { return s.contentType }
+func (s *Status) Content() any        { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
-func (s *Status) SetContent(content any) *Status {
+func (s *Status) SetContent(content any, contentType string) *Status {
 	if content == nil {
 		return s
 	}
-
-	switch data := content.(type) {
-	case string:
-		s.content = []byte(data)
-	case []byte:
-		s.content = data
-	case error:
-		s.content = []byte(data.Error())
-	default:
-		s.jsonContent = true
-		buf, err := json.Marshal(data)
-		if err != nil {
-			s.content = []byte("invalid non Json serializable type")
-		} else {
-			s.content = buf
+	s.content = content
+	s.contentType = contentType
+	/*
+		switch data := content.(type) {
+		case string:
+			s.content = []byte(data)
+		case []byte:
+			s.content = data
+		case error:
+			s.content = []byte(data.Error())
+		default:
+			s.jsonContent = true
+			buf, err := json.Marshal(data)
+			if err != nil {
+				s.content = []byte("invalid non Json serializable type")
+			} else {
+				s.content = buf
+			}
 		}
-	}
+
+	*/
 	return s
 }
 
