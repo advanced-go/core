@@ -39,13 +39,22 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	}
 	var err error
 
-	if req.URL.Scheme == "file" {
-		resp, err = httpx.ReadResponse(req.URL)
-	} else {
+	if runtime.IsDebugEnvironment() {
+		if req.URL.Scheme == "file" {
+			resp, err = httpx.ReadResponse(req.URL)
+			if err != nil {
+				return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
+			}
+			return resp, runtime.NewStatusOK()
+		}
 		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
 			do := findProxy(proxies)
 			if do != nil {
 				resp, err = do(req)
+				if err != nil {
+					return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
+				}
+				return resp, runtime.NewStatusOK()
 			}
 		}
 	}

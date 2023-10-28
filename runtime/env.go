@@ -20,7 +20,9 @@ const (
 	production
 )
 
-var rte runtimeEnv = debug
+var (
+	rte = debug
+)
 
 func IsProdEnvironment() bool {
 	return rte == production
