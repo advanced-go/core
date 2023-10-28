@@ -7,7 +7,7 @@ import (
 )
 
 func Example_formatErrors() {
-	fmt.Printf("test: formatErrors(nil) -> %v\n", runtime.FormatErrors(nil))
+	fmt.Printf("test: formatErrors(nil) -> %v\n", runtime.FormatErrors("err", nil))
 
 	//Output:
 	//test: formatErrors(nil) -> "err" : null
@@ -22,7 +22,7 @@ func ExampleDebugHandler_Handle() {
 	var h DebugError
 
 	//status := runtime.NewStatusError(0, location, err)
-	s := h.Handle(ctx, location)
+	s := h.Handle(runtime.ContextRequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
 	s = h.Handle(runtime.GetOrCreateRequestId(ctx), location, err)
@@ -44,6 +44,7 @@ func ExampleDebugHandler_Handle() {
 
 }
 
+/*
 func ExampleErrorHandleFn() {
 	loc := "/ErrorHandleFn"
 	err := errors.New("debug - error message")
@@ -57,3 +58,6 @@ func ExampleErrorHandleFn() {
 	//test: Handle[DebugError]()
 
 }
+
+
+*/

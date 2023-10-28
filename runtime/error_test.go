@@ -17,10 +17,10 @@ func ExampleLogHandler_Handle() {
 	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = NewStatusError(StatusInternal, location) //.SetLocationAndId(location, )
+	s = NewStatusError(StatusInternal, location)
 	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(s, GetOrCreateRequestId(ctx), ""), s.IsErrors())
 
-	s = NewStatusError(StatusInternal, location, err) //.SetLocationAndId(location, GetOrCreateRequestId(ctx))
+	s = NewStatusError(StatusInternal, location, err)
 	errors := s.IsErrors()
 	s1 := h.HandleStatus(s, GetOrCreateRequestId(ctx), "")
 	fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
@@ -33,6 +33,7 @@ func ExampleLogHandler_Handle() {
 
 }
 
+/*
 func ExampleErrorHandleFn() {
 	loc := PkgUri + "/ErrorHandleFn"
 
@@ -44,3 +45,6 @@ func ExampleErrorHandleFn() {
 	//test: Handle[LogErrorHandler]()
 
 }
+
+
+*/

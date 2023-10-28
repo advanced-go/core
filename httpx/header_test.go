@@ -29,12 +29,12 @@ func ExampleSelect() {
 func Example_SetHeaders() {
 	r := NewRecorder()
 
-	err := SetHeaders(r, "key-only")
-	fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
+	//SetHeaders(r, "key-only")
+	//fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
 
 	r = NewRecorder()
-	err = SetHeaders(r, "key1", "val-1", "key-2", "val-2")
-	fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
+	SetHeaders(r, []Attr{{"key1", "val-1"}, {"key-2", "val-2"}})
+	fmt.Printf("test: SetHeaders() [cnt:%v]\n", len(r.Result().Header))
 
 	//Output:
 	//test: SetHeaders() [err:invalid number of kv items: number is odd, missing a value] [cnt:0]

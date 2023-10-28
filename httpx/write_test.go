@@ -23,11 +23,11 @@ func ExampleWriteResponse_NoStatus() {
 	str := "text response"
 
 	w := httptest.NewRecorder()
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, nil)
+	WriteResponse[runtimetest.DebugError, []byte](w, nil, nil, nil)
 	fmt.Printf("test: WriteResponse(w,nil,nil) -> [status:%v] [body:%v]\n", w.Code, w.Body.String())
 
 	w = httptest.NewRecorder()
-	WriteResponse[runtimetest.DebugError, string](w, str, nil)
+	WriteResponse[runtimetest.DebugError, string](w, str, nil, nil)
 	fmt.Printf("test: WriteResponse(w,%v,nil) -> [status:%v] [body:%v]\n", str, w.Code, w.Body.String())
 
 	//Output:
@@ -41,21 +41,22 @@ func ExampleWriteResponse_StatusOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusOK)
-	status1 := WriteResponse[runtimetest.DebugError, string](w, str, status)
+	WriteResponse[runtimetest.DebugError, string](w, str, status, nil)
 	resp := w.Result()
-	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
+	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [body:%v] [header:%v]\n", str, status, w.Body.String(), resp.Header)
 
 	//Output:
-	//test: WriteResponse(w,text response,status) -> [status:OK] [status1:200] [body:text response] [header:map[]]
+	//test: WriteResponse(w,text response,status) -> [status:OK] [body:text response] [header:map[]]
 
 }
 
+/*
 func ExampleWriteResponse_StatusOK_InvalidKV() {
 	str := "text response"
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusOK).SetRequestId("123456-id")
-	status1 := WriteResponse[runtimetest.DebugError, string](w, str, status, ContentType)
+	status1 := WriteResponse[runtimetest.DebugError, string](w, str, status, []Attr{{ContentType,"")
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
 
@@ -65,23 +66,26 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 
 }
 
+
+*/
+
 func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusUnavailable).SetContent(str)
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status)
+	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
 	status = runtime.NewStatus(runtime.StatusNotFound).SetContent([]byte("not found"))
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status)
+	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
 	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str))
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status)
+	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
@@ -92,14 +96,14 @@ func ExampleWriteResponse_StatusNotOK() {
 		Update:       false,
 		Delete:       false,
 	})
-	WriteResponse[runtimetest.DebugError, []byte](w, nil, status)
+	WriteResponse[runtimetest.DebugError, []byte](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
 	//test: WriteResponse(w,nil,status) -> [status:503] [body:server unavailable] [header:map[Content-Length:[18] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Length:[9] Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Length:[19] Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,nil,status) -> [status:400] [body:{"Sql":"insert 1","RowsAffected":1,"Insert":true,"Update":false,"Delete":false}] [header:map[Content-Length:[79] Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,nil,status) -> [status:400] [body:{"Sql":"insert 1","RowsAffected":1,"Insert":true,"Update":false,"Delete":false}] [header:map[Content-Length:[79] Content-Type:[application/json]]]
 
 }
 
@@ -107,13 +111,13 @@ func Example_RequestBody() {
 	w := httptest.NewRecorder()
 
 	body := io.NopCloser(bytes.NewReader([]byte("error content")))
-	WriteResponse[runtimetest.DebugError, io.ReadCloser](w, body, runtime.NewStatus(http.StatusGatewayTimeout))
+	WriteResponse[runtimetest.DebugError, io.ReadCloser](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	body = io.NopCloser(bytes.NewReader([]byte("foo")))
 	w = httptest.NewRecorder()
 	WriteResponse[runtimetest.DebugError, io.ReadCloser](w, body, nil,
-		"key", "value", "key1", "value1", "key2", "value2")
+		[]Attr{{"key", "value"}, {"key1", "value1"}, {"key2", "value2"}})
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:

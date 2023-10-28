@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-ai-agent/core/httpx"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -38,11 +38,11 @@ func ExampleDeserialize() {
 	result, status = Deserialize[[]byte](resp.Body)
 	fmt.Printf("test: Deserialize[[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
-	resp.Body = httpx.NewReaderCloser(strings.NewReader("Hello World String"), nil)
+	resp.Body = io.NopCloser(strings.NewReader("Hello World String"))
 	result, status = Deserialize[[]byte](resp.Body)
 	fmt.Printf("test: Deserialize[[]byte](resp) -> [%v] [status:%v]\n", string(result), status)
 
-	resp.Body = httpx.NewReaderCloser(bytes.NewReader([]byte("Hello World []byte")), nil)
+	resp.Body = io.NopCloser(bytes.NewReader([]byte("Hello World []byte")))
 	result2, status2 := Deserialize[[]byte](resp.Body)
 	fmt.Printf("test: Deserialize[[]byte](resp) -> [%v] [status:%v]\n", string(result2), status2)
 
@@ -65,7 +65,7 @@ func ExampleDeserialize_Decode() {
 	bufV1, _ := json.Marshal(&addrV1)
 
 	resp := new(http.Response)
-	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV1), nil)
+	resp.Body = io.NopCloser(bytes.NewReader(bufV1))
 
 	result, status := Deserialize[addressV1](resp.Body)
 	fmt.Printf("test: Deserialize[addressV1](resp) -> [%v] [status:%v]\n", result, status)
@@ -79,13 +79,13 @@ func ExampleDeserialize_Decode() {
 	}
 	bufV2, _ := json.Marshal(&addrV2)
 	resp = new(http.Response)
-	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV2), nil)
+	resp.Body = io.NopCloser(bytes.NewReader(bufV2))
 
 	result2, status2 := Deserialize[addressV2](resp.Body)
 	fmt.Printf("test: Deserialize[addressV2](resp) -> [%v] [status:%v]\n", result2, status2)
 
 	resp = new(http.Response)
-	resp.Body = httpx.NewReaderCloser(bytes.NewReader(bufV2), nil)
+	resp.Body = io.NopCloser(bytes.NewReader(bufV2))
 
 	result3, status3 := Deserialize[addressV1](resp.Body)
 	fmt.Printf("test: Deserialize[addressV1](resp) -> [%v] [status:%v]\n", result3, status3)

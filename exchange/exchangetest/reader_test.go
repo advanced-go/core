@@ -1,6 +1,11 @@
-package httpx
+package exchangetest
 
-/*
+import (
+	"fmt"
+	"io"
+	"strings"
+)
+
 func ExampleStringReader() {
 	s := "This is an example of content"
 	r := NewReaderCloser(strings.NewReader(s), nil)
@@ -26,6 +31,3 @@ func ExampleIOError() {
 	//test: NewReaderCloser(s,err) -> [error:unexpected EOF] [cnt:0] [content:false]
 
 }
-
-
-*/

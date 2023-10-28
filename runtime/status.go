@@ -56,6 +56,7 @@ type Status struct {
 	requestId   string
 	errs        []error
 	content     []byte
+	jsonContent bool
 	//md        metadata.MD
 }
 
@@ -188,14 +189,21 @@ func (s *Status) SetDuration(duration time.Duration) *Status {
 
 // RequestId  - request id
 func (s *Status) RequestId() string { return s.requestId }
-func (s *Status) SetRequestId(requestId any) *Status {
-	if str, ok := requestId.(string); ok {
-		s.requestId = str
-	} else {
-		if st, ok1 := requestId.(*Status); ok1 && st != nil {
-			s.requestId = st.RequestId()
-		}
+func (s *Status) SetRequestId(requestId string) *Status {
+	if len(s.requestId) == 0 {
+		s.requestId = requestId
 	}
+
+	/*
+		if str, ok := requestId.(string); ok {
+			s.requestId = str
+		} else {
+			if st, ok1 := requestId.(*Status); ok1 && st != nil {
+				s.requestId = st.RequestId()
+			}
+		}
+
+	*/
 	return s
 }
 
@@ -209,13 +217,16 @@ func (s *Status) SetLocation(locationUri string) *Status {
 // Origin - caller
 func (s *Status) Origin() string { return s.originUri }
 func (s *Status) SetOrigin(originUri string) *Status {
-	s.originUri = originUri
+	if len(s.originUri) == 0 {
+		s.originUri = originUri
+	}
 	return s
 }
 
 // IsContent - content
-func (s *Status) IsContent() bool { return s.content != nil }
-func (s *Status) Content() []byte { return s.content }
+func (s *Status) IsContent() bool   { return s.content != nil }
+func (s *Status) JsonContent() bool { return s.jsonContent }
+func (s *Status) Content() []byte   { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
@@ -226,13 +237,13 @@ func (s *Status) SetContent(content any) *Status {
 
 	switch data := content.(type) {
 	case string:
-		buf := []byte(data)
-		s.content = buf
+		s.content = []byte(data)
 	case []byte:
 		s.content = data
 	case error:
 		s.content = []byte(data.Error())
 	default:
+		s.jsonContent = true
 		buf, err := json.Marshal(data)
 		if err != nil {
 			s.content = []byte("invalid non Json serializable type")

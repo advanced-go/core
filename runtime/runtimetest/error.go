@@ -17,23 +17,19 @@ var formatter runtime.FormatOutput = defaultFormatter
 // DebugError - debug error handler
 type DebugError struct{}
 
-func (h DebugError) Handle(requestId any, location string, errs ...error) *runtime.Status {
+func (h DebugError) Handle(requestId string, location string, errs ...error) *runtime.Status {
 	if !runtime.IsErrors(errs) {
 		return runtime.NewStatusOK()
 	}
 	return h.HandleStatus(runtime.NewStatusError(runtime.StatusInternal, location, errs...), requestId, "")
 }
 
-func (h DebugError) HandleStatus(s *runtime.Status, requestId any, originUri string) *runtime.Status {
+func (h DebugError) HandleStatus(s *runtime.Status, requestId string, originUri string) *runtime.Status {
 	if s == nil {
 		return s
 	}
-	if len(s.RequestId()) == 0 {
-		s.SetRequestId(requestId)
-	}
-	if len(s.Origin()) == 0 && len(originUri) != 0 {
-		s.SetOrigin(originUri)
-	}
+	s.SetRequestId(requestId)
+	s.SetOrigin(originUri)
 	if s.IsErrors() && !s.ErrorsHandled() {
 		fmt.Printf(defaultFormatter(s))
 		s.SetErrorsHandled()
@@ -46,7 +42,7 @@ func defaultFormatter(s *runtime.Status) string {
 		strings.JsonMarkup("id", s.RequestId(), true),
 		strings.JsonMarkup("l", s.Location(), true),
 		strings.JsonMarkup("o", s.Origin(), true),
-		runtime.FormatErrors(s.Errors()))
+		runtime.FormatErrors("err", s.Errors()))
 }
 
 /*

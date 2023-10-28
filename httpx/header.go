@@ -40,20 +40,20 @@ func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 	}
 }
 
-func SetHeaders(w http.ResponseWriter, kv ...string) error {
-	err := ValidateKVHeaders(kv...)
-	if err != nil {
-		return err
+func SetHeaders(w http.ResponseWriter, kv []Attr) {
+	//err := ValidateKVHeaders(kv...)
+	//if err != nil {
+	//	return err
+	//}
+	for _, pair := range kv {
+		//key :=
+		w.Header().Set(strings.ToLower(pair.Key), pair.Val)
+		//if i+1 >= len(kv) {
+		//	w.Header().Set(key, "")
+		//} else {
+		//	w.Header().Set(key, kv[i+1])
+		//}
 	}
-	for i := 0; i < len(kv); i += 2 {
-		key := strings.ToLower(kv[i])
-		if i+1 >= len(kv) {
-			w.Header().Set(key, "")
-		} else {
-			w.Header().Set(key, kv[i+1])
-		}
-	}
-	return nil
 }
 
 func ValidateKVHeaders(kv ...string) error {

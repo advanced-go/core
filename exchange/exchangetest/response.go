@@ -2,7 +2,6 @@ package exchangetest
 
 import (
 	"bytes"
-	"github.com/go-ai-agent/core/httpx"
 	"io"
 	"net/http"
 	"strings"
@@ -14,7 +13,7 @@ func NewResponse(httpStatus int, content []byte, kv ...string) *http.Response {
 		kv = append(kv, "dummy header value")
 	}
 	resp := &http.Response{StatusCode: httpStatus, Header: make(http.Header), Request: nil}
-	resp.Body = httpx.NewReaderCloser(bytes.NewReader(content), nil)
+	resp.Body = io.NopCloser(bytes.NewReader(content))
 	for i := 0; i < len(kv); i += 2 {
 		key := strings.ToLower(kv[i])
 		resp.Header.Add(key, kv[i+1])
@@ -25,6 +24,6 @@ func NewResponse(httpStatus int, content []byte, kv ...string) *http.Response {
 // NewIOErrorResponse - create a response that contains a body that will generate an I/O error when read
 func NewIOErrorResponse() *http.Response {
 	resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Request: nil}
-	resp.Body = httpx.NewReaderCloser(nil, io.ErrUnexpectedEOF)
+	resp.Body = NewReaderCloser(nil, io.ErrUnexpectedEOF)
 	return resp
 }
