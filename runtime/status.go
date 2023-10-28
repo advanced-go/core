@@ -10,7 +10,8 @@ import (
 // https://grpc.github.io/grpc/core/md_doc_statuscodes.html
 
 const (
-	NilDuration = time.Duration(-1)
+	NilDuration     = time.Duration(-1)
+	ContentTypeJson = "application/json"
 )
 
 const (
@@ -229,31 +230,14 @@ func (s *Status) Content() any        { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
-func (s *Status) SetContent(content any, contentType string) *Status {
+func (s *Status) SetContent(content any, jsonEncode bool) *Status {
 	if content == nil {
 		return s
 	}
 	s.content = content
-	s.contentType = contentType
-	/*
-		switch data := content.(type) {
-		case string:
-			s.content = []byte(data)
-		case []byte:
-			s.content = data
-		case error:
-			s.content = []byte(data.Error())
-		default:
-			s.jsonContent = true
-			buf, err := json.Marshal(data)
-			if err != nil {
-				s.content = []byte("invalid non Json serializable type")
-			} else {
-				s.content = buf
-			}
-		}
-
-	*/
+	if jsonEncode {
+		s.contentType = ContentTypeJson
+	}
 	return s
 }
 
