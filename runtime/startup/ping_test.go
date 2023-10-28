@@ -44,9 +44,9 @@ func ExamplePing() {
 
 	//Output:
 	//test: Ping(good) -> [OK] [duration:0s]
-	//[[] github.com/go-ai-agent/core/startup/Ping [ping response time out: [urn:ping:bad]]]
-	//test: Ping(bad) -> [DeadlineExceeded github.com/go-ai-agent/core/startup/Ping [ping response time out: [urn:ping:bad]]] [duration:0s]
-	//test: Ping(error) -> [Internal github.com/go-ai-agent/core/startup/Ping [ping depends error message]] [duration:0s]
+	//{ "id":null, "l":"github.com/go-ai-agent/core/runtime/startup/Ping", "o":null "err" : [ "ping response time out: [urn:ping:bad]" ] }
+	//test: Ping(bad) -> [DeadlineExceeded [ping response time out: [urn:ping:bad]]] [duration:0s]
+	//test: Ping(error) -> [Internal [ping depends error message]] [duration:0s]
 	//test: Ping(delay) -> [OK] [duration:0s]
 
 }

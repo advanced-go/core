@@ -90,9 +90,9 @@ func ExampleStartup_Failure() {
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//[[] github.com/go-ai-agent/core/runtime/startup/Run [startup failure error message]]
+	//{ "id":null, "l":"github.com/go-ai-agent/core/runtime/startup/Run", "o":null "err" : [ "startup failure error message" ] }
 	//test: Startup() -> [Internal]
-
+	
 }
 
 func startupGood(c chan Message) {
@@ -131,7 +131,7 @@ func startupDepends(c chan Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				ReplyTo(msg, runtime.NewStatusError(0, startupLocation, err).SetDuration(time.Since(start)))
+				ReplyTo(msg, runtime.NewStatusError(0, runLocation, err).SetDuration(time.Since(start)))
 			} else {
 				time.Sleep(time.Second + (time.Millisecond * 900))
 				ReplyTo(msg, runtime.NewStatusOK().SetDuration(time.Since(start)))
