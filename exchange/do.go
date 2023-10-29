@@ -64,7 +64,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
-		return nil, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
+		return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
 	}
 	if resp == nil {
 		return nil, runtime.NewStatusError(http.StatusInternalServerError, doLocation, errors.New("invalid argument : response is nil"))
