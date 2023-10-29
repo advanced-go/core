@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
+	"google.golang.org/grpc/codes"
 	"net/http"
 	"time"
 )
@@ -64,11 +65,12 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
-		return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
+		code := http.StatusInternalServerError
+		if resp != nil {
+			code = resp.StatusCode
+		}
+		return resp, runtime.NewStatusError(codes.Code(code), doLocation, err)
 	}
-	//if resp == nil {
-	//	return nil, runtime.NewStatusError(http.StatusInternalServerError, doLocation, errors.New("invalid argument : response is nil"))
-	//}
 	return resp, runtime.NewHttpStatus(resp.StatusCode)
 }
 
