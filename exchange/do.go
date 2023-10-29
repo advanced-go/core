@@ -56,7 +56,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		}
 	}
 	if doProxy == nil {
-		doProxy = Resolve(req)
+		doProxy = ProxyLookup(req)
 	}
 	if doProxy != nil {
 		resp, err = doProxy(req)
