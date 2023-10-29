@@ -26,7 +26,7 @@ func AddResolver(fn Resolver) {
 	if !runtime.IsDebugEnvironment() || fn == nil {
 		return
 	}
-	// TODO : need to ensure mutex
+	// do not need mutex, as this is only called from test
 	list = append(list, fn)
 }
 
