@@ -73,16 +73,16 @@ func Example_AddResolver_Fail() {
 	runtime.SetProdEnvironment()
 	pattern := "/endpoint/resource"
 
-	err := AddResolver(func(s string) string {
+	AddResolver(func(s string) string {
 		if s == pattern {
 			return "https://github.com/acccount/go-ai-agent/core"
 		}
 		return ""
 	})
 
-	fmt.Printf("test: AddResolver(%v) -> [err:%v]\n", pattern, err)
+	fmt.Printf("test: AddResolver(%v) -> [err:%v]\n", pattern, nil)
 
 	//Output:
-	//test: AddResolver(/endpoint/resource) -> [err:error: adding a resolver is only available in DEBUG environment]
+	//test: AddResolver(/endpoint/resource) -> [err:<nil>]
 
 }

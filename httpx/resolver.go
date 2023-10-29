@@ -1,7 +1,6 @@
 package httpx
 
 import (
-	"errors"
 	"github.com/go-ai-agent/core/runtime"
 	"strings"
 )
@@ -15,25 +14,27 @@ var (
 )
 
 func SetDefaultOrigin(s string) {
+	if !runtime.IsDebugEnvironment() {
+		return
+	}
 	if len(s) != 0 {
 		defaultOrigin = s
 	}
 }
 
-func AddResolver(fn Resolver) error {
-	if !runtime.IsDebugEnvironment() {
-		return errors.New("error: adding a resolver is only available in DEBUG environment")
-	}
-	if fn == nil {
-		return errors.New("error: resolver fn is nil")
+func AddResolver(fn Resolver) {
+	if !runtime.IsDebugEnvironment() || fn == nil {
+		return
 	}
 	// TODO : need to ensure mutex
 	list = append(list, fn)
-	return nil
 }
 
 // Resolve - resolve a string to an url.
 func Resolve(s string) string {
+	if !runtime.IsDebugEnvironment() {
+		return ""
+	}
 	if list != nil {
 		for _, r := range list {
 			url := r(s)
