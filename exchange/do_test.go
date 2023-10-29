@@ -60,7 +60,7 @@ func ExampleDo_Proxy_HttpError() {
 	fmt.Printf("test: Do(req) -> [%v] [response:%v]\n", err, resp)
 
 	//Output:
-	//test: Do(req) -> [Internal Error [http: connection has been hijacked]] [response:<nil>]
+	//test: Do(req) -> [Internal Error [http: connection has been hijacked]] [response:&{internal server error 500  0 0 map[] <nil> 0 [] false false map[] <nil> <nil>}]
 
 }
 

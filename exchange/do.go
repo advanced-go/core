@@ -65,11 +65,10 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
-		code := http.StatusInternalServerError
-		if resp != nil {
-			code = resp.StatusCode
+		if resp == nil {
+			resp = &http.Response{StatusCode: http.StatusInternalServerError, Status: "internal server error"}
 		}
-		return resp, runtime.NewStatusError(codes.Code(code), doLocation, err)
+		return resp, runtime.NewStatusError(codes.Code(resp.StatusCode), doLocation, err)
 	}
 	return resp, runtime.NewHttpStatus(resp.StatusCode)
 }
