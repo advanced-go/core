@@ -10,9 +10,9 @@ import (
 )
 
 // HttpExchange - interface for Http request/response interaction
-type HttpExchange interface {
-	Do(req *http.Request) (*http.Response, error)
-}
+//type HttpExchange interface {
+//	Do(req *http.Request) (*http.Response, error)
+//}
 
 var (
 	doLocation = PkgUri + "/Do"
@@ -38,6 +38,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
+	var doProxy Exchange
 
 	if runtime.IsDebugEnvironment() {
 		if req.URL.Scheme == "file" {
@@ -50,16 +51,16 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
 			do := findProxy(proxies)
 			if do != nil {
-				resp, err = do(req)
-				if err != nil {
-					return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
-				}
-				return resp, runtime.NewStatusOK()
+				doProxy = do
 			}
 		}
 	}
-	// If an exchange has not already happened, then call the client.Do
-	if resp == nil && err == nil {
+	if doProxy == nil {
+		doProxy = Resolve(req)
+	}
+	if doProxy != nil {
+		resp, err = doProxy(req)
+	} else {
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
