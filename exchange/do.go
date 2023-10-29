@@ -65,6 +65,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		resp, err = Client.Do(req)
 	}
 	if err != nil {
+		// can happen because of an errant proxy, or when there is a connectivity error, even with a valid URL
 		if resp == nil {
 			resp = &http.Response{StatusCode: http.StatusInternalServerError, Status: "internal server error"}
 		}
