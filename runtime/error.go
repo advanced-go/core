@@ -23,6 +23,9 @@ func SetFormatOutput(fn FormatOutput) {
 
 var formatter FormatOutput = DefaultErrorFormatter
 
+// ErrorHandleFn - function type for error handling
+type ErrorHandleFn func(requestId, location string, errs ...error) *Status
+
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
 	Handle(requestId string, location string, errs ...error) *Status
@@ -66,19 +69,13 @@ func (h LogError) HandleStatus(s *Status, requestId string, originUri string) *S
 	return s
 }
 
-// ErrorHandleFn - function type for error handling
-//type ErrorHandleFn func(requestId string, location string, errs ...error) *Status
 // NewErrorHandler - templated function providing an error handle function via a closure
-/*
 func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	var e E
 	return func(requestId string, location string, errs ...error) *Status {
 		return e.Handle(requestId, location, errs...)
 	}
 }
-
-
-*/
 
 func DefaultErrorFormatter(s *Status) string {
 	return fmt.Sprintf("{ %v, %v, %v %v }\n",

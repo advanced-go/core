@@ -33,7 +33,6 @@ func ExampleLogHandler_Handle() {
 
 }
 
-/*
 func ExampleErrorHandleFn() {
 	loc := PkgUri + "/ErrorHandleFn"
 
@@ -45,6 +44,3 @@ func ExampleErrorHandleFn() {
 	//test: Handle[LogErrorHandler]()
 
 }
-
-
-*/
