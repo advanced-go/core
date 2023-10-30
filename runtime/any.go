@@ -2,7 +2,7 @@ package runtime
 
 import "reflect"
 
-type NilType *struct{}
+type Nil *struct{}
 
 // IsNil - determine if the interface{} is nil, or if it holds a nil pointer
 func IsNil(a any) bool {
