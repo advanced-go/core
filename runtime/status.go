@@ -231,9 +231,7 @@ func (s *Status) SetOrigin(originUri string) *Status {
 
 // IsContent - content
 func (s *Status) IsContent() bool { return s.content != nil }
-
-// func (s *Status) ContentType() string { return s.contentType }
-func (s *Status) Content() any { return s.content }
+func (s *Status) Content() any    { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }

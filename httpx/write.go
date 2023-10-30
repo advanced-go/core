@@ -21,7 +21,14 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	// if status.Content is available, then that takes precedence
 	if status.Content() != nil {
-		WriteMinResponse[E](w, status, headers)
+		w.WriteHeader(status.Http())
+		SetHeaders(w, headers)
+		writeStatusContent[E](w, status, writeLoc)
+		return
+	}
+	if content == nil {
+		w.WriteHeader(status.Http())
+		SetHeaders(w, headers)
 		return
 	}
 	buf, rc, status0 := WriteBytes(content, GetContentType(headers))
@@ -41,8 +48,8 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	return
 }
 
-// WriteMinResponse - write a http.Response, with status, optional headers and optional status content
-func WriteMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headers any) {
+// writeMinResponse - write a http.Response, with status, optional headers and optional status content
+func writeMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headers any) {
 	if status == nil {
 		status = runtime.NewStatusOK()
 	}

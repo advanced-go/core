@@ -31,8 +31,7 @@ func ExampleWriteResponse_NoStatus() {
 	fmt.Printf("test: WriteResponse(w,%v,nil) -> [status:%v] [body:%v]\n", str, w.Code, w.Body.String())
 
 	//Output:
-	//{ "id":null, "l":"github.com/go-ai-agent/core/httpx/WriteBytes", "o":"github.com/go-ai-agent/core/httpx/WriteResponse" "err" : [ "error: content type is invalid: <nil>" ] }
-	//test: WriteResponse(w,nil,nil) -> [status:500] [body:]
+	//test: WriteResponse(w,nil,nil) -> [status:200] [body:]
 	//test: WriteResponse(w,text response,nil) -> [status:200] [body:text response]
 
 }
