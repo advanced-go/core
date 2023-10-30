@@ -325,18 +325,19 @@ func (s *Status) NotFound() bool { return s.code == StatusNotFound || s.code == 
 */
 
 func (s *Status) Http() int {
+	// Catch all valid http status codes
 	if s.code >= http.StatusContinue {
 		return s.code
 	}
+	// map known
 	switch s.code {
 	case StatusInvalidArgument:
 		return http.StatusInternalServerError
 	case StatusDeadlineExceeded:
 		return http.StatusGatewayTimeout
-		//case StatusUnavailable:
-		//	return http.StatusServiceUnavailable
 	}
-	return s.code
+	// all others
+	return http.StatusInternalServerError //s.code
 }
 
 func (s *Status) Description() string {
