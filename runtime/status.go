@@ -235,14 +235,19 @@ func (s *Status) Content() any    { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
-func (s *Status) SetContent(content any, jsonEncode bool) *Status {
+func (s *Status) SetContent(content any) *Status {
 	if content == nil {
 		return s
 	}
 	s.content = content
-	if jsonEncode {
-		s.Header().Set(ContentType, ContentTypeJson)
+	return s
+}
+func (s *Status) SetJsonContent(content any) *Status {
+	if content == nil {
+		return s
 	}
+	s.content = content
+	s.Header().Set(ContentType, ContentTypeJson)
 	return s
 }
 
