@@ -1,7 +1,6 @@
 package httpx
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 )
@@ -21,10 +20,24 @@ func GetContentLocation(req *http.Request) string {
 	return ""
 }
 
-func GetContentType(attrs []Attr) string {
-	for _, attr := range attrs {
-		if attr.Key == ContentType {
-			return attr.Val
+func GetContentType(headers any) string {
+	if pairs, ok := headers.([]Attr); ok {
+		for _, pair := range pairs {
+			if pair.Key == ContentType {
+				return pair.Val
+			}
+		}
+		return ""
+	}
+	if h, ok := headers.(http.Header); ok {
+		for k, v := range h {
+			if k == ContentType {
+				if len(v) > 0 {
+					return v[0]
+				} else {
+					return ""
+				}
+			}
 		}
 	}
 	return ""
@@ -49,25 +62,28 @@ func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 	}
 }
 
-func SetHeaders(w http.ResponseWriter, kv []Attr) {
-	//err := ValidateKVHeaders(kv...)
-	//if err != nil {
-	//	return err
-	//}
-	for _, pair := range kv {
-		//key :=
-		w.Header().Set(strings.ToLower(pair.Key), pair.Val)
-		//if i+1 >= len(kv) {
-		//	w.Header().Set(key, "")
-		//} else {
-		//	w.Header().Set(key, kv[i+1])
-		//}
+func SetHeaders(w http.ResponseWriter, headers any) {
+	if pairs, ok := headers.([]Attr); ok {
+		for _, pair := range pairs {
+			w.Header().Set(strings.ToLower(pair.Key), pair.Val)
+		}
+		return
+	}
+	if h, ok := headers.(http.Header); ok {
+		for k, v := range h {
+			if len(v) > 0 {
+				w.Header().Set(strings.ToLower(k), v[0])
+			}
+		}
 	}
 }
 
+/*
 func ValidateKVHeaders(kv ...string) error {
 	if (len(kv) & 1) == 1 {
 		return errors.New("invalid number of kv items: number is odd, missing a value")
 	}
 	return nil
 }
+
+*/

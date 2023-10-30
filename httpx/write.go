@@ -13,7 +13,7 @@ var (
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
 // Only supports []byte, string, io.Reader, and io.ReaderCloser for T
-func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status *runtime.Status, headers []Attr) {
+func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status *runtime.Status, headers any) {
 	var e E
 
 	if status == nil {
@@ -42,7 +42,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 }
 
 // WriteMinResponse - write a http.Response, with status, optional headers and optional status content
-func WriteMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headers []Attr) {
+func WriteMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, headers any) {
 	if status == nil {
 		status = runtime.NewStatusOK()
 	}
