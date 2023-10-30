@@ -248,11 +248,22 @@ func (s *Status) SetContent(content any, jsonEncode bool) *Status {
 	return s
 }
 
+// Header - header map
 func (s *Status) Header() http.Header {
 	if s.header == nil {
 		s.header = make(http.Header)
 	}
 	return s.header
+}
+
+func (s *Status) SetHeader(header http.Header, keys ...string) *Status {
+	if header == nil {
+		return s
+	}
+	for _, key := range keys {
+		s.header.Set(key, header.Get(key))
+	}
+	return s
 }
 
 func (s *Status) OK() bool { return s.code == http.StatusOK }
