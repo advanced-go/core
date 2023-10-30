@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"net/http"
 	"time"
 )
 
@@ -54,7 +55,7 @@ func Run[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (st
 			continue
 		}
 		// Check for failed resources
-		failures = cache.Exclude(StartupEvent, runtime.StatusOK)
+		failures = cache.Exclude(StartupEvent, http.StatusOK)
 		if len(failures) == 0 {
 			handleStatus(cache)
 			return runtime.NewStatusOK()
@@ -64,7 +65,7 @@ func Run[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (st
 	Shutdown()
 	if len(failures) > 0 {
 		handleErrors[E](failures, cache)
-		return runtime.NewStatus(runtime.StatusInternal)
+		return runtime.NewStatus(http.StatusInternalServerError)
 	}
 	return e.Handle("", runLocation, errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), directory.Count()))).SetCode(runtime.StatusDeadlineExceeded)
 }
@@ -109,7 +110,7 @@ func handleStatus(cache *MessageCache) {
 			continue
 		}
 		if msg.Status != nil {
-			fmt.Printf("startup successful for startup [%v] : %s", uri, msg.Status.Duration())
+			fmt.Printf("startup successful for startup [%v] : %s\n", uri, msg.Status.Duration())
 		}
 	}
 }

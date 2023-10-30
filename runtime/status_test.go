@@ -17,19 +17,20 @@ func (a address) GetZip() string {
 	return a.Zip
 }
 
-func ExampleStatus_String() {
-	s := NewStatus(StatusPermissionDenied)
-	fmt.Printf("test: NewStatus() -> [%v]\n", s)
+/*
+	func ExampleStatus_GRPC_String() {
+		s := NewStatus(StatusPermissionDenied)
+		fmt.Printf("test: NewStatus() -> [%v]\n", s)
 
-	s = NewStatusError(StatusOutOfRange, "", errors.New("error - 1"), errors.New("error - 2"))
-	fmt.Printf("test: NewStatus() -> [%v]\n", s)
+		s = NewStatusError(StatusOutOfRange, "", errors.New("error - 1"), errors.New("error - 2"))
+		fmt.Printf("test: NewStatus() -> [%v]\n", s)
 
-	//Output:
-	//test: NewStatus() -> [PermissionDenied]
-	//test: NewStatus() -> [OutOfRange [error - 1 error - 2]]
+		//Output:
+		//test: NewStatus() -> [PermissionDenied]
+		//test: NewStatus() -> [OutOfRange [error - 1 error - 2]]
 
 }
-
+*/
 func Example_NewStatusError() {
 	location := "test"
 	err := errors.New("http error")

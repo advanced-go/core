@@ -3,6 +3,7 @@ package runtime
 import (
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 func ExampleLogHandler_Handle() {
@@ -17,19 +18,19 @@ func ExampleLogHandler_Handle() {
 	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = NewStatusError(StatusInternal, location)
+	s = NewStatusError(http.StatusInternalServerError, location)
 	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(s, GetOrCreateRequestId(ctx), ""), s.IsErrors())
 
-	s = NewStatusError(StatusInternal, location, err)
+	s = NewStatusError(http.StatusInternalServerError, location, err)
 	errors := s.IsErrors()
 	s1 := h.HandleStatus(s, GetOrCreateRequestId(ctx), "")
 	fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
-	//test: Handle(ctx,location,err) -> [Internal [test error]] [errors:true]
+	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [errors:true]
 	//test: HandleStatus(nil,s) -> [OK] [errors:false]
-	//test: HandleStatus(nil,s) -> [prev:Internal [test error]] [prev-errors:true] [curr:Internal [test error]] [curr-errors:true]
+	//test: HandleStatus(nil,s) -> [prev:Internal Error [test error]] [prev-errors:true] [curr:Internal Error [test error]] [curr-errors:true]
 
 }
 

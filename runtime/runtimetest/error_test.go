@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"net/http"
 )
 
 func Example_formatErrors() {
@@ -28,7 +29,7 @@ func ExampleDebugHandler_Handle() {
 	s = h.Handle(runtime.GetOrCreateRequestId(ctx), location, err)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.ErrorsHandled())
 
-	s = runtime.NewStatusError(runtime.StatusInternal, location)
+	s = runtime.NewStatusError(http.StatusInternalServerError, location)
 	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.HandleStatus(s, runtime.GetOrCreateRequestId(ctx), origin), s.ErrorsHandled())
 
 	//s = runtime.NewStatusError(runtime.StatusInternal, location, err)
@@ -39,7 +40,7 @@ func ExampleDebugHandler_Handle() {
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
 	//{ "id":"123-request-id", "l":"/DebugHandler", "o":null "err" : [ "test error" ] }
-	//test: Handle(ctx,location,err) -> [Internal [test error]] [handled:true]
+	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
 
 }

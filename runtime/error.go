@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-ai-agent/core/strings"
 	"log"
+	"net/http"
 )
 
 const (
@@ -39,7 +40,7 @@ func (h BypassError) Handle(requestId string, _ string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return NewStatusError(StatusInternal, "", errs...)
+	return NewStatusError(http.StatusInternalServerError, "", errs...)
 }
 
 func (h BypassError) HandleStatus(s *Status, _ string, _ string) *Status {
@@ -53,7 +54,7 @@ func (h LogError) Handle(requestId string, location string, errs ...error) *Stat
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatusError(StatusInternal, location, errs...), requestId, "")
+	return h.HandleStatus(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
 func (h LogError) HandleStatus(s *Status, requestId string, originUri string) *Status {

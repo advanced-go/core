@@ -3,7 +3,6 @@ package startup
 import (
 	"errors"
 	"fmt"
-	"google.golang.org/grpc/codes"
 	"sort"
 	"sync"
 )
@@ -29,7 +28,7 @@ func (r *MessageCache) Count() int {
 	return count
 }
 
-func (r *MessageCache) Filter(event string, code codes.Code, include bool) []string {
+func (r *MessageCache) Filter(event string, code int, include bool) []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	var uri []string
@@ -48,11 +47,11 @@ func (r *MessageCache) Filter(event string, code codes.Code, include bool) []str
 	return uri
 }
 
-func (r *MessageCache) Include(event string, status codes.Code) []string {
+func (r *MessageCache) Include(event string, status int) []string {
 	return r.Filter(event, status, true)
 }
 
-func (r *MessageCache) Exclude(event string, status codes.Code) []string {
+func (r *MessageCache) Exclude(event string, status int) []string {
 	return r.Filter(event, status, false)
 }
 

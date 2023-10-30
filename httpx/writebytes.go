@@ -48,7 +48,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 			}
 			return buf, contentType, status
 		} else {
-			return nil, "", runtime.NewStatusError(runtime.StatusInternal, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return nil, "", runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
 	}
 	if strings.Contains(contentType, "json") {

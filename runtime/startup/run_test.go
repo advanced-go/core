@@ -91,8 +91,8 @@ func ExampleStartup_Failure() {
 
 	//Output:
 	//{ "id":null, "l":"github.com/go-ai-agent/core/runtime/startup/Run", "o":null "err" : [ "startup failure error message" ] }
-	//test: Startup() -> [Internal]
-	
+	//test: Startup() -> [Internal Error]
+
 }
 
 func startupGood(c chan Message) {

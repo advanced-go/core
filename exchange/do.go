@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
-	"google.golang.org/grpc/codes"
 	"net/http"
 	"time"
 )
@@ -56,9 +55,9 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 			}
 		}
 	}
-	if doProxy == nil {
-		doProxy = ProxyLookup(req)
-	}
+	//if doProxy == nil {
+	//	doProxy = ProxyLookup(req)
+	//}
 	if doProxy != nil {
 		resp, err = doProxy(req)
 	} else {
@@ -69,9 +68,9 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		if resp == nil {
 			resp = &http.Response{StatusCode: http.StatusInternalServerError, Status: "internal server error"}
 		}
-		return resp, runtime.NewStatusError(codes.Code(resp.StatusCode), doLocation, err)
+		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
 	}
-	return resp, runtime.NewHttpStatus(resp.StatusCode)
+	return resp, runtime.NewStatus(resp.StatusCode)
 }
 
 func DoT[T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {

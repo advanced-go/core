@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
 	"github.com/go-ai-agent/core/strings"
+	"net/http"
 )
 
 func SetFormatOutput(fn runtime.FormatOutput) {
@@ -21,7 +22,7 @@ func (h DebugError) Handle(requestId string, location string, errs ...error) *ru
 	if !runtime.IsErrors(errs) {
 		return runtime.NewStatusOK()
 	}
-	return h.HandleStatus(runtime.NewStatusError(runtime.StatusInternal, location, errs...), requestId, "")
+	return h.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
 func (h DebugError) HandleStatus(s *runtime.Status, requestId string, originUri string) *runtime.Status {

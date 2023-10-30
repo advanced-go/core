@@ -50,7 +50,7 @@ func ExampleDo_InvalidArgument() {
 	fmt.Printf("test: Do(nil) -> [%v]\n", s)
 
 	//Output:
-	//test: Do(nil) -> [InvalidArgument [invalid argument : request is nil]]
+	//test: Do(nil) -> [Invalid Argument [invalid argument : request is nil]]
 
 }
 

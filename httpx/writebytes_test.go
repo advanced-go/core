@@ -58,10 +58,10 @@ func Example_WriteBytes_Error() {
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
 
 	//Output:
-	//test: WriteBytes() -> [buf:false] [status:Internal [error: content type is invalid: <nil>]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal [error: content type is invalid: *string]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal [error: content type is invalid: *io.Reader]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal [error: content type is invalid: int]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: <nil>]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *string]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *io.Reader]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: int]] [rc:]
 	//test: WriteBytes() -> [buf:false] [status:I/O Failure [error on internal read]] [rc:]
 
 }
