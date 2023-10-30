@@ -266,6 +266,16 @@ func (s *Status) SetHeader(header http.Header, keys ...string) *Status {
 	return s
 }
 
+func (s *Status) CopyHeader(header http.Header) *Status {
+	if header == nil {
+		return s
+	}
+	for k, _ := range s.header {
+		header.Set(k, s.header.Get(k))
+	}
+	return s
+}
+
 func (s *Status) OK() bool { return s.code == http.StatusOK }
 
 /*
