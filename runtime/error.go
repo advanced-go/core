@@ -78,6 +78,7 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	}
 }
 
+// Status code ??
 func DefaultErrorFormatter(s *Status) string {
 	return fmt.Sprintf("{ %v, %v, %v %v }\n",
 		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
