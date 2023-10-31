@@ -247,7 +247,14 @@ func (s *Status) SetJsonContent(content any) *Status {
 		return s
 	}
 	s.content = content
-	s.Header().Set(ContentType, ContentTypeJson)
+	s.SetContentType(ContentTypeJson)
+	return s
+}
+func (s *Status) SetContentType(contentType string) *Status {
+	if len(contentType) == 0 {
+		return s
+	}
+	s.Header().Set(ContentType, contentType)
 	return s
 }
 
