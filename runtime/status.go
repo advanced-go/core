@@ -12,6 +12,7 @@ const (
 	NilDuration     = time.Duration(-1)
 	ContentType     = "Content-type"
 	ContentTypeJson = "application/json"
+	ContentLocation = "Content-Location"
 )
 
 const (
@@ -250,11 +251,26 @@ func (s *Status) SetJsonContent(content any) *Status {
 	s.SetContentType(ContentTypeJson)
 	return s
 }
-func (s *Status) SetContentType(contentType string) *Status {
-	if len(contentType) == 0 {
+func (s *Status) SetContentType(str string) *Status {
+	if len(str) == 0 {
 		return s
 	}
-	s.Header().Set(ContentType, contentType)
+	s.Header().Set(ContentType, str)
+	return s
+}
+func (s *Status) SetContentLocation(location string) *Status {
+	if len(location) == 0 {
+		return s
+	}
+	s.Header().Set(ContentLocation, location)
+	return s
+}
+func (s *Status) SetContentTypeAndLocation(location string) *Status {
+	if len(location) == 0 {
+		return s
+	}
+	s.Header().Set(ContentType, location)
+	s.Header().Set(ContentLocation, location)
 	return s
 }
 
