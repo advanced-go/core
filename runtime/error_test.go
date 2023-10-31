@@ -6,6 +6,21 @@ import (
 	"net/http"
 )
 
+func Example_DefaultErrorFormat() {
+	s := NewStatusOK()
+	s.SetRequestId("1234-5678")
+	// Adding on reverse to mirror call stack
+	s.AddLocation("github.com/go-ai-agent/location-2")
+	s.AddLocation("github.com/go-ai-agent/location-1")
+	s.errs = append(s.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
+	str := DefaultErrorFormatter(s)
+	fmt.Printf("test: DefaultErrorFormatter() -> %v", str)
+
+	//Output:
+	//test: DefaultErrorFormatter() -> { "Code":200, "Status":"OK", "RequestId":"1234-5678", "Location" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "Errors" : [ "test error message 1","testing error msg 2" ] }
+
+}
+
 func ExampleLogHandler_Handle() {
 	location := "/LogHandler"
 	ctx := ContextWithRequestId(nil, "")

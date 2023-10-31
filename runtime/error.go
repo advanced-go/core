@@ -5,11 +5,14 @@ import (
 	"github.com/go-ai-agent/core/strings"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 const (
-	LocationName  = "Location"
-	OriginName    = "Origin"
+	StatusName     = "Status"
+	StatusCodeName = "Code"
+	LocationName   = "Location"
+	//OriginName    = "Origin"
 	RequestIdName = "RequestId"
 	ErrorsName    = "Errors"
 )
@@ -30,7 +33,7 @@ type ErrorHandleFn func(requestId, location string, errs ...error) *Status
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
 	Handle(requestId string, location string, errs ...error) *Status
-	HandleStatus(s *Status, requestId string, originUri string) *Status
+	HandleStatus(s *Status, requestId string, location string) *Status
 }
 
 // BypassError - bypass error handler
@@ -57,12 +60,12 @@ func (h LogError) Handle(requestId string, location string, errs ...error) *Stat
 	return h.HandleStatus(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
-func (h LogError) HandleStatus(s *Status, requestId string, originUri string) *Status {
+func (h LogError) HandleStatus(s *Status, requestId string, location string) *Status {
 	if s == nil {
 		return s
 	}
 	s.SetRequestId(requestId)
-	s.SetOrigin(originUri)
+	s.AddLocation(location)
 	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
 		log.Println(formatter(s))
 		s.SetErrorsHandled()
@@ -78,12 +81,13 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	}
 }
 
-// Status code ??
 func DefaultErrorFormatter(s *Status) string {
-	return fmt.Sprintf("{ %v, %v, %v %v }\n",
+	str := strconv.Itoa(s.Code())
+	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
+		strings.JsonMarkup(StatusCodeName, str, false),
+		strings.JsonMarkup(StatusName, s.Description(), true),
 		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
-		strings.JsonMarkup(LocationName, s.Location(), true),
-		strings.JsonMarkup(OriginName, s.Origin(), true),
+		FormatLocation(LocationName, s.Location()),
 		FormatErrors(ErrorsName, s.Errors()))
 }
 
@@ -97,6 +101,20 @@ func FormatErrors(name string, errs []error) string {
 			result += ","
 		}
 		result += fmt.Sprintf("\"%v\"", e.Error())
+	}
+	return result + " ]"
+}
+
+func FormatLocation(name string, location []string) string {
+	if len(location) == 0 {
+		return fmt.Sprintf("\"%v\" : null", name)
+	}
+	result := fmt.Sprintf("\"%v\" : [ ", name)
+	for i := len(location) - 1; i >= 0; i-- {
+		if i < len(location)-1 {
+			result += ","
+		}
+		result += fmt.Sprintf("\"%v\"", location[i])
 	}
 	return result + " ]"
 }

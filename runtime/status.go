@@ -57,15 +57,14 @@ func IsErrors(errs []error) bool {
 
 // Status - struct for status data
 type Status struct {
-	code        int //type codes.Code uint32
-	duration    time.Duration
-	handled     bool
-	locationUri string
-	originUri   string
-	requestId   string
-	errs        []error
-	content     any
-	header      http.Header
+	code      int //type codes.Code uint32
+	duration  time.Duration
+	handled   bool
+	requestId string
+	location  []string
+	errs      []error
+	content   any
+	header    http.Header
 }
 
 // NewStatus - new Status from a code
@@ -76,20 +75,15 @@ func NewStatus(code int) *Status {
 	return s
 }
 
-// NewHttpStatus - new Status from a http status code
-//func NewHttpStatus(code int) *Status {
-//	return NewStatus(codes.Code(code))
-//}
-
 // NewStatusOK - new OK status
 func NewStatusOK() *Status {
 	return NewStatus(http.StatusOK)
 }
 
 // NewStatusError - new Status from a code, location, and optional errors
-func NewStatusError(code int, locationUri string, errs ...error) *Status {
+func NewStatusError(code int, location string, errs ...error) *Status {
 	s := NewStatus(code)
-	s.locationUri = locationUri
+	s.location = append(s.location, location)
 	if !IsErrors(errs) {
 		s.code = http.StatusOK
 	} else {
@@ -101,46 +95,8 @@ func NewStatusError(code int, locationUri string, errs ...error) *Status {
 	return s
 }
 
-/*
-func NewStatusWithContext(code codes.Code, location string, ctx context.Context, errs ...error) *Status {
-	s := NewStatus(code, location, errs...)
-	//s.SetContext(ctx)
-	return s
-}
-
-// NewHttpStatus - new Status from a http.Response, location, and optional errors
-// func NewHttpStatus(resp *http.Response, location string, errs ...error) *Status {
-func NewHttpStatus(resp *http.Response, errs ...error) *Status {
-	var code codes.Code
-	if resp == nil {
-		code = StatusInvalidContent
-	} else {
-		code = codes.Code(resp.StatusCode)
-	}
-	s := NewStatusCode(code)
-	if IsErrors(errs) {
-		s.addErrors(errs...)
-		s.code = http.StatusInternalServerError
-	}
-	return s
-}
-
-func NewStatusInvalidArgument(location string, err error) *Status {
-	return NewStatus(StatusInvalidArgument, err)
-}
-
-// NewStatusError - new Internal status with location and errors
-// func NewStatusError(location string, errs ...error) *Status {
-func NewStatusError(errs ...error) *Status {
-	return NewStatus(StatusInternal, errs...)
-}
-
-*/
-
-// IsGRPCCode - gRPC code functions
-// func (s *Status) IsGRPCCode() bool { return s.code >= codes.OK && s.code <= _maxGRPCCode }
+// Code - functions
 func (s *Status) Code() int { return s.code }
-
 func (s *Status) SetCode(code int) *Status {
 	s.code = code
 	return s
@@ -215,17 +171,10 @@ func (s *Status) SetRequestId(requestId any) *Status {
 }
 
 // Location - location
-func (s *Status) Location() string { return s.locationUri }
-func (s *Status) SetLocation(locationUri string) *Status {
-	s.locationUri = locationUri
-	return s
-}
-
-// Origin - caller
-func (s *Status) Origin() string { return s.originUri }
-func (s *Status) SetOrigin(originUri string) *Status {
-	if len(s.originUri) == 0 {
-		s.originUri = originUri
+func (s *Status) Location() []string { return s.location }
+func (s *Status) AddLocation(location string) *Status {
+	if len(location) >= 0 {
+		s.location = append(s.location, location)
 	}
 	return s
 }
@@ -281,7 +230,6 @@ func (s *Status) Header() http.Header {
 	}
 	return s.header
 }
-
 func (s *Status) SetHeader(header http.Header, keys ...string) *Status {
 	if header == nil {
 		return s
@@ -291,7 +239,6 @@ func (s *Status) SetHeader(header http.Header, keys ...string) *Status {
 	}
 	return s
 }
-
 func (s *Status) CopyHeader(header http.Header) *Status {
 	if header == nil {
 		return s
@@ -302,7 +249,8 @@ func (s *Status) CopyHeader(header http.Header) *Status {
 	return s
 }
 
-func (s *Status) OK() bool { return s.code == http.StatusOK }
+func (s *Status) OK() bool       { return s.code == http.StatusOK }
+func (s *Status) NotFound() bool { return s.code == http.StatusNotFound }
 
 /*
 func (s *Status) InvalidArgument() bool { return s.code == http.StatusInvalidArgument }

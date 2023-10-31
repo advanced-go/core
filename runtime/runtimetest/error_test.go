@@ -8,10 +8,15 @@ import (
 )
 
 func Example_formatErrors() {
-	fmt.Printf("test: formatErrors(nil) -> %v\n", runtime.FormatErrors("err", nil))
+	s := runtime.NewStatusOK()
+	s.SetRequestId("1234-5678")
+	// Adding on reverse to mirror call stack
+	s.AddLocation("github.com/go-ai-agent/location-2")
+	s.AddLocation("github.com/go-ai-agent/location-1")
+	fmt.Printf("test: defaultFormatter() -> %v", defaultFormatter(s))
 
 	//Output:
-	//test: formatErrors(nil) -> "err" : null
+	//test: defaultFormatter() -> { "c":200, "s":"OK", "id":"1234-5678", "l" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "err" : null }
 
 }
 
@@ -39,7 +44,7 @@ func ExampleDebugHandler_Handle() {
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
-	//{ "id":"123-request-id", "l":"/DebugHandler", "o":null "err" : [ "test error" ] }
+	//{ "c":500, "s":"Internal Error", "id":"123-request-id", "l" : [ "","/DebugHandler" ], "err" : [ "test error" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
 

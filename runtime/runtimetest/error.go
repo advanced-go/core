@@ -25,12 +25,12 @@ func (h DebugError) Handle(requestId string, location string, errs ...error) *ru
 	return h.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
-func (h DebugError) HandleStatus(s *runtime.Status, requestId string, originUri string) *runtime.Status {
+func (h DebugError) HandleStatus(s *runtime.Status, requestId string, location string) *runtime.Status {
 	if s == nil {
 		return s
 	}
 	s.SetRequestId(requestId)
-	s.SetOrigin(originUri)
+	s.AddLocation(location)
 	if s.IsErrors() && !s.ErrorsHandled() {
 		fmt.Printf(defaultFormatter(s))
 		s.SetErrorsHandled()
@@ -39,27 +39,10 @@ func (h DebugError) HandleStatus(s *runtime.Status, requestId string, originUri 
 }
 
 func defaultFormatter(s *runtime.Status) string {
-	return fmt.Sprintf("{ %v, %v, %v %v }\n",
+	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
+		strings.JsonMarkup("c", fmt.Sprintf("%v", s.Code()), false),
+		strings.JsonMarkup("s", s.Description(), true),
 		strings.JsonMarkup("id", s.RequestId(), true),
-		strings.JsonMarkup("l", s.Location(), true),
-		strings.JsonMarkup("o", s.Origin(), true),
+		runtime.FormatLocation("l", s.Location()),
 		runtime.FormatErrors("err", s.Errors()))
 }
-
-/*
-func formatErrors(errs []error) string {
-	if len(errs) == 0 {
-		return fmt.Sprintf("\"%v\" : null", "err")
-	}
-	result := fmt.Sprintf("\"%v\" : [ ", "err")
-	for i, e := range errs {
-		if i != 0 {
-			result += ","
-		}
-		result += fmt.Sprintf("\"%v\"", e.Error())
-	}
-	return result + " ]"
-}
-
-
-*/
