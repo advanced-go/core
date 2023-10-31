@@ -73,18 +73,18 @@ func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
 	w := httptest.NewRecorder()
-	status := runtime.NewStatus(http.StatusServiceUnavailable).SetContent(str, false)
+	status := runtime.NewStatus(http.StatusServiceUnavailable).SetContent(str)
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(http.StatusNotFound).SetContent([]byte("not found"), false)
+	status = runtime.NewStatus(http.StatusNotFound).SetContent([]byte("not found"))
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), false)
+	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str))
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
@@ -95,7 +95,7 @@ func ExampleWriteResponse_StatusNotOK() {
 		Insert:       true,
 		Update:       false,
 		Delete:       false,
-	}, false)
+	})
 	WriteResponse[runtimetest.DebugError](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 

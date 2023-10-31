@@ -43,7 +43,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 		if strings.Contains(contentType, "json") {
 			var status *runtime.Status
 
-			buf, status = json.MarshalType(content)
+			buf, status = json.Marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}
