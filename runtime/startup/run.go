@@ -98,7 +98,7 @@ func handleErrors[E runtime.ErrorHandler](failures []string, cache *MessageCache
 			continue
 		}
 		if msg.Status != nil {
-			e.Handle("", msg.Status.Location(), msg.Status.Errors()...)
+			e.HandleStatus(msg.Status, "", "")
 		}
 	}
 }
