@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"net/http"
 	"time"
 )
 
@@ -19,13 +20,18 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 	var e E
 
 	if uri == "" {
-		return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New("invalid argument: startup uri is empty"))
+		//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New("invalid argument: startup uri is empty"))
+		return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New("invalid argument: startup uri is empty")),
+			runtime.RequestId(ctx), "")
+
 	}
 	cache := NewMessageCache()
 	msg := Message{To: uri, From: HostName, Event: PingEvent, Status: nil, ReplyTo: NewMessageCacheHandler(cache)}
 	err := directory.Send(msg)
 	if err != nil {
-		return e.Handle(runtime.RequestId(ctx), pingLocation, err)
+		//return e.Handle(runtime.RequestId(ctx), pingLocation, err)
+		return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, err), runtime.RequestId(ctx), "")
+
 	}
 	duration := maxWait
 	for wait := time.Duration(float64(duration) * 0.20); duration >= 0; duration -= wait {
@@ -35,9 +41,13 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 			continue //return e.HandleWithContext(ctx, pingLocation, err1)
 		}
 		if result.Status == nil {
-			return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))).SetCode(runtime.StatusNotProvided)
+			//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))).SetCode(runtime.StatusNotProvided)
+			return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))), runtime.RequestId(ctx), "")
+
 		}
 		return result.Status
 	}
-	return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))).SetCode(runtime.StatusDeadlineExceeded)
+	//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))).SetCode(runtime.StatusDeadlineExceeded)
+	return e.HandleStatus(runtime.NewStatusError(runtime.StatusDeadlineExceeded, pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))), runtime.RequestId(ctx), "")
+
 }

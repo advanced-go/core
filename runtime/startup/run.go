@@ -67,7 +67,8 @@ func Run[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (st
 		handleErrors[E](failures, cache)
 		return runtime.NewStatus(http.StatusInternalServerError)
 	}
-	return e.Handle("", runLocation, errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), directory.Count()))).SetCode(runtime.StatusDeadlineExceeded)
+	//return e.Handle("", runLocation, errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), directory.Count()))).SetCode(runtime.StatusDeadlineExceeded)
+	return e.HandleStatus(runtime.NewStatusError(runtime.StatusDeadlineExceeded, runLocation, errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), directory.Count()))), "", "")
 }
 
 func createToSend(cm ContentMap, fn MessageHandler) messageMap {
@@ -98,7 +99,9 @@ func handleErrors[E runtime.ErrorHandler](failures []string, cache *MessageCache
 			continue
 		}
 		if msg.Status != nil {
-			e.Handle("", msg.Status.Location()[0], msg.Status.Errors()...)
+			//.Handle("", msg.Status.Location()[0], msg.Status.Errors()...)
+			e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, msg.Status.Location()[0], msg.Status.Errors()...), "", "")
+
 		}
 	}
 }

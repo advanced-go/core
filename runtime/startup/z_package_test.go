@@ -11,3 +11,12 @@ func Example_PackageUri() {
 	//test: PkgUri -> github.com/go-ai-agent/core/runtime/startup
 
 }
+
+func Example_newStatusRequest() {
+	req := newStatusRequest()
+	fmt.Printf("test: newStatusRequest() -> %v\n", req.URL.Path)
+
+	//Output:
+	//test: newStatusRequest() -> /startup/status
+
+}
