@@ -12,9 +12,8 @@ const (
 	StatusName     = "Status"
 	StatusCodeName = "Code"
 	LocationName   = "Location"
-	//OriginName    = "Origin"
-	RequestIdName = "RequestId"
-	ErrorsName    = "Errors"
+	RequestIdName  = "RequestId"
+	ErrorsName     = "Errors"
 )
 
 type FormatOutput func(s *Status) string
@@ -32,7 +31,7 @@ type ErrorHandleFn func(requestId, location string, errs ...error) *Status
 
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
-	Handle(requestId string, location string, errs ...error) *Status
+	//Handle(requestId string, location string, errs ...error) *Status
 	HandleStatus(s *Status, requestId string, location string) *Status
 }
 
@@ -77,7 +76,7 @@ func (h LogError) HandleStatus(s *Status, requestId string, location string) *St
 func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	var e E
 	return func(requestId string, location string, errs ...error) *Status {
-		return e.Handle(requestId, location, errs...)
+		return e.HandleStatus(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 	}
 }
 
