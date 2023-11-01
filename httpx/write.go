@@ -43,7 +43,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
 	_, err := w.Write(buf)
 	if err != nil {
-		e.Handle(status.RequestId(), writeLoc, err)
+		e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
 	}
 	return
 }

@@ -26,7 +26,7 @@ func Example_writeStatusContent() {
 	// Json
 	d := data{Item: "test item", Count: 500}
 	r = NewRecorder()
-	writeStatusContent[runtimetest.DebugError](r, runtime.NewStatus(http.StatusInternalServerError).SetContent(d), "test location")
+	writeStatusContent[runtimetest.DebugError](r, runtime.NewStatus(http.StatusInternalServerError).SetJsonContent(d), "test location")
 	r.Result().Header = r.Header()
 	buf, status = ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)

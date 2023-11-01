@@ -21,6 +21,6 @@ func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status *r
 	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
 	_, err := w.Write(buf)
 	if err != nil {
-		e.Handle(status.RequestId(), location+"/writeStatusContent", err)
+		e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, location+"/writeStatusContent", err), "", "")
 	}
 }
