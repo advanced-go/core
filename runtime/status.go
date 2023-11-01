@@ -186,21 +186,27 @@ func (s *Status) Content() any    { return s.content }
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
-func (s *Status) SetContent(content any) *Status {
+func (s *Status) SetContent(content any, jsonContent bool) *Status {
 	if content == nil {
 		return s
 	}
 	s.content = content
+	if jsonContent {
+		s.SetContentType(ContentTypeJson)
+	}
 	return s
 }
-func (s *Status) SetJsonContent(content any) *Status {
-	if content == nil {
+
+/*
+	func (s *Status) SetJsonContent(content any) *Status {
+		if content == nil {
+			return s
+		}
+		s.content = content
+		s.SetContentType(ContentTypeJson)
 		return s
 	}
-	s.content = content
-	s.SetContentType(ContentTypeJson)
-	return s
-}
+*/
 func (s *Status) SetContentType(str string) *Status {
 	if len(str) == 0 {
 		return s
