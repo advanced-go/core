@@ -22,6 +22,7 @@ const (
 	StatusJsonEncodeError = int(93) // Json decoding failed
 	StatusNotProvided     = int(94) // No status is available
 	StatusRateLimited     = int(95) // Rate limited
+	StatusNotStarted      = int(96) // Not started
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
@@ -350,6 +351,8 @@ func (s *Status) Description() string {
 		return "Not Provided"
 	case StatusRateLimited:
 		return "Rate Limited"
+	case StatusNotStarted:
+		return "Not Started"
 	case StatusDeadlineExceeded:
 		return "Deadline Exceeded"
 	case StatusInvalidArgument:
