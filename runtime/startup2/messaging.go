@@ -1,5 +1,7 @@
 package startup2
 
+import "github.com/go-ai-agent/core/runtime"
+
 const (
 	StartupEvent  = "event:startup"
 	ShutdownEvent = "event:shutdown"
@@ -13,24 +15,24 @@ type MessageHandler func(msg Message)
 
 // Message - message access data
 type Message struct {
-	To    string
-	From  string
-	Event string
-	//Status  *runtime.Status
+	To      string
+	From    string
+	Event   string
+	Status  *runtime.Status
 	Content []any
 	ReplyTo MessageHandler
 }
 
 // ReplyTo - function used by message recipient to reply with a runtime.Status
-func ReplyTo(msg Message) {
+func ReplyTo(msg Message, status *runtime.Status) {
 	if msg.ReplyTo == nil {
 		return
 	}
 	msg.ReplyTo(Message{
-		To:    msg.From,
-		From:  msg.To,
-		Event: msg.Event,
-		//Status:  status,
+		To:      msg.From,
+		From:    msg.To,
+		Event:   msg.Event,
+		Status:  status,
 		Content: nil,
 		ReplyTo: nil,
 	})

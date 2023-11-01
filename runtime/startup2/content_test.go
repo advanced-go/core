@@ -1,7 +1,6 @@
 package startup2
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
@@ -19,9 +18,9 @@ var msgTest = Message{To: "to-uri", From: "from-uri", Content: []any{
 	func() bool { return false },
 	runtime.NewStatusError(0, "location", errors.New("error message")).SetDuration(time.Second * 2),
 	//runtime.HandleWithContext[runtime.DebugError](),
-	ControllerApply(func(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
-		return func() {}, ctx, false
-	}),
+	//ControllerApply(func(ctx context.Context, statusCode func() int, uri, requestId, method string) (func(), context.Context, bool) {
+	//	return func() {}, ctx, false
+	//}),
 	Resource{"postgres://username:password@database.cloud.timescale.com/database?sslmode=require"},
 }}
 
@@ -48,6 +47,7 @@ func ExampleAccessResource() {
 
 }
 
+/*
 func ExampleAccessControllerApply() {
 	fmt.Printf("test: AccessControllerApply(nil) -> [valid:%v]\n", AccessControllerApply(nil) != nil)
 	fmt.Printf("test: AccessControllerApply(msg) -> [valid:%v]\n", AccessControllerApply(&Message{To: "to-uri"}) != nil)
@@ -59,6 +59,9 @@ func ExampleAccessControllerApply() {
 	//test: AccessControllerApply(msg) -> [valid:true]
 
 }
+
+
+*/
 
 func ExampleNewStatusCodeFn() {
 	var status *runtime.Status

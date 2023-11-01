@@ -58,21 +58,22 @@ func (d *EntryDirectory) Uri() []string {
 	return uri
 }
 
-func (d *EntryDirectory) Send(msg Message) error {
+func (d *EntryDirectory) Send(msg Message) (Message, *runtime.Status) {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 	if e, ok := d.m[msg.To]; ok {
-		if e.handler == nil {
-			return errors.New(fmt.Sprintf("handler function is nil: [%v]", msg.To))
+		//if e.handler == nil {
+		//	return Message{},runtime.NewStatusError(runtime.StatusInvalidArgument,startupLoc,errors.New(fmt.Sprintf("handler function is nil: [%v]", msg.To)))
+		//}
+		req, _ := http.NewRequest("", StartupPath, nil)
+		result, status := e.handler(req, msg)
+		if msg2, ok2 := result.(Message); ok2 {
+			msg2.Status = status
+			return msg2, status
 		}
-		req, _ := http.NewRequest("", "/runtime", nil)
-		_, status := e.handler(req, msg)
-		if status != nil {
-		}
-		//e.c <- msg
-		return nil
+		return Message{}, runtime.NewStatusError(runtime.StatusInvalidArgument, startupLoc, errors.New(fmt.Sprintf("Message type is invalid")))
 	}
-	return errors.New(fmt.Sprintf("entry not found: [%v]", msg.To))
+	return Message{}, runtime.NewStatusError(runtime.StatusInvalidArgument, startupLoc, errors.New(fmt.Sprintf("entry not found: [%v]", msg.To)))
 }
 
 func (d *EntryDirectory) Shutdown() {
@@ -80,8 +81,8 @@ func (d *EntryDirectory) Shutdown() {
 	defer d.mu.RUnlock()
 	for _, e := range d.m {
 		if e.handler != nil {
-			req, _ := http.NewRequest("", "/runtime", nil)
-			_, _ = e.handler(req, Message{To: e.uri, Event: ShutdownEvent})
+			req, _ := http.NewRequest("", StartupPath, nil)
+			e.handler(req, Message{To: e.uri, Event: ShutdownEvent})
 			//	e.c <- Message{To: e.uri, Event: ShutdownEvent}
 		}
 	}

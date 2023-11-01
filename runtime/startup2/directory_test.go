@@ -2,6 +2,7 @@ package startup2
 
 import (
 	"fmt"
+	"net/http"
 )
 
 /*
@@ -12,6 +13,14 @@ import (
 	}
 */
 var directoryTest = NewEntryDirectory()
+
+func Example_StartupUri() {
+	req, err := http.NewRequest("", StartupPath, nil)
+	fmt.Printf("test: StartupUri() -> [path:%v] [err:%v]\n", req.URL.Path, err)
+
+	//Output:
+	//test: StartupUri() -> [path:/startup] [err:<nil>]
+}
 
 func ExampleEntryDirectory_Add() {
 	uri := "urn:test"

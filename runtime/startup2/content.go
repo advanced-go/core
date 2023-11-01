@@ -1,7 +1,6 @@
 package startup2
 
 import (
-	"context"
 	"github.com/go-ai-agent/core/runtime"
 )
 
@@ -12,7 +11,7 @@ type ContentMap map[string][]any
 type Credentials func() (username string, password string, err error)
 
 // ControllerApply - type for applying a controller
-type ControllerApply func(ctx context.Context, statusCode func() int, uri, requestId, method string) (fn func(), newCtx context.Context, rateLimited bool)
+//type ControllerApply func(ctx context.Context, statusCode func() int, uri, requestId, method string) (fn func(), newCtx context.Context, rateLimited bool)
 
 // Resource - struct for a resource
 type Resource struct {
@@ -32,6 +31,7 @@ func AccessCredentials(msg *Message) Credentials {
 	return nil
 }
 
+/*
 // AccessControllerApply - access function for ControllerApply in a message
 func AccessControllerApply(msg *Message) ControllerApply {
 	if msg == nil || msg.Content == nil {
@@ -44,6 +44,9 @@ func AccessControllerApply(msg *Message) ControllerApply {
 	}
 	return nil
 }
+
+
+*/
 
 // AccessResource - access function for a resource in a message
 func AccessResource(msg *Message) Resource {
