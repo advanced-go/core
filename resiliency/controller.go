@@ -36,7 +36,7 @@ func (ctrl *Controller) Apply(r *http.Request, body any) (t any, status *runtime
 	var statusFlags = ""
 
 	if ctrl.InFailover {
-		t, status = failover()
+		t, status = ctrl.failover()
 	} else {
 		if ctrl.Timeout.Duration > 0 {
 			//newReq := r.Clone() //.
@@ -53,6 +53,11 @@ func (ctrl *Controller) Apply(r *http.Request, body any) (t any, status *runtime
 	return t, status
 }
 
-func failover() (any, *runtime.Status) {
+func (ctrl *Controller) failover() (any, *runtime.Status) {
 	return nil, nil
+}
+
+// SetFailover - manual set/reset failover status
+func (ctrl *Controller) SetFailover(status bool) {
+
 }
