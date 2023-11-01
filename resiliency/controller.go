@@ -20,15 +20,19 @@ type Threshold struct {
 	Duration time.Duration
 }
 
-type Controller struct {
+type ControllerConfig struct {
 	Name        string
-	InFailover  bool // if true, then call upstream and also start pinging. If pinging succeeds, then failback
 	FailoverUri string
 	PingUri     string
 	Timeout     Timeout
 	Threshold   Threshold
-	Log         func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
-	Handler     runtime.TypeHandlerFn
+}
+
+type Controller struct {
+	Config     ControllerConfig
+	InFailover bool // if true, then call upstream and also start pinging. If pinging succeeds, then failback
+	Log        func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
+	Handler    runtime.TypeHandlerFn
 }
 
 func (ctrl *Controller) Apply(r *http.Request, body any) (t any, status *runtime.Status) {
@@ -38,7 +42,7 @@ func (ctrl *Controller) Apply(r *http.Request, body any) (t any, status *runtime
 	if ctrl.InFailover {
 		t, status = ctrl.failover()
 	} else {
-		if ctrl.Timeout.Duration > 0 {
+		if ctrl.Config.Timeout.Duration > 0 {
 			//newReq := r.Clone() //.
 		}
 		t, status = ctrl.Handler(r, body)
@@ -49,7 +53,7 @@ func (ctrl *Controller) Apply(r *http.Request, body any) (t any, status *runtime
 	//
 	// convert Duration to int milliseconds
 	ms := 0
-	ctrl.Log("egress", start, time.Since(start), r, &resp, ctrl.Name, ms, statusFlags)
+	ctrl.Log("egress", start, time.Since(start), r, &resp, ctrl.Config.Name, ms, statusFlags)
 	return t, status
 }
 
