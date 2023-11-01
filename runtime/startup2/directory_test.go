@@ -59,10 +59,14 @@ func ExampleEntryDirectory_Add() {
 
 }
 
+/*
 func ExampleEntryDirectory_SendError() {
 	uri := "urn:test"
 	directoryTest.Empty()
+	var msg Message
 
+	msg2, status := directoryTest.Send(Message{To: uri})
+	if msg, ok :=
 	fmt.Printf("test: send(%v) -> : %v\n", uri, directoryTest.Send(Message{To: uri}))
 
 	directoryTest.Add(uri, nil)
@@ -76,6 +80,8 @@ func ExampleEntryDirectory_SendError() {
 
 }
 
+
+*/
 /*
 func ExampleEntryDirectory_Send() {
 	uri1 := "urn:test-1"

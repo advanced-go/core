@@ -1,4 +1,4 @@
-package startup
+package startup2
 
 import (
 	"context"
@@ -22,10 +22,13 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 		return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New("invalid argument: startup uri is empty"))
 	}
 	cache := NewMessageCache()
-	msg := Message{To: uri, From: HostName, Event: PingEvent, Status: nil, ReplyTo: NewMessageCacheHandler(cache)}
-	err := directory.Send(msg)
-	if err != nil {
-		return e.Handle(runtime.RequestId(ctx), pingLocation, err)
+	msg := Message{To: uri, From: PkgUri, Event: PingEvent}
+	// TO DO: fix add
+	msg2, status := directory.Send(msg)
+	if !status.OK() {
+		return e.HandleStatus(status, runtime.RequestId(ctx), pingLocation)
+	}
+	if msg2.To == "" {
 	}
 	duration := maxWait
 	for wait := time.Duration(float64(duration) * 0.20); duration >= 0; duration -= wait {

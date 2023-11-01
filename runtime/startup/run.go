@@ -98,7 +98,7 @@ func handleErrors[E runtime.ErrorHandler](failures []string, cache *MessageCache
 			continue
 		}
 		if msg.Status != nil {
-			e.HandleStatus(msg.Status, "", "")
+			e.Handle("", msg.Status.Location()[0], msg.Status.Errors()...)
 		}
 	}
 }
@@ -110,7 +110,7 @@ func handleStatus(cache *MessageCache) {
 			continue
 		}
 		if msg.Status != nil {
-			fmt.Printf("startup successful for startup [%v] : %s\n", uri, msg.Status.Duration())
+			fmt.Printf("startup successful for startup [%v] : %s", uri, msg.Status.Duration())
 		}
 	}
 }

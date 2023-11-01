@@ -3,6 +3,7 @@ package startup
 import (
 	"errors"
 	"fmt"
+
 	"sort"
 	"sync"
 )

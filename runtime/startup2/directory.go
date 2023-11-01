@@ -68,7 +68,6 @@ func (d *EntryDirectory) Send(msg Message) (Message, *runtime.Status) {
 		req, _ := http.NewRequest("", StartupPath, nil)
 		result, status := e.handler(req, msg)
 		if msg2, ok2 := result.(Message); ok2 {
-			msg2.Status = status
 			return msg2, status
 		}
 		return Message{}, runtime.NewStatusError(runtime.StatusInvalidArgument, startupLoc, errors.New(fmt.Sprintf("Message type is invalid")))
@@ -92,8 +91,8 @@ func (d *EntryDirectory) Empty() {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 	for key, _ := range d.m {
-		//if e.handler != nil {
-		//	close(e.hanc)
+		//if e.c != nil {
+		//	close(e.c)
 		//}
 		delete(d.m, key)
 	}

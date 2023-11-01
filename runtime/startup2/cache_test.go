@@ -9,11 +9,11 @@ import (
 func ExampleMessageCache_Add() {
 	resp := NewMessageCache()
 
-	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent, Status: runtime.NewStatusOK()})
-	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent, Status: runtime.NewStatus(http.StatusOK)})
+	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent}, runtime.NewStatusOK())
+	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent}, runtime.NewStatus(http.StatusOK))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
@@ -34,8 +34,8 @@ func ExampleMessageCache_Add() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{   <nil> [] <nil>}]
-	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{to-uri from-uri-3 event:ping Not provided [] <nil>}]
+	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{{   []} <nil>}]
+	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{{to-uri from-uri-3 event:ping []} Not Provided}]
 	//test: include(event:shutdown,94) -> : []
 	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
 	//test: include(event:startup,94) -> : [from-uri-0]
@@ -48,11 +48,11 @@ func ExampleMessageCache_Add() {
 func ExampleMessageCache_Uri() {
 	resp := NewMessageCache()
 
-	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent, Status: runtime.NewStatusOK()})
-	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent, Status: runtime.NewStatus(runtime.StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent, Status: runtime.NewStatus(http.StatusOK)})
+	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent}, runtime.NewStatusOK())
+	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent}, runtime.NewStatus(runtime.StatusNotProvided))
+	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent}, runtime.NewStatus(http.StatusOK))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
@@ -73,8 +73,8 @@ func ExampleMessageCache_Uri() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{   <nil> [] <nil>}]
-	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{to-uri from-uri-3 event:ping Not provided [] <nil>}]
+	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{{   []} <nil>}]
+	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{{to-uri from-uri-3 event:ping []} Not Provided}]
 	//test: include(event:shutdown,94) -> : []
 	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
 	//test: include(event:startup,94) -> : [from-uri-0]

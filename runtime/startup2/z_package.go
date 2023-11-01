@@ -10,5 +10,6 @@ var (
 	PkgUri      = reflect.TypeOf(any(pkg{})).PkgPath()
 	StartupPath = "/startup"
 
-	startupLoc = "/startup"
+	startupLoc  = "/startup"
+	runLocation = PkgUri + "/Run"
 )

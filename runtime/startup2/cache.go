@@ -3,19 +3,25 @@ package startup2
 import (
 	"errors"
 	"fmt"
+	"github.com/go-ai-agent/core/runtime"
 	"sort"
 	"sync"
 )
 
+type StatusMessage struct {
+	Msg    Message
+	Status *runtime.Status
+}
+
 // MessageCache - message cache by startup uri
 type MessageCache struct {
-	m  map[string]Message
+	m  map[string]StatusMessage
 	mu sync.RWMutex
 }
 
 // NewMessageCache - create a message cache
 func NewMessageCache() *MessageCache {
-	return &MessageCache{m: make(map[string]Message)}
+	return &MessageCache{m: make(map[string]StatusMessage)}
 }
 
 func (r *MessageCache) Count() int {
@@ -34,11 +40,11 @@ func (r *MessageCache) Filter(event string, code int, include bool) []string {
 	var uri []string
 	for u, resp := range r.m {
 		if include {
-			if resp.Status != nil && resp.Status.Code() == code && resp.Event == event {
+			if resp.Status != nil && resp.Status.Code() == code && resp.Msg.Event == event {
 				uri = append(uri, u)
 			}
 		} else {
-			if resp.Status != nil && resp.Status.Code() != code || resp.Event != event {
+			if resp.Status != nil && resp.Status.Code() != code || resp.Msg.Event != event {
 				uri = append(uri, u)
 			}
 		}
@@ -55,28 +61,28 @@ func (r *MessageCache) Exclude(event string, status int) []string {
 	return r.Filter(event, status, false)
 }
 
-func (r *MessageCache) Add(msg Message) error {
+func (r *MessageCache) Add(msg Message, status *runtime.Status) error {
 	if msg.From == "" {
 		return errors.New("invalid argument: message from is empty")
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.m[msg.From]; !ok {
-		r.m[msg.From] = msg
+		r.m[msg.From] = StatusMessage{Msg: msg, Status: status}
 	}
 	return nil
 }
 
-func (r *MessageCache) Get(uri string) (Message, error) {
+func (r *MessageCache) Get(uri string) (StatusMessage, error) {
 	if uri == "" {
-		return Message{}, errors.New("invalid argument: uri is empty")
+		return StatusMessage{}, errors.New("invalid argument: uri is empty")
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.m[uri]; ok {
 		return r.m[uri], nil
 	}
-	return Message{}, errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
+	return StatusMessage{}, errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
 }
 
 func (r *MessageCache) Uri() []string {
