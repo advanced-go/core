@@ -10,18 +10,23 @@ const (
 	UpstreamTimeoutFlag = "UT"
 )
 
-type TimeoutConfig struct {
-	Enabled    bool
+type Timeout struct {
 	StatusCode int
 	Duration   time.Duration
 }
 
+type Threshold struct {
+	Percent  int
+	Duration time.Duration
+}
+
 type Controller struct {
 	Name        string
-	InFailover  bool
+	InFailover  bool // if true, then call upstream and also start pinging. If pinging succeeds, then failback
 	FailoverUri string
 	PingUri     string
-	Timeout     TimeoutConfig
+	Timeout     Timeout
+	Threshold   Threshold
 	Log         func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
 	Handler     runtime.TypeHandlerFn
 }
