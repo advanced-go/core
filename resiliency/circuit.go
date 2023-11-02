@@ -8,9 +8,7 @@ import (
 type Select func(status *runtime.Status) bool
 
 // StatusCircuitBreaker - Circuit breaker functionality based on a runtime.Status. Configuration provides the
-// limit and burst for rate limiting, and a function to determine the selection of statuses. The select function
-// allows for the creation of an inverted circuit breaker, where exceeding the limit of negative events will break.
-// Set the rate limit higher for positive events,and lower for negative events.
+// limit and burst for rate limiting, and a function to determine the selection of statuses.
 type StatusCircuitBreaker interface {
 	Allow(status *runtime.Status) bool
 	Limit() rate.Limit
@@ -39,5 +37,14 @@ func NewStatusCircuitBreaker(limit rate.Limit, burst int, fn Select) StatusCircu
 	cb := new(circuitConfig)
 	cb.limiter = rate.NewLimiter(limit, burst)
 	cb.selectFn = fn
+	return cb
+}
+
+func CloneStatusCircuitBreaker(src StatusCircuitBreaker, limit rate.Limit, burst int) StatusCircuitBreaker {
+	cb := new(circuitConfig)
+	cb.limiter = rate.NewLimiter(limit, burst)
+	if cfg, ok := any(src).(*circuitConfig); ok {
+		cb.selectFn = cfg.selectFn
+	}
 	return cb
 }
