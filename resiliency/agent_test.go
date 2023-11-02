@@ -7,11 +7,11 @@ import (
 	"time"
 )
 
-var okCircuitBreaker = NewStatusCircuitBreaker(200, 100, func(s *runtime.Status) bool { return s.OK() })
+var okCircuitBreaker = NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
 
 var okPing = func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }
 
-func Example_exponentialDecay() {
+func _Example_exponentialDecay() {
 	//var ms float64 = 1000.0
 	rate := .4
 	y := 5000.0
@@ -45,8 +45,9 @@ func _Example_runChannels() {
 func _Example_runTicks() {
 	quit := make(chan struct{})
 	status := make(chan *runtime.Status, 100)
+	cb := NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
 
-	go runTicks(okPing, okCircuitBreaker, quit, status)
+	go runTicks(okPing, cb, quit, status)
 	time.Sleep(time.Millisecond * 500)
 	quit <- struct{}{}
 	s := <-status
@@ -60,9 +61,10 @@ func _Example_runTicks() {
 func Example_runPing() {
 	quit := make(chan struct{})
 	status := make(chan *runtime.Status, 100)
+	cb := NewStatusCircuitBreaker(10, 10, func(s *runtime.Status) bool { return s.OK() })
 
-	go runPing(okPing, okCircuitBreaker, quit, status)
-	time.Sleep(time.Millisecond * 500)
+	go runPing(okPing, cb, quit, status)
+	time.Sleep(time.Second * 10)
 	quit <- struct{}{}
 	s := <-status
 

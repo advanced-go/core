@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"golang.org/x/time/rate"
 	"time"
 )
 
@@ -84,23 +85,38 @@ func runTicks(_ Ping, _ StatusCircuitBreaker, quit chan struct{}, status chan *r
 	}
 }
 
-func runPing(p Ping, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+func runPing(p Ping, target StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+	var limit = rate.Limit(1)
+	burst := 1
+	cb := CloneStatusCircuitBreaker(target, limit, burst)
 	start := time.Now().UTC()
-	count := 0
-	tick := time.Tick(100 * time.Millisecond)
+	e := NewExponentialDuration(0.5, 250)
+	tick := time.Tick(e.Eval())
+
+	fmt.Printf("initial -> limit = %v burst = %v ms = %v\n", limit, burst, e.Current())
 
 	for {
 		select {
 		case <-tick:
 			ps := p(nil)
+			// If exceeded the current limit, then update limiter and increase the ticks frequency
 			if !cb.Allow(ps) {
-				status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("elapsed time: %v", time.Since(start)), false)
-				return
+				// If having achieved the target, then return
+				l1 := cb.Limit()
+				l2 := target.Limit()
+				if l1 >= l2 {
+					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
+					return
+				}
+				tick = time.Tick(e.Eval())
+				limit += limit
+				burst += burst
+				cb = CloneStatusCircuitBreaker(cb, limit, burst)
+				fmt.Printf("limit = %v target = %v burst = %v ms = %v\n", limit, target.Limit(), burst, e.Current())
 			}
-			count++
 		case <-quit:
-			c := fmt.Sprintf("received quit with ping count: %v\n", count)
-			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(c, false)
+			//c := fmt.Sprintf("received quit with ping count: %v\n", count)
+			status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("quit -> elapsed time: %v", time.Since(start)), false)
 			return
 		default:
 		}

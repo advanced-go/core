@@ -33,3 +33,14 @@ func _Example_CircuitBreaker() {
 	//test: CloneCircuitBreaker() -> [limit:45] [burst:15] [select:0x10202c0]
 
 }
+
+func Example_RateLimiter() {
+	rl := rate.NewLimiter(0.5, 1)
+
+	allow := rl.Allow()
+	fmt.Printf("test: Allow() -> %v\n", allow)
+
+	//Output:
+	//test: Allow() -> true
+
+}
