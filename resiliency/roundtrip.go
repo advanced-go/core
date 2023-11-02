@@ -54,8 +54,9 @@ func (w *controllerWrapper) RoundTrip(req *http.Request) (*http.Response, error)
 	return resp, err
 }
 
-func (w *controllerWrapper) exchange(tc TimeoutConfig, req *http.Request) (resp *http.Response, err error, statusFlags string) {
-	if !tc.Enabled || tc.Duration == 0 {
+/*
+func (w *controllerWrapper) exchange(tc Timeout, req *http.Request) (resp *http.Response, err error, statusFlags string) {
+	if !tc.Duration == 0 {
 		resp, err = w.rt.RoundTrip(req)
 		return
 	}
@@ -71,6 +72,9 @@ func (w *controllerWrapper) exchange(tc TimeoutConfig, req *http.Request) (resp 
 	}
 	return
 }
+
+
+*/
 
 func (w *controllerWrapper) deadlineExceeded(err error) bool {
 	return err != nil && err == context.DeadlineExceeded //errors.As(err, de)

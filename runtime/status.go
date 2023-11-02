@@ -23,6 +23,7 @@ const (
 	StatusNotProvided     = int(94) // No status is available
 	StatusRateLimited     = int(95) // Rate limited
 	StatusNotStarted      = int(96) // Not started
+	StatusHaveContent     = int(97) // Content is available
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
@@ -183,6 +184,16 @@ func (s *Status) AddLocation(location string) *Status {
 // IsContent - content
 func (s *Status) IsContent() bool { return s.content != nil }
 func (s *Status) Content() any    { return s.content }
+func (s *Status) ContentString() string {
+	switch ptr := s.content.(type) {
+	case string:
+		return ptr
+	case []byte:
+		return string(ptr)
+	}
+	return ""
+}
+
 func (s *Status) RemoveContent() {
 	s.content = nil
 }
@@ -363,6 +374,9 @@ func (s *Status) Description() string {
 		return "Deadline Exceeded"
 	case StatusInvalidArgument:
 		return "Invalid Argument"
+	case StatusHaveContent:
+		return "Content Available"
+
 	//case StatusUnavailable:
 	//	return "Invalid Argument"
 
