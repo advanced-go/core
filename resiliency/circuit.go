@@ -12,7 +12,9 @@ type StatusSelect func(status *runtime.Status) bool
 type StatusCircuitBreaker interface {
 	Allow(status *runtime.Status) bool
 	Limit() rate.Limit
+	SetLimit(limit rate.Limit)
 	Burst() int
+	SetBurst(burst int)
 	Select() StatusSelect
 }
 
@@ -35,8 +37,16 @@ func (c *circuitConfig) Limit() rate.Limit {
 	return c.limiter.Limit()
 }
 
+func (c *circuitConfig) SetLimit(limit rate.Limit) {
+	c.limiter.SetLimit(limit)
+}
+
 func (c *circuitConfig) Burst() int {
 	return c.limiter.Burst()
+}
+
+func (c *circuitConfig) SetBurst(burst int) {
+	c.limiter.SetBurst(burst)
 }
 
 func (c *circuitConfig) Select() StatusSelect {

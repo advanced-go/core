@@ -51,9 +51,9 @@ var runTable = []runArgs{
 
 func createTable() []runArgs {
 	var table []runArgs
-	for i, arg := range runTable {
-		arg.cb = NewStatusCircuitBreaker(runTable[i].limit, runTable[i].burst, func(status *runtime.Status) bool { return true })
-		arg.tick = time.Tick(runTable[i].dur)
+	for _, arg := range runTable {
+		//arg.cb = NewStatusCircuitBreaker(runTable[i].limit, runTable[i].burst, func(status *runtime.Status) bool { return true })
+		//arg.tick = time.Tick(runTable[i].dur)
 		table = append(table, arg)
 	}
 	return table
@@ -72,9 +72,9 @@ func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker)
 	a.ping = ping
 	a.cb = cb
 	a.table = []runArgs{}
-	for i, arg := range runTable {
-		arg.cb = NewStatusCircuitBreaker(runTable[i].limit, runTable[i].burst, cb.Select())
-		arg.tick = time.Tick(runTable[i].dur)
+	for _, arg := range runTable {
+		//arg.cb = NewStatusCircuitBreaker(runTable[i].limit, runTable[i].burst, cb.Select())
+		//arg.tick = time.Tick(runTable[i].dur)
 		a.table = append(a.table, arg)
 	}
 	//cnt := copy(a.table, runTable)
@@ -137,38 +137,37 @@ func runTicks(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan 
 	}
 }
 
-func runTest(table []runArgs, ping PingFn, timeout time.Duration, target StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+func runTest(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
 	start := time.Now().UTC()
 	limiterTime := time.Now().UTC()
 	i := 0
+	targetLimit := cb.Limit()
+	cb.SetLimit(runTable[i].limit)
+	cb.SetBurst(runTable[i].burst)
+	tick := time.Tick(runTable[i].dur)
 
-	tick := table[i].tick
-	cb := table[i].cb //NewStatusCircuitBreaker(table[i].limit, table[i].burst, target.Select())
 	//fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", target.Limit(), cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 	for {
 		select {
 		case <-tick:
 			ps := callPing(nil, ping, timeout)
 			// If exceeded the current limit, then update limiter and increase the tick frequency
-			//allowStart := time.Now().UTC()
-			allow := cb.Allow(ps)
-			//fmt.Printf("allow duration = %v\n", time.Since(allowStart))
-			if !allow {
+			if !cb.Allow(ps) {
 				// If having achieved the target, then return
-				if cb.Limit() >= target.Limit() {
+				if cb.Limit() >= targetLimit {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
 					return
 				}
-				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", target.Limit(), cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
+				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 				i++
 				if i >= len(table) {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("error: reached end o table -> elapsed time: %v", time.Since(start)), false)
 					return
 				}
-				tick = table[i].tick
-				cb = table[i].cb //NewStatusCircuitBreaker(table[i].limit, table[i].burst, target.Select())
-				//fmt.Printf("target = %v limit = %v dur = %v elapsed time = %v\n", target.Limit(), cb.Limit(), table[i].dur, time.Since(limiterTime))
-				//fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", target.Limit(), cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
+				tick = time.Tick(runTable[i].dur)
+				cb.SetLimit(runTable[i].limit)
+				cb.SetBurst(runTable[i].burst)
+				//cb = table[i].cb //NewStatusCircuitBreaker(table[i].limit, table[i].burst, target.Select())
 				limiterTime = time.Now().UTC()
 			}
 		default:

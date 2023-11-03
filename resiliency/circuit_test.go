@@ -51,19 +51,29 @@ func _Example_RateLimiter() {
 func Example_CircuitTest() {
 	count := 1000
 	ms := time.Duration(999)
+	limiter := rate.NewLimiter(1, 1)
 
-	//testBreaker(1, 1, func(status *runtime.Status) bool { return true }, time.Millisecond*ms, count)
-	//testBreaker2(1, 1, time.Millisecond*ms, count)
+	testBreaker2(limiter, 1, 1, time.Millisecond*ms, count)
 
-	// 99ms should work
-	ms = time.Duration(95)
-	//testBreaker(10, 10, func(status *runtime.Status) bool { return true }, time.Millisecond*ms, count)
-	testBreaker2(10, 10, time.Millisecond*ms, count)
+	// 100ms should work  actual 94
+	ms = time.Duration(94)
+	testBreaker2(limiter, 10, 10, time.Millisecond*ms, count)
 
-	// 19 ms should work
-	//ms = time.Duration(15)
-	//testBreaker(50, 50, func(status *runtime.Status) bool { return true }, time.Millisecond*ms, count)
-	//testBreaker2(50, 50, time.Millisecond*ms, count)
+	// 40ms should work  actual
+	ms = time.Duration(30)
+	testBreaker2(limiter, 25, 25, time.Millisecond*ms, count)
+
+	// 20 ms should work actual
+	ms = time.Duration(15)
+	testBreaker2(limiter, 50, 50, time.Millisecond*ms, count)
+
+	// 13 ms should work actual
+	ms = time.Duration(6)
+	testBreaker2(limiter, 75, 75, time.Millisecond*ms, count)
+
+	// 1 ms should work actual 0
+	ms = time.Duration(0)
+	testBreaker2(limiter, 100, 100, time.Millisecond*ms, count+1000)
 
 	//Output:
 }
@@ -82,11 +92,15 @@ func testBreaker(limit rate.Limit, burst int, fn StatusSelect, d time.Duration, 
 	fmt.Printf("test: testBreaker()  ->  [circuit:%v] [limit:%v] [duration:%v] [count:%v] [elapsed:%v]\n", "OK", limit, d, count, time.Since(start))
 }
 
-func testBreaker2(limit rate.Limit, burst int, d time.Duration, count int) {
+func testBreaker2(limiter *rate.Limiter, limit rate.Limit, burst int, d time.Duration, count int) {
 	start := time.Now().UTC()
-	limiter := rate.NewLimiter(limit, burst)
+	//limiter := rate.NewLimiter(limit, burst)
+	limiter.SetLimit(limit)
+	limiter.SetBurst(burst)
 	for i := 0; i < count; i++ {
-		time.Sleep(d)
+		if d > 0 {
+			time.Sleep(d)
+		}
 		if !limiter.Allow() {
 			fmt.Printf("test: testBreaker2() ->  [circuit:%v] [limit:%v] [duration:%v] [count:%v] [elapsed:%v]\n", "broken", limit, d, i, time.Since(start))
 			return
