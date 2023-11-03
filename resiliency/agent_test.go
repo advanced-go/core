@@ -8,11 +8,51 @@ import (
 )
 
 var okCircuitBreaker = NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
-
 var okPing = func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }
 
+func Example_runTest() {
+	useDone := false
+	quit := make(chan struct{}, 1)
+	status := make(chan *runtime.Status, 100)
+	cb := NewStatusCircuitBreaker(5, 5, func(s *runtime.Status) bool { return s.OK() })
+
+	go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
+	if useDone {
+		done := make(chan struct{})
+		go func(chan struct{}, chan *runtime.Status) {
+			for {
+				select {
+				case <-status:
+					st := <-status
+					if st.IsContent() {
+						fmt.Printf("status: %v", st.ContentString())
+					}
+					if st.OK() {
+						done <- struct{}{}
+						return
+					}
+				default:
+				}
+			}
+		}(done, status)
+		<-done
+		close(done)
+	} else {
+		time.Sleep(time.Minute * 2)
+		quit <- struct{}{}
+		for s := range status {
+			fmt.Printf("test: runTest() -> %v\n", s.ContentString())
+		}
+	}
+	close(quit)
+	close(status)
+
+	//Output:
+
+}
+
 func _Example_NewStatusAgent() {
-	a := NewStatusAgent(0, okPing, okCircuitBreaker)
+	a := NewStatusAgent(0, nil, nil)
 	fmt.Printf("test: NewStatusAgent() -> %v\n", a)
 
 	//Output:
@@ -49,20 +89,53 @@ func _Example_runTicks() {
 
 }
 
-func Example_runTest() {
-	quit := make(chan struct{}, 1)
-	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(100, 100, func(s *runtime.Status) bool { return s.OK() })
+func runStatus(ping PingFn, table []runArgs, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+	for {
+		select {
+		case <-quit:
+			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent("quit = true", false)
+			return
+		default:
+		}
+	}
+}
 
-	go runTest(createTable(), okPing, 0, cb, quit, status)
-	time.Sleep(time.Minute * 5)
-	quit <- struct{}{}
-	s := <-status
-	close(quit)
-	close(status)
+// run - quit and status
+func runChannels(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+	count := 0
+	for {
+		select {
+		case <-quit:
+			c := fmt.Sprintf("received quit with default count: %v\n", count)
+			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(c, false)
+			return
+		default:
+			count++
+		}
+	}
+}
 
-	fmt.Printf("test: runPing() -> %v\n", s.ContentString())
+func runTicks(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+	count := 0
+	d := 10
+	tick := time.Tick(time.Duration(d) * time.Millisecond)
 
-	//Output:
-
+	for {
+		select {
+		case <-tick:
+			count++
+			// Tick reset
+			if (count % 10) == 0 {
+				fmt.Printf("tick count %vms: %v\n", d, count)
+				d += 10
+				tick = time.Tick(time.Duration(d) * time.Millisecond)
+				count = 0
+			}
+		case <-quit:
+			c := fmt.Sprintf("received quit with tick count %vms: %v\n", d, count)
+			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(c, false)
+			return
+		default:
+		}
+	}
 }

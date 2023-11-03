@@ -1,10 +1,15 @@
 package resiliency
 
 import (
+	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
 	"golang.org/x/time/rate"
 	"time"
+)
+
+const (
+	maxLimit = rate.Limit(100)
 )
 
 type StatusAgent interface {
@@ -18,9 +23,9 @@ type runArgs struct {
 }
 
 var runTable = []runArgs{
-	{limit: rate.Limit(0.02), burst: 1, dur: time.Millisecond * 40000},
-	{limit: rate.Limit(0.04), burst: 1, dur: time.Millisecond * 20000},
-	{limit: rate.Limit(0.08), burst: 1, dur: time.Millisecond * 10000},
+	//{limit: rate.Limit(0.02), burst: 1, dur: time.Millisecond * 40000},
+	//{limit: rate.Limit(0.04), burst: 1, dur: time.Millisecond * 20000},
+	//{limit: rate.Limit(0.08), burst: 1, dur: time.Millisecond * 10000},
 	{limit: rate.Limit(0.15), burst: 1, dur: time.Millisecond * 5000},
 	{limit: rate.Limit(0.30), burst: 1, dur: time.Millisecond * 2500},
 	{limit: rate.Limit(0.60), burst: 1, dur: time.Millisecond * 1250},
@@ -67,7 +72,12 @@ type agentConfig struct {
 	table   []runArgs
 }
 
-func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) StatusAgent {
+// NewStatusAgent -
+//
+func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (*runtime.Status, StatusAgent) {
+	if cb.Limit() > maxLimit {
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, "Agent", errors.New(fmt.Sprintf("error: circuit breaker limit [%v] is > 100", cb.Limit()))), nil
+	}
 	a := new(agentConfig)
 	a.timeout = timeout
 	a.ping = ping
@@ -76,65 +86,14 @@ func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker)
 	for _, arg := range runTable {
 		a.table = append(a.table, arg)
 	}
-	return a
+	return runtime.NewStatusOK(), a
 }
 
 func (cf *agentConfig) Run(quit chan struct{}, status chan *runtime.Status) {
-	go run(cf.ping, cf.table, cf.cb, quit, status)
+	go run(cf.table, cf.ping, cf.timeout, cf.cb, quit, status)
 }
 
-func run(ping PingFn, table []runArgs, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
-	for {
-		select {
-		case <-quit:
-			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent("quit = true", false)
-			return
-		default:
-		}
-	}
-}
-
-// run - quit and status
-func runChannels(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
-	count := 0
-	for {
-		select {
-		case <-quit:
-			c := fmt.Sprintf("received quit with default count: %v\n", count)
-			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(c, false)
-			return
-		default:
-			count++
-		}
-	}
-}
-
-func runTicks(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
-	count := 0
-	d := 10
-	tick := time.Tick(time.Duration(d) * time.Millisecond)
-
-	for {
-		select {
-		case <-tick:
-			count++
-			// Tick reset
-			if (count % 10) == 0 {
-				fmt.Printf("tick count %vms: %v\n", d, count)
-				d += 10
-				tick = time.Tick(time.Duration(d) * time.Millisecond)
-				count = 0
-			}
-		case <-quit:
-			c := fmt.Sprintf("received quit with tick count %vms: %v\n", d, count)
-			status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(c, false)
-			return
-		default:
-		}
-	}
-}
-
-func runTest(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
 	start := time.Now().UTC()
 	limiterTime := time.Now().UTC()
 	i := 0
@@ -154,6 +113,8 @@ func runTest(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircu
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
 					return
 				}
+				//status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(
+				//	fmt.Sprintf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
 				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 				i++
 				if i >= len(table) {
