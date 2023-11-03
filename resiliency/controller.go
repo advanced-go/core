@@ -30,9 +30,10 @@ type Threshold struct {
 }
 
 type ControllerConfig struct {
-	Name      string
-	Threshold Threshold // requests per second
-	Timeout   Timeout
+	Name    string
+	Primary Threshold // requests per second
+	Ping    Threshold
+	Timeout Timeout
 }
 
 type controller struct {
@@ -48,6 +49,10 @@ type controller struct {
 
 func NewController(cfg ControllerConfig, ping PingFn, primary, secondary runtime.TypeHandlerFn, log LogFn) Controller {
 	ctrl := new(controller)
+	ctrl.ping = ping
+	ctrl.primary = primary
+	ctrl.secondary = secondary
+	ctrl.log = log
 	return ctrl
 }
 
