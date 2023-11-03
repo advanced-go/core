@@ -11,10 +11,10 @@ var okCircuitBreaker = NewStatusCircuitBreaker(200, 200, func(s *runtime.Status)
 var okPing = func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }
 
 func Example_runTest() {
-	useDone := false
+	useDone := true
 	quit := make(chan struct{}, 1)
 	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(5, 5, func(s *runtime.Status) bool { return s.OK() })
+	cb := NewStatusCircuitBreaker(100, 100, func(s *runtime.Status) bool { return s.OK() })
 
 	go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
 	if useDone {
@@ -22,10 +22,9 @@ func Example_runTest() {
 		go func(chan struct{}, chan *runtime.Status) {
 			for {
 				select {
-				case <-status:
-					st := <-status
+				case st := <-status:
 					if st.IsContent() {
-						fmt.Printf("status: %v", st.ContentString())
+						fmt.Printf("test: runTest() -> %v", st.ContentString())
 					}
 					if st.OK() {
 						done <- struct{}{}
@@ -38,11 +37,15 @@ func Example_runTest() {
 		<-done
 		close(done)
 	} else {
-		time.Sleep(time.Minute * 2)
+		time.Sleep(time.Minute * 1)
 		quit <- struct{}{}
-		for s := range status {
+		s := <-status
+		if s != nil && s.IsContent() {
 			fmt.Printf("test: runTest() -> %v\n", s.ContentString())
 		}
+		//for s := range status {
+		//		}
+		//	}
 	}
 	close(quit)
 	close(status)

@@ -23,9 +23,9 @@ type runArgs struct {
 }
 
 var runTable = []runArgs{
-	//{limit: rate.Limit(0.02), burst: 1, dur: time.Millisecond * 40000},
-	//{limit: rate.Limit(0.04), burst: 1, dur: time.Millisecond * 20000},
-	//{limit: rate.Limit(0.08), burst: 1, dur: time.Millisecond * 10000},
+	{limit: rate.Limit(0.02), burst: 1, dur: time.Millisecond * 40000},
+	{limit: rate.Limit(0.04), burst: 1, dur: time.Millisecond * 20000},
+	{limit: rate.Limit(0.08), burst: 1, dur: time.Millisecond * 10000},
 	{limit: rate.Limit(0.15), burst: 1, dur: time.Millisecond * 5000},
 	{limit: rate.Limit(0.30), burst: 1, dur: time.Millisecond * 2500},
 	{limit: rate.Limit(0.60), burst: 1, dur: time.Millisecond * 1250},
@@ -104,9 +104,12 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBr
 	for {
 		select {
 		case <-tick:
+			//status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("done -> elapsed time: %v", time.Since(start)), false)
+			//return
 			ps := callPing(nil, ping, timeout)
 			// If exceeded the current limit, then update limiter and increase the tick frequency
 			if !cb.Allow(ps) {
+				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 				// If having achieved the target, then return
 				if cb.Limit() >= targetLimit {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
@@ -114,7 +117,7 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBr
 				}
 				//status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(
 				//	fmt.Sprintf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
-				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
+				//fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 				i++
 				if i >= len(table) {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("error: reached end o table -> elapsed time: %v", time.Since(start)), false)
