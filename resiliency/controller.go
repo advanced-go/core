@@ -11,7 +11,9 @@ const (
 	UpstreamTimeoutFlag = "UT"
 )
 
-type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
+type PingFn func(ctx context.Context) *runtime.Status
+
+type LogFn func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
 
 type Controller interface {
 	Apply(r *http.Request, body any) (t any, status *runtime.Status)
@@ -38,13 +40,13 @@ type controller struct {
 	inFailover     bool // if true, then call upstream and also start pinging. If pinging succeeds, then failback
 	primaryCircuit StatusCircuitBreaker
 	pingCircuit    StatusCircuitBreaker
-	ping           func(ctx context.Context) *runtime.Status
+	ping           PingFn
 	primary        runtime.TypeHandlerFn
 	secondary      runtime.TypeHandlerFn
-	log            func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
+	log            LogFn
 }
 
-func NewController(cfg ControllerConfig, ping Threshold, primary, secondary runtime.TypeHandlerFn, log LogHandler) Controller {
+func NewController(cfg ControllerConfig, ping PingFn, primary, secondary runtime.TypeHandlerFn, log LogFn) Controller {
 	ctrl := new(controller)
 	return ctrl
 }
@@ -72,4 +74,17 @@ func (ctrl *controller) Apply(r *http.Request, body any) (t any, status *runtime
 	ms := 0
 	ctrl.log("internal", start, time.Since(start), r, &resp, ctrl.config.Name, ms, statusFlags)
 	return t, status
+}
+
+func callPing(ctx context.Context, ping PingFn, timeout time.Duration) *runtime.Status {
+	if timeout == 0 {
+		return ping(ctx)
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	//ctx, cancel := context.WithTimeout(ctx,timeout)
+	status := ping(ctx)
+
+	return status
 }

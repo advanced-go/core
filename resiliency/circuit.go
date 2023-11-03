@@ -5,25 +5,27 @@ import (
 	"golang.org/x/time/rate"
 )
 
-type Select func(status *runtime.Status) bool
+type StatusSelect func(status *runtime.Status) bool
 
 // StatusCircuitBreaker - Circuit breaker functionality based on a runtime.Status. Configuration provides the
 // limit and burst for rate limiting, and a function to determine the selection of statuses.
 type StatusCircuitBreaker interface {
 	Allow(status *runtime.Status) bool
 	Limit() rate.Limit
+	Burst() int
+	Select() StatusSelect
 }
 
 type circuitConfig struct {
-	limiter  *rate.Limiter
-	selectFn Select
+	limiter *rate.Limiter
+	fn      StatusSelect
 }
 
 func (c *circuitConfig) Allow(status *runtime.Status) bool {
 	if status == nil {
 		return false
 	}
-	if !c.selectFn(status) {
+	if !c.fn(status) {
 		return true
 	}
 	return c.limiter.Allow()
@@ -33,18 +35,17 @@ func (c *circuitConfig) Limit() rate.Limit {
 	return c.limiter.Limit()
 }
 
-func NewStatusCircuitBreaker(limit rate.Limit, burst int, fn Select) StatusCircuitBreaker {
-	cb := new(circuitConfig)
-	cb.limiter = rate.NewLimiter(limit, burst)
-	cb.selectFn = fn
-	return cb
+func (c *circuitConfig) Burst() int {
+	return c.limiter.Burst()
 }
 
-func CloneStatusCircuitBreaker(src StatusCircuitBreaker, limit rate.Limit, burst int) StatusCircuitBreaker {
+func (c *circuitConfig) Select() StatusSelect {
+	return c.fn
+}
+
+func NewStatusCircuitBreaker(limit rate.Limit, burst int, fn StatusSelect) StatusCircuitBreaker {
 	cb := new(circuitConfig)
 	cb.limiter = rate.NewLimiter(limit, burst)
-	if cfg, ok := any(src).(*circuitConfig); ok {
-		cb.selectFn = cfg.selectFn
-	}
+	cb.fn = fn
 	return cb
 }
