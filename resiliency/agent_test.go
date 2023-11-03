@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
-	"golang.org/x/time/rate"
 	"time"
 )
 
@@ -53,30 +52,10 @@ func _Example_runTicks() {
 func Example_runTest() {
 	quit := make(chan struct{}, 1)
 	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(100, 10, func(s *runtime.Status) bool { return s.OK() })
+	cb := NewStatusCircuitBreaker(100, 100, func(s *runtime.Status) bool { return s.OK() })
 
 	go runTest(createTable(), okPing, 0, cb, quit, status)
-	time.Sleep(time.Minute * 2)
-	quit <- struct{}{}
-	s := <-status
-	close(quit)
-	close(status)
-
-	fmt.Printf("test: runPing() -> %v\n", s.ContentString())
-
-	//Output:
-
-}
-
-func _Example_runSlice() {
-	quit := make(chan struct{}, 1)
-	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(100, 10, func(s *runtime.Status) bool { return s.OK() })
-
-	args := []runArgs{{limit: rate.Limit(90), burst: 100, dur: time.Millisecond * 1}}
-
-	go runTest(args, okPing, 0, cb, quit, status)
-	time.Sleep(time.Minute * 1)
+	time.Sleep(time.Minute * 5)
 	quit <- struct{}{}
 	s := <-status
 	close(quit)

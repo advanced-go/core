@@ -15,7 +15,7 @@ type StatusCircuitBreaker interface {
 	SetLimit(limit rate.Limit)
 	Burst() int
 	SetBurst(burst int)
-	Select() StatusSelect
+	//Select() StatusSelect
 }
 
 type circuitConfig struct {

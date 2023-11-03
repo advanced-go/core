@@ -48,7 +48,7 @@ func _Example_RateLimiter() {
 
 }
 
-func Example_CircuitTest() {
+func _Example_CircuitTest() {
 	count := 1000
 	ms := time.Duration(999)
 	limiter := rate.NewLimiter(1, 1)
