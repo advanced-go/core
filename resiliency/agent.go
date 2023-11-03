@@ -73,7 +73,6 @@ type agentConfig struct {
 }
 
 // NewStatusAgent -
-//
 func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (*runtime.Status, StatusAgent) {
 	if cb.Limit() > maxLimit {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, "Agent", errors.New(fmt.Sprintf("error: circuit breaker limit [%v] is > 100", cb.Limit()))), nil

@@ -51,13 +51,6 @@ func Example_runTest() {
 
 }
 
-func _Example_NewStatusAgent() {
-	a := NewStatusAgent(0, nil, nil)
-	fmt.Printf("test: NewStatusAgent() -> %v\n", a)
-
-	//Output:
-}
-
 func _Example_runChannels() {
 	quit := make(chan struct{})
 	status := make(chan *runtime.Status, 100)
