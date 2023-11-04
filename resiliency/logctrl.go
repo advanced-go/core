@@ -33,7 +33,7 @@ func (ctrl *logController) Apply(r *http.Request, body any) (t any, status *runt
 	t, status = ctrl.handler(r, body)
 	resp := http.Response{StatusCode: status.Code()}
 	if ctrl.log != nil {
-		ctrl.log(InternalTraffic, start, time.Since(start), r, &resp, ctrl.name, 0, "")
+		ctrl.log(internalTraffic, start, time.Since(start), r, &resp, ctrl.name, 0, "")
 	}
 	return
 }

@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	UpstreamTimeoutFlag = "UT"
-	InternalTraffic     = "internal"
+	upstreamTimeoutFlag = "UT"
+	internalTraffic     = "internal"
+	defaultAgentTimeout = time.Hour * 1
 )
 
-var controllerLoc = PkgUri + "/Controller/ping"
+var controlAgentFailoverloc = PkgUri + "/Controller/failover"
 
 // PingFn - typedef for a ping function that returns a status
 type PingFn func(ctx context.Context) *runtime.Status
@@ -39,10 +40,10 @@ type Threshold struct {
 
 // ControllerConfig - user supplied configuration
 type ControllerConfig struct {
-	Name    string
-	Primary Threshold
-	Ping    Threshold
-	Agent   Threshold
+	Name         string
+	agentTimeout time.Duration
+	Primary      Threshold
+	Ping         Threshold
 }
 
 type controller struct {
@@ -84,6 +85,9 @@ func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, second
 	if err0 != nil {
 		return nil, err0
 	}
+	if ctrl.config.agentTimeout == 0 {
+		ctrl.config.agentTimeout = defaultAgentTimeout
+	}
 	ctrl.primary = primary
 	ctrl.secondary = secondary
 	ctrl.log = log
@@ -103,6 +107,7 @@ func (c *controller) failover() {
 	status := make(chan *runtime.Status, 100)
 	go func(chan struct{}, chan *runtime.Status) {
 		for {
+			tick := time.Tick(c.config.agentTimeout)
 			select {
 			case st := <-status:
 				if st.IsContent() {
@@ -113,6 +118,13 @@ func (c *controller) failover() {
 					done <- struct{}{}
 					return
 				}
+			default:
+			}
+			select {
+			case <-tick:
+				c.e.HandleStatus(runtime.NewStatus(runtime.StatusDeadlineExceeded), "", controlAgentFailoverloc)
+				done <- struct{}{}
+				return
 			default:
 			}
 		}
@@ -141,7 +153,7 @@ func (c *controller) Apply(r *http.Request, body any) (t any, status *runtime.St
 	// access logging
 	resp := http.Response{StatusCode: status.Code()}
 	d := time.Since(start)
-	c.log(InternalTraffic, start, d, r, &resp, c.config.Name, int(d/time.Millisecond), statusFlags)
+	c.log(internalTraffic, start, d, r, &resp, c.config.Name, int(d/time.Millisecond), statusFlags)
 	return t, status
 }
 
