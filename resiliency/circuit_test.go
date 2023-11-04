@@ -10,19 +10,19 @@ import (
 var okSelect = func(status *runtime.Status) bool { return status.OK() }
 
 func Example_CircuitBreaker_Error() {
-	err, _ := NewStatusCircuitBreaker(0, 50, okSelect)
+	_, err := NewStatusCircuitBreaker(Threshold{Limit: 0, Burst: 50, Duration: 0}, okSelect)
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	err, _ = NewStatusCircuitBreaker(100, 0, okSelect)
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 0, Duration: 0}, okSelect)
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	err, _ = NewStatusCircuitBreaker(-1, 50, okSelect)
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: -1, Burst: 50, Duration: 0}, okSelect)
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	err, _ = NewStatusCircuitBreaker(101, 50, nil)
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 101, Burst: 50, Duration: 0}, nil)
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	err, _ = NewStatusCircuitBreaker(100, 50, nil)
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Duration: 0}, nil)
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	//Output:
@@ -35,7 +35,7 @@ func Example_CircuitBreaker_Error() {
 }
 
 func Example_CircuitBreaker_Clone() {
-	_, cb := NewStatusCircuitBreaker(100, 50, okSelect)
+	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Duration: 0}, okSelect)
 	clone := CloneStatusCircuitBreaker(cb)
 
 	fmt.Printf("test: CloneStatusCircuitBreaker() -> [limit:%v] [burst:%v]\n", clone.Limit(), clone.Burst())
@@ -75,9 +75,9 @@ func _Example_CircuitTest() {
 	//Output:
 }
 
-func testBreaker(limit rate.Limit, burst int, fn StatusSelect, d time.Duration, count int) {
+func testBreaker(limit rate.Limit, burst int, fn StatusSelectFn, d time.Duration, count int) {
 	start := time.Now().UTC()
-	_, cb := NewStatusCircuitBreaker(limit, burst, fn)
+	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: limit, Burst: burst, Duration: 0}, fn)
 	s := runtime.NewStatusOK()
 	for i := 0; i < count; i++ {
 		time.Sleep(d)

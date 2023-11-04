@@ -63,12 +63,12 @@ type agentConfig struct {
 }
 
 // NewStatusAgent - creation of an agent with configuration
-func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (error, StatusAgent) {
+func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (StatusAgent, error) {
 	if ping == nil {
-		return errors.New("error: ping function is nil"), nil
+		return nil, errors.New("error: ping function is nil")
 	}
 	if cb == nil {
-		return errors.New("error: circuit breaker is nil"), nil
+		return nil, errors.New("error: circuit breaker is nil")
 	}
 	a := new(agentConfig)
 	a.timeout = timeout
@@ -78,7 +78,7 @@ func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker)
 	for _, arg := range runTable {
 		a.table = append(a.table, arg)
 	}
-	return nil, a
+	return a, nil
 }
 
 // Run - run the agent

@@ -13,8 +13,8 @@ const (
 
 var cbLocation = PkgUri + "/StatusCircuitBreaker"
 
-// StatusSelect - typedef for a function that determines whether or not to select a status
-type StatusSelect func(status *runtime.Status) bool
+// StatusSelectFn - typedef for a function that determines when to select a status
+type StatusSelectFn func(status *runtime.Status) bool
 
 // StatusCircuitBreaker - Circuit breaker functionality based on a runtime.Status. Configuration provides the
 // limit and burst for rate limiting, and a function to determine the selection of statuses.
@@ -28,7 +28,7 @@ type StatusCircuitBreaker interface {
 
 type circuitConfig struct {
 	limiter *rate.Limiter
-	fn      StatusSelect
+	fn      StatusSelectFn
 }
 
 // Allow - allow the event based on the status
@@ -64,20 +64,20 @@ func (c *circuitConfig) SetBurst(burst int) {
 }
 
 // NewStatusCircuitBreaker - create a circuit breaker with argument validation
-func NewStatusCircuitBreaker(limit rate.Limit, burst int, fn StatusSelect) (error, StatusCircuitBreaker) {
-	if limit <= 0 || burst <= 0 {
-		return errors.New(fmt.Sprintf("error: rate limit or burst is invalid limit = %v burst = %v", limit, burst)), nil
+func NewStatusCircuitBreaker(t Threshold, fn StatusSelectFn) (StatusCircuitBreaker, error) {
+	if t.Limit <= 0 || t.Burst <= 0 {
+		return nil, errors.New(fmt.Sprintf("error: rate limit or burst is invalid limit = %v burst = %v", t.Limit, t.Burst))
 	}
-	if limit > maxLimit {
-		return errors.New(fmt.Sprintf("error: rate limit [%v] is greater than the maximum [%v]", limit, maxLimit)), nil
+	if t.Limit > maxLimit {
+		return nil, errors.New(fmt.Sprintf("error: rate limit [%v] is greater than the maximum [%v]", t.Limit, maxLimit))
 	}
 	if fn == nil {
-		return errors.New(fmt.Sprintf("error: status select function in nil")), nil
+		return nil, errors.New(fmt.Sprintf("error: status select function in nil"))
 	}
 	cb := new(circuitConfig)
-	cb.limiter = rate.NewLimiter(limit, burst)
+	cb.limiter = rate.NewLimiter(t.Limit, t.Burst)
 	cb.fn = fn
-	return nil, cb
+	return cb, nil
 }
 
 // CloneStatusCircuitBreaker - create a clone of a StatusCircuitBreaker

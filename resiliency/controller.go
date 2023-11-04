@@ -2,8 +2,12 @@ package resiliency
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"golang.org/x/time/rate"
 	"net/http"
+	"sync/atomic"
 	"time"
 )
 
@@ -25,29 +29,24 @@ type Controller interface {
 	Apply(r *http.Request, body any) (t any, status *runtime.Status)
 }
 
-// Timeout - timeout configuration
-type Timeout struct {
-	StatusCode int
-	Duration   time.Duration
-}
-
-// Threshold - rate limiting configuration
+// Threshold - rate limiting and timeout configuration
 type Threshold struct {
-	Limit int // request per second
-	Burst int
+	Limit    rate.Limit // request per second
+	Burst    int
+	Duration time.Duration
 }
 
 // ControllerConfig - user supplied configuration
 type ControllerConfig struct {
 	Name    string
-	Primary Threshold // requests per second
+	Primary Threshold
 	Ping    Threshold
-	Timeout Timeout
+	Agent   Threshold
 }
 
 type controller struct {
 	config         ControllerConfig
-	inFailover     bool // if true, then call upstream and also start pinging. If pinging succeeds, then failback
+	failoverStatus *atomic.Bool
 	primaryCircuit StatusCircuitBreaker
 	pingCircuit    StatusCircuitBreaker
 	agent          StatusAgent
@@ -55,23 +54,62 @@ type controller struct {
 	primary        runtime.TypeHandlerFn
 	secondary      runtime.TypeHandlerFn
 	log            LogFn
+	e              runtime.ErrorHandler
 }
 
 // NewController - create a new resiliency controller
-func NewController(cfg ControllerConfig, ping PingFn, primary, secondary runtime.TypeHandlerFn, log LogFn) Controller {
+func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, secondary runtime.TypeHandlerFn, ping PingFn, statusSelect StatusSelectFn, log LogFn) (Controller, error) {
+	var e E
+	if primary == nil || secondary == nil {
+		return nil, errors.New(fmt.Sprintf("error: primary [nil:%v] or secondary [nil:%v] is nil", primary == nil, secondary == nil))
+	}
+	if ping == nil || statusSelect == nil {
+		return nil, errors.New(fmt.Sprintf("error: ping [nil:%v] or status select [nil:%v] is nil", ping == nil, statusSelect == nil))
+	}
 	ctrl := new(controller)
 	//ctrl.p
-	//ctrl.agent = NewStatusAgent(ctrl.config.Timeout.Duration,ping,pingCircuit)c
+	//err,cb := NewStatusCircuitBreaker(0,0,statusSelect)
+	//ctrl.agent = NewStatusAgent(ctrl.config.Timeout.Duration,ping,pingCircuit)
 	ctrl.config = cfg
 	ctrl.ping = ping
 	ctrl.primary = primary
 	ctrl.secondary = secondary
 	ctrl.log = log
-	return ctrl
+	ctrl.failoverStatus = new(atomic.Bool)
+	ctrl.failoverStatus.Store(false)
+	ctrl.e = e
+	return ctrl, nil
 }
 
-func (c *controller) failover() bool {
-	return false
+func (c *controller) failover() {
+	if c.failoverStatus.Load() {
+		return
+	}
+	c.failoverStatus.Store(true)
+	done := make(chan struct{})
+	quit := make(chan struct{}, 1)
+	status := make(chan *runtime.Status, 100)
+	go func(chan struct{}, chan *runtime.Status) {
+		for {
+			select {
+			case st := <-status:
+				if st.IsContent() {
+					fmt.Printf("test: runTest() -> %v", st.ContentString())
+				}
+				if st.OK() {
+					c.failoverStatus.Store(false)
+					done <- struct{}{}
+					return
+				}
+			default:
+			}
+		}
+	}(done, status)
+	<-done
+	close(done)
+	close(quit)
+	close(status)
+	return
 }
 
 // Apply - call the controller for each request
@@ -79,13 +117,13 @@ func (c *controller) Apply(r *http.Request, body any) (t any, status *runtime.St
 	var start = time.Now().UTC()
 	var statusFlags = ""
 
-	if c.failover() {
+	if c.failoverStatus.Load() {
 		t, status = c.secondary(r, body)
 	} else {
-		t, status = callPrimary(r, body, c.primary, c.config.Timeout.Duration)
+		t, status = callPrimary(r, body, c.primary, c.config.Primary.Duration)
 		// check the circuit
 		if !c.primaryCircuit.Allow(status) {
-
+			c.failover()
 		}
 	}
 	// access logging
