@@ -191,3 +191,17 @@ func callPrimary(r *http.Request, body any, fn runtime.TypeHandlerFn, timeout ti
 	}
 	return
 }
+
+type bypass struct {
+	handler runtime.TypeHandlerFn
+}
+
+func NewBypassController(handler runtime.TypeHandlerFn) Controller {
+	ctrl := new(bypass)
+	ctrl.handler = handler
+	return ctrl
+}
+
+func (b *bypass) Apply(r *http.Request, body any) (t any, status *runtime.Status) {
+	return b.handler(r, body)
+}
