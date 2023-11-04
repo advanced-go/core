@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
 	"golang.org/x/time/rate"
+	"net/http"
 	"time"
 )
 
-const (
-	maxLimit = rate.Limit(100)
-)
-
+// StatusAgent - an agent that will manage returning an endpoint back to receiving traffic
 type StatusAgent interface {
 	Run(quit chan struct{}, status chan *runtime.Status)
 }
@@ -55,15 +53,7 @@ var runTable = []runArgs{
 	//{limit: rate.Limit(250), burst: 250, dur: time.Millisecond * 3, cb: nil}, //
 }
 
-func createTable() []runArgs {
-	var table []runArgs
-	for _, arg := range runTable {
-		//arg.cb = NewStatusCircuitBreaker(runTable[i].limit, runTable[i].burst, func(status *runtime.Status) bool { return true })
-		//arg.tick = time.Tick(runTable[i].dur)
-		table = append(table, arg)
-	}
-	return table
-}
+var agentRunLoc = PkgUri + "/StatusAgent/Run"
 
 type agentConfig struct {
 	timeout time.Duration
@@ -72,10 +62,13 @@ type agentConfig struct {
 	table   []runArgs
 }
 
-// NewStatusAgent -
-func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (*runtime.Status, StatusAgent) {
-	if cb.Limit() > maxLimit {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, "Agent", errors.New(fmt.Sprintf("error: circuit breaker limit [%v] is > 100", cb.Limit()))), nil
+// NewStatusAgent - creation of an agent with configuration
+func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (error, StatusAgent) {
+	if ping == nil {
+		return errors.New("error: ping function is nil"), nil
+	}
+	if cb == nil {
+		return errors.New("error: circuit breaker is nil"), nil
 	}
 	a := new(agentConfig)
 	a.timeout = timeout
@@ -85,9 +78,10 @@ func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker)
 	for _, arg := range runTable {
 		a.table = append(a.table, arg)
 	}
-	return runtime.NewStatusOK(), a
+	return nil, a
 }
 
+// Run - run the agent
 func (cf *agentConfig) Run(quit chan struct{}, status chan *runtime.Status) {
 	go run(cf.table, cf.ping, cf.timeout, cf.cb, quit, status)
 }
@@ -104,23 +98,17 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBr
 	for {
 		select {
 		case <-tick:
-			//status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("done -> elapsed time: %v", time.Since(start)), false)
-			//return
 			ps := callPing(nil, ping, timeout)
-			// If exceeded the current limit, then update limiter and increase the tick frequency
+			// If the circuit breaks, then update the circuit breaker with new limit and burst, and increase the tick frequency
 			if !cb.Allow(ps) {
-				fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
-				// If having achieved the target, then return
+				status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(fmt.Sprintf("target = %v limit = %v dur = %v limit-time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
 				if cb.Limit() >= targetLimit {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
 					return
 				}
-				//status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(
-				//	fmt.Sprintf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
-				//fmt.Printf("target = %v limit = %v dur = %v time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start))
 				i++
 				if i >= len(table) {
-					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("error: reached end o table -> elapsed time: %v", time.Since(start)), false)
+					status <- runtime.NewStatusError(http.StatusInternalServerError, agentRunLoc, errors.New(fmt.Sprintf("error: reached end of run table -> elapsed time: %v", time.Since(start))))
 					return
 				}
 				tick = time.Tick(runTable[i].dur)

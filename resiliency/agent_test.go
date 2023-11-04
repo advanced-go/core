@@ -7,17 +7,39 @@ import (
 	"time"
 )
 
-var okCircuitBreaker = NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
 var okPing = func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }
 
+func createTable() []runArgs {
+	var table []runArgs
+	for _, arg := range runTable {
+		table = append(table, arg)
+	}
+	return table
+}
+
+func Example_StatusAgent_Error() {
+	_, cb := NewStatusCircuitBreaker(100, 50, okSelect)
+
+	err, _ := NewStatusAgent(-1, nil, cb)
+	fmt.Printf("test: NewStatusAgent() -> %v\n", err)
+
+	err, _ = NewStatusAgent(-1, okPing, nil)
+	fmt.Printf("test: NewStatusAgent() -> %v\n", err)
+
+	//Output:
+	//test: NewStatusAgent() -> error: ping function is nil
+	//test: NewStatusAgent() -> error: circuit breaker is nil
+
+}
+
 func Example_runTest() {
-	useDone := true
+	idiomaticGo := true
 	quit := make(chan struct{}, 1)
 	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(100, 100, func(s *runtime.Status) bool { return s.OK() })
+	_, cb := NewStatusCircuitBreaker(100, 100, func(s *runtime.Status) bool { return s.OK() })
 
 	go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
-	if useDone {
+	if idiomaticGo {
 		done := make(chan struct{})
 		go func(chan struct{}, chan *runtime.Status) {
 			for {
@@ -37,6 +59,7 @@ func Example_runTest() {
 		<-done
 		close(done)
 	} else {
+		// idiomatic Java
 		time.Sleep(time.Minute * 1)
 		quit <- struct{}{}
 		s := <-status
@@ -54,11 +77,12 @@ func Example_runTest() {
 
 }
 
+/*
 func _Example_runChannels() {
 	quit := make(chan struct{})
 	status := make(chan *runtime.Status, 100)
 
-	go runChannels(okPing, okCircuitBreaker, quit, status)
+	go runChannels(okPing, nil, quit, status)
 	time.Sleep(time.Millisecond * 500)
 	quit <- struct{}{}
 	s := <-status
@@ -72,7 +96,7 @@ func _Example_runChannels() {
 func _Example_runTicks() {
 	quit := make(chan struct{})
 	status := make(chan *runtime.Status, 100)
-	cb := NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
+	_,cb := NewStatusCircuitBreaker(200, 200, func(s *runtime.Status) bool { return s.OK() })
 
 	go runTicks(okPing, cb, quit, status)
 	time.Sleep(time.Millisecond * 500)
@@ -85,7 +109,7 @@ func _Example_runTicks() {
 
 }
 
-func runStatus(ping PingFn, table []runArgs, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+func runStatus(_ PingFn, _[]runArgs, _ StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
 	for {
 		select {
 		case <-quit:
@@ -135,3 +159,6 @@ func runTicks(_ PingFn, _ StatusCircuitBreaker, quit chan struct{}, status chan 
 		}
 	}
 }
+
+
+*/

@@ -7,44 +7,30 @@ import (
 	"time"
 )
 
-func _Example_CircuitBreaker() {
-	var limit rate.Limit = 0.0
-	var burst int = 0
-	var fn StatusSelect
+var okSelect = func(status *runtime.Status) bool { return status.OK() }
 
-	src := NewStatusCircuitBreaker(100, 50, func(status *runtime.Status) bool { return status.OK() })
-	if cfg, ok := any(src).(*circuitConfig); ok {
-		limit = cfg.limiter.Limit()
-		burst = cfg.limiter.Burst()
-		fn = cfg.fn
-	}
-	fmt.Printf("test: CircuitBreaker() -> [limit:%v] [burst:%v] [select:%v]\n", limit, burst, fn)
+func Example_CircuitBreaker_Error() {
+	err, _ := NewStatusCircuitBreaker(0, 50, okSelect)
+	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
 
-	/*
-		src = CloneStatusCircuitBreaker(src, 45, 15)
-		if cfg, ok := any(src).(*circuitConfig); ok {
-			limit = cfg.limiter.Limit()
-			burst = cfg.limiter.Burst()
-			fn2 = cfg.selectFn
-		}
-		fmt.Printf("test: CloneCircuitBreaker() -> [limit:%v] [burst:%v] [select:%v]\n", limit, burst, fn2)
+	err, _ = NewStatusCircuitBreaker(100, 0, okSelect)
+	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
 
+	err, _ = NewStatusCircuitBreaker(-1, 50, okSelect)
+	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
 
-	*/
-	//Output:
-	//test: CircuitBreaker() -> [limit:100] [burst:50] [select:0x10202c0]
-	//test: CloneCircuitBreaker() -> [limit:45] [burst:15] [select:0x10202c0]
+	err, _ = NewStatusCircuitBreaker(101, 50, nil)
+	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
 
-}
-
-func _Example_RateLimiter() {
-	rl := rate.NewLimiter(0.5, 1)
-
-	allow := rl.Allow()
-	fmt.Printf("test: Allow() -> %v\n", allow)
+	err, _ = NewStatusCircuitBreaker(100, 50, nil)
+	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
 
 	//Output:
-	//test: Allow() -> true
+	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = 0 burst = 50
+	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = 100 burst = 0
+	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = -1 burst = 50
+	//test: NewStatsCircuitBreaker() -> error: rate limit [101] is greater than the maximum [100]
+	//test: NewStatsCircuitBreaker() -> error: status select function in nil
 
 }
 
@@ -80,7 +66,7 @@ func _Example_CircuitTest() {
 
 func testBreaker(limit rate.Limit, burst int, fn StatusSelect, d time.Duration, count int) {
 	start := time.Now().UTC()
-	cb := NewStatusCircuitBreaker(limit, burst, fn)
+	_, cb := NewStatusCircuitBreaker(limit, burst, fn)
 	s := runtime.NewStatusOK()
 	for i := 0; i < count; i++ {
 		time.Sleep(d)
@@ -94,7 +80,6 @@ func testBreaker(limit rate.Limit, burst int, fn StatusSelect, d time.Duration, 
 
 func testBreaker2(limiter *rate.Limiter, limit rate.Limit, burst int, d time.Duration, count int) {
 	start := time.Now().UTC()
-	//limiter := rate.NewLimiter(limit, burst)
 	limiter.SetLimit(limit)
 	limiter.SetBurst(burst)
 	for i := 0; i < count; i++ {
