@@ -41,7 +41,7 @@ type Threshold struct {
 // ControllerConfig - user supplied configuration
 type ControllerConfig struct {
 	Name         string
-	agentTimeout time.Duration
+	AgentTimeout time.Duration
 	Primary      Threshold
 	Ping         Threshold
 }
@@ -85,8 +85,8 @@ func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, second
 	if err0 != nil {
 		return nil, err0
 	}
-	if ctrl.config.agentTimeout == 0 {
-		ctrl.config.agentTimeout = defaultAgentTimeout
+	if ctrl.config.AgentTimeout == 0 {
+		ctrl.config.AgentTimeout = defaultAgentTimeout
 	}
 	ctrl.primary = primary
 	ctrl.secondary = secondary
@@ -107,7 +107,7 @@ func (c *controller) failover() {
 	status := make(chan *runtime.Status, 100)
 	go func(chan struct{}, chan *runtime.Status) {
 		for {
-			tick := time.Tick(c.config.agentTimeout)
+			tick := time.Tick(c.config.AgentTimeout)
 			select {
 			case st := <-status:
 				if st.IsContent() {
