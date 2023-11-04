@@ -11,10 +11,15 @@ const (
 	UpstreamTimeoutFlag = "UT"
 )
 
+var controllerLoc = PkgUri + "/Controller/ping"
+
+// PingFn - typedef for a ping function that returns a status
 type PingFn func(ctx context.Context) *runtime.Status
 
+// LogFn - typedef for a function that provides access logging
 type LogFn func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, controllerName string, timeout int, statusFlags string)
 
+// Controller - an interface that manages resiliency for a configured function of type runtime.TypeHandlerFn
 type Controller interface {
 	Apply(r *http.Request, body any) (t any, status *runtime.Status)
 }
@@ -49,6 +54,7 @@ type controller struct {
 
 func NewController(cfg ControllerConfig, ping PingFn, primary, secondary runtime.TypeHandlerFn, log LogFn) Controller {
 	ctrl := new(controller)
+	ctrl.config = cfg
 	ctrl.ping = ping
 	ctrl.primary = primary
 	ctrl.secondary = secondary
@@ -56,6 +62,7 @@ func NewController(cfg ControllerConfig, ping PingFn, primary, secondary runtime
 	return ctrl
 }
 
+// Apply - call the controller for each request
 func (ctrl *controller) Apply(r *http.Request, body any) (t any, status *runtime.Status) {
 	var start = time.Now().UTC()
 	var statusFlags = ""
@@ -82,14 +89,17 @@ func (ctrl *controller) Apply(r *http.Request, body any) (t any, status *runtime
 }
 
 func callPing(ctx context.Context, ping PingFn, timeout time.Duration) *runtime.Status {
-	if timeout == 0 {
-		return ping(ctx)
+	// should not happen, but check for safety
+	if ping == nil {
+		return runtime.NewStatus(runtime.StatusInvalidArgument).SetContent("error: ping function is nil", false)
 	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	if timeout <= 0 {
+		return ping(ctx)
+	}
 	//ctx, cancel := context.WithTimeout(ctx,timeout)
 	status := ping(ctx)
-
 	return status
 }
