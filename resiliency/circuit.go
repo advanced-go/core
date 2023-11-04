@@ -64,19 +64,19 @@ func (c *circuitConfig) SetBurst(burst int) {
 }
 
 // NewStatusCircuitBreaker - create a circuit breaker with argument validation
-func NewStatusCircuitBreaker(t Threshold, fn StatusSelectFn) (StatusCircuitBreaker, error) {
+func NewStatusCircuitBreaker(t Threshold) (StatusCircuitBreaker, error) {
 	if t.Limit <= 0 || t.Burst <= 0 {
 		return nil, errors.New(fmt.Sprintf("error: rate limit or burst is invalid limit = %v burst = %v", t.Limit, t.Burst))
 	}
 	if t.Limit > maxLimit {
 		return nil, errors.New(fmt.Sprintf("error: rate limit [%v] is greater than the maximum [%v]", t.Limit, maxLimit))
 	}
-	if fn == nil {
+	if t.Select == nil {
 		return nil, errors.New(fmt.Sprintf("error: status select function in nil"))
 	}
 	cb := new(circuitConfig)
 	cb.limiter = rate.NewLimiter(t.Limit, t.Burst)
-	cb.fn = fn
+	cb.fn = t.Select
 	return cb, nil
 }
 

@@ -29,11 +29,12 @@ type Controller interface {
 	Apply(r *http.Request, body any) (t any, status *runtime.Status)
 }
 
-// Threshold - rate limiting and timeout configuration
+// Threshold - rate limiting, timeout, and status select configuration
 type Threshold struct {
 	Limit    rate.Limit // request per second
 	Burst    int
 	Duration time.Duration
+	Select   StatusSelectFn
 }
 
 // ControllerConfig - user supplied configuration
@@ -48,9 +49,7 @@ type controller struct {
 	config         ControllerConfig
 	failoverStatus *atomic.Bool
 	primaryCircuit StatusCircuitBreaker
-	pingCircuit    StatusCircuitBreaker
 	agent          StatusAgent
-	ping           PingFn
 	primary        runtime.TypeHandlerFn
 	secondary      runtime.TypeHandlerFn
 	log            LogFn
@@ -58,20 +57,33 @@ type controller struct {
 }
 
 // NewController - create a new resiliency controller
-func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, secondary runtime.TypeHandlerFn, ping PingFn, statusSelect StatusSelectFn, log LogFn) (Controller, error) {
+func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, secondary runtime.TypeHandlerFn, ping PingFn, log LogFn) (Controller, error) {
 	var e E
 	if primary == nil || secondary == nil {
 		return nil, errors.New(fmt.Sprintf("error: primary [nil:%v] or secondary [nil:%v] is nil", primary == nil, secondary == nil))
 	}
-	if ping == nil || statusSelect == nil {
-		return nil, errors.New(fmt.Sprintf("error: ping [nil:%v] or status select [nil:%v] is nil", ping == nil, statusSelect == nil))
+	if ping == nil || cfg.Ping.Select == nil {
+		return nil, errors.New(fmt.Sprintf("error: ping [nil:%v] or ping status select [nil:%v] is nil", ping == nil, cfg.Ping.Select == nil))
 	}
+	var err0 error
+
 	ctrl := new(controller)
-	//ctrl.p
-	//err,cb := NewStatusCircuitBreaker(0,0,statusSelect)
-	//ctrl.agent = NewStatusAgent(ctrl.config.Timeout.Duration,ping,pingCircuit)
 	ctrl.config = cfg
-	ctrl.ping = ping
+	// primary circuit
+	ctrl.primaryCircuit, err0 = NewStatusCircuitBreaker(cfg.Primary)
+	if err0 != nil {
+		return nil, err0
+	}
+	// ping circuit
+	cb, err := NewStatusCircuitBreaker(cfg.Ping)
+	if err != nil {
+		return nil, err
+	}
+	// status agent
+	ctrl.agent, err0 = NewStatusAgent(ctrl.config.Ping.Duration, ping, cb)
+	if err0 != nil {
+		return nil, err0
+	}
 	ctrl.primary = primary
 	ctrl.secondary = secondary
 	ctrl.log = log
