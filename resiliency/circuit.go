@@ -79,3 +79,13 @@ func NewStatusCircuitBreaker(limit rate.Limit, burst int, fn StatusSelect) (erro
 	cb.fn = fn
 	return nil, cb
 }
+
+// CloneStatusCircuitBreaker - create a clone of a StatusCircuitBreaker
+func CloneStatusCircuitBreaker(cb StatusCircuitBreaker) StatusCircuitBreaker {
+	clone := new(circuitConfig)
+	if cfg, ok := any(cb).(*circuitConfig); ok {
+		clone.fn = cfg.fn
+		clone.limiter = rate.NewLimiter(cb.Limit(), cb.Burst())
+	}
+	return clone
+}

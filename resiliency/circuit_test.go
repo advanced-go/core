@@ -11,26 +11,37 @@ var okSelect = func(status *runtime.Status) bool { return status.OK() }
 
 func Example_CircuitBreaker_Error() {
 	err, _ := NewStatusCircuitBreaker(0, 50, okSelect)
-	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
+	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	err, _ = NewStatusCircuitBreaker(100, 0, okSelect)
-	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
+	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	err, _ = NewStatusCircuitBreaker(-1, 50, okSelect)
-	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
+	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	err, _ = NewStatusCircuitBreaker(101, 50, nil)
-	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
+	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	err, _ = NewStatusCircuitBreaker(100, 50, nil)
-	fmt.Printf("test: NewStatsCircuitBreaker() -> %v\n", err)
+	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	//Output:
-	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = 0 burst = 50
-	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = 100 burst = 0
-	//test: NewStatsCircuitBreaker() -> error: rate limit or burst is invalid limit = -1 burst = 50
-	//test: NewStatsCircuitBreaker() -> error: rate limit [101] is greater than the maximum [100]
-	//test: NewStatsCircuitBreaker() -> error: status select function in nil
+	//test: NewStatusCircuitBreaker() -> error: rate limit or burst is invalid limit = 0 burst = 50
+	//test: NewStatusCircuitBreaker() -> error: rate limit or burst is invalid limit = 100 burst = 0
+	//test: NewStatusCircuitBreaker() -> error: rate limit or burst is invalid limit = -1 burst = 50
+	//test: NewStatusCircuitBreaker() -> error: rate limit [101] is greater than the maximum [100]
+	//test: NewStatusCircuitBreaker() -> error: status select function in nil
+
+}
+
+func Example_CircuitBreaker_Clone() {
+	_, cb := NewStatusCircuitBreaker(100, 50, okSelect)
+	clone := CloneStatusCircuitBreaker(cb)
+
+	fmt.Printf("test: CloneStatusCircuitBreaker() -> [limit:%v] [burst:%v]\n", clone.Limit(), clone.Burst())
+
+	//Output:
+	//test: CloneStatusCircuitBreaker() -> [limit:100] [burst:50]
 
 }
 

@@ -11,7 +11,7 @@ import (
 
 // StatusAgent - an agent that will manage returning an endpoint back to receiving traffic
 type StatusAgent interface {
-	Run(quit chan struct{}, status chan *runtime.Status)
+	Run(quit <-chan struct{}, status chan *runtime.Status)
 }
 
 type runArgs struct {
@@ -82,17 +82,17 @@ func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker)
 }
 
 // Run - run the agent
-func (cf *agentConfig) Run(quit chan struct{}, status chan *runtime.Status) {
+func (cf *agentConfig) Run(quit <-chan struct{}, status chan *runtime.Status) {
 	go run(cf.table, cf.ping, cf.timeout, cf.cb, quit, status)
 }
 
-func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBreaker, quit chan struct{}, status chan *runtime.Status) {
+func run(table []runArgs, ping PingFn, timeout time.Duration, target StatusCircuitBreaker, quit <-chan struct{}, status chan *runtime.Status) {
 	start := time.Now().UTC()
 	limiterTime := time.Now().UTC()
 	i := 0
-	targetLimit := cb.Limit()
-	cb.SetLimit(runTable[i].limit)
-	cb.SetBurst(runTable[i].burst)
+	test := CloneStatusCircuitBreaker(target)
+	test.SetLimit(runTable[i].limit)
+	test.SetBurst(runTable[i].burst)
 	tick := time.Tick(runTable[i].dur)
 
 	for {
@@ -100,9 +100,9 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBr
 		case <-tick:
 			ps := callPing(nil, ping, timeout)
 			// If the circuit breaks, then update the circuit breaker with new limit and burst, and increase the tick frequency
-			if !cb.Allow(ps) {
-				status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(fmt.Sprintf("target = %v limit = %v dur = %v limit-time = %v elapsed time = %v\n", targetLimit, cb.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
-				if cb.Limit() >= targetLimit {
+			if !test.Allow(ps) {
+				status <- runtime.NewStatus(runtime.StatusHaveContent).SetContent(fmt.Sprintf("target = %v limit = %v dur = %v limit-time = %v elapsed time = %v\n", target.Limit(), test.Limit(), table[i].dur, time.Since(limiterTime), time.Since(start)), false)
+				if test.Limit() >= target.Limit() {
 					status <- runtime.NewStatusOK().SetContent(fmt.Sprintf("success -> elapsed time: %v", time.Since(start)), false)
 					return
 				}
@@ -112,8 +112,8 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, cb StatusCircuitBr
 					return
 				}
 				tick = time.Tick(runTable[i].dur)
-				cb.SetLimit(runTable[i].limit)
-				cb.SetBurst(runTable[i].burst)
+				test.SetLimit(runTable[i].limit)
+				test.SetBurst(runTable[i].burst)
 				limiterTime = time.Now().UTC()
 			}
 		default:
