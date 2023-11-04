@@ -32,10 +32,10 @@ type Controller interface {
 
 // Threshold - rate limiting, timeout, and status select configuration
 type Threshold struct {
-	Limit    rate.Limit // request per second
-	Burst    int
-	Duration time.Duration
-	Select   StatusSelectFn
+	Limit   rate.Limit // request per second
+	Burst   int
+	Timeout time.Duration
+	Select  StatusSelectFn
 }
 
 // ControllerConfig - user supplied configuration
@@ -81,7 +81,7 @@ func NewController[E runtime.ErrorHandler](cfg ControllerConfig, primary, second
 		return nil, err
 	}
 	// status agent
-	ctrl.agent, err0 = NewStatusAgent(ctrl.config.Ping.Duration, ping, cb)
+	ctrl.agent, err0 = NewStatusAgent(ctrl.config.Ping.Timeout, ping, cb)
 	if err0 != nil {
 		return nil, err0
 	}
@@ -144,7 +144,7 @@ func (c *controller) Apply(r *http.Request, body any) (t any, status *runtime.St
 	if c.failoverStatus.Load() {
 		t, status = c.secondary(r, body)
 	} else {
-		t, status = callPrimary(r, body, c.primary, c.config.Primary.Duration)
+		t, status = callPrimary(r, body, c.primary, c.config.Primary.Timeout)
 		// check the circuit
 		if !c.primaryCircuit.Allow(status) {
 			c.failover()

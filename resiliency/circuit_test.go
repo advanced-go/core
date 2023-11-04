@@ -10,19 +10,19 @@ import (
 var okSelect = func(status *runtime.Status) bool { return status.OK() }
 
 func Example_CircuitBreaker_Error() {
-	_, err := NewStatusCircuitBreaker(Threshold{Limit: 0, Burst: 50, Duration: 0, Select: okSelect})
+	_, err := NewStatusCircuitBreaker(Threshold{Limit: 0, Burst: 50, Timeout: 0, Select: okSelect})
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 0, Duration: 0, Select: okSelect})
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 0, Timeout: 0, Select: okSelect})
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	_, err = NewStatusCircuitBreaker(Threshold{Limit: -1, Burst: 50, Duration: 0, Select: okSelect})
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: -1, Burst: 50, Timeout: 0, Select: okSelect})
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	_, err = NewStatusCircuitBreaker(Threshold{Limit: 101, Burst: 50, Duration: 0, Select: nil})
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 101, Burst: 50, Timeout: 0, Select: nil})
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
-	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Duration: 0, Select: nil})
+	_, err = NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Timeout: 0, Select: nil})
 	fmt.Printf("test: NewStatusCircuitBreaker() -> %v\n", err)
 
 	//Output:
@@ -35,7 +35,7 @@ func Example_CircuitBreaker_Error() {
 }
 
 func Example_CircuitBreaker_Clone() {
-	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Duration: 0, Select: okSelect})
+	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Timeout: 0, Select: okSelect})
 	clone := CloneStatusCircuitBreaker(cb)
 
 	fmt.Printf("test: CloneStatusCircuitBreaker() -> [limit:%v] [burst:%v]\n", clone.Limit(), clone.Burst())
@@ -77,7 +77,7 @@ func _Example_CircuitTest() {
 
 func testBreaker(limit rate.Limit, burst int, fn StatusSelectFn, d time.Duration, count int) {
 	start := time.Now().UTC()
-	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: limit, Burst: burst, Duration: 0, Select: fn})
+	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: limit, Burst: burst, Timeout: 0, Select: fn})
 	s := runtime.NewStatusOK()
 	for i := 0; i < count; i++ {
 		time.Sleep(d)
