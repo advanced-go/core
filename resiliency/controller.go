@@ -153,7 +153,9 @@ func (c *controller) Apply(r *http.Request, body any) (t any, status *runtime.St
 	// access logging
 	resp := http.Response{StatusCode: status.Code()}
 	d := time.Since(start)
-	c.log(internalTraffic, start, d, r, &resp, c.config.Name, int(d/time.Millisecond), statusFlags)
+	if c.log != nil {
+		c.log(internalTraffic, start, d, r, &resp, c.config.Name, int(d/time.Millisecond), statusFlags)
+	}
 	return t, status
 }
 
