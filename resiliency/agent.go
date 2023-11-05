@@ -1,6 +1,7 @@
 package resiliency
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
@@ -55,15 +56,18 @@ var runTable = []runArgs{
 
 var agentRunLoc = PkgUri + "/StatusAgent/Run"
 
+// PingFn - typedef for a ping function that returns a status
+type pingFn func(ctx context.Context) *runtime.Status
+
 type agentConfig struct {
 	timeout time.Duration
-	ping    PingFn
+	ping    pingFn
 	cb      StatusCircuitBreaker
 	table   []runArgs
 }
 
 // NewStatusAgent - creation of an agent with configuration
-func NewStatusAgent(timeout time.Duration, ping PingFn, cb StatusCircuitBreaker) (StatusAgent, error) {
+func NewStatusAgent(timeout time.Duration, ping pingFn, cb StatusCircuitBreaker) (StatusAgent, error) {
 	if ping == nil {
 		return nil, errors.New("error: ping function is nil")
 	}
@@ -86,7 +90,7 @@ func (cf *agentConfig) Run(quit <-chan struct{}, status chan *runtime.Status) {
 	go run(cf.table, cf.ping, cf.timeout, cf.cb, quit, status)
 }
 
-func run(table []runArgs, ping PingFn, timeout time.Duration, target StatusCircuitBreaker, quit <-chan struct{}, status chan *runtime.Status) {
+func run(table []runArgs, ping pingFn, timeout time.Duration, target StatusCircuitBreaker, quit <-chan struct{}, status chan *runtime.Status) {
 	start := time.Now().UTC()
 	limiterTime := time.Now().UTC()
 	i := 0
@@ -125,4 +129,16 @@ func run(table []runArgs, ping PingFn, timeout time.Duration, target StatusCircu
 		default:
 		}
 	}
+}
+
+func callPing(ctx context.Context, fn pingFn, timeout time.Duration) *runtime.Status {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if timeout <= 0 {
+		return fn(ctx)
+	}
+	//ctx, cancel := context.WithTimeout(ctx,timeout)
+	status := fn(ctx)
+	return status
 }

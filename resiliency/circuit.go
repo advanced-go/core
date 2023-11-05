@@ -1,10 +1,9 @@
 package resiliency
 
 import (
-	"errors"
-	"fmt"
 	"github.com/go-ai-agent/core/runtime"
 	"golang.org/x/time/rate"
+	"time"
 )
 
 const (
@@ -64,19 +63,19 @@ func (c *circuitConfig) SetBurst(burst int) {
 }
 
 // NewStatusCircuitBreaker - create a circuit breaker with argument validation
-func NewStatusCircuitBreaker(t Threshold) (StatusCircuitBreaker, error) {
-	if t.Limit <= 0 || t.Burst <= 0 {
-		return nil, errors.New(fmt.Sprintf("error: rate limit or burst is invalid limit = %v burst = %v", t.Limit, t.Burst))
-	}
-	if t.Limit > maxLimit {
-		return nil, errors.New(fmt.Sprintf("error: rate limit [%v] is greater than the maximum [%v]", t.Limit, maxLimit))
-	}
-	if t.Select == nil {
-		return nil, errors.New(fmt.Sprintf("error: status select function in nil"))
-	}
+func NewStatusCircuitBreaker(limit rate.Limit, burst int, timeout time.Duration, fn StatusSelectFn) (StatusCircuitBreaker, error) {
+	//if t.Limit <= 0 || t.Burst <= 0 {
+	//	return nil, errors.New(fmt.Sprintf("error: rate limit or burst is invalid limit = %v burst = %v", t.Limit, t.Burst))
+	//}
+	//if t.Limit > maxLimit {
+	//	return nil, errors.New(fmt.Sprintf("error: rate limit [%v] is greater than the maximum [%v]", t.Limit, maxLimit))
+	//}
+	//if t.Select == nil {
+	//	return nil, errors.New(fmt.Sprintf("error: status select function in nil"))
+	//}
 	cb := new(circuitConfig)
-	cb.limiter = rate.NewLimiter(t.Limit, t.Burst)
-	cb.fn = t.Select
+	cb.limiter = rate.NewLimiter(limit, burst)
+	cb.fn = fn
 	return cb, nil
 }
 

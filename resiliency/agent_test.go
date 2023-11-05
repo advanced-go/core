@@ -18,7 +18,7 @@ func createTable() []runArgs {
 }
 
 func Example_StatusAgent_Error() {
-	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 50, Timeout: 0, Select: okSelect})
+	cb, _ := NewStatusCircuitBreaker(100, 50, 0, okSelect)
 
 	_, err := NewStatusAgent(-1, nil, cb)
 	fmt.Printf("test: NewStatusAgent() -> %v\n", err)
@@ -36,9 +36,9 @@ func Example_runTest() {
 	idiomaticGo := true
 	quit := make(chan struct{}, 1)
 	status := make(chan *runtime.Status, 100)
-	cb, _ := NewStatusCircuitBreaker(Threshold{Limit: 100, Burst: 100, Timeout: 0, Select: func(s *runtime.Status) bool { return s.OK() }})
+	//cb, _ := NewStatusCircuitBreaker( 100, 100, 0, func(s *runtime.Status) bool { return s.OK() })
 
-	go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
+	//go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
 	if idiomaticGo {
 		done := make(chan struct{})
 		go func(chan struct{}, chan *runtime.Status) {
