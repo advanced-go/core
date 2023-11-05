@@ -1,5 +1,8 @@
 package log
 
+//middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
+// middleware2.ControllerWrapTransport(exchange.Client)
+
 // ControllerHttpHostMetricsHandler - handler that applies host and ingress controllers
 /*
 func ControllerHttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
