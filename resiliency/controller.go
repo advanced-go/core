@@ -33,16 +33,16 @@ type controller struct {
 }
 
 // NewController - create a new resiliency controller
-func NewController(name string, threshold Threshold, handler runtime.TypeHandlerFn, log startup.HttpAccessLogFn) (Controller, error) {
-	if handler == nil {
-		return nil, errors.New("error: handler is nil")
-	}
+func NewController(name string, threshold Threshold, handler runtime.TypeHandlerFn, log startup.HttpAccessLogFn) Controller {
+	//if handler == nil {
+	//	return nil, errors.New("error: handler is nil")
+	//}
 	ctrl := new(controller)
 	ctrl.name = name
 	ctrl.threshold = threshold
 	ctrl.handler = handler
 	ctrl.log = log
-	return ctrl, nil
+	return ctrl
 }
 
 func (c *controller) failover() {
@@ -86,6 +86,9 @@ func (c *controller) Apply(r *http.Request, body any) (any, *runtime.Status) {
 	var start = time.Now().UTC()
 	var statusFlags = ""
 
+	if c.handler == nil {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, "/Controller/Apply", errors.New(fmt.Sprintf("error: handler function is nil for controller [%v]", c.name))).SetRequestId(r.Context())
+	}
 	t, status := callHandler(r, body, c.handler, c.threshold.Timeout)
 	resp := http.Response{StatusCode: status.Code()}
 	d := time.Since(start)

@@ -12,11 +12,11 @@ var handler = func(r *http.Request, body any) (any, *runtime.Status) {
 }
 
 func Example_Controller() {
-	c, err := NewController("test", Threshold{time.Millisecond * 500}, nil, nil)
-	fmt.Printf("test: NewController() -> [err:%v] %v\n", err, c)
+	c := NewController("test", Threshold{time.Millisecond * 500}, nil, nil)
+	fmt.Printf("test: NewController() -> [err:%v] %v\n", nil, c)
 
-	c, err = NewController("test", Threshold{time.Millisecond * 500}, handler, nil)
-	fmt.Printf("test: NewController() -> [err:%v] %v\n", err, c)
+	c = NewController("test", Threshold{time.Millisecond * 500}, handler, nil)
+	fmt.Printf("test: NewController() -> [err:%v] %v\n", nil, c)
 
 	//Output:
 	//test: NewController() -> [err:error: handler is nil] <nil>
