@@ -14,7 +14,7 @@ func Example_FmtLog() {
 	req.Header.Add(runtime.XRequestId, "123-456")
 	fmt.Printf("test: NewRequest() -> [err:%v] %v\n", err, req)
 	resp := http.Response{StatusCode: http.StatusOK}
-	s := fmtLog("egress", start, time.Since(start), req, &resp, "flags")
+	s := fmtLog("egress", start, time.Since(start), req, &resp, -1, "")
 	fmt.Printf("test: fmtLog() -> %v\n", s)
 
 	//Output:

@@ -7,29 +7,31 @@ import (
 	"time"
 )
 
-var testLogger = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, statusFlags string) {
+var testLogger = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	fmt.Printf("test: testLogger() -> %v", "{ access logging attributes }")
 
 }
 
 func ExampleContextWithAccessLoggerExisting() {
-	ctx := ContextWithAccessLogger(context.Background(), testLogger)
+	SetAccessLogger(testLogger)
+	ctx := ContextWithAccessLogger(context.Background())
 	fmt.Printf("test: ContextWithAccessLogger(context.Background(),id) -> %v [newContext:%v]\n", ContextAccessLogger(ctx), ctx != context.Background())
 
-	ctxNew := ContextWithAccessLogger(ctx, testLogger)
+	ctxNew := ContextWithAccessLogger(ctx)
 	fmt.Printf("test: ContextWithAccessLogger(ctx,id) -> %v [newContext:%v]\n", ContextAccessLogger(ctx), ctxNew != ctx)
 
 	//Output:
 	//test: ContextWithAccessLogger(context.Background(),id) -> 0x35e940 [newContext:true]
 	//test: ContextWithAccessLogger(ctx,id) -> 0x35e940 [newContext:false]
-	
+
 }
 
 func Example_AccessLogger() {
 	start := time.Now().UTC()
-	ctx := ContextWithAccessLogger(context.Background(), testLogger)
+	SetAccessLogger(testLogger)
+	ctx := ContextWithAccessLogger(context.Background())
 	logger := ContextAccessLogger(ctx)
-	logger("egress", start, time.Since(start), nil, nil, "flags")
+	logger("egress", start, time.Since(start), nil, nil, -1, "flags")
 
 	//fmt.Printf("test: ContextWithAccessLogger() -> %v\n",logger("egress",start,time.Since(start),nil,nil,"flags"))
 

@@ -3,16 +3,12 @@ package startup
 import (
 	"context"
 	"github.com/go-ai-agent/core/runtime"
-	"golang.org/x/time/rate"
 	"net/http"
 	"time"
 )
 
 // AccessLogFn - typedef for a function that provides access logging
-type AccessLogFn func(traffic string, start time.Time, duration time.Duration, uri, method string, statusCode int, controllerName string, limit rate.Limit, burst int, timeout int, statusFlags string)
-
-// HttpAccessLogFn - typedef for a function that provides access logging
-type HttpAccessLogFn func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, statusFlags string)
+type AccessLogFn func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
 
 // ContentMap - slice of any content to be included in a message
 type ContentMap map[string][]any

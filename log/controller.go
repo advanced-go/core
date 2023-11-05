@@ -38,7 +38,7 @@ func (c *controller) Apply(req *http.Request, body any) (any, *runtime.Status) {
 	if logger != nil {
 		resp := http.Response{StatusCode: status.Code()}
 		dur := time.Since(start)
-		logger(InternalTraffic, start, dur, req, &resp, "")
+		logger(InternalTraffic, start, dur, req, &resp, -1, "")
 	}
 	return t, status
 }

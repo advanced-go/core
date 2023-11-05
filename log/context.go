@@ -23,8 +23,8 @@ var (
 )
 
 // ContextWithAccessLogger - creates a new Context with an access logger
-func ContextWithAccessLogger(ctx context.Context, access startup.HttpAccessLogFn) context.Context {
-	if access == nil {
+func ContextWithAccessLogger(ctx context.Context) context.Context {
+	if accessLogger == nil {
 		return ctx
 	}
 	if ctx == nil {
@@ -35,17 +35,17 @@ func ContextWithAccessLogger(ctx context.Context, access startup.HttpAccessLogFn
 			return ctx
 		}
 	}
-	return runtime.ContextWithValue(ctx, accessLoggerContextKey, access)
+	return runtime.ContextWithValue(ctx, accessLoggerContextKey, accessLogger)
 }
 
 // ContextAccessLogger - return the access logger from a context
-func ContextAccessLogger(ctx any) startup.HttpAccessLogFn {
+func ContextAccessLogger(ctx any) startup.AccessLogFn {
 	if ctx == nil {
 		return nil
 	}
 	if ctx2, ok := ctx.(context.Context); ok {
 		i := ctx2.Value(accessLoggerContextKey)
-		if requestId, ok2 := i.(startup.HttpAccessLogFn); ok2 {
+		if requestId, ok2 := i.(startup.AccessLogFn); ok2 {
 			return requestId
 		}
 	}
