@@ -11,7 +11,7 @@ import (
 
 //var LogFn = defaultLogFn //
 
-var AccessLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, statusFlags string) {
+var accessLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, statusFlags string) {
 	s := fmtLog(traffic, start, duration, req, resp, statusFlags)
 	fmt.Printf("{%v}\n", s)
 }

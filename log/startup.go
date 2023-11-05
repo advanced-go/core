@@ -13,12 +13,13 @@ func init() {
 	go receive()
 }
 
+var AccessLogger startup.HttpAccessLogFn = accessLogFn
+
 var messageHandler startup.MessageHandler = func(msg startup.Message) {
 	switch msg.Event {
 	case startup.StartupEvent:
-		//clientStartup(msg)
+		AccessLogger = accessLogFn
 	case startup.ShutdownEvent:
-		//ClientShutdown()
 	case startup.PingEvent:
 	}
 }
