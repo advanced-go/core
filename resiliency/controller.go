@@ -93,7 +93,7 @@ func (c *controller) Apply(r *http.Request, body any) (any, *runtime.Status) {
 	resp := http.Response{StatusCode: status.Code()}
 	d := time.Since(start)
 	if c.log != nil {
-		c.log(internalTraffic, start, d, r, &resp, c.name, int(c.threshold.Timeout/time.Millisecond), statusFlags)
+		c.log(internalTraffic, start, d, r, &resp, statusFlags) //c.name, int(c.threshold.Timeout/time.Millisecond), statusFlags)
 	}
 	return t, status
 }

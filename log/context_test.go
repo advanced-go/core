@@ -8,6 +8,8 @@ import (
 )
 
 var testLogger = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, statusFlags string) {
+	fmt.Printf("test: testLogger() -> %v", "{ access logging attributes }")
+
 }
 
 func ExampleContextWithAccessLoggerExisting() {
@@ -18,8 +20,21 @@ func ExampleContextWithAccessLoggerExisting() {
 	fmt.Printf("test: ContextWithAccessLogger(ctx,id) -> %v [newContext:%v]\n", ContextAccessLogger(ctx), ctxNew != ctx)
 
 	//Output:
-	//test: ContextWithAccessLogger(context.Background(),id) -> 123-456-abc [newContext:true]
-	//test: ContextWithAccessLogger(ctx,id) -> 123-456-abc [newContext:false]
+	//test: ContextWithAccessLogger(context.Background(),id) -> 0x35e940 [newContext:true]
+	//test: ContextWithAccessLogger(ctx,id) -> 0x35e940 [newContext:false]
+	
+}
+
+func Example_AccessLogger() {
+	start := time.Now().UTC()
+	ctx := ContextWithAccessLogger(context.Background(), testLogger)
+	logger := ContextAccessLogger(ctx)
+	logger("egress", start, time.Since(start), nil, nil, "flags")
+
+	//fmt.Printf("test: ContextWithAccessLogger() -> %v\n",logger("egress",start,time.Since(start),nil,nil,"flags"))
+
+	//Output:
+	//test: testLogger() -> { access logging attributes }
 
 }
 
