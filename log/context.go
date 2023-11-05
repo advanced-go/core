@@ -7,7 +7,6 @@ import (
 )
 
 const (
-	XAccessLogger   = "x-access-logger"
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 )
@@ -45,8 +44,8 @@ func ContextAccessLogger(ctx any) startup.AccessLogFn {
 	}
 	if ctx2, ok := ctx.(context.Context); ok {
 		i := ctx2.Value(accessLoggerContextKey)
-		if requestId, ok2 := i.(startup.AccessLogFn); ok2 {
-			return requestId
+		if fn, ok2 := i.(startup.AccessLogFn); ok2 {
+			return fn
 		}
 	}
 	return nil
