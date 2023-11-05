@@ -9,6 +9,7 @@ import (
 const (
 	XAccessLogger   = "x-access-logger"
 	InternalTraffic = "internal"
+	EgressTraffic   = "egress"
 )
 
 type contextKey struct {
