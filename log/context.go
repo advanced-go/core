@@ -11,15 +11,9 @@ const (
 	EgressTraffic   = "egress"
 )
 
-type contextKey struct {
-	name string
-}
+type key int
 
-func (k *contextKey) String() string { return "context value " + k.name }
-
-var (
-	accessFnContextKey = &contextKey{"access-log-fn"}
-)
+var accessFnKey key
 
 // NewAccessContext - creates a new Context with an access log function
 func NewAccessContext(ctx context.Context) context.Context {
@@ -29,12 +23,12 @@ func NewAccessContext(ctx context.Context) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
-		fn := ctx.Value(accessFnContextKey)
+		fn := ctx.Value(accessFnKey)
 		if fn != nil {
 			return ctx
 		}
 	}
-	return runtime.ContextWithValue(ctx, accessFnContextKey, accessFn)
+	return runtime.ContextWithValue(ctx, accessFnKey, accessFn)
 }
 
 // AccessFromContext - return the access logger from a context
@@ -42,7 +36,7 @@ func AccessFromContext(ctx context.Context) startup.AccessLogFn {
 	if ctx == nil {
 		return nil
 	}
-	i := ctx.Value(accessFnContextKey)
+	i := ctx.Value(accessFnKey)
 	if fn, ok2 := i.(startup.AccessLogFn); ok2 {
 		return fn
 	}
