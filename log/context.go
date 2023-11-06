@@ -38,15 +38,13 @@ func ContextWithAccessLogger(ctx context.Context) context.Context {
 }
 
 // ContextAccessLogger - return the access logger from a context
-func ContextAccessLogger(ctx any) startup.AccessLogFn {
+func ContextAccessLogger(ctx context.Context) startup.AccessLogFn {
 	if ctx == nil {
 		return nil
 	}
-	if ctx2, ok := ctx.(context.Context); ok {
-		i := ctx2.Value(accessLoggerContextKey)
-		if fn, ok2 := i.(startup.AccessLogFn); ok2 {
-			return fn
-		}
+	i := ctx.Value(accessLoggerContextKey)
+	if fn, ok2 := i.(startup.AccessLogFn); ok2 {
+		return fn
 	}
 	return nil
 }
