@@ -37,10 +37,6 @@ func Example_NewStatusError() {
 	fmt.Printf("test: NewStatusError(nil) -> [%v]\n", NewStatusError(StatusInvalidContent, location, err))
 	fmt.Printf("test: NewStatusError(nil) -> [%v]\n", NewStatusError(http.StatusBadRequest, location, err))
 
-	//resp := http.Response{StatusCode: http.StatusBadRequest}
-	//fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, nil).SetLocation(location))
-	//fmt.Printf("test: NewHttpStatus(resp) -> [%v]\n", NewHttpStatus(&resp, err).SetLocation(location))
-
 	//Output:
 	//test: NewStatusError(nil) -> [Invalid Content [http error]]
 	//test: NewStatusError(nil) -> [Bad Request [http error]]
