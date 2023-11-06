@@ -33,7 +33,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	buf, rc, status0 := WriteBytes(content, GetContentType(headers))
 	if !status0.OK() {
-		e.HandleStatus(status0, status.RequestId(), writeLoc)
+		e.Handle(status0, status.RequestId(), writeLoc)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -43,7 +43,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
 	_, err := w.Write(buf)
 	if err != nil {
-		e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
 	}
 	return
 }
