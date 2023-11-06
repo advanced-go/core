@@ -43,7 +43,7 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 	return nil, nil
 }
 
-var exchangeCtx = runtime.ContextWithProxy(nil, exchangeProxy)
+var exchangeCtx = runtime.NewProxyContext(nil, exchangeProxy)
 
 func ExampleDo_InvalidArgument() {
 	_, s := Do(nil)

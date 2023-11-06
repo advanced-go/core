@@ -23,7 +23,7 @@ func Example_DefaultErrorFormat() {
 
 func ExampleLogHandler_Handle() {
 	location := "/LogHandler"
-	ctx := ContextWithRequestId(nil, "")
+	ctx := NewRequestIdContext(nil, "")
 	err := errors.New("test error")
 	var h LogError
 

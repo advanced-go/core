@@ -12,28 +12,27 @@ var testLogger = func(traffic string, start time.Time, duration time.Duration, r
 
 }
 
-func ExampleContextWithAccessLoggerExisting() {
-	SetAccessLogger(testLogger)
-	ctx := ContextWithAccessLogger(context.Background())
-	fmt.Printf("test: ContextWithAccessLogger(context.Background(),id) -> %v [newContext:%v]\n", ContextAccessLogger(ctx), ctx != context.Background())
+func Example_ContextWithAccessLoggerExisting() {
+	SetAccess(testLogger)
+	ctx := NewAccessContext(context.Background())
+	fmt.Printf("test: NewAccessContext(context.Background(),id) -> [access:%v] [newContext:%v]\n", AccessFromContext(ctx) != nil, ctx != context.Background())
 
-	ctxNew := ContextWithAccessLogger(ctx)
-	fmt.Printf("test: ContextWithAccessLogger(ctx,id) -> %v [newContext:%v]\n", ContextAccessLogger(ctx), ctxNew != ctx)
+	ctxNew := NewAccessContext(ctx)
+	fmt.Printf("test: NewAccessContext(ctx,id) -> [access:%v] [newContext:%v]\n", AccessFromContext(ctx) != nil, ctxNew != ctx)
 
 	//Output:
-	//test: ContextWithAccessLogger(context.Background(),id) -> 0x35e940 [newContext:true]
-	//test: ContextWithAccessLogger(ctx,id) -> 0x35e940 [newContext:false]
+	//test: NewAccessContext(context.Background(),id) -> [access:true] [newContext:true]
+	//test: NewAccessContext(ctx,id) -> [access:true] [newContext:false]
 
 }
 
 func Example_AccessLogger() {
 	start := time.Now().UTC()
-	SetAccessLogger(testLogger)
-	ctx := ContextWithAccessLogger(context.Background())
-	logger := ContextAccessLogger(ctx)
-	logger("egress", start, time.Since(start), nil, nil, -1, "flags")
-
-	//fmt.Printf("test: ContextWithAccessLogger() -> %v\n",logger("egress",start,time.Since(start),nil,nil,"flags"))
+	SetAccess(testLogger)
+	ctx := NewAccessContext(context.Background())
+	if fn := AccessFromContext(ctx); fn != nil {
+		fn("egress", start, time.Since(start), nil, nil, -1, "flags")
+	}
 
 	//Output:
 	//test: testLogger() -> { access logging attributes }
@@ -41,24 +40,24 @@ func Example_AccessLogger() {
 }
 
 /*
-func ExampleContextWithAccessLogger() {
-	ctx := ContextWithAccessLogger(context.Background(), testLogger)
-	fmt.Printf("test: ContextWithAccessLogger(ctx,id) -> %v\n", ContextAccessLogger(ctx))
+func ExampleNewAccessContext() {
+	ctx := NewAccessContext(context.Background(), testLogger)
+	fmt.Printf("test: NewAccessContext(ctx,id) -> %v\n", AccessFnFromContext(ctx))
 
-	ctx = ContextWithAccessLogger(nil)
-	fmt.Printf("test: ContextWithAccessLogger(nil) -> %v\n", ContextAccessLogger(ctx) != "")
+	ctx = NewAccessContext(nil)
+	fmt.Printf("test: NewAccessContext(nil) -> %v\n", AccessFnFromContext(ctx) != "")
 
 	req, _ := http.NewRequest("", "https.www.google.com", nil)
 	ctx = ContextWithRequest(req)
-	fmt.Printf("test: ContextWithRequest(req) -> %v\n", ContextAccessLogger(ctx) != "")
+	fmt.Printf("test: ContextWithRequest(req) -> %v\n", AccessFnFromContext(ctx) != "")
 
 	req, _ = http.NewRequest("", "https.www.google.com", nil)
 	req.Header.Add(XRequestId, "x-request-id-value")
 	ctx = ContextWithRequest(req)
-	fmt.Printf("test: ContextWithRequest(req) -> %v\n", ContextAccessLogger(ctx))
+	fmt.Printf("test: ContextWithRequest(req) -> %v\n", AccessFnFromContext(ctx))
 
 	//Output:
-	//test: ContextWithAccessLogger(ctx,id) -> 123-456-abc
+	//test: NewAccessContext(ctx,id) -> 123-456-abc
 	//test: ContextWithRequest(nil) -> false
 	//test: ContextWithRequest(req) -> true
 	//test: ContextWithRequest(req) -> x-request-id-value
@@ -69,7 +68,7 @@ func Example_RequestId() {
 	id := RequestId("123-456")
 	fmt.Printf("test: RequestId() -> %v\n", id)
 
-	ctx := ContextWithAccessLogger(context.Background(), "123-456-abc")
+	ctx := NewAccessContext(context.Background(), "123-456-abc")
 	id = RequestId(ctx)
 	fmt.Printf("test: RequestId() -> %v\n", id)
 

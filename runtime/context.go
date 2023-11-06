@@ -20,8 +20,8 @@ var (
 	requestContextKey = &contextKey{"request-id"}
 )
 
-// ContextWithRequestId - creates a new Context with a request id
-func ContextWithRequestId(ctx context.Context, requestId string) context.Context {
+// NewRequestIdContext - creates a new Context with a request id
+func NewRequestIdContext(ctx context.Context, requestId string) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
@@ -36,19 +36,19 @@ func ContextWithRequestId(ctx context.Context, requestId string) context.Context
 	return ContextWithValue(ctx, requestContextKey, requestId)
 }
 
-// ContextWithRequest - creates a new Context with a request id from the request headers
-func ContextWithRequest(req *http.Request) context.Context {
+// NewRequestContext - creates a new Context with a request id from the request headers
+func NewRequestContext(req *http.Request) context.Context {
 	if req == nil || req.Header == nil {
 		return context.Background()
 	}
 	if req.Header.Get(XRequestId) == "" {
 		req.Header.Add(XRequestId, uuid.New().String())
 	}
-	return ContextWithRequestId(req.Context(), req.Header.Get(XRequestId))
+	return NewRequestIdContext(req.Context(), req.Header.Get(XRequestId))
 }
 
-// ContextRequestId - return the requestId from a context
-func ContextRequestId(ctx any) string {
+// RequestIdFromContext - return the requestId from a context
+func RequestIdFromContext(ctx any) string {
 	if ctx == nil {
 		return ""
 	}
@@ -61,8 +61,8 @@ func ContextRequestId(ctx any) string {
 	return ""
 }
 
-// ContextWithProxy - create a new Context interface, containing a proxy
-func ContextWithProxy(ctx context.Context, proxy any) context.Context {
+// NewProxyContext - create a new Context interface, containing a proxy
+func NewProxyContext(ctx context.Context, proxy any) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
@@ -109,7 +109,7 @@ func RequestId(t any) string {
 	case string:
 		return ptr
 	case context.Context:
-		return ContextRequestId(ptr)
+		return RequestIdFromContext(ptr)
 	case *http.Request:
 		return ptr.Header.Get(XRequestId)
 	case *Status:

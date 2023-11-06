@@ -32,7 +32,7 @@ func ExampleProxyContext() {
 	v2 := "value 2"
 	v3 := "value 3"
 
-	ctx := ContextWithProxy(nil, proxyDo)
+	ctx := NewProxyContext(nil, proxyDo)
 
 	fmt.Printf("test: isProxyContext(ctx) -> %v\n", testProxyContext(ctx))
 	fmt.Printf("test: Values() -> [key1:%v] [key2:%v] [key3:%v]\n", ctx.Value(k1), ctx.Value(k2), ctx.Value(k3))
@@ -62,8 +62,8 @@ func ExampleProxyContext() {
 }
 
 func ExampleProxyContext_Proxy() {
-	ctx0 := ContextWithProxy(nil, proxyGet)
-	ctx := ContextWithProxy(ctx0, proxyDo)
+	ctx0 := NewProxyContext(nil, proxyGet)
+	ctx := NewProxyContext(ctx0, proxyDo)
 	ok1 := testProxyContext(ctx)
 
 	fmt.Printf("test: isProxyContext(ctx) -> %v\n", ok1)

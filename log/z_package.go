@@ -12,22 +12,22 @@ import (
 type pkg struct{}
 
 var (
-	PkgUri       = reflect.TypeOf(any(pkg{})).PkgPath()
-	accessLogger startup.AccessLogFn
+	PkgUri   = reflect.TypeOf(any(pkg{})).PkgPath()
+	accessFn startup.AccessLogFn
 )
 
-func AccessLogger() startup.AccessLogFn {
-	return accessLogger
+func Access() startup.AccessLogFn {
+	return accessFn
 }
 
-func SetAccessLogger(fn startup.AccessLogFn) {
+func SetAccess(fn startup.AccessLogFn) {
 	if fn != nil {
-		accessLogger = fn
+		accessFn = fn
 	}
 }
 func init() {
 	if runtime.IsDebugEnvironment() {
-		accessLogger = defaultLogFn
+		accessFn = defaultLogFn
 	}
 }
 
