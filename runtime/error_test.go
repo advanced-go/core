@@ -27,28 +27,31 @@ func ExampleLogHandler_Handle() {
 	err := errors.New("test error")
 	var h LogError
 
-	s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
+	//s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
+	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
+	//	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
 	s = NewStatusError(http.StatusInternalServerError, location)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [errors:%v]\n", h.HandleStatus(s, GetOrCreateRequestId(ctx), ""), s.IsErrors())
+	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(s, GetOrCreateRequestId(ctx), ""), s.IsErrors())
 
 	s = NewStatusError(http.StatusInternalServerError, location, err)
 	errors := s.IsErrors()
-	s1 := h.HandleStatus(s, GetOrCreateRequestId(ctx), "")
-	fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
+	s1 := h.Handle(s, GetOrCreateRequestId(ctx), "")
+	fmt.Printf("test: Handle(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [errors:true]
-	//test: HandleStatus(nil,s) -> [OK] [errors:false]
-	//test: HandleStatus(nil,s) -> [prev:Internal Error [test error]] [prev-errors:true] [curr:Internal Error [test error]] [curr-errors:true]
+	//test: Handle(nil,s) -> [OK] [errors:false]
+	//test: Handle(nil,s) -> [prev:Internal Error [test error]] [prev-errors:true] [curr:Internal Error [test error]] [curr-errors:true]
 
 }
 
+/*
 func ExampleErrorHandleFn() {
 	loc := PkgUri + "/ErrorHandleFn"
 
@@ -56,7 +59,10 @@ func ExampleErrorHandleFn() {
 	fn("", loc, errors.New("log - error message"))
 	fmt.Printf("test: Handle[LogErrorHandler]()\n")
 
-	//Output:
-	//test: Handle[LogErrorHandler]()
+	Output:
+	test: Handle[LogErrorHandler]()
 
 }
+
+
+*/

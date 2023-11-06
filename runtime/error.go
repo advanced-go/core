@@ -27,44 +27,44 @@ func SetFormatOutput(fn FormatOutput) {
 var formatter FormatOutput = DefaultErrorFormatter
 
 // ErrorHandleFn - function type for error handling
-type ErrorHandleFn func(requestId, location string, errs ...error) *Status
+//type ErrorHandleFn func(requestId, location string, errs ...error) *Status
 
 // ErrorHandler - template parameter error handler interface
+// Handle(requestId string, location string, errs ...error) *Status
 type ErrorHandler interface {
-	//Handle(requestId string, location string, errs ...error) *Status
-	HandleStatus(s *Status, requestId string, location string) *Status
+	Handle(s *Status, requestId string, callerLocation string) *Status
 }
 
 // BypassError - bypass error handler
 type BypassError struct{}
 
-func (h BypassError) Handle(requestId string, _ string, errs ...error) *Status {
+func (h BypassError) HandleDEP(requestId string, _ string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
 	return NewStatusError(http.StatusInternalServerError, "", errs...)
 }
 
-func (h BypassError) HandleStatus(s *Status, _ string, _ string) *Status {
+func (h BypassError) Handle(s *Status, _ string, _ string) *Status {
 	return s
 }
 
 // LogError - log error handler
 type LogError struct{}
 
-func (h LogError) Handle(requestId string, location string, errs ...error) *Status {
+func (h LogError) HandleDEP(requestId string, location string, errs ...error) *Status {
 	if !IsErrors(errs) {
 		return NewStatusOK()
 	}
-	return h.HandleStatus(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
+	return h.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
-func (h LogError) HandleStatus(s *Status, requestId string, location string) *Status {
+func (h LogError) Handle(s *Status, requestId string, callerLocation string) *Status {
 	if s == nil {
 		return s
 	}
 	s.SetRequestId(requestId)
-	s.AddLocation(location)
+	s.AddLocation(callerLocation)
 	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
 		log.Println(formatter(s))
 		s.SetErrorsHandled()
@@ -73,12 +73,16 @@ func (h LogError) HandleStatus(s *Status, requestId string, location string) *St
 }
 
 // NewErrorHandler - templated function providing an error handle function via a closure
+/*
 func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 	var e E
 	return func(requestId string, location string, errs ...error) *Status {
-		return e.HandleStatus(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
+		return e.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 	}
 }
+
+
+*/
 
 func DefaultErrorFormatter(s *Status) string {
 	str := strconv.Itoa(s.Code())

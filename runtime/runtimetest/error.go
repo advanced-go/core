@@ -18,14 +18,14 @@ var formatter runtime.FormatOutput = defaultFormatter
 // DebugError - debug error handler
 type DebugError struct{}
 
-func (h DebugError) Handle(requestId string, location string, errs ...error) *runtime.Status {
+func (h DebugError) HandleDEP(requestId string, location string, errs ...error) *runtime.Status {
 	if !runtime.IsErrors(errs) {
 		return runtime.NewStatusOK()
 	}
-	return h.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
+	return h.Handle(runtime.NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 }
 
-func (h DebugError) HandleStatus(s *runtime.Status, requestId string, location string) *runtime.Status {
+func (h DebugError) Handle(s *runtime.Status, requestId string, location string) *runtime.Status {
 	if s == nil {
 		return s
 	}

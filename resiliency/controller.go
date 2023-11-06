@@ -29,11 +29,11 @@ type controller struct {
 	name      string
 	threshold Threshold
 	handler   runtime.TypeHandlerFn
-	log       startup.HttpAccessLogFn
+	log       startup.AccessLogFn
 }
 
 // NewController - create a new resiliency controller
-func NewController(name string, threshold Threshold, handler runtime.TypeHandlerFn, log startup.HttpAccessLogFn) Controller {
+func NewController(name string, threshold Threshold, handler runtime.TypeHandlerFn, log startup.AccessLogFn) Controller {
 	//if handler == nil {
 	//	return nil, errors.New("error: handler is nil")
 	//}
@@ -93,7 +93,7 @@ func (c *controller) Apply(r *http.Request, body any) (any, *runtime.Status) {
 	resp := http.Response{StatusCode: status.Code()}
 	d := time.Since(start)
 	if c.log != nil {
-		c.log(internalTraffic, start, d, r, &resp, statusFlags) //c.name, int(c.threshold.Timeout/time.Millisecond), statusFlags)
+		c.log(internalTraffic, start, d, r, &resp, -1, statusFlags) //c.name, int(c.threshold.Timeout/time.Millisecond), statusFlags)
 	}
 	return t, status
 }

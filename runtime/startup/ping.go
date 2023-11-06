@@ -21,7 +21,7 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 
 	if uri == "" {
 		//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New("invalid argument: startup uri is empty"))
-		return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New("invalid argument: startup uri is empty")),
+		return e.Handle(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New("invalid argument: startup uri is empty")),
 			runtime.RequestId(ctx), "")
 
 	}
@@ -30,7 +30,7 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 	err := directory.Send(msg)
 	if err != nil {
 		//return e.Handle(runtime.RequestId(ctx), pingLocation, err)
-		return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, err), runtime.RequestId(ctx), "")
+		return e.Handle(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, err), runtime.RequestId(ctx), "")
 
 	}
 	duration := maxWait
@@ -42,12 +42,12 @@ func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runt
 		}
 		if result.Status == nil {
 			//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))).SetCode(runtime.StatusNotProvided)
-			return e.HandleStatus(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))), runtime.RequestId(ctx), "")
+			return e.Handle(runtime.NewStatusError(http.StatusInternalServerError, pingLocation, errors.New(fmt.Sprintf("ping response status not available: [%v]", uri))), runtime.RequestId(ctx), "")
 
 		}
 		return result.Status
 	}
 	//return e.Handle(runtime.RequestId(ctx), pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))).SetCode(runtime.StatusDeadlineExceeded)
-	return e.HandleStatus(runtime.NewStatusError(runtime.StatusDeadlineExceeded, pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))), runtime.RequestId(ctx), "")
+	return e.Handle(runtime.NewStatusError(runtime.StatusDeadlineExceeded, pingLocation, errors.New(fmt.Sprintf("ping response time out: [%v]", uri))), runtime.RequestId(ctx), "")
 
 }

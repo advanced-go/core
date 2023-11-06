@@ -23,19 +23,19 @@ func Example_formatErrors() {
 func ExampleDebugHandler_Handle() {
 	location := "/DebugHandler"
 	origin := "github.com/module/package/calling-fn"
-	ctx := runtime.ContextWithRequestId(nil, "123-request-id")
+	ctx := runtime.NewRequestIdContext(nil, "123-request-id")
 	err := errors.New("test error")
 	var h DebugError
 
 	//status := runtime.NewStatusError(0, location, err)
-	s := h.Handle(runtime.ContextRequestId(ctx), location)
+	s := h.Handle(runtime.NewStatus(http.StatusInternalServerError), runtime.RequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
 
-	s = h.Handle(runtime.GetOrCreateRequestId(ctx), location, err)
+	s = h.Handle(runtime.NewStatusError(http.StatusInternalServerError, location, err), runtime.GetOrCreateRequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.ErrorsHandled())
 
 	s = runtime.NewStatusError(http.StatusInternalServerError, location)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.HandleStatus(s, runtime.GetOrCreateRequestId(ctx), origin), s.ErrorsHandled())
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(s, runtime.GetOrCreateRequestId(ctx), origin), s.ErrorsHandled())
 
 	//s = runtime.NewStatusError(runtime.StatusInternal, location, err)
 	//errors := s.IsErrors()
