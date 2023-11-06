@@ -55,8 +55,8 @@ func ExampleIsPointer() {
 
 */
 
-func Example_Nil() {
-	b := isNil[Nil](nil)
+func Example_Nillable() {
+	b := isNillable[Nillable](nil)
 
 	fmt.Printf("test: isNil() -> %v", b)
 
@@ -65,6 +65,6 @@ func Example_Nil() {
 
 }
 
-func isNil[T Nil](t T) bool {
+func isNillable[T Nillable](t T) bool {
 	return t == nil
 }
