@@ -58,3 +58,17 @@ func LookupEnv(name string) (string, error) {
 	}
 	return "", errors.New(fmt.Sprintf("invalid argument : LookupEnv() template variable is invalid: %v", name))
 }
+
+func EnvStr() string {
+	switch rte {
+	case debug:
+		return "debug"
+	case test:
+		return "test"
+	case stage:
+		return "stage"
+	case production:
+		return "prod"
+	}
+	return "unknown"
+}
