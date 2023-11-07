@@ -48,7 +48,7 @@ func createValue(v []string) string {
 	return value
 }
 
-func Clone(req *http.Request) *http.Request {
+func UpdateHeadersAndContext(req *http.Request) *http.Request {
 	if req == nil {
 		return nil
 	}

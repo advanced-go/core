@@ -15,7 +15,7 @@ import (
 func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()
-		clone := httpx.Clone(r)
+		r = httpx.UpdateHeadersAndContext(r)
 		/*
 			requestId := runtime.GetOrCreateRequestId(r)
 			if r.Header.Get(runtime.XRequestId) == "" {
@@ -27,10 +27,10 @@ func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 			}
 
 		*/
-		m := httpsnoop.CaptureMetrics(appHandler, w, clone)
+		m := httpsnoop.CaptureMetrics(appHandler, w, r)
 		// log.Printf("%s %s (code=%d dt=%s written=%d)", r.Method, r.URL, m.Code, m.Duration, m.Written)
 		if fn := log.Access(); fn != nil {
-			fn(log.IngressTraffic, start, time.Since(start), clone, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, -1, "")
+			fn(log.IngressTraffic, start, time.Since(start), r, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, -1, "")
 		}
 	})
 	return wrappedH
