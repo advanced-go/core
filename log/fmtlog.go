@@ -29,15 +29,10 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"threshold\":%v, "+
-		//"timeout-ms:%v, "+
-		//"rate-limit:%v, "+
-		//"rate-burst:%v, "+
-		//	"proxy:%v, "+
 		"\"status-flags\":%v }",
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
 		traffic,
-		//controllerName,
 
 		fmtstr(req.Header.Get(runtime.XRequestId)),
 		fmtstr(req.Proto),
@@ -48,10 +43,6 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 
 		resp.StatusCode,
 
-		//timeout,
-		//rateLimit,
-		//rateBurst,
-		//proxy,
 		threshold,
 		fmtstr(statusFlags),
 	)
