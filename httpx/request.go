@@ -2,7 +2,6 @@ package httpx
 
 import (
 	"github.com/go-ai-agent/core/log"
-	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
 )
@@ -53,10 +52,7 @@ func Clone(req *http.Request) *http.Request {
 	if req == nil {
 		return nil
 	}
-	requestId := runtime.GetOrCreateRequestId(req)
-	if req.Header.Get(runtime.XRequestId) == "" {
-		req.Header.Set(runtime.XRequestId, requestId)
-	}
+	AddRequestId(req)
 	if fn := log.Access(); fn != nil {
 		return req.Clone(log.NewAccessContext(req.Context()))
 	}
