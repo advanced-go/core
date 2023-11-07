@@ -1,38 +1,35 @@
 package log
 
-//middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
-// middleware2.ControllerWrapTransport(exchange.Client)
+import (
+	"github.com/felixge/httpsnoop"
+	"github.com/go-ai-agent/core/runtime"
+	"net/http"
+	"time"
+)
 
-// ControllerHttpHostMetricsHandler - handler that applies host and ingress controllers
-/*
-func ControllerHttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
+// Configure as last handler in chain
+//middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
+
+// HttpHostMetricsHandler - handler that applies access logging
+func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()
-		ctrl := controller.IngressLookupHost()
-		var m httpsnoop.Metrics
+		clone := r
+		fn := Access()
 
-		if ctrl != nil {
-			if rlc := ctrl.RateLimiter(); rlc.IsEnabled() && !rlc.Allow() {
-				controller.LogHttpIngress(ctrl, start, time.Since(start), r, rlc.StatusCode(), 0, controller.RateLimitFlag)
-				return
+		if fn != nil {
+			ctx := NewAccessContext(r.Context())
+			clone = r.Clone(ctx)
+			requestId := runtime.GetOrCreateRequestId(r)
+			if r.Header.Get(runtime.XRequestId) == "" {
+				r.Header.Set(runtime.XRequestId, requestId)
 			}
 		}
-		ctrl, _ = controller.IngressLookup(r)
-		if ctrl == nil {
-			m = httpsnoop.CaptureMetrics(appHandler, w, r)
-		} else {
-			if toc := ctrl.Timeout(); toc.IsEnabled() && toc.Duration() > 0 {
-				m = httpsnoop.CaptureMetrics(http.TimeoutHandler(appHandler, toc.Duration(), msg), w, r)
-			} else {
-				m = httpsnoop.CaptureMetrics(appHandler, w, r)
-			}
-		}
+		m := httpsnoop.CaptureMetrics(appHandler, w, clone)
 		// log.Printf("%s %s (code=%d dt=%s written=%d)", r.Method, r.URL, m.Code, m.Duration, m.Written)
-		// TO DO: determine how to set status flag value when a timeout occurs
-		controller.LogHttpIngress(ctrl, start, time.Since(start), r, m.Code, m.Written, "")
+		if fn != nil {
+			fn(IngressTraffic, start, time.Since(start), clone, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, -1, "")
+		}
 	})
 	return wrappedH
 }
-
-
-*/

@@ -9,6 +9,7 @@ import (
 const (
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
+	IngressTraffic  = "ingress"
 )
 
 type key int

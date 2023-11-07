@@ -18,9 +18,6 @@ type controller struct {
 
 // NewController - create a new resiliency controller
 func NewController(handler runtime.TypeHandlerFn) Controller {
-	//if handler == nil {
-	//	return nil, errors.New("error: handler is nil")
-	//}
 	ctrl := new(controller)
 	ctrl.handler = handler
 	return ctrl

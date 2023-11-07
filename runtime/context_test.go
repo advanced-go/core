@@ -56,6 +56,14 @@ func Example_RequestId() {
 	id = RequestId(req)
 	fmt.Printf("test: RequestId() -> %v\n", id)
 
+	req, _ = http.NewRequest("", "https.www.google.com", nil)
+	id = GetOrCreateRequestId(req)
+	if req.Header.Get(XRequestId) == "" {
+		req.Header.Set(XRequestId, id)
+	}
+	id = RequestId(req)
+	fmt.Printf("test: GetOrCreateRequestId() -> [valid:%v]\n", len(id) != 0)
+
 	status := NewStatusOK().SetRequestId("987-654")
 	id = RequestId(status)
 	fmt.Printf("test: RequestId() -> %v\n", id)
@@ -64,6 +72,7 @@ func Example_RequestId() {
 	//test: RequestId() -> 123-456
 	//test: RequestId() -> 123-456-abc
 	//test: RequestId() -> 123-456-789
+	//test: GetOrCreateRequestId() -> [valid:true]
 	//test: RequestId() -> 987-654
 
 }
