@@ -80,9 +80,8 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 }
 
 func AddRequestId(req *http.Request) {
-	requestId := runtime.GetOrCreateRequestId(req)
-	if req.Header.Get(runtime.XRequestId) == "" {
-		req.Header.Set(runtime.XRequestId, requestId)
+	if req != nil && req.Header.Get(runtime.XRequestId) == "" {
+		req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
 	}
 }
 
