@@ -53,6 +53,9 @@ func Clone(req *http.Request) *http.Request {
 		return nil
 	}
 	AddRequestId(req)
+	if log.AccessFromContext(req.Context()) != nil {
+		return req
+	}
 	if fn := log.Access(); fn != nil {
 		return req.Clone(log.NewAccessContext(req.Context()))
 	}
