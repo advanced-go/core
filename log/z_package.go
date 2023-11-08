@@ -12,9 +12,9 @@ import (
 type pkg struct{}
 
 const (
-	internalTraffic = "internal"
-	egressTraffic   = "egress"
-	ingressTraffic  = "ingress"
+	InternalTraffic = "internal"
+	EgressTraffic   = "egress"
+	IngressTraffic  = "ingress"
 )
 
 var (
@@ -44,22 +44,23 @@ var defaultLogFn = func(traffic string, start time.Time, duration time.Duration,
 
 func EgressAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	if accessFn != nil {
-		defaultLogFn(egressTraffic, start, duration, req, resp, threshold, statusFlags)
+		defaultLogFn(EgressTraffic, start, duration, req, resp, threshold, statusFlags)
 	}
 }
 
 func IngressAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	if accessFn != nil {
-		defaultLogFn(ingressTraffic, start, duration, req, resp, threshold, statusFlags)
+		defaultLogFn(IngressTraffic, start, duration, req, resp, threshold, statusFlags)
 	}
 }
 
 func InternalAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	if accessFn != nil {
-		defaultLogFn(internalTraffic, start, duration, req, resp, threshold, statusFlags)
+		defaultLogFn(InternalTraffic, start, duration, req, resp, threshold, statusFlags)
 	}
 }
 
+// AnyAccess - needed for packages that have optional logging when core logging is not configured.
 func AnyAccess(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	if accessFn != nil {
 		defaultLogFn(traffic, start, duration, req, resp, threshold, statusFlags)
