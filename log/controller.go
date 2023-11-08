@@ -13,11 +13,11 @@ type Controller interface {
 }
 
 type controller struct {
-	handler runtime.TypeHandlerFn
+	handler runtime.TypeHandler
 }
 
 // NewController - create a new resiliency controller
-func NewController(handler runtime.TypeHandlerFn) Controller {
+func NewController(handler runtime.TypeHandler) Controller {
 	ctrl := new(controller)
 	ctrl.handler = handler
 	return ctrl

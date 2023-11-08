@@ -13,11 +13,11 @@ type Controller2 interface {
 }
 
 type controller2 struct {
-	handler runtime.DoHandlerFn
+	handler runtime.DoHandler
 }
 
 // NewController2 - create a new access logging controller
-func NewController2(handler runtime.DoHandlerFn) Controller2 {
+func NewController2(handler runtime.DoHandler) Controller2 {
 	ctrl := new(controller2)
 	ctrl.handler = handler
 	return ctrl
