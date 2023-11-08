@@ -7,12 +7,6 @@ import (
 	"net/http"
 )
 
-const (
-	InternalTraffic = "internal"
-	EgressTraffic   = "egress"
-	IngressTraffic  = "ingress"
-)
-
 type key int
 
 var accessFnKey key

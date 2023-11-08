@@ -54,3 +54,13 @@ func Example_NewRequest_Request() {
 	//test: NewRequest(ctx) -> [status:OK] [req-len:9] [ctx-len:9] [access:true] [var:variant:location-3]
 
 }
+
+func Example_Clone() {
+	req, _ := http.NewRequest("get", "https://www.google.com/search?q=golang", nil)
+	clone := req.Clone(context.Background())
+
+	fmt.Printf("test: Clone() ->  [orig:%v] [clone:%v] [orig:%v] [clone:%v]\n", req.Host, clone.Host, req.URL.String(), clone.URL.String())
+
+	//Output:
+
+}

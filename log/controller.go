@@ -31,10 +31,6 @@ func (c *controller) Apply(req *http.Request, body any) (any, *runtime.Status) {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/Controller/Apply", errors.New("error: handler function is nil for access logger")).SetRequestId(req.Context())
 	}
 	t, status := c.handler(req, body)
-	if fn := AccessFromContext(req.Context()); fn != nil {
-		resp := http.Response{StatusCode: status.Code()}
-		dur := time.Since(start)
-		fn(InternalTraffic, start, dur, req, &resp, -1, "")
-	}
+	InternalAccess(start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
 	return t, status
 }
