@@ -59,3 +59,9 @@ func InternalAccess(start time.Time, duration time.Duration, req *http.Request, 
 		defaultLogFn(internalTraffic, start, duration, req, resp, threshold, statusFlags)
 	}
 }
+
+func AnyAccess(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+	if accessFn != nil {
+		defaultLogFn(traffic, start, duration, req, resp, threshold, statusFlags)
+	}
+}
