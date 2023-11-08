@@ -50,12 +50,12 @@ func AccessFromAny(ctx any) startup.AccessLogFn {
 	if ctx == nil {
 		return nil
 	}
-	if ctx2 := ctx.(context.Context); ctx2 != nil {
+	if ctx2, ok := ctx.(context.Context); ok {
 		if fn := AccessFromContext(ctx2); fn != nil {
 			return fn
 		}
 	}
-	if r := ctx.(*http.Request); r != nil {
+	if r, ok := ctx.(*http.Request); ok && r.Context() != nil {
 		if fn := AccessFromContext(r.Context()); fn != nil {
 			return fn
 		}
