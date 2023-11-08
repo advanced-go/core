@@ -1,7 +1,9 @@
 package httpx
 
 import (
+	"context"
 	"github.com/go-ai-agent/core/log"
+	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
 )
@@ -60,4 +62,37 @@ func UpdateHeadersAndContext(req *http.Request) *http.Request {
 		return req.Clone(log.NewAccessContext(req.Context()))
 	}
 	return req
+}
+
+func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.Status) {
+	newCtx := newContext(ctx)
+
+	// check for access function
+	if log.AccessFromContext(newCtx) == nil {
+		if fn := log.Access(); fn != nil {
+			newCtx = log.NewAccessContext(newCtx)
+		}
+	}
+	req, err := http.NewRequestWithContext(newCtx, method, uri, nil)
+	if err != nil {
+		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
+	}
+	if len(variant) != 0 {
+		req.Header.Add(runtime.ContentLocation, variant)
+	}
+	AddRequestId(req)
+	return req, runtime.NewStatusOK()
+}
+
+func newContext(ctx any) context.Context {
+	if ctx == nil {
+		return context.Background()
+	}
+	if ctx2 := ctx.(context.Context); ctx2 != nil {
+		return ctx2
+	}
+	if r := ctx.(*http.Request); r != nil && r.Context() != nil {
+		return r.Context()
+	}
+	return context.Background()
 }

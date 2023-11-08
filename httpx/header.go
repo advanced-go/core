@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"github.com/go-ai-agent/core/runtime"
+	"github.com/google/uuid"
 	"net/http"
 	"strings"
 )
@@ -79,10 +80,17 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 	}
 }
 
-func AddRequestId(req *http.Request) {
-	if req != nil && req.Header.Get(runtime.XRequestId) == "" {
+func AddRequestId(req *http.Request) string {
+	if req == nil {
+		return ""
+	}
+	id := req.Header.Get(runtime.XRequestId)
+	if len(id) == 0 {
+		uid, _ := uuid.NewUUID()
+		id = uid.String()
 		req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
 	}
+	return id
 }
 
 /*
