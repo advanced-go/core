@@ -56,11 +56,14 @@ func Example_NewRequest_Request() {
 }
 
 func Example_Clone() {
-	req, _ := http.NewRequest("get", "https://www.google.com/search?q=golang", nil)
+	req, _ := http.NewRequest("get", "http://localhost:8080/search?q=golang", nil)
 	clone := req.Clone(context.Background())
 
 	fmt.Printf("test: Clone() ->  [orig:%v] [clone:%v] [orig:%v] [clone:%v]\n", req.Host, clone.Host, req.URL.String(), clone.URL.String())
+	fmt.Printf("test: Clone() ->  [origUrl:%v] [cloneUrl:%v]\n", req.URL.Host, clone.URL.Host)
 
 	//Output:
+	//test: Clone() ->  [orig:localhost:8080] [clone:localhost:8080] [orig:http://localhost:8080/search?q=golang] [clone:http://localhost:8080/search?q=golang]
+	//test: Clone() ->  [origUrl:localhost:8080] [cloneUrl:localhost:8080]
 
 }

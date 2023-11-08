@@ -16,6 +16,10 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 	if resp == nil {
 		resp = &http.Response{StatusCode: http.StatusOK}
 	}
+	host := req.Host
+	if len(host) == 0 {
+		host = req.URL.Host
+	}
 	d := int(duration / time.Duration(1e6))
 	s := fmt.Sprintf("{ \"start\":%v, "+
 		"\"duration\":%v, "+
@@ -38,7 +42,8 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		fmtstr(req.Proto),
 		fmtstr(req.Method),
 		fmtstr(req.URL.String()),
-		fmtstr(req.URL.Host),
+		//fmtstr(req.URL.Host),
+		fmtstr(host),
 		fmtstr(req.URL.Path),
 
 		resp.StatusCode,
