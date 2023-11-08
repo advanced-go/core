@@ -21,10 +21,9 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		host = req.URL.Host
 	}
 	d := int(duration / time.Duration(1e6))
-	s := fmt.Sprintf("{ \"start\":%v, "+
+	s := fmt.Sprintf("{ \"traffic\":\"%v\", "+
+		"\"start\":%v, "+
 		"\"duration\":%v, "+
-		"\"traffic\":\"%v\", "+
-		//"controller:%v, "+
 		"\"request-id\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
@@ -34,9 +33,9 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"\"status-code\":%v, "+
 		"\"threshold\":%v, "+
 		"\"status-flags\":%v }",
+		traffic,
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
-		traffic,
 
 		fmtstr(req.Header.Get(runtime.XRequestId)),
 		fmtstr(req.Proto),
