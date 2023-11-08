@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-ai-agent/core/runtime"
 	"github.com/go-ai-agent/core/runtime/startup"
+	"net/http"
 )
 
 const (
@@ -32,7 +33,7 @@ func NewAccessContext(ctx context.Context) context.Context {
 	return runtime.ContextWithValue(ctx, accessFnKey, accessFn)
 }
 
-// AccessFromContext - return the access logger from a context
+// AccessFromContext - return the access function from a context
 func AccessFromContext(ctx context.Context) startup.AccessLogFn {
 	if ctx == nil {
 		return nil
@@ -42,4 +43,23 @@ func AccessFromContext(ctx context.Context) startup.AccessLogFn {
 		return fn
 	}
 	return nil
+}
+
+// AccessFromAny - return the access function from any context
+func AccessFromAny(ctx any) startup.AccessLogFn {
+	if ctx == nil {
+		return nil
+	}
+	if ctx2 := ctx.(context.Context); ctx2 != nil {
+		if fn := AccessFromContext(ctx2); fn != nil {
+			return fn
+		}
+	}
+	if r := ctx.(*http.Request); r != nil {
+		if fn := AccessFromContext(r.Context()); fn != nil {
+			return fn
+		}
+	}
+	return nil
+
 }
