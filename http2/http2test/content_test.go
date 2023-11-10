@@ -2,12 +2,12 @@ package http2test
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/io2"
 )
 
 func Example_ReadContent_Empty() {
 	s := "file://[cwd]/resource/get-request.txt"
-	buf, err := io.ReadFile(ParseRaw(s))
+	buf, err := io2.ReadFile(ParseRaw(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 
@@ -23,7 +23,7 @@ func Example_ReadContent_Empty() {
 
 func _Example_ReadContent_Available() {
 	s := "file://[cwd]/resource/put-req.txt"
-	buf, err := io.ReadFile(ParseRaw(s))
+	buf, err := io2.ReadFile(ParseRaw(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 

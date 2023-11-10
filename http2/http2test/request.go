@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	io2 "github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/io2"
 	"io"
 	"net/http"
 	"net/url"

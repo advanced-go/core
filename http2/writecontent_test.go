@@ -2,7 +2,7 @@ package http2
 
 import (
 	"fmt"
-	io2 "github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/io2"
 	"github.com/go-ai-agent/core/runtime"
 	"github.com/go-ai-agent/core/runtime/runtimetest"
 	"net/http"

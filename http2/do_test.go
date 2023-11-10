@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/httpx/httpxtest"
-	io2 "github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/io2"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 )

@@ -3,7 +3,7 @@ package http2
 import (
 	"encoding/json"
 	"errors"
-	io2 "github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/io2"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
 )
