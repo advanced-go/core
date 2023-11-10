@@ -50,7 +50,7 @@ func createValue(v []string) string {
 	return value
 }
 
-func UpdateHeaderst(req *http.Request) *http.Request {
+func UpdateHeaders(req *http.Request) *http.Request {
 	if req == nil {
 		return nil
 	}

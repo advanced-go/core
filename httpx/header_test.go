@@ -40,3 +40,7 @@ func Example_SetHeaders() {
 	//test: SetHeaders() [cnt:2]
 
 }
+
+func Example_Header() {
+	
+}

@@ -15,6 +15,13 @@ const (
 	ContentLength   = "Content-Length"
 )
 
+func HeaderValue(name string, r *http.Request) string {
+	if r == nil {
+		return "invalid-request"
+	}
+	return r.Header.Get(name)
+}
+
 func GetContentLocation(req *http.Request) string {
 	if req != nil && req.Header != nil {
 		return req.Header.Get(ContentLocation)
