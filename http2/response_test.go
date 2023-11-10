@@ -1,4 +1,4 @@
-package httpxtest
+package http2
 
 import (
 	"fmt"

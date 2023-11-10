@@ -1,0 +1,12 @@
+GET http://www.techcrunch.com/ HTTP/1.1
+Host: www.techcrunch.com
+User-Agent: Fake
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate\r\n
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Content-Length: 7
+Proxy-Connection: keep-alive
+
+abcdef
