@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var handler = func(r *http.Request, body any) (any, *runtime.Status) {
+var handler = func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 	return nil, runtime.NewStatusOK()
 }
 

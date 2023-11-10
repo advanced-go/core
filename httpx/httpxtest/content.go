@@ -4,7 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"net/url"
 )
+
+// ParseRaw - parse a raw Uri without error
+func ParseRaw(rawUri string) *url.URL {
+	u, _ := url.Parse(rawUri)
+	return u
+}
 
 func ReadContent(rawHttp []byte) (*bytes.Buffer, error) {
 	var content = new(bytes.Buffer)

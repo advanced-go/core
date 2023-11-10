@@ -1,9 +1,9 @@
-package exchange
+package exchange2
 
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/exchange/exchangetest"
+	"github.com/go-ai-agent/core/exchange2/exchangetest"
 	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"io"

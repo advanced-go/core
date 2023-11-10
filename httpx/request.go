@@ -2,7 +2,6 @@ package httpx
 
 import (
 	"context"
-	"github.com/go-ai-agent/core/log"
 	"github.com/go-ai-agent/core/runtime"
 	"github.com/google/uuid"
 	"io"
@@ -51,17 +50,17 @@ func createValue(v []string) string {
 	return value
 }
 
-func UpdateHeadersAndContext(req *http.Request) *http.Request {
+func UpdateHeaderst(req *http.Request) *http.Request {
 	if req == nil {
 		return nil
 	}
 	AddRequestId(req)
-	if log.AccessFromContext(req.Context()) != nil {
-		return req
-	}
-	if fn := log.Access(); fn != nil {
-		return req.Clone(log.NewAccessContext(req.Context()))
-	}
+	//if log.AccessFromContext(req.Context()) != nil {
+	//	return req
+	//}
+	//	if fn := log.Access(); fn != nil {
+	//		return req.Clone(log.NewAccessContext(req.Context()))
+	//	}
 	return req
 }
 
@@ -69,11 +68,11 @@ func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.S
 	newCtx := newContext(ctx)
 
 	// Check for access function
-	if log.AccessFromContext(newCtx) == nil {
-		if fn := log.Access(); fn != nil {
-			newCtx = log.NewAccessContext(newCtx)
-		}
-	}
+	//if log.AccessFromContext(newCtx) == nil {
+	//	if fn := log.Access(); fn != nil {
+	//		newCtx = log.NewAccessContext(newCtx)
+	//	}
+	//}
 	// Create request id and add to context
 	requestId := newId(ctx)
 	if id := runtime.RequestIdFromContext(newCtx); len(id) == 0 {
@@ -97,9 +96,9 @@ func newContext(ctx any) context.Context {
 	if ctx2, ok := ctx.(context.Context); ok {
 		return ctx2
 	}
-	if r, ok := ctx.(*http.Request); ok && r.Context() != nil {
-		return r.Context()
-	}
+	//if r, ok := ctx.(*http.Request); ok && r.Context() != nil {
+	//	return r.Context()
+	//}
 	return context.Background()
 }
 

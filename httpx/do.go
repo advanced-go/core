@@ -1,18 +1,15 @@
-package exchange
+package httpx
 
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/go-ai-agent/core/httpx"
 	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 	"time"
 )
 
-// HttpExchange - interface for Http request/response interaction
-//type HttpExchange interface {
-//	Do(req *http.Request) (*http.Response, error)
-//}
+// Exchange - interface for Http request/response interaction
+type Exchange func(req *http.Request) (*http.Response, error)
 
 var (
 	doLocation = PkgUri + "/Do"
@@ -42,7 +39,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 
 	if runtime.IsDebugEnvironment() {
 		if req.URL.Scheme == "file" {
-			resp, err = httpx.ReadResponse(req.URL)
+			resp, err = ReadResponse(req.URL)
 			if err != nil {
 				return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
 			}
@@ -55,9 +52,6 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 			}
 		}
 	}
-	//if doProxy == nil {
-	//	doProxy = ProxyLookup(req)
-	//}
 	if doProxy != nil {
 		resp, err = doProxy(req)
 	} else {
@@ -79,10 +73,6 @@ func DoT[T any](req *http.Request) (resp *http.Response, t T, status *runtime.St
 		return nil, t, status
 	}
 	t, status = Deserialize[T](resp.Body)
-	//var e E
-	//if !status.OK() {
-	//	e.HandleStatus(status, req) //.SetRequestId(runtime.RequestId(req)))
-	//}
 	return
 }
 

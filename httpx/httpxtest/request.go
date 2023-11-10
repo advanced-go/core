@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/httpx"
+	io2 "github.com/go-ai-agent/core/io"
 	"io"
 	"net/http"
 	"net/url"
@@ -24,7 +24,7 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	if uri.Scheme != "file" {
 		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", uri.Scheme))
 	}
-	buf, err := httpx.ReadFile(uri)
+	buf, err := io2.ReadFile(uri)
 	if err != nil {
 		return nil, err
 	}

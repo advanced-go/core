@@ -24,7 +24,7 @@ func (w *controllerWrapper) RoundTrip(req *http.Request) (*http.Response, error)
 	/*
 		ctrl, _ := controller.EgressLookup(req)
 		if ctrl == nil {
-			resp, err, statusFlags = w.exchange(nil, req)
+			resp, err, statusFlags = w.do(nil, req)
 			controller.LogHttpEgress(ctrl, start, time.Since(start), req, resp, statusFlags)
 			return resp, err
 		}
@@ -43,7 +43,7 @@ func (w *controllerWrapper) RoundTrip(req *http.Request) (*http.Response, error)
 				req.Header.Add(header.Name, header.Value)
 			}
 		}
-		resp, err, statusFlags = w.exchange(ctrl.Timeout(), req)
+		resp, err, statusFlags = w.doe(ctrl.Timeout(), req)
 		if err != nil {
 			return resp, err
 		}
@@ -55,7 +55,7 @@ func (w *controllerWrapper) RoundTrip(req *http.Request) (*http.Response, error)
 }
 
 /*
-func (w *controllerWrapper) exchange(tc Timeout, req *http.Request) (resp *http.Response, err error, statusFlags string) {
+func (w *controllerWrapper) do(tc Timeout, req *http.Request) (resp *http.Response, err error, statusFlags string) {
 	if !tc.Duration == 0 {
 		resp, err = w.rt.RoundTrip(req)
 		return

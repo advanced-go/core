@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-
-	"github.com/go-ai-agent/core/httpx"
+	"github.com/go-ai-agent/core/io"
+	"github.com/go-ai-agent/core/runtime"
 	"net/http"
 )
 
@@ -18,12 +18,12 @@ type Args struct {
 
 func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
 	path := basePath + reqName
-	req, err := ReadRequest(httpx.ParseRaw(path))
+	req, err := ReadRequest(ParseRaw(path))
 	if err != nil {
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
 	}
 	path = basePath + respName
-	resp, err1 := httpx.ReadResponse(httpx.ParseRaw(path))
+	resp, err1 := ReadResponse(ParseRaw(path))
 	if err1 != nil {
 		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: err1}}, nil, nil
 	}
@@ -51,12 +51,12 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 
 func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
-	wantBytes, status := httpx.ReadAll(want.Body)
+	wantBytes, status := io.ReadAll(want.Body)
 	if status.IsErrors() {
 		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Errors()[0]}}
 		return
 	}
-	gotBytes, status1 := httpx.ReadAll(got.Body)
+	gotBytes, status1 := io.ReadAll(got.Body)
 	if status1.IsErrors() {
 		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Errors()[0]}}
 		return
@@ -89,7 +89,7 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 	}
 
 	// validate content type is application/json
-	if ct != httpx.ContentTypeJson {
+	if ct != runtime.ContentTypeJson {
 		failures = []Args{{Item: "Content-Type", Got: "", Want: "", Err: errors.New(fmt.Sprintf("invalid content type for serialization [%v]", ct))}}
 		return
 	}
@@ -110,13 +110,13 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 }
 
 func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
-	ct = want.Header.Get(httpx.ContentType)
+	ct = want.Header.Get(runtime.ContentType)
 	if ct == "" {
-		return []Args{{Item: httpx.ContentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
+		return []Args{{Item: runtime.ContentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
 	}
-	gotCt := got.Header.Get(httpx.ContentType)
+	gotCt := got.Header.Get(runtime.ContentType)
 	if gotCt != ct {
-		return []Args{{Item: httpx.ContentType, Got: gotCt, Want: ct, Err: nil}}, ct
+		return []Args{{Item: runtime.ContentType, Got: gotCt, Want: ct, Err: nil}}, ct
 	}
 	return nil, ct
 }

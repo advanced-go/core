@@ -2,12 +2,12 @@ package httpxtest
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/httpx"
+	"github.com/go-ai-agent/core/io"
 )
 
 func Example_ReadContent_Empty() {
 	s := "file://[cwd]/resource/get-request.txt"
-	buf, err := httpx.ReadFile(httpx.ParseRaw(s))
+	buf, err := io.ReadFile(ParseRaw(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 
@@ -23,7 +23,7 @@ func Example_ReadContent_Empty() {
 
 func _Example_ReadContent_Available() {
 	s := "file://[cwd]/resource/put-req.txt"
-	buf, err := httpx.ReadFile(httpx.ParseRaw(s))
+	buf, err := io.ReadFile(ParseRaw(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 
