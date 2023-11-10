@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/httpx/httpxtest"
+	io2 "github.com/go-ai-agent/core/io"
 	"github.com/go-ai-agent/core/runtime"
-	"io"
 	"net/http"
 )
 
@@ -69,12 +69,12 @@ func ExampleDo_Proxy_IOError() {
 	fmt.Printf("test: Do(req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
 
 	defer resp.Body.Close()
-	buf, s2 := io.ReadAll(resp.Body)
-	fmt.Printf("test: io.ReadAll(resp.Body) -> [%v] [body:%v]\n", s2, string(buf))
+	buf, s2 := io2.ReadAll(resp.Body)
+	fmt.Printf("test: ReadAll(resp.Body) -> [%v] [body:%v]\n", s2, string(buf))
 
 	//Output:
 	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [body:true]
-	//test: io.ReadAll(resp.Body) -> [unexpected EOF] [body:]
+	//test: ReadAll(resp.Body) -> [unexpected EOF] [body:]
 
 }
 
@@ -85,12 +85,12 @@ func ExampleDo_Proxy_HellowWorld() {
 		err, resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Header.Get("content-length"), resp.Body != nil)
 
 	defer resp.Body.Close()
-	buf, ioError := io.ReadAll(resp.Body)
-	fmt.Printf("test: io.ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
+	buf, ioError := io2.ReadAll(resp.Body)
+	fmt.Printf("test: ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
 	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
-	//test: io.ReadAll(resp.Body) -> [err:<nil>] [body:<html><body><h1>Hello, World</h1></body></html>]
+	//test: ReadAll(resp.Body) -> [err:<nil>] [body:<html><body><h1>Hello, World</h1></body></html>]
 
 }
 
@@ -101,8 +101,8 @@ func ExampleDo_Proxy_ServiceUnavailable() {
 		resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
 
 	//defer resp.Body.Close()
-	//buf, ioError := io.ReadAll(resp.Body)
-	//fmt.Printf("test: io.ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
+	//buf, ioError := io2.ReadAll(resp.Body)
+	//fmt.Printf("test: ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
 	//test: Do(req) -> [resp:true] [statusCode:503] [content-type:text/html] [body:true]

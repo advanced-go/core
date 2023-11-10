@@ -3,6 +3,7 @@ package httpx
 import (
 	"errors"
 	"fmt"
+	io2 "github.com/go-ai-agent/core/io"
 	"github.com/go-ai-agent/core/json"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
@@ -28,14 +29,14 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 	case io.Reader:
 		var status *runtime.Status
 
-		buf, status = ReadAll(io.NopCloser(ptr))
+		buf, status = io2.ReadAll(io.NopCloser(ptr))
 		if !status.OK() {
 			return nil, "", status
 		}
 	case io.ReadCloser:
 		var status *runtime.Status
 
-		buf, status = ReadAll(ptr)
+		buf, status = io2.ReadAll(ptr)
 		if !status.OK() {
 			return nil, "", status
 		}

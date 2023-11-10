@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"fmt"
+	io2 "github.com/go-ai-agent/core/io"
 	"github.com/go-ai-agent/core/runtime"
 	"github.com/go-ai-agent/core/runtime/runtimetest"
 	"net/http"
@@ -13,14 +14,14 @@ func Example_writeStatusContent() {
 	// No content
 	writeStatusContent[runtimetest.DebugError](r, runtime.NewStatusOK(), "test location")
 	r.Result().Header = r.Header()
-	buf, status := ReadAll(r.Result().Body)
+	buf, status := io2.ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Error message
 	r = NewRecorder()
 	writeStatusContent[runtimetest.DebugError](r, runtime.NewStatus(http.StatusInternalServerError).SetContent("error message", false), "test location")
 	r.Result().Header = r.Header()
-	buf, status = ReadAll(r.Result().Body)
+	buf, status = io2.ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Json
@@ -28,7 +29,7 @@ func Example_writeStatusContent() {
 	r = NewRecorder()
 	writeStatusContent[runtimetest.DebugError](r, runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true), "test location")
 	r.Result().Header = r.Header()
-	buf, status = ReadAll(r.Result().Body)
+	buf, status = io2.ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	//Output:
