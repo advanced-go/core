@@ -83,7 +83,7 @@ func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.S
 		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
 	}
 	if len(variant) != 0 {
-		req.Header.Add(runtime.ContentLocation, variant)
+		req.Header.Add(ContentLocation, variant)
 	}
 	req.Header.Add(runtime.XRequestId, requestId)
 	return req, runtime.NewStatusOK()

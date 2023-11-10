@@ -5,8 +5,12 @@ import (
 	"errors"
 	"fmt"
 	io2 "github.com/go-ai-agent/core/io"
-	"github.com/go-ai-agent/core/runtime"
 	"net/http"
+)
+
+const (
+	contentTypeJson = "application/json"
+	contentType     = "Content-Type"
 )
 
 type Args struct {
@@ -89,7 +93,7 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 	}
 
 	// validate content type is application/json
-	if ct != runtime.ContentTypeJson {
+	if ct != contentTypeJson {
 		failures = []Args{{Item: "Content-Type", Got: "", Want: "", Err: errors.New(fmt.Sprintf("invalid content type for serialization [%v]", ct))}}
 		return
 	}
@@ -110,13 +114,13 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 }
 
 func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
-	ct = want.Header.Get(runtime.ContentType)
+	ct = want.Header.Get(contentType)
 	if ct == "" {
-		return []Args{{Item: runtime.ContentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
+		return []Args{{Item: contentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
 	}
-	gotCt := got.Header.Get(runtime.ContentType)
+	gotCt := got.Header.Get(contentType)
 	if gotCt != ct {
-		return []Args{{Item: runtime.ContentType, Got: gotCt, Want: ct, Err: nil}}, ct
+		return []Args{{Item: contentType, Got: gotCt, Want: ct, Err: nil}}, ct
 	}
 	return nil, ct
 }
