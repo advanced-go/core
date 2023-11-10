@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/io2"
-	"github.com/go-ai-agent/core/json"
+	"github.com/go-ai-agent/core/json2"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
@@ -44,7 +44,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 		if strings.Contains(contentType, "json") {
 			var status *runtime.Status
 
-			buf, status = json.Marshal(content)
+			buf, status = json2.Marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}
