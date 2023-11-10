@@ -21,22 +21,22 @@ const (
 type AccessHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
 
 var (
-	PkgUri   = reflect.TypeOf(any(pkg{})).PkgPath()
-	accessFn AccessHandler
+	PkgUri  = reflect.TypeOf(any(pkg{})).PkgPath()
+	handler AccessHandler
 )
 
 func GetAccessHandler() AccessHandler {
-	return accessFn
+	return handler
 }
 
 func SetAccessHandler(fn AccessHandler) {
 	if fn != nil {
-		accessFn = fn
+		handler = fn
 	}
 }
 func init() {
 	if runtime.IsDebugEnvironment() {
-		accessFn = defaultLogFn
+		handler = defaultLogFn
 	}
 }
 
@@ -59,8 +59,8 @@ func InternalAccess(start time.Time, duration time.Duration, req *http.Request, 
 
 // AnyAccess - needed for packages that have optional logging when core logging is not configured.
 func AnyAccess(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	if accessFn != nil {
-		defaultLogFn(traffic, start, duration, req, resp, threshold, statusFlags)
+	if handler != nil {
+		handler(traffic, start, duration, req, resp, threshold, statusFlags)
 	}
 }
 
@@ -70,10 +70,10 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 		var start = time.Now().UTC()
 
 		if handler == nil {
-			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/Wrap", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
+			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapDo", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
 		}
 		data, status := handler(ctx, req, body)
-		GetAccessHandler()(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
+		AnyAccess(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
 		return data, status
 	}
 }
