@@ -101,7 +101,7 @@ func ExampleDo_Proxy_ServiceUnavailable() {
 		resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
 
 	//defer resp.Body.Close()
-	//buf, ioError := io2.ReadAll(resp.Body)
+	//buf, ioError := io.ReadAll(resp.Body)
 	//fmt.Printf("test: ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
