@@ -1,10 +1,10 @@
 package http2
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/io2"
-	"github.com/go-ai-agent/core/json2"
 	"github.com/go-ai-agent/core/runtime"
 	"io"
 	"net/http"
@@ -15,6 +15,14 @@ import (
 var (
 	bytesLoc = PkgUri + "/WriteBytes"
 )
+
+func marshal(t any) ([]byte, *runtime.Status) {
+	buf, err := json.Marshal(t)
+	if err != nil {
+		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgUri+"/Marshal", err)
+	}
+	return buf, runtime.NewStatusOK()
+}
 
 func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Status) {
 	var buf []byte
@@ -44,7 +52,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 		if strings.Contains(contentType, "json") {
 			var status *runtime.Status
 
-			buf, status = json2.Marshal(content)
+			buf, status = marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}
