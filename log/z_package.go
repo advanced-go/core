@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/runtime"
+	"github.com/google/uuid"
 	"net/http"
 	"reflect"
 	"time"
@@ -76,4 +77,18 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 		AnyAccess(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
 		return data, status
 	}
+}
+
+// AddRequestId - function copied from package httpx
+func AddRequestId(req *http.Request) string {
+	if req == nil {
+		return ""
+	}
+	id := req.Header.Get(runtime.XRequestId)
+	if len(id) == 0 {
+		uid, _ := uuid.NewUUID()
+		id = uid.String()
+		req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
+	}
+	return id
 }
