@@ -65,16 +65,15 @@ func AnyAccess(traffic string, start time.Time, duration time.Duration, req *htt
 }
 
 // WrapDo - wrap a DoHandler with access logging
-func WrapDo[T AccessHandler](handler runtime.DoHandler) runtime.DoHandler {
+func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
 
 		if handler == nil {
 			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/Wrap", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
 		}
-		var t T
 		data, status := handler(ctx, req, body)
-		t(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
+		GetAccessHandler()(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
 		return data, status
 	}
 }
