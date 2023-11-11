@@ -35,9 +35,14 @@ func Example_DoHandlerProxy() {
 	ctx := runtime.NewProxyContext(nil, doHandler)
 
 	fn := DoHandlerProxy(ctx)
-	fmt.Printf("test: DoHandlerProxy() -> [proxy:%v]\n", fn != nil)
+	fmt.Printf("test: DoHandlerProxy(ctx) -> [proxy:%v]\n", fn != nil)
+
+	req, _ := http.NewRequestWithContext(ctx, "", "https://www.google.com/search", nil)
+	fn = DoHandlerProxy(req)
+	fmt.Printf("test: DoHandlerProxy(*http.Request) -> [proxy:%v]\n", fn != nil)
 
 	//Output:
-	//test: DoHandlerProxy() -> [proxy:true]
+	//test: DoHandlerProxy(ctx) -> [proxy:true]
+	//test: DoHandlerProxy(*http.Request) -> [proxy:true]
 
 }

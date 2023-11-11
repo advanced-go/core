@@ -91,7 +91,7 @@ func ExampleDo_Proxy_HellowWorld() {
 	//Output:
 	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
 	//test: ReadAll(resp.Body) -> [status:OK] [body:<html><body><h1>Hello, World</h1></body></html>]
-	
+
 }
 
 func ExampleDo_Proxy_ServiceUnavailable() {
