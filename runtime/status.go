@@ -270,73 +270,6 @@ func (s *Status) CopyHeader(header http.Header) *Status {
 func (s *Status) OK() bool       { return s.code == http.StatusOK }
 func (s *Status) NotFound() bool { return s.code == http.StatusNotFound }
 
-/*
-func (s *Status) InvalidArgument() bool { return s.code == http.StatusInvalidArgument }
-
-	func (s *Status) Unauthenticated() bool {
-		return s.code == StatusUnauthenticated || s.code == http.StatusUnauthorized
-	}
-
-	func (s *Status) PermissionDenied() bool {
-		return s.code == StatusPermissionDenied || s.code == http.StatusForbidden
-	}
-
-func (s *Status) NotFound() bool { return s.code == StatusNotFound || s.code == http.StatusNotFound }
-
-	func (s *Status) Internal() bool {
-		return s.code == StatusInternal || s.code == http.StatusInternalServerError
-	}
-
-	func (s *Status) Timeout() bool {
-		return s.code == StatusDeadlineExceeded || s.code == http.StatusGatewayTimeout
-	}
-
-	func (s *Status) ServiceUnavailable() bool {
-		return s.code == StatusUnavailable || s.code == http.StatusServiceUnavailable
-	}
-
-	func (s *Status) Http() int {
-		if s.code >= http.StatusContinue {
-			return int(s.code)
-		}
-		//return http.StatusInternalServerError
-
-		var code = http.StatusInternalServerError
-		switch s.code {
-		case StatusOK:
-			code = http.StatusOK
-		case StatusInvalidArgument:
-			code = http.StatusBadRequest
-		case StatusUnauthenticated:
-			code = http.StatusUnauthorized
-		case StatusPermissionDenied:
-			code = http.StatusForbidden
-		case StatusNotFound:
-			code = http.StatusNotFound
-		case StatusRateLimited:
-			code = http.StatusTooManyRequests
-		case StatusInternal:
-			code = http.StatusInternalServerError
-		case StatusUnavailable:
-			code = http.StatusServiceUnavailable
-		case StatusDeadlineExceeded:
-			code = http.StatusGatewayTimeout
-		case StatusInvalidContent:
-			code = http.StatusNoContent
-		case StatusCancelled,
-			StatusUnknown,
-			StatusAlreadyExists,
-			StatusResourceExhausted,
-			StatusFailedPrecondition,
-			StatusAborted,
-			StatusOutOfRange,
-			StatusUnimplemented,
-			StatusDataLoss:
-		}
-		return code
-	}
-*/
-
 func (s *Status) Http() int {
 	// Catch all valid http status codes
 	if s.code >= http.StatusContinue {
@@ -350,7 +283,7 @@ func (s *Status) Http() int {
 		return http.StatusGatewayTimeout
 	}
 	// all others
-	return http.StatusInternalServerError //s.code
+	return http.StatusInternalServerError
 }
 
 func (s *Status) Description() string {
@@ -389,6 +322,8 @@ func (s *Status) Description() string {
 		return "Timeout"
 	case http.StatusNotFound:
 		return "Not Found"
+	case http.StatusMethodNotAllowed:
+		return "Method Not Allowed"
 	case http.StatusForbidden:
 		return "Permission Denied"
 	case http.StatusInternalServerError:
