@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"errors"
 	"fmt"
 	"github.com/go-ai-agent/core/strings"
 	"log"
@@ -90,7 +91,7 @@ func DefaultErrorFormatter(s *Status) string {
 		strings.JsonMarkup(StatusCodeName, str, false),
 		strings.JsonMarkup(StatusName, s.Description(), true),
 		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
-		FormatLocation(TraceName, s.Location()),
+		FormatTrace(TraceName, s.Location()),
 		FormatErrors(ErrorsName, s.Errors()))
 }
 
@@ -108,16 +109,20 @@ func FormatErrors(name string, errs []error) string {
 	return result + " ]"
 }
 
-func FormatLocation(name string, location []string) string {
-	if len(location) == 0 {
+func FormatTrace(name string, trace []string) string {
+	if len(trace) == 0 {
 		return fmt.Sprintf("\"%v\" : null", name)
 	}
 	result := fmt.Sprintf("\"%v\" : [ ", name)
-	for i := len(location) - 1; i >= 0; i-- {
-		if i < len(location)-1 {
+	for i := len(trace) - 1; i >= 0; i-- {
+		if i < len(trace)-1 {
 			result += ","
 		}
-		result += fmt.Sprintf("\"%v\"", location[i])
+		result += fmt.Sprintf("\"%v\"", trace[i])
 	}
 	return result + " ]"
+}
+
+func NewInvalidBodyTypeError(t any) error {
+	return errors.New(fmt.Sprintf("invalid body type: %v", TypeName(t)))
 }
