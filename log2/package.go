@@ -35,6 +35,19 @@ func SetAccessHandler(fn AccessHandler) {
 		handler = fn
 	}
 }
+
+func RemoveDebugAccessHandler() {
+	if runtime.IsDebugEnvironment() {
+		handler = nil
+	}
+}
+
+func SetDebugAccessHandler() {
+	if runtime.IsDebugEnvironment() {
+		SetAccessHandler(defaultLogFn)
+	}
+}
+
 func init() {
 	//if runtime.IsDebugEnvironment() {
 	//	handler = defaultLogFn
