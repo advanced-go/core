@@ -17,7 +17,7 @@ func Example_DefaultErrorFormat() {
 	fmt.Printf("test: DefaultErrorFormatter() -> %v", str)
 
 	//Output:
-	//test: DefaultErrorFormatter() -> { "Code":200, "Status":"OK", "RequestId":"1234-5678", "Location" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "Errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: DefaultErrorFormatter() -> { "code":200, "status":"OK", "request-id":"1234-5678", "trace" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 

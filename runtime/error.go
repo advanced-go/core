@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	StatusName     = "Status"
-	StatusCodeName = "Code"
-	LocationName   = "Location"
-	RequestIdName  = "RequestId"
-	ErrorsName     = "Errors"
+	StatusName     = "status"
+	StatusCodeName = "code"
+	TraceName      = "trace"
+	RequestIdName  = "request-id"
+	ErrorsName     = "errors"
 )
 
 type FormatOutput func(s *Status) string
@@ -90,7 +90,7 @@ func DefaultErrorFormatter(s *Status) string {
 		strings.JsonMarkup(StatusCodeName, str, false),
 		strings.JsonMarkup(StatusName, s.Description(), true),
 		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
-		FormatLocation(LocationName, s.Location()),
+		FormatLocation(TraceName, s.Location()),
 		FormatErrors(ErrorsName, s.Errors()))
 }
 
