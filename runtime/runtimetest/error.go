@@ -43,6 +43,6 @@ func defaultFormatter(s *runtime.Status) string {
 		strings.JsonMarkup("code", fmt.Sprintf("%v", s.Code()), false),
 		strings.JsonMarkup("status", s.Description(), true),
 		strings.JsonMarkup("id", s.RequestId(), true),
-		runtime.FormatLocation("trace", s.Location()),
+		runtime.FormatTrace("trace", s.Location()),
 		runtime.FormatErrors("err", s.Errors()))
 }

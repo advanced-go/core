@@ -78,6 +78,9 @@ func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.S
 	if id := runtime.RequestIdFromContext(newCtx); len(id) == 0 {
 		newCtx = runtime.NewRequestIdContext(newCtx, requestId)
 	}
+	if len(method) == 0 {
+		method = "GET"
+	}
 	req, err := http.NewRequestWithContext(newCtx, method, uri, nil)
 	if err != nil {
 		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
