@@ -79,6 +79,16 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	}
 }
 
+// WrapBypass - wrap a DoHandler with no logging
+func WrapBypass(handler runtime.DoHandler) runtime.DoHandler {
+	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
+		if handler == nil {
+			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapDoBypass", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
+		}
+		return handler(ctx, req, body)
+	}
+}
+
 // AddRequestId - function copied from package httpx
 func AddRequestId(req *http.Request) string {
 	if req == nil {
