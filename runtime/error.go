@@ -6,6 +6,7 @@ import (
 	"github.com/go-ai-agent/core/strings"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 )
 
@@ -124,5 +125,5 @@ func FormatTrace(name string, trace []string) string {
 }
 
 func NewInvalidBodyTypeError(t any) error {
-	return errors.New(fmt.Sprintf("invalid body type: %v", TypeName(t)))
+	return errors.New(fmt.Sprintf("invalid body type: %v", reflect.TypeOf(t)))
 }

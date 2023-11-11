@@ -51,6 +51,22 @@ func ExampleLogHandler_Handle() {
 
 }
 
+func Example_InvalidTypeError() {
+	fmt.Printf("test: NewInvalidBodyTypeError(nil) -> %v\n", NewInvalidBodyTypeError(nil))
+	fmt.Printf("test: NewInvalidBodyTypeError(string) -> %v\n", NewInvalidBodyTypeError("test data"))
+	fmt.Printf("test: NewInvalidBodyTypeError(int) -> %v\n", NewInvalidBodyTypeError(500))
+
+	req, _ := http.NewRequest("patch", "https://www.google.com/search", nil)
+	fmt.Printf("test: NewInvalidBodyTypeError(*http.Request) -> %v\n", NewInvalidBodyTypeError(req))
+
+	//Output:
+	//test: NewInvalidBodyTypeError(nil) -> invalid body type: <nil>
+	//test: NewInvalidBodyTypeError(string) -> invalid body type: string
+	//test: NewInvalidBodyTypeError(int) -> invalid body type: int
+	//test: NewInvalidBodyTypeError(*http.Request) -> invalid body type: *http.Request
+	
+}
+
 /*
 func ExampleErrorHandleFn() {
 	loc := PkgUri + "/ErrorHandleFn"

@@ -15,6 +15,7 @@ func IsNil(a any) bool {
 	return reflect.ValueOf(a).IsNil()
 }
 
+/*
 func TypeName(a any) string {
 	if a == nil {
 		return "<nil>"
@@ -37,6 +38,8 @@ func IsPointer(a any) bool {
 	return true
 }
 
+
+*/
 /*
 func IsNillable(a any) bool {
 	return IsPointer(a) || IsPointerType(a)
