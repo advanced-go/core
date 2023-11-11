@@ -1,6 +1,9 @@
 package runtime
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 type testStruct struct {
 	vers  string
@@ -19,6 +22,29 @@ func ExampleIsNil() {
 	//test: IsNil(nil) -> true
 	//test: IsNil(i) -> true
 	//test: IsNil(pi) -> true
+
+}
+
+func Example_TypeName() {
+	s := TypeName(nil)
+	fmt.Printf("test: TypeName(nil) -> %v\n", s)
+
+	s = TypeName("test data")
+	fmt.Printf("test: TypeName(string) -> %v\n", s)
+
+	n := 500
+	s = TypeName(n)
+	fmt.Printf("test: TypeName(int) -> %v\n", s)
+
+	req, _ := http.NewRequest("patch", "https://www.google.com/search", nil)
+	s = TypeName(req)
+	fmt.Printf("test: TypeName(http.Request) -> %v\n", s)
+
+	//Output:
+	//test: TypeName(nil) -> <nil>
+	//test: TypeName(string) -> string
+	//test: TypeName(int) -> int
+	//test: TypeName(http.Request) -> ptr
 
 }
 

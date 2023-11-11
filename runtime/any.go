@@ -15,9 +15,16 @@ func IsNil(a any) bool {
 	return reflect.ValueOf(a).IsNil()
 }
 
-/*
-func IsNillable(a any) bool {
-	return IsPointer(a) || IsPointerType(a)
+func TypeName(a any) string {
+	if a == nil {
+		return "<nil>"
+	}
+	// TO DO: determine underlying type name of a pointer
+	if IsPointer(a) {
+		k := reflect.TypeOf(a).Kind()
+		return k.String()
+	}
+	return reflect.TypeOf(a).Name()
 }
 
 func IsPointer(a any) bool {
@@ -29,6 +36,13 @@ func IsPointer(a any) bool {
 	}
 	return true
 }
+
+/*
+func IsNillable(a any) bool {
+	return IsPointer(a) || IsPointerType(a)
+}
+
+
 
 func IsPointerType(a any) bool {
 	if a == nil {
