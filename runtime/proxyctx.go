@@ -42,7 +42,7 @@ func (p *proxyContext) withValue(key, val any) context.Context {
 	return p
 }
 
-func DoHandlerProxy(ctx context.Context) DoHandler {
+func DoHandlerProxy(ctx context.Context) func(ctx any, r *http.Request, body any) (any, *Status) {
 	if proxies, ok := IsProxyable(ctx); ok {
 		do := findDoProxy(proxies)
 		if do != nil {
