@@ -36,13 +36,13 @@ func SetAccessHandler(fn AccessHandler) {
 	}
 }
 
-func RemoveDebugAccessHandler() {
+func DisableDebugAccessHandler() {
 	if runtime.IsDebugEnvironment() {
 		handler = nil
 	}
 }
 
-func SetDebugAccessHandler() {
+func EnableDebugAccessHandler() {
 	if runtime.IsDebugEnvironment() {
 		SetAccessHandler(defaultLogFn)
 	}
