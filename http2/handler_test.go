@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-func Example_Do() {
+func Example_DoContext() {
 	ctx := context.Background()
 	do(ctx, "GET", "https://www.google.com/search?q=golang", nil)
 
@@ -17,9 +17,27 @@ func Example_Do() {
 	do(req, "GET", "https://www.google.com/search?q=golang", nil)
 
 	//Output:
+	//test: do() -> [type:*context.emptyCtx] [method:GET] [uri:https://www.google.com/search?q=golang]
+	//test: do() -> [type:*http.Request] [method:GET] [uri:https://www.google.com/search?q=golang]
+
 }
 
 func do(ctx any, method, uri string, body any) (any, *runtime.Status) {
 	fmt.Printf("test: do() -> [type:%v] [method:%v] [uri:%v]\n", reflect.TypeOf(ctx), method, uri)
 	return nil, nil
+}
+
+func doHandler(ctx any, r *http.Request, body any) (any, *runtime.Status) {
+	return nil, runtime.NewStatusOK()
+}
+
+func Example_DoHandlerProxy() {
+	ctx := runtime.NewProxyContext(nil, doHandler)
+
+	fn := DoHandlerProxy(ctx)
+	fmt.Printf("test: DoHandlerProxy() -> [proxy:%v]\n", fn != nil)
+
+	//Output:
+	//test: DoHandlerProxy() -> [proxy:true]
+
 }

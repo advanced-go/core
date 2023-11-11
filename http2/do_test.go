@@ -74,7 +74,7 @@ func ExampleDo_Proxy_IOError() {
 
 	//Output:
 	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [body:true]
-	//test: ReadAll(resp.Body) -> [unexpected EOF] [body:]
+	//test: ReadAll(resp.Body) -> [I/O Failure [unexpected EOF]] [body:]
 
 }
 
@@ -85,13 +85,13 @@ func ExampleDo_Proxy_HellowWorld() {
 		err, resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Header.Get("content-length"), resp.Body != nil)
 
 	defer resp.Body.Close()
-	buf, ioError := io2.ReadAll(resp.Body)
-	fmt.Printf("test: ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
+	buf, status := io2.ReadAll(resp.Body)
+	fmt.Printf("test: ReadAll(resp.Body) -> [status:%v] [body:%v]\n", status, string(buf))
 
 	//Output:
 	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
-	//test: ReadAll(resp.Body) -> [err:<nil>] [body:<html><body><h1>Hello, World</h1></body></html>]
-
+	//test: ReadAll(resp.Body) -> [status:OK] [body:<html><body><h1>Hello, World</h1></body></html>]
+	
 }
 
 func ExampleDo_Proxy_ServiceUnavailable() {
