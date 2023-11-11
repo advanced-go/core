@@ -40,9 +40,9 @@ func (h DebugError) Handle(s *runtime.Status, requestId string, location string)
 
 func defaultFormatter(s *runtime.Status) string {
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
-		strings.JsonMarkup("c", fmt.Sprintf("%v", s.Code()), false),
-		strings.JsonMarkup("s", s.Description(), true),
+		strings.JsonMarkup("code", fmt.Sprintf("%v", s.Code()), false),
+		strings.JsonMarkup("status", s.Description(), true),
 		strings.JsonMarkup("id", s.RequestId(), true),
-		runtime.FormatLocation("l", s.Location()),
+		runtime.FormatLocation("trace", s.Location()),
 		runtime.FormatErrors("err", s.Errors()))
 }

@@ -16,7 +16,7 @@ func Example_formatErrors() {
 	fmt.Printf("test: defaultFormatter() -> %v", defaultFormatter(s))
 
 	//Output:
-	//test: defaultFormatter() -> { "c":200, "s":"OK", "id":"1234-5678", "l" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "err" : null }
+	//test: defaultFormatter() -> { "code":200, "status":"OK", "id":"1234-5678", "trace" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "err" : null }
 
 }
 
@@ -43,11 +43,11 @@ func ExampleDebugHandler_Handle() {
 	//fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
 
 	//Output:
-	//test: Handle(ctx,location,nil) -> [OK] [errors:false]
-	//{ "c":500, "s":"Internal Error", "id":"123-request-id", "l" : [ "","/DebugHandler" ], "err" : [ "test error" ] }
+	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
+	//{ "code":500, "status":"Internal Error", "id":"123-request-id", "trace" : [ "/DebugHandler","/DebugHandler" ], "err" : [ "test error" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
-
+	
 }
 
 /*
