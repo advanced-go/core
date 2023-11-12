@@ -4,8 +4,8 @@ import (
 	"net/http"
 )
 
-// TypeHandler - function type for TypeHandler handler
-type TypeHandler func(r *http.Request, body any) (any, *Status)
+// HttpHandler - function type for HTTP handling
+type HttpHandler func(ctx any, w http.ResponseWriter, r *http.Request) *Status
 
 // DoHandler - function type for a Do handler
 type DoHandler func(ctx any, r *http.Request, body any) (any, *Status)

@@ -92,6 +92,20 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	}
 }
 
+// WrapHttp - wrap a HttpHandler with access logging
+func WrapHttp(handler runtime.HttpHandler) runtime.HttpHandler {
+	return func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status {
+		var start = time.Now().UTC()
+
+		if handler == nil {
+			return runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapHttp", errors.New("error:Http handler function is nil for access log")).SetRequestId(r.Context())
+		}
+		status := handler(ctx, w, r)
+		AnyAccess(InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: status.Code()}, -1, "")
+		return status
+	}
+}
+
 // WrapBypass - wrap a DoHandler with no logging
 func WrapBypass(handler runtime.DoHandler) runtime.DoHandler {
 	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
