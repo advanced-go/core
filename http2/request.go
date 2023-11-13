@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 type nopCloser struct {
@@ -64,7 +65,7 @@ func UpdateHeaders(req *http.Request) *http.Request {
 	return req
 }
 
-func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.Status) {
+func NewRequest(ctx any, method string, uri any, variant string) (*http.Request, *runtime.Status) {
 	newCtx := newContext(ctx)
 
 	// Check for access function
@@ -81,7 +82,15 @@ func NewRequest(ctx any, method, uri, variant string) (*http.Request, *runtime.S
 	if len(method) == 0 {
 		method = "GET"
 	}
-	req, err := http.NewRequestWithContext(newCtx, method, uri, nil)
+	s := "invalid uri type"
+	if url, ok := uri.(*url.URL); ok {
+		s = url.String()
+	} else {
+		if s2, ok2 := uri.(string); ok2 {
+			s = s2
+		}
+	}
+	req, err := http.NewRequestWithContext(newCtx, method, s, nil)
 	if err != nil {
 		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
 	}
