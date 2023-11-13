@@ -154,3 +154,31 @@ type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
 // HttpHandler - function type for HTTP handling
 type HttpHandler func(ctx context.Context, w http.ResponseWriter, r *http.Request) *runtime.Status
+
+// Log - accessing logging for generic function calls
+func Log(ctx any, method, uri string, statusCode func() int) func() {
+	start := time.Now().UTC()
+	req := newRequest(ctx, method, uri)
+	return func() {
+		InternalAccess(start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, -1, "")
+	}
+}
+
+func newRequest(ctx any, method, uri string) *http.Request {
+	req, err := http.NewRequest(method, uri, nil)
+
+	if err != nil {
+		req, err = http.NewRequest(method, "http://invalid-uri.com", nil)
+	}
+	requestId := runtime.RequestId(ctx)
+	if len(requestId) > 0 {
+		req.Header.Add(runtime.XRequestId, requestId)
+	}
+	return req
+}
+
+func NewStatusCodeClosure(status **runtime.Status) func() int {
+	return func() int {
+		return (*(status)).Code()
+	}
+}
