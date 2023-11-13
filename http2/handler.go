@@ -71,9 +71,9 @@ func findHttpProxy(proxies []any) func(ctx any, w http.ResponseWriter, r *http.R
 }
 
 // PostHandler - function type for a Post handler
-type PostHandler func(ctx any, method, uri, variant string, body any) (any, *runtime.Status)
+type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
-func PostHandlerProxy(ctx any) func(ctx any, method, uri, variant string, body any) (any, *runtime.Status) {
+func PostHandlerProxy(ctx any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 	switch ptr := ctx.(type) {
 	case context.Context:
 		if proxies, ok := runtime.IsProxyable(ptr); ok {
@@ -93,9 +93,9 @@ func PostHandlerProxy(ctx any) func(ctx any, method, uri, variant string, body a
 	return nil
 }
 
-func findPostProxy(proxies []any) func(ctx any, method, uri, variant string, body any) (any, *runtime.Status) {
+func findPostProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 	for _, p := range proxies {
-		if fn, ok := p.(func(ctx any, method, uri, variant string, body any) (any, *runtime.Status)); ok {
+		if fn, ok := p.(func(ctx any, r *http.Request, body any) (any, *runtime.Status)); ok {
 			return fn
 		}
 	}

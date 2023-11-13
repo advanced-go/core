@@ -95,15 +95,15 @@ func WrapDo(handler DoHandler) DoHandler {
 
 // WrapPost - wrap a PostHandler with access logging
 func WrapPost(handler PostHandler) PostHandler {
-	return func(ctx any, method, uri, variant string, body any) (any, *runtime.Status) {
+	return func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
 
-		req, _ := http.NewRequest(method, uri, nil)
+		//req, _ := http.NewRequest(method, uri, nil)
 		if handler == nil {
-			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapPost", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
+			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapPost", errors.New("error:Do handler function is nil for access log")).SetRequestId(r)
 		}
-		data, status := handler(ctx, method, uri, variant, body)
-		AnyAccess(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
+		data, status := handler(ctx, r, body)
+		AnyAccess(InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: status.Code()}, -1, "")
 		return data, status
 	}
 }
@@ -150,7 +150,7 @@ func AddRequestId(req *http.Request) string {
 type DoHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
 // PostHandler - function type for a Post handler
-type PostHandler func(ctx any, method, uri, variant string, body any) (any, *runtime.Status)
+type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
 // HttpHandler - function type for HTTP handling
 type HttpHandler func(ctx context.Context, w http.ResponseWriter, r *http.Request) *runtime.Status
