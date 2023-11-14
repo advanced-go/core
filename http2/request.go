@@ -65,7 +65,7 @@ func UpdateHeaders(req *http.Request) *http.Request {
 	return req
 }
 
-func NewRequest(ctx any, method string, uri any, variant string) (*http.Request, *runtime.Status) {
+func NewRequest(ctx any, method string, uri any, variant string, body io.Reader) (*http.Request, *runtime.Status) {
 	newCtx := newContext(ctx)
 
 	// Check for access function
@@ -82,7 +82,7 @@ func NewRequest(ctx any, method string, uri any, variant string) (*http.Request,
 	if len(method) == 0 {
 		method = "GET"
 	}
-	s := "invalid uri type"
+	s := "https://somedomain.com/invalid-uri-or-type"
 	if url, ok := uri.(*url.URL); ok {
 		s = url.String()
 	} else {
@@ -90,7 +90,7 @@ func NewRequest(ctx any, method string, uri any, variant string) (*http.Request,
 			s = s2
 		}
 	}
-	req, err := http.NewRequestWithContext(newCtx, method, s, nil)
+	req, err := http.NewRequestWithContext(newCtx, method, s, body)
 	if err != nil {
 		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
 	}
