@@ -80,7 +80,7 @@ func AnyAccess(traffic string, start time.Time, duration time.Duration, req *htt
 }
 
 // WrapDo - wrap a DoHandler with access logging
-func WrapDo(handler DoHandler) DoHandler {
+func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
 
@@ -94,7 +94,7 @@ func WrapDo(handler DoHandler) DoHandler {
 }
 
 // WrapPost - wrap a PostHandler with access logging
-func WrapPost(handler PostHandler) PostHandler {
+func WrapPost(handler runtime.PostHandler) runtime.PostHandler {
 	return func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
 
@@ -145,15 +145,6 @@ func AddRequestId(req *http.Request) string {
 	}
 	return id
 }
-
-// DoHandler - copied from http2
-type DoHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
-
-// PostHandler - function type for a Post handler
-type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
-
-// HttpHandler - function type for HTTP handling
-type HttpHandler func(ctx context.Context, w http.ResponseWriter, r *http.Request) *runtime.Status
 
 // Log - accessing logging for generic function calls
 func Log(ctx any, method, uri string, statusCode func() int) func() {

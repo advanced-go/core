@@ -7,7 +7,7 @@ import (
 )
 
 // DoHandler - function type for a Do handler
-type DoHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
+//type DoHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
 func DoHandlerProxy(ctx any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 	switch ptr := ctx.(type) {
@@ -39,7 +39,7 @@ func findDoProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *
 }
 
 // HttpHandler - function type for a HTTP handler
-type HttpHandler func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status
+//type HttpHandler func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status
 
 func HttpHandlerProxy(ctx any) func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status {
 	switch ptr := ctx.(type) {
@@ -71,7 +71,7 @@ func findHttpProxy(proxies []any) func(ctx any, w http.ResponseWriter, r *http.R
 }
 
 // PostHandler - function type for a Post handler
-type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
+//type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
 
 func PostHandlerProxy(ctx any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
 	switch ptr := ctx.(type) {
