@@ -7,13 +7,14 @@ import (
 	"github.com/advanced-go/core/runtime"
 	"github.com/google/uuid"
 	"net/http"
-	"reflect"
 	"time"
 )
 
 type pkg struct{}
 
 const (
+	PkgUri          = "github.com/advanced-go/core/log2"
+	PkgPath         = "/advanced-go/core/log2"
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"
@@ -23,7 +24,6 @@ const (
 type AccessHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
 
 var (
-	PkgUri  = reflect.TypeOf(any(pkg{})).PkgPath()
 	handler AccessHandler
 )
 
@@ -47,12 +47,6 @@ func EnableDebugAccessHandler() {
 	if runtime.IsDebugEnvironment() {
 		SetAccessHandler(defaultLogFn)
 	}
-}
-
-func init() {
-	//if runtime.IsDebugEnvironment() {
-	//	handler = defaultLogFn
-	//}
 }
 
 var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
@@ -119,16 +113,6 @@ func WrapHttp(handler runtime.HttpHandler) runtime.HttpHandler {
 		status := handler(ctx, w, r)
 		AnyAccess(InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: status.Code()}, -1, "")
 		return status
-	}
-}
-
-// WrapBypass - wrap a DoHandler with no logging
-func WrapBypass(handler runtime.DoHandler) runtime.DoHandler {
-	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
-		if handler == nil {
-			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapDoBypass", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
-		}
-		return handler(ctx, req, body)
 	}
 }
 

@@ -1,11 +1,7 @@
 package io2
 
-import (
-	"reflect"
-)
-
 type pkg struct{}
 
-var (
-	PkgUri = reflect.TypeOf(any(pkg{})).PkgPath()
+const (
+	PkgUri = "github.com/advanced-go/core/io2"
 )

@@ -5,10 +5,14 @@ import (
 	"github.com/advanced-go/core/runtime"
 )
 
+const (
+	PkgUri = "github.com/advanced-go/core/json2"
+)
+
 func Marshal(t any) ([]byte, *runtime.Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgUri+"/Marshal", err)
+		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, PkgUri+"/Marshal", err)
 	}
 	return buf, runtime.NewStatusOK()
 }
@@ -16,7 +20,7 @@ func Marshal(t any) ([]byte, *runtime.Status) {
 func Unmarshal(buf []byte, t any) *runtime.Status {
 	err := json.Unmarshal(buf, t)
 	if err != nil {
-		return runtime.NewStatusError(runtime.StatusJsonDecodeError, runtime.PkgUri+"/Unmarshal", err)
+		return runtime.NewStatusError(runtime.StatusJsonDecodeError, PkgUri+"/Unmarshal", err)
 	}
 	return runtime.NewStatusOK()
 }
