@@ -2,7 +2,7 @@ package http2
 
 import (
 	"context"
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 

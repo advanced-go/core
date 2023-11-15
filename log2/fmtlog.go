@@ -2,8 +2,8 @@ package log2
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
-	strings2 "github.com/go-ai-agent/core/strings"
+	"github.com/advanced-go/core/runtime"
+	strings2 "github.com/advanced-go/core/strings"
 	"net/http"
 	"strconv"
 	"time"

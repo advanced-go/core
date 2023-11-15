@@ -2,7 +2,7 @@ package json2
 
 import (
 	"encoding/json"
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/runtime"
 )
 
 func Marshal(t any) ([]byte, *runtime.Status) {

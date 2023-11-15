@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
-	"github.com/go-ai-agent/core/runtime/runtimetest"
+	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/runtimetest"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -61,7 +61,7 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
 
 	//Output:
-	//{ "id":"123456-id", "l":"github.com/go-ai-agent/core/httpx/WriteResponse", "o":null "err" : [ "invalid number of kv items: number is odd, missing a value" ] }
+	//{ "id":"123456-id", "l":"github.com/advanced-go/core/httpx/WriteResponse", "o":null "err" : [ "invalid number of kv items: number is odd, missing a value" ] }
 	//test: WriteResponse(w,text response,status) -> [status:Internal [invalid number of kv items: number is odd, missing a value]] [status1:500] [body:] [header:map[]]
 
 }

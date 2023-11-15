@@ -3,9 +3,9 @@ package http2
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/httpx/httpxtest"
-	"github.com/go-ai-agent/core/io2"
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/http2/http2test"
+	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 
@@ -22,11 +22,11 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
 		return nil, errors.New("request or request URL is nil")
 	}
-	switch httpxtest.Pattern(req) {
-	case httpxtest.HttpErrorUri, httpxtest.BodyIOErrorUri:
-		return httpxtest.ErrorProxy(req)
+	switch http2test.Pattern(req) {
+	case http2test.HttpErrorUri, http2test.BodyIOErrorUri:
+		return http2test.ErrorProxy(req)
 	case helloWorldUri:
-		resp := httpxtest.NewResponse(http.StatusOK, []byte("<html><body><h1>Hello, World</h1></body></html>"), "content-type", "text/html", "content-length", "1234")
+		resp := http2test.NewResponse(http.StatusOK, []byte("<html><body><h1>Hello, World</h1></body></html>"), "content-type", "text/html", "content-length", "1234")
 		return resp, nil
 	case serviceUnavailableUri:
 		// Read the response from an embedded file system.
@@ -37,7 +37,7 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 		resp, err := ReadResponse(ParseRaw(http503FileName))
 		return resp, err
 	default:
-		fmt.Printf("test: doProxy(req) : unmatched pattern %v", httpxtest.Pattern(req))
+		fmt.Printf("test: doProxy(req) : unmatched pattern %v", http2test.Pattern(req))
 	}
 	return nil, nil
 }
@@ -54,7 +54,7 @@ func ExampleDo_InvalidArgument() {
 }
 
 func ExampleDo_Proxy_HttpError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, httpxtest.HttpErrorUri, nil)
+	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, http2test.HttpErrorUri, nil)
 	resp, err := Do(req)
 	fmt.Printf("test: Do(req) -> [%v] [response:%v]\n", err, resp)
 
@@ -64,7 +64,7 @@ func ExampleDo_Proxy_HttpError() {
 }
 
 func ExampleDo_Proxy_IOError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, httpxtest.BodyIOErrorUri, nil)
+	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, http2test.BodyIOErrorUri, nil)
 	resp, err := Do(req)
 	fmt.Printf("test: Do(req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
 

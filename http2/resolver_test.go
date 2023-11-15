@@ -2,7 +2,7 @@ package http2
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/runtime"
 )
 
 func Example_Resolve() {

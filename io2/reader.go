@@ -1,7 +1,7 @@
 package io2
 
 import (
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/runtime"
 	"io"
 )
 

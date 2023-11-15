@@ -3,7 +3,7 @@ package runtimetest
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 
@@ -11,12 +11,12 @@ func Example_formatErrors() {
 	s := runtime.NewStatusOK()
 	s.SetRequestId("1234-5678")
 	// Adding on reverse to mirror call stack
-	s.AddLocation("github.com/go-ai-agent/location-2")
-	s.AddLocation("github.com/go-ai-agent/location-1")
+	s.AddLocation("github.com/advanced-go/location-2")
+	s.AddLocation("github.com/advanced-go/location-1")
 	fmt.Printf("test: defaultFormatter() -> %v", defaultFormatter(s))
 
 	//Output:
-	//test: defaultFormatter() -> { "code":200, "status":"OK", "id":"1234-5678", "trace" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "err" : null }
+	//test: defaultFormatter() -> { "code":200, "status":"OK", "id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "err" : null }
 
 }
 
@@ -47,7 +47,7 @@ func ExampleDebugHandler_Handle() {
 	//{ "code":500, "status":"Internal Error", "id":"123-request-id", "trace" : [ "/DebugHandler","/DebugHandler" ], "err" : [ "test error" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
-	
+
 }
 
 /*

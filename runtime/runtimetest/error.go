@@ -2,8 +2,8 @@ package runtimetest
 
 import (
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
-	"github.com/go-ai-agent/core/strings"
+	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/strings"
 	"net/http"
 )
 

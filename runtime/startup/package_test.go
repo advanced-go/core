@@ -8,7 +8,7 @@ func Example_PackageUri() {
 	fmt.Printf("test: PkgUri -> %v\n", PkgUri)
 
 	//Output:
-	//test: PkgUri -> github.com/go-ai-agent/core/runtime/startup
+	//test: PkgUri -> github.com/advanced-go/core/runtime/startup
 
 }
 

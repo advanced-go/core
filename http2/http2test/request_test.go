@@ -3,7 +3,7 @@ package http2test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-ai-agent/core/io2"
+	"github.com/advanced-go/core/io2"
 	"time"
 )
 

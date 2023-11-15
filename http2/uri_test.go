@@ -7,12 +7,12 @@ import (
 
 /*
 	func Example_ParsePkgUrl() {
-		s := "github.com/go-ai-agent/core/runtime"
+		s := "github.com/advanced-go/core/runtime"
 		u := ParsePkgUrl(s)
 		fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
 
 		//Output:
-		//test: ParsePkgUri(github.com/go-ai-agent/core/runtime) file://github.com/go-ai-agent/core/runtime
+		//test: ParsePkgUri(github.com/advanced-go/core/runtime) file://github.com/advanced-go/core/runtime
 
 }
 */

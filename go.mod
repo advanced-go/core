@@ -1,10 +1,9 @@
-module github.com/go-ai-agent/core
+module github.com/advanced-go/core
 
-go 1.18
-
-require github.com/google/uuid v1.3.0
+go 1.21.4
 
 require (
-	github.com/felixge/httpsnoop v1.0.4 // indirect
-	golang.org/x/time v0.3.0 // indirect
+	github.com/felixge/httpsnoop v1.0.4
+	github.com/google/uuid v1.4.0
+	golang.org/x/time v0.4.0
 )

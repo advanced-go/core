@@ -3,8 +3,8 @@ package startup
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
-	"github.com/go-ai-agent/core/runtime/runtimetest"
+	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/runtimetest"
 	"time"
 )
 
@@ -90,7 +90,7 @@ func ExampleStartup_Failure() {
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//{ "id":null, "l":"github.com/go-ai-agent/core/runtime/startup/Run", "o":null "err" : [ "startup failure error message" ] }
+	//{ "id":null, "l":"github.com/advanced-go/core/runtime/startup/Run", "o":null "err" : [ "startup failure error message" ] }
 	//test: Startup() -> [Internal Error]
 
 }

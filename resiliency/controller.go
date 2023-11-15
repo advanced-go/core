@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-ai-agent/core/runtime"
-	"github.com/go-ai-agent/core/runtime/startup"
+	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/startup"
 	"net/http"
 	"time"
 )

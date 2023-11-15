@@ -2,7 +2,7 @@ package http2
 
 import (
 	"errors"
-	strings2 "github.com/go-ai-agent/core/strings"
+	strings2 "github.com/advanced-go/core/strings"
 	"net/url"
 	"strings"
 )
