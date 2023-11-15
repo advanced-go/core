@@ -2,13 +2,19 @@ package runtime
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func Example_PackageUri() {
-	fmt.Printf("test: PkgUri -> %v\n", PkgUri)
+	pkgUri2 := reflect.TypeOf(any(pkg{})).PkgPath()
+	pkgPath2 := PathFromUri(pkgUri2)
+
+	fmt.Printf("test: PkgUri  = \"%v\"\n", pkgUri2)
+	fmt.Printf("test: PkgPath = \"%v\"\n", pkgPath2)
 
 	//Output:
-	//test: PkgUri -> github.com/advanced-go/core/runtime
+	//test: PkgUri  = "github.com/advanced-go/core/runtime"
+	//test: PkgPath = "/advanced-go/core/runtime"
 
 }
 

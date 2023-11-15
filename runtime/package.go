@@ -1,15 +1,13 @@
 package runtime
 
 import (
-	"reflect"
 	"strings"
 )
 
 type pkg struct{}
 
-var (
-	PkgUri  = reflect.TypeOf(any(pkg{})).PkgPath()
-	pkgPath = PathFromUri(PkgUri)
+const (
+	PkgUri = "github.com/advanced-go/core/runtime"
 )
 
 // PathFromUri - return a path from a scheme less uri
