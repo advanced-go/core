@@ -1,6 +1,7 @@
-package log2
+package handler
 
 import (
+	"github.com/advanced-go/core/log2"
 	"github.com/felixge/httpsnoop"
 	"net/http"
 	"time"
@@ -13,10 +14,10 @@ import (
 func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()
-		AddRequestId(r)
+		log2.AddRequestId(r)
 		m := httpsnoop.CaptureMetrics(appHandler, w, r)
 		// log.Printf("%s %s (code=%d dt=%s written=%d)", r.Method, r.URL, m.Code, m.Duration, m.Written)
-		AnyAccess(IngressTraffic, start, time.Since(start), r, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, -1, "")
+		log2.AnyAccess(log2.IngressTraffic, start, time.Since(start), r, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, -1, "")
 	})
 	return wrappedH
 }
