@@ -1,8 +1,6 @@
 package log2
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"github.com/google/uuid"
@@ -74,6 +72,7 @@ func AnyAccess(traffic string, start time.Time, duration time.Duration, req *htt
 }
 
 // WrapDo - wrap a DoHandler with access logging
+/*
 func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
@@ -87,7 +86,10 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 	}
 }
 
+
+*/
 // WrapPost - wrap a PostHandler with access logging
+/*
 func WrapPost(handler runtime.PostHandler) runtime.PostHandler {
 	return func(ctx context.Context, r *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
@@ -102,7 +104,10 @@ func WrapPost(handler runtime.PostHandler) runtime.PostHandler {
 	}
 }
 
+
+*/
 // WrapHttp - wrap a HttpHandler with access logging
+/*
 func WrapHttp(handler runtime.HttpHandler) runtime.HttpHandler {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) *runtime.Status {
 		var start = time.Now().UTC()
@@ -116,6 +121,8 @@ func WrapHttp(handler runtime.HttpHandler) runtime.HttpHandler {
 	}
 }
 
+
+*/
 // AddRequestId - function copied from package httpx
 func AddRequestId(req *http.Request) string {
 	if req == nil {
@@ -140,6 +147,7 @@ func Log(h http.Header, method, uri string, statusCode func() int) func() {
 }
 
 // LogWithRequest - accessing logging for an HTTP function call
+/*
 func LogWithRequest(r *http.Request, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
@@ -147,6 +155,8 @@ func LogWithRequest(r *http.Request, statusCode func() int) func() {
 	}
 }
 
+
+*/
 // TO DO : Add more header attributes?
 func newRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)

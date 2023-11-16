@@ -38,6 +38,7 @@ func findDoProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *
 	return nil
 }
 
+/*
 // HttpHandlerProxy - function for finding an HTTP handler proxy
 func HttpHandlerProxy(ctx context.Context) func(w http.ResponseWriter, r *http.Request) *runtime.Status {
 	if proxies, ok := runtime.IsProxyable(ctx); ok {
@@ -46,7 +47,7 @@ func HttpHandlerProxy(ctx context.Context) func(w http.ResponseWriter, r *http.R
 			return p
 		}
 	}
-	/*
+
 		switch ptr := ctx.(type) {
 		case context.Context:
 			if proxies, ok := runtime.IsProxyable(ptr); ok {
@@ -63,7 +64,6 @@ func HttpHandlerProxy(ctx context.Context) func(w http.ResponseWriter, r *http.R
 				}
 			}
 		}
-	*/
 	return nil
 }
 
@@ -85,8 +85,7 @@ func PostHandlerProxy(ctx context.Context) func(r *http.Request, body any) (any,
 		}
 	}
 
-	/*
-		switch ptr := ctx.(type) {
+	switch ptr := ctx.(type) {
 		case context.Context:
 			if proxies, ok := runtime.IsProxyable(ptr); ok {
 				do := findPostProxy(proxies)
@@ -103,7 +102,6 @@ func PostHandlerProxy(ctx context.Context) func(r *http.Request, body any) (any,
 			}
 		}
 
-	*/
 	return nil
 }
 
@@ -127,8 +125,7 @@ func GetHandlerProxy(ctx context.Context) func(h http.Header, uri string) (any, 
 			return do
 		}
 	}
-	/*
-		switch ptr := ctx.(type) {
+			switch ptr := ctx.(type) {
 		case context.Context:
 			if proxies, ok := runtime.IsProxyable(ptr); ok {
 				do := findGetProxy(proxies)
@@ -145,7 +142,6 @@ func GetHandlerProxy(ctx context.Context) func(h http.Header, uri string) (any, 
 			}
 		}
 
-	*/
 	return nil
 }
 
@@ -157,3 +153,6 @@ func findGetProxy(proxies []any) func(h http.Header, uri string) (any, *runtime.
 	}
 	return nil
 }
+
+
+*/
