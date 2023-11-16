@@ -71,59 +71,7 @@ func AnyAccess(traffic string, start time.Time, duration time.Duration, req *htt
 	}
 }
 
-// WrapDo - wrap a DoHandler with access logging
-/*
-func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
-	return func(ctx any, req *http.Request, body any) (any, *runtime.Status) {
-		var start = time.Now().UTC()
-
-		if handler == nil {
-			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapDo", errors.New("error:Do handler function is nil for access log")).SetRequestId(req.Context())
-		}
-		data, status := handler(ctx, req, body)
-		AnyAccess(InternalTraffic, start, time.Since(start), req, &http.Response{StatusCode: status.Code()}, -1, "")
-		return data, status
-	}
-}
-
-
-*/
-// WrapPost - wrap a PostHandler with access logging
-/*
-func WrapPost(handler runtime.PostHandler) runtime.PostHandler {
-	return func(ctx context.Context, r *http.Request, body any) (any, *runtime.Status) {
-		var start = time.Now().UTC()
-
-		//req, _ := http.NewRequest(method, uri, nil)
-		if handler == nil {
-			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapPost", errors.New("error:Do handler function is nil for access log")).SetRequestId(r)
-		}
-		data, status := handler(ctx, r, body)
-		AnyAccess(InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: status.Code()}, -1, "")
-		return data, status
-	}
-}
-
-
-*/
-// WrapHttp - wrap a HttpHandler with access logging
-/*
-func WrapHttp(handler runtime.HttpHandler) runtime.HttpHandler {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) *runtime.Status {
-		var start = time.Now().UTC()
-
-		if handler == nil {
-			return runtime.NewStatusError(runtime.StatusInvalidArgument, PkgUri+"/WrapHttp", errors.New("error:Http handler function is nil for access log")).SetRequestId(r.Context())
-		}
-		status := handler(ctx, w, r)
-		AnyAccess(InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: status.Code()}, -1, "")
-		return status
-	}
-}
-
-
-*/
-// AddRequestId - function copied from package httpx
+// AddRequestId - function copied from package http2
 func AddRequestId(req *http.Request) string {
 	if req == nil {
 		return ""
@@ -132,12 +80,12 @@ func AddRequestId(req *http.Request) string {
 	if len(id) == 0 {
 		uid, _ := uuid.NewUUID()
 		id = uid.String()
-		req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
+		req.Header.Set(runtime.XRequestId, id)
 	}
 	return id
 }
 
-// Log - accessing logging for generic function calls
+// Log - accessing logging
 func Log(h http.Header, method, uri string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	req := newRequest(h, method, uri)
@@ -146,17 +94,6 @@ func Log(h http.Header, method, uri string, statusCode func() int) func() {
 	}
 }
 
-// LogWithRequest - accessing logging for an HTTP function call
-/*
-func LogWithRequest(r *http.Request, statusCode func() int) func() {
-	start := time.Now().UTC()
-	return func() {
-		InternalAccess(start, time.Since(start), r, &http.Response{StatusCode: statusCode()}, -1, "")
-	}
-}
-
-
-*/
 // TO DO : Add more header attributes?
 func newRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)
