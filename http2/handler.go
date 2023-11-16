@@ -38,64 +38,78 @@ func findDoProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *
 	return nil
 }
 
-// HttpHandler - function type for a HTTP handler
-//type HttpHandler func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status
-
-func HttpHandlerProxy(ctx any) func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status {
-	switch ptr := ctx.(type) {
-	case context.Context:
-		if proxies, ok := runtime.IsProxyable(ptr); ok {
-			p := findHttpProxy(proxies)
-			if p != nil {
-				return p
-			}
-		}
-	case *http.Request:
-		if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
-			p := findHttpProxy(proxies)
-			if p != nil {
-				return p
-			}
+// HttpHandlerProxy - function for finding an HTTP handler proxy
+func HttpHandlerProxy(ctx context.Context) func(w http.ResponseWriter, r *http.Request) *runtime.Status {
+	if proxies, ok := runtime.IsProxyable(ctx); ok {
+		p := findHttpProxy(proxies)
+		if p != nil {
+			return p
 		}
 	}
+	/*
+		switch ptr := ctx.(type) {
+		case context.Context:
+			if proxies, ok := runtime.IsProxyable(ptr); ok {
+				p := findHttpProxy(proxies)
+				if p != nil {
+					return p
+				}
+			}
+		case *http.Request:
+			if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
+				p := findHttpProxy(proxies)
+				if p != nil {
+					return p
+				}
+			}
+		}
+	*/
 	return nil
 }
 
-func findHttpProxy(proxies []any) func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status {
+func findHttpProxy(proxies []any) func(w http.ResponseWriter, r *http.Request) *runtime.Status {
 	for _, p := range proxies {
-		if fn, ok := p.(func(ctx any, w http.ResponseWriter, r *http.Request) *runtime.Status); ok {
+		if fn, ok := p.(func(w http.ResponseWriter, r *http.Request) *runtime.Status); ok {
 			return fn
 		}
 	}
 	return nil
 }
 
-// PostHandler - function type for a Post handler
-//type PostHandler func(ctx any, r *http.Request, body any) (any, *runtime.Status)
-
-func PostHandlerProxy(ctx any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
-	switch ptr := ctx.(type) {
-	case context.Context:
-		if proxies, ok := runtime.IsProxyable(ptr); ok {
-			do := findPostProxy(proxies)
-			if do != nil {
-				return do
-			}
-		}
-	case *http.Request:
-		if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
-			do := findPostProxy(proxies)
-			if do != nil {
-				return do
-			}
+// PostHandlerProxy - function for finding a Post handler proxy
+func PostHandlerProxy(ctx context.Context) func(r *http.Request, body any) (any, *runtime.Status) {
+	if proxies, ok := runtime.IsProxyable(ctx); ok {
+		do := findPostProxy(proxies)
+		if do != nil {
+			return do
 		}
 	}
+
+	/*
+		switch ptr := ctx.(type) {
+		case context.Context:
+			if proxies, ok := runtime.IsProxyable(ptr); ok {
+				do := findPostProxy(proxies)
+				if do != nil {
+					return do
+				}
+			}
+		case *http.Request:
+			if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
+				do := findPostProxy(proxies)
+				if do != nil {
+					return do
+				}
+			}
+		}
+
+	*/
 	return nil
 }
 
-func findPostProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
+func findPostProxy(proxies []any) func(r *http.Request, body any) (any, *runtime.Status) {
 	for _, p := range proxies {
-		if fn, ok := p.(func(ctx any, r *http.Request, body any) (any, *runtime.Status)); ok {
+		if fn, ok := p.(func(r *http.Request, body any) (any, *runtime.Status)); ok {
 			return fn
 		}
 	}
@@ -103,31 +117,41 @@ func findPostProxy(proxies []any) func(ctx any, r *http.Request, body any) (any,
 }
 
 // GetHandler - function type for a Get handler
-type GetHandler func(ctx any, uri, variant string) (any, *runtime.Status)
+//type GetHandler func(ctx any, uri, variant string) (any, *runtime.Status)
 
-func GetHandlerProxy(ctx any) func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status) {
-	switch ptr := ctx.(type) {
-	case context.Context:
-		if proxies, ok := runtime.IsProxyable(ptr); ok {
-			do := findGetProxy(proxies)
-			if do != nil {
-				return do
-			}
-		}
-	case *http.Request:
-		if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
-			do := findGetProxy(proxies)
-			if do != nil {
-				return do
-			}
+// GetHandlerProxy - function for finding a Get handler proxy
+func GetHandlerProxy(ctx context.Context) func(h http.Header, uri string) (any, *runtime.Status) {
+	if proxies, ok := runtime.IsProxyable(ctx); ok {
+		do := findGetProxy(proxies)
+		if do != nil {
+			return do
 		}
 	}
+	/*
+		switch ptr := ctx.(type) {
+		case context.Context:
+			if proxies, ok := runtime.IsProxyable(ptr); ok {
+				do := findGetProxy(proxies)
+				if do != nil {
+					return do
+				}
+			}
+		case *http.Request:
+			if proxies, ok := runtime.IsProxyable(ptr.Context()); ok {
+				do := findGetProxy(proxies)
+				if do != nil {
+					return do
+				}
+			}
+		}
+
+	*/
 	return nil
 }
 
-func findGetProxy(proxies []any) func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status) {
+func findGetProxy(proxies []any) func(h http.Header, uri string) (any, *runtime.Status) {
 	for _, p := range proxies {
-		if fn, ok := p.(func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status)); ok {
+		if fn, ok := p.(func(h http.Header, uri string) (any, *runtime.Status)); ok {
 			return fn
 		}
 	}

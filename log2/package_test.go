@@ -14,8 +14,8 @@ func Example_PackageUri() {
 	fmt.Printf("test: PkgPath = \"%v\"\n", pkgPath2)
 
 	//Output:
-	//test: PkgUri  = "github.com/advanced-go/core/runtime"
-	//test: PkgPath = "/advanced-go/core/runtime"
+	//test: PkgUri  = "github.com/advanced-go/core/log2"
+	//test: PkgPath = "/advanced-go/core/log2"
 
 }
 

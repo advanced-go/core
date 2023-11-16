@@ -89,7 +89,7 @@ func WrapDo(handler runtime.DoHandler) runtime.DoHandler {
 
 // WrapPost - wrap a PostHandler with access logging
 func WrapPost(handler runtime.PostHandler) runtime.PostHandler {
-	return func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
+	return func(ctx context.Context, r *http.Request, body any) (any, *runtime.Status) {
 		var start = time.Now().UTC()
 
 		//req, _ := http.NewRequest(method, uri, nil)
@@ -131,21 +131,30 @@ func AddRequestId(req *http.Request) string {
 }
 
 // Log - accessing logging for generic function calls
-func Log(ctx any, method, uri string, statusCode func() int) func() {
+func Log(h http.Header, method, uri string, statusCode func() int) func() {
 	start := time.Now().UTC()
-	req := newRequest(ctx, method, uri)
+	req := newRequest(h, method, uri)
 	return func() {
 		InternalAccess(start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, -1, "")
 	}
 }
 
-func newRequest(ctx any, method, uri string) *http.Request {
+// LogWithRequest - accessing logging for an HTTP function call
+func LogWithRequest(r *http.Request, statusCode func() int) func() {
+	start := time.Now().UTC()
+	return func() {
+		InternalAccess(start, time.Since(start), r, &http.Response{StatusCode: statusCode()}, -1, "")
+	}
+}
+
+// TO DO : Add more header attributes?
+func newRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)
 
 	if err != nil {
 		req, err = http.NewRequest(method, "http://invalid-uri.com", nil)
 	}
-	requestId := runtime.RequestId(ctx)
+	requestId := runtime.RequestId(h)
 	if len(requestId) > 0 {
 		req.Header.Add(runtime.XRequestId, requestId)
 	}

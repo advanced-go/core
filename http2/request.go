@@ -65,15 +65,10 @@ func UpdateHeaders(req *http.Request) *http.Request {
 	return req
 }
 
+// TO DO: if the ctx is an http.Header, then need to add to the new request
 func NewRequest(ctx any, method string, uri any, variant string, body io.Reader) (*http.Request, *runtime.Status) {
 	newCtx := newContext(ctx)
 
-	// Check for access function
-	//if log.AccessFromContext(newCtx) == nil {
-	//	if fn := log.Access(); fn != nil {
-	//		newCtx = log.NewAccessContext(newCtx)
-	//	}
-	//}
 	// Create request id and add to context
 	requestId := newId(ctx)
 	if id := runtime.RequestIdFromContext(newCtx); len(id) == 0 {

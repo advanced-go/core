@@ -12,4 +12,4 @@ type HttpHandler func(ctx context.Context, w http.ResponseWriter, r *http.Reques
 type DoHandler func(ctx any, r *http.Request, body any) (any, *Status)
 
 // PostHandler - function type for a Post handler
-type PostHandler func(ctx any, r *http.Request, body any) (any, *Status)
+type PostHandler func(ctx context.Context, r *http.Request, body any) (any, *Status)
