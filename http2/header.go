@@ -91,11 +91,28 @@ func AddRequestId(req *http.Request) string {
 	if req == nil {
 		return ""
 	}
-	id := req.Header.Get(runtime.XRequestId)
+	return AddRequestIdHeader(req.Header)
+	/*
+		id := req.Header.Get(runtime.XRequestId)
+		if len(id) == 0 {
+			uid, _ := uuid.NewUUID()
+			id = uid.String()
+			req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
+		}
+		return id
+
+	*/
+}
+
+func AddRequestIdHeader(h http.Header) string {
+	if h == nil {
+		return ""
+	}
+	id := h.Get(runtime.XRequestId)
 	if len(id) == 0 {
 		uid, _ := uuid.NewUUID()
 		id = uid.String()
-		req.Header.Set(runtime.XRequestId, runtime.GetOrCreateRequestId(req))
+		h.Set(runtime.XRequestId, id)
 	}
 	return id
 }
