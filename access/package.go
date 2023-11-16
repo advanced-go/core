@@ -18,32 +18,32 @@ const (
 	IngressTraffic  = "ingress"
 )
 
-// AccessHandler - access logging handler
-type AccessHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
+// LogHandler - access logging handler
+type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
 
 var (
-	handler AccessHandler
+	handler LogHandler
 )
 
-func GetAccessHandler() AccessHandler {
+func GetLogHandler() LogHandler {
 	return handler
 }
 
-func SetAccessHandler(fn AccessHandler) {
+func SetLogHandler(fn LogHandler) {
 	if fn != nil {
 		handler = fn
 	}
 }
 
-func DisableDebugAccessHandler() {
+func DisableDebugLogHandler() {
 	if runtime.IsDebugEnvironment() {
 		handler = nil
 	}
 }
 
-func EnableDebugAccessHandler() {
+func EnableDebugLogHandler() {
 	if runtime.IsDebugEnvironment() {
-		SetAccessHandler(defaultLogFn)
+		SetLogHandler(defaultLogFn)
 	}
 }
 
