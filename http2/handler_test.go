@@ -17,9 +17,9 @@ func Example_DoContext() {
 	do(req, "GET", "https://www.google.com/search?q=golang", nil)
 
 	//Output:
-	//test: do() -> [type:*context.emptyCtx] [method:GET] [uri:https://www.google.com/search?q=golang]
+	//test: do() -> [type:context.backgroundCtx] [method:GET] [uri:https://www.google.com/search?q=golang]
 	//test: do() -> [type:*http.Request] [method:GET] [uri:https://www.google.com/search?q=golang]
-
+	
 }
 
 func do(ctx any, method, uri string, body any) (any, *runtime.Status) {

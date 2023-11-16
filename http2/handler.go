@@ -105,7 +105,7 @@ func findPostProxy(proxies []any) func(ctx any, r *http.Request, body any) (any,
 // GetHandler - function type for a Get handler
 type GetHandler func(ctx any, uri, variant string) (any, *runtime.Status)
 
-func GetHandlerProxy(ctx any) func(ctx any, uri, variant string) (any, *runtime.Status) {
+func GetHandlerProxy(ctx any) func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status) {
 	switch ptr := ctx.(type) {
 	case context.Context:
 		if proxies, ok := runtime.IsProxyable(ptr); ok {
@@ -125,9 +125,9 @@ func GetHandlerProxy(ctx any) func(ctx any, uri, variant string) (any, *runtime.
 	return nil
 }
 
-func findGetProxy(proxies []any) func(ctx any, uri, variant string) (any, *runtime.Status) {
+func findGetProxy(proxies []any) func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status) {
 	for _, p := range proxies {
-		if fn, ok := p.(func(ctx any, uri, variant string) (any, *runtime.Status)); ok {
+		if fn, ok := p.(func(ctx context.Context, h http.Header, uri string) (any, *runtime.Status)); ok {
 			return fn
 		}
 	}

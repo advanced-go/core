@@ -112,6 +112,8 @@ func RequestId(t any) string {
 		return RequestIdFromContext(ptr)
 	case *http.Request:
 		return ptr.Header.Get(XRequestId)
+	case http.Header:
+		return ptr.Get(XRequestId)
 	case *Status:
 		return ptr.RequestId()
 	}
