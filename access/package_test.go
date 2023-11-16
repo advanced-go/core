@@ -1,4 +1,4 @@
-package log2
+package access
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ func Example_PackageUri() {
 	fmt.Printf("test: PkgPath = \"%v\"\n", pkgPath2)
 
 	//Output:
-	//test: PkgUri  = "github.com/advanced-go/core/log2"
-	//test: PkgPath = "/advanced-go/core/log2"
+	//test: PkgUri  = "github.com/advanced-go/core/access"
+	//test: PkgPath = "/advanced-go/core/access"
 
 }
 

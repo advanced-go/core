@@ -1,4 +1,4 @@
-package log2
+package access
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 type pkg struct{}
 
 const (
-	PkgUri          = "github.com/advanced-go/core/log2"
-	PkgPath         = "/advanced-go/core/log2"
+	PkgUri          = "github.com/advanced-go/core/access"
+	PkgPath         = "/advanced-go/core/access"
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"
@@ -52,22 +52,31 @@ var defaultLogFn = func(traffic string, start time.Time, duration time.Duration,
 	fmt.Printf("%v\n", s)
 }
 
-func EgressAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	AnyAccess(EgressTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+	Log(EgressTraffic, start, duration, req, resp, threshold, statusFlags)
 }
 
-func IngressAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	AnyAccess(IngressTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+	Log(IngressTraffic, start, duration, req, resp, threshold, statusFlags)
 }
 
-func InternalAccess(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	AnyAccess(InternalTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+	Log(InternalTraffic, start, duration, req, resp, threshold, statusFlags)
 }
 
-// AnyAccess - needed for packages that have optional logging when core logging is not configured.
-func AnyAccess(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+// Log - takes traffic as parameter.
+func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
 	if handler != nil {
 		handler(traffic, start, duration, req, resp, threshold, statusFlags)
+	}
+}
+
+// LogDeferred - deferred accessing logging
+func LogDeferred(h http.Header, method, uri string, statusCode func() int) func() {
+	start := time.Now().UTC()
+	req := newRequest(h, method, uri)
+	return func() {
+		LogInternal(start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, -1, "")
 	}
 }
 
@@ -83,15 +92,6 @@ func AddRequestId(req *http.Request) string {
 		req.Header.Set(runtime.XRequestId, id)
 	}
 	return id
-}
-
-// Log - accessing logging
-func Log(h http.Header, method, uri string, statusCode func() int) func() {
-	start := time.Now().UTC()
-	req := newRequest(h, method, uri)
-	return func() {
-		InternalAccess(start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, -1, "")
-	}
 }
 
 // TO DO : Add more header attributes?
