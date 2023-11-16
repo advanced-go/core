@@ -128,6 +128,14 @@ func newId(ctx any) string {
 		}
 		return id
 	}
+	if r, ok := ctx.(http.Header); ok {
+		id = r.Get(runtime.XRequestId)
+		if len(id) == 0 {
+			uid, _ := uuid.NewUUID()
+			id = uid.String()
+		}
+		return id
+	}
 	if ctx2, ok := ctx.(context.Context); ok {
 		id = runtime.RequestIdFromContext(ctx2)
 		if len(id) == 0 {
