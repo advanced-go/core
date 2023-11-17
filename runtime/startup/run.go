@@ -37,7 +37,7 @@ func Shutdown() {
 }
 
 // Run - templated function to start all registered resources.
-func Run[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (status *runtime.Status) {
+func Run[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (status runtime.Status) {
 	var e E
 	var failures []string
 	var count = directory.Count()
@@ -113,7 +113,7 @@ func handleStatus(cache *MessageCache) {
 			continue
 		}
 		if msg.Status != nil {
-			fmt.Printf("startup successful for startup [%v] : %s", uri, msg.Status.Duration())
+			fmt.Printf("startup successful for startup [%v] : %s\n", uri, msg.Status.Duration())
 		}
 	}
 }

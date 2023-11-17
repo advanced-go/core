@@ -61,7 +61,7 @@ func ExampleAccessControllerApply() {
 }
 
 func ExampleNewStatusCodeFn() {
-	var status *runtime.Status
+	var status runtime.Status
 
 	fn := NewStatusCode(&status)
 	status = runtime.NewStatus(runtime.StatusDeadlineExceeded)

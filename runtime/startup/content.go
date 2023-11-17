@@ -63,7 +63,7 @@ func AccessResource(msg *Message) Resource {
 	return Resource{}
 }
 
-func NewStatusCode(status **runtime.Status) func() int {
+func NewStatusCode(status *runtime.Status) func() int {
 	return func() int {
 		return int((*(status)).Code())
 	}

@@ -16,7 +16,7 @@ const (
 var pingLocation = PkgUri + "/Ping"
 
 // Ping - templated function to "ping" a startup
-func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status *runtime.Status) {
+func Ping[E runtime.ErrorHandler](ctx context.Context, uri string) (status runtime.Status) {
 	var e E
 
 	if uri == "" {
