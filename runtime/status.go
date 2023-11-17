@@ -79,12 +79,13 @@ type Status interface {
 	ContentString() string
 	SetContent(content any, jsonContent bool) Status
 
+	Header() http.Header
+
 	/*
 		SetContentType(str string) Status
 		SetContentLocation(location string) Status
 		SetContentTypeAndLocation(location string) Status
 
-		Header() http.Header
 		SetHeader(header http.Header, keys ...string) Status
 		CopyHeader(header http.Header) Status
 
@@ -93,7 +94,6 @@ type Status interface {
 
 	OK() bool
 	Http() int
-
 	Description() string
 	String() string
 }
