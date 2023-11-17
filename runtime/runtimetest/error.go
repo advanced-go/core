@@ -27,9 +27,9 @@ func (h DebugError) Handle(s runtime.Status, requestId string, location string) 
 	}
 	s.SetRequestId(requestId)
 	s.AddLocation(location)
-	if s.IsErrors() && !s.ErrorsHandled() {
+	if s.IsErrors() {
 		fmt.Printf(defaultFormatter(s))
-		s.SetErrorsHandled()
+		//s.SetErrorsHandled()
 	}
 	return s
 }

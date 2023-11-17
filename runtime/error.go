@@ -55,9 +55,9 @@ func (h LogError) Handle(s Status, requestId string, callerLocation string) Stat
 	}
 	s.SetRequestId(requestId)
 	s.AddLocation(callerLocation)
-	if s.IsErrors() && !s.ErrorsHandled() {
+	if s.IsErrors() && !errorsHandled(s) {
 		log.Println(formatter(s))
-		s.SetErrorsHandled()
+		setErrorsHandled(s)
 	}
 	return s
 }

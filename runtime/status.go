@@ -61,9 +61,6 @@ type Status interface {
 	Code() int
 	SetCode(code int) Status
 
-	// ErrorsHandled -handling
-	ErrorsHandled() bool
-	SetErrorsHandled()
 	IsErrors() bool
 	Errors() []error
 	FirstError() error
@@ -82,13 +79,17 @@ type Status interface {
 	ContentString() string
 	SetContent(content any, jsonContent bool) Status
 
-	SetContentType(str string) Status
-	SetContentLocation(location string) Status
-	SetContentTypeAndLocation(location string) Status
+	/*
+		SetContentType(str string) Status
+		SetContentLocation(location string) Status
+		SetContentTypeAndLocation(location string) Status
 
-	Header() http.Header
-	SetHeader(header http.Header, keys ...string) Status
-	CopyHeader(header http.Header) Status
+		Header() http.Header
+		SetHeader(header http.Header, keys ...string) Status
+		CopyHeader(header http.Header) Status
+
+
+	*/
 
 	OK() bool
 	Http() int
@@ -156,17 +157,29 @@ func (s *status) String() string {
 	}
 }
 
-// ErrorsHandled - determine errors status
-func (s *status) ErrorsHandled() bool { return s.handled }
-func (s *status) SetErrorsHandled()   { s.handled = true }
-func (s *status) IsErrors() bool      { return s.errs != nil && len(s.errs) > 0 }
-func (s *status) Errors() []error     { return s.errs }
+// IsErrors - determine errors status
+func (s *status) IsErrors() bool  { return s.errs != nil && len(s.errs) > 0 }
+func (s *status) Errors() []error { return s.errs }
 func (s *status) FirstError() error {
 	if s.IsErrors() {
 		return s.errs[0]
 	}
 	return nil
 }
+
+func errorsHandled(s Status) bool {
+	if st, ok := any(s).(*status); ok {
+		return st.handled
+	}
+	return false
+}
+
+func setErrorsHandled(s Status) {
+	if st, ok := any(s).(*status); ok {
+		st.handled = true
+	}
+}
+
 func (s *status) addErrors(errs ...error) {
 	for _, e := range errs {
 		if e == nil {
