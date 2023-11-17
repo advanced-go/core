@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status *runtime.Status, location string) {
+func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status runtime.Status, location string) {
 	var e E
 
 	if status.Content() == nil {

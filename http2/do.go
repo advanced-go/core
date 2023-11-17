@@ -30,7 +30,7 @@ func init() {
 	}
 }
 
-func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
+func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
@@ -67,7 +67,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	return resp, runtime.NewStatus(resp.StatusCode)
 }
 
-func DoT[T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+func DoT[T any](req *http.Request) (resp *http.Response, t T, status runtime.Status) {
 	resp, status = Do(req)
 	if !status.OK() {
 		return nil, t, status

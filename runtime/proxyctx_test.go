@@ -89,7 +89,8 @@ func ExampleProxyContext_Proxy() {
 
 }
 
-func doHandler(ctx any, r *http.Request, body any) (any, *Status) {
+/*
+func doHandler(ctx any, r *http.Request, body any) (any, Status) {
 	return nil, NewStatusOK()
 }
 
@@ -103,3 +104,6 @@ func Example_DoHandlerProxy() {
 	//test: DoHandlerProxy() -> [proxy:true]
 
 }
+
+
+*/

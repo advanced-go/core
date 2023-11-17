@@ -15,10 +15,14 @@ func SetFormatOutput(fn runtime.FormatOutput) {
 var formatter runtime.FormatOutput = defaultFormatter
 
 // DebugError - debug error handler
+// DebugError - debug error handler
 type DebugError struct{}
 
-func (h DebugError) Handle(s *runtime.Status, requestId string, location string) *runtime.Status {
+func (h DebugError) Handle(s runtime.Status, requestId string, location string) runtime.Status {
 	if s == nil || s.OK() {
+		return runtime.NewStatusOK()
+	}
+	if s.OK() {
 		return s
 	}
 	s.SetRequestId(requestId)
@@ -30,7 +34,7 @@ func (h DebugError) Handle(s *runtime.Status, requestId string, location string)
 	return s
 }
 
-func defaultFormatter(s *runtime.Status) string {
+func defaultFormatter(s runtime.Status) string {
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		strings.JsonMarkup("code", fmt.Sprintf("%v", s.Code()), false),
 		strings.JsonMarkup("status", s.Description(), true),

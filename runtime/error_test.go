@@ -10,14 +10,16 @@ func Example_DefaultErrorFormat() {
 	s := NewStatusOK()
 	s.SetRequestId("1234-5678")
 	// Adding on reverse to mirror call stack
-	s.AddLocation("github.com/go-ai-agent/location-2")
-	s.AddLocation("github.com/go-ai-agent/location-1")
-	s.errs = append(s.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
+	s.AddLocation("github.com/advanced-go/location-2")
+	s.AddLocation("github.com/advanced-go/location-1")
+	if st, ok := any(s).(*status); ok {
+		st.errs = append(st.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
+	}
 	str := DefaultErrorFormatter(s)
 	fmt.Printf("test: DefaultErrorFormatter() -> %v", str)
 
 	//Output:
-	//test: DefaultErrorFormatter() -> { "code":200, "status":"OK", "request-id":"1234-5678", "trace" : [ "github.com/go-ai-agent/location-1","github.com/go-ai-agent/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: DefaultErrorFormatter() -> { "code":200, "status":"OK", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 
@@ -64,7 +66,7 @@ func Example_InvalidTypeError() {
 	//test: NewInvalidBodyTypeError(string) -> invalid body type: string
 	//test: NewInvalidBodyTypeError(int) -> invalid body type: int
 	//test: NewInvalidBodyTypeError(*http.Request) -> invalid body type: *http.Request
-	
+
 }
 
 /*

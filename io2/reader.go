@@ -6,7 +6,7 @@ import (
 )
 
 // ReadAll - read all the body, with a deferred close
-func ReadAll(body io.ReadCloser) ([]byte, *runtime.Status) {
+func ReadAll(body io.ReadCloser) ([]byte, runtime.Status) {
 	if body == nil {
 		return nil, runtime.NewStatusOK()
 	}

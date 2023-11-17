@@ -19,7 +19,7 @@ const (
 )
 
 // LogHandler - access logging handler
-type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string)
+type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string)
 
 var (
 	handler LogHandler
@@ -47,27 +47,27 @@ func EnableDebugLogHandler() {
 	}
 }
 
-var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	s := fmtLog(traffic, start, duration, req, resp, threshold, statusFlags)
+var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+	s := fmtLog(traffic, start, duration, req, resp, threshold, thresholdFlags)
 	fmt.Printf("%v\n", s)
 }
 
-func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	Log(EgressTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+	Log(EgressTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
-func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	Log(IngressTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+	Log(IngressTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
-func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
-	Log(InternalTraffic, start, duration, req, resp, threshold, statusFlags)
+func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+	Log(InternalTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
 // Log - takes traffic as parameter.
-func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) {
+func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	if handler != nil {
-		handler(traffic, start, duration, req, resp, threshold, statusFlags)
+		handler(traffic, start, duration, req, resp, threshold, thresholdFlags)
 	}
 }
 
@@ -108,7 +108,7 @@ func newRequest(h http.Header, method, uri string) *http.Request {
 	return req
 }
 
-func NewStatusCodeClosure(status **runtime.Status) func() int {
+func NewStatusCodeClosure(status *runtime.Status) func() int {
 	return func() int {
 		return (*(status)).Code()
 	}

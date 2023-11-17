@@ -16,7 +16,7 @@ var (
 	bytesLoc = PkgUri + "/WriteBytes"
 )
 
-func marshal(t any) ([]byte, *runtime.Status) {
+func marshal(t any) ([]byte, runtime.Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgUri+"/Marshal", err)
@@ -24,7 +24,7 @@ func marshal(t any) ([]byte, *runtime.Status) {
 	return buf, runtime.NewStatusOK()
 }
 
-func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Status) {
+func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
 	var buf []byte
 
 	switch ptr := (content).(type) {
@@ -35,14 +35,14 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 	case error:
 		buf = []byte(ptr.Error())
 	case io.Reader:
-		var status *runtime.Status
+		var status runtime.Status
 
 		buf, status = io2.ReadAll(io.NopCloser(ptr))
 		if !status.OK() {
 			return nil, "", status
 		}
 	case io.ReadCloser:
-		var status *runtime.Status
+		var status runtime.Status
 
 		buf, status = io2.ReadAll(ptr)
 		if !status.OK() {
@@ -50,7 +50,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, *runtime.Statu
 		}
 	default:
 		if strings.Contains(contentType, "json") {
-			var status *runtime.Status
+			var status runtime.Status
 
 			buf, status = marshal(content)
 			if !status.OK() {

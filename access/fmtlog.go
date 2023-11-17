@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, statusFlags string) string {
+func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) string {
 	if req == nil {
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
@@ -32,7 +32,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"threshold\":%v, "+
-		"\"status-flags\":%v }",
+		"\"threshold-flags\":%v }",
 		traffic,
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
@@ -48,7 +48,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		resp.StatusCode,
 
 		threshold,
-		fmtstr(statusFlags),
+		fmtstr(thresholdFlags),
 	)
 
 	return s

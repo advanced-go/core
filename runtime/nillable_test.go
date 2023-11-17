@@ -13,9 +13,9 @@ func ExampleIsNil() {
 	var i any
 	var p *int
 
-	fmt.Printf("test: IsNil(nil) -> %v\n", IsNil(nil))
-	fmt.Printf("test: IsNil(i) -> %v\n", IsNil(i))
-	fmt.Printf("test: IsNil(pi) -> %v\n", IsNil(p))
+	fmt.Printf("test: IsNil(nil) -> %v\n", IsNil2(nil))
+	fmt.Printf("test: IsNil(i) -> %v\n", IsNil2(i))
+	fmt.Printf("test: IsNil(pi) -> %v\n", IsNil2(p))
 
 	//Output:
 	//test: IsNil(nil) -> true

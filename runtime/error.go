@@ -17,7 +17,7 @@ const (
 	ErrorsName     = "errors"
 )
 
-type FormatOutput func(s *Status) string
+type FormatOutput func(s Status) string
 
 func SetFormatOutput(fn FormatOutput) {
 	if fn != nil {
@@ -33,21 +33,24 @@ var formatter FormatOutput = DefaultErrorFormatter
 // ErrorHandler - template parameter error handler interface
 // Handle(requestId string, location string, errs ...error) *Status
 type ErrorHandler interface {
-	Handle(s *Status, requestId string, callerLocation string) *Status
+	Handle(s Status, requestId string, callerLocation string) Status
 }
 
 // BypassError - bypass error handler
 type BypassError struct{}
 
-func (h BypassError) Handle(s *Status, _ string, _ string) *Status {
+func (h BypassError) Handle(s Status, _ string, _ string) Status {
 	return s
 }
 
 // LogError - log error handler
 type LogError struct{}
 
-func (h LogError) Handle(s *Status, requestId string, callerLocation string) *Status {
-	if s == nil || s.OK() {
+func (h LogError) Handle(s Status, requestId string, callerLocation string) Status {
+	if s == nil {
+		return NewStatusOK()
+	}
+	if s.OK() {
 		return s
 	}
 	s.SetRequestId(requestId)
@@ -71,7 +74,7 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 
 */
 
-func DefaultErrorFormatter(s *Status) string {
+func DefaultErrorFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		strings.JsonMarkup(StatusCodeName, str, false),

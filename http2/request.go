@@ -66,7 +66,7 @@ func UpdateHeaders(req *http.Request) *http.Request {
 }
 
 // TO DO: if the ctx is an http.Header, then need to add to the new request
-func NewRequest(ctx any, method string, uri any, variant string, body io.Reader) (*http.Request, *runtime.Status) {
+func NewRequest(ctx any, method string, uri any, variant string, body io.Reader) (*http.Request, runtime.Status) {
 	newCtx := newContext(ctx)
 
 	// Create request id and add to context
