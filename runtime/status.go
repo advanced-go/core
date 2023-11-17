@@ -59,7 +59,8 @@ func IsErrors(errs []error) bool {
 
 type Status interface {
 	Code() int
-	SetCode(code int) Status
+	OK() bool
+	Http() int
 
 	IsErrors() bool
 	Errors() []error
@@ -81,18 +82,17 @@ type Status interface {
 	SetContent(content any, jsonContent bool) Status
 
 	/*
-		SetContentType(str string) Status
-		SetContentLocation(location string) Status
-		SetContentTypeAndLocation(location string) Status
+		    SetCode(code int) Status
+			SetContentType(str string) Status
+			SetContentLocation(location string) Status
+			SetContentTypeAndLocation(location string) Status
 
-		SetHeader(header http.Header, keys ...string) Status
-		CopyHeader(header http.Header) Status
+			SetHeader(header http.Header, keys ...string) Status
+			CopyHeader(header http.Header) Status
 
 
 	*/
 
-	OK() bool
-	Http() int
 	Description() string
 	String() string
 }
