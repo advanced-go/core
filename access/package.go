@@ -22,7 +22,8 @@ const (
 type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string)
 
 var (
-	handler LogHandler
+	handler         LogHandler
+	internalLogging = true
 )
 
 func GetLogHandler() LogHandler {
@@ -47,6 +48,14 @@ func EnableDebugLogHandler() {
 	}
 }
 
+func DisableInternalLogging() {
+	internalLogging = false
+}
+
+func EnableInternalLogging() {
+	internalLogging = true
+}
+
 var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	s := fmtLog(traffic, start, duration, req, resp, threshold, thresholdFlags)
 	fmt.Printf("%v\n", s)
@@ -66,9 +75,13 @@ func LogInternal(start time.Time, duration time.Duration, req *http.Request, res
 
 // Log - takes traffic as parameter.
 func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
-	if handler != nil {
-		handler(traffic, start, duration, req, resp, threshold, thresholdFlags)
+	if handler == nil {
+		return
 	}
+	if traffic == InternalTraffic && !internalLogging {
+		return
+	}
+	handler(traffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
 // LogDeferred - deferred accessing logging
