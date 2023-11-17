@@ -12,7 +12,7 @@ func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status ru
 	if status.Content() == nil {
 		return
 	}
-	buf, rc, status1 := WriteBytes(status.Content(), status.Header().Get(ContentType))
+	buf, rc, status1 := WriteBytes(status.Content(), status.ContentHeader().Get(ContentType))
 	if !status1.OK() {
 		e.Handle(status, status.RequestId(), location+"/writeStatusContent")
 		return

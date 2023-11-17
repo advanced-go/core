@@ -76,10 +76,9 @@ type Status interface {
 
 	IsContent() bool
 	Content() any
+	ContentHeader() http.Header
 	ContentString() string
 	SetContent(content any, jsonContent bool) Status
-
-	Header() http.Header
 
 	/*
 		SetContentType(str string) Status
@@ -232,17 +231,13 @@ func (s *status) ContentString() string {
 	return ""
 }
 
-//func (s *status) RemoveContent() {
-//	s.content = nil
-//}
-
 func (s *status) SetContent(content any, jsonContent bool) Status {
 	if content == nil {
 		return s
 	}
 	s.content = content
 	if jsonContent {
-		s.SetContentType(contentTypeJson)
+		s.ContentHeader().Set(contentType, contentTypeJson)
 	}
 	return s
 }
@@ -257,6 +252,7 @@ func (s *status) SetContent(content any, jsonContent bool) Status {
 		return s
 	}
 */
+/*
 func (s *status) SetContentType(str string) Status {
 	if len(str) == 0 {
 		return s
@@ -279,9 +275,9 @@ func (s *status) SetContentTypeAndLocation(location string) Status {
 	s.Header().Set(contentLocation, location)
 	return s
 }
-
-// Header - header map
-func (s *status) Header() http.Header {
+*/
+// ContentHeader - header map
+func (s *status) ContentHeader() http.Header {
 	if s.header == nil {
 		s.header = make(http.Header)
 	}
