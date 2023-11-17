@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"github.com/advanced-go/core/strings"
-	"net/http"
 )
 
 func SetFormatOutput(fn runtime.FormatOutput) {
@@ -18,15 +17,8 @@ var formatter runtime.FormatOutput = defaultFormatter
 // DebugError - debug error handler
 type DebugError struct{}
 
-func (h DebugError) HandleDEP(requestId string, location string, errs ...error) *runtime.Status {
-	if !runtime.IsErrors(errs) {
-		return runtime.NewStatusOK()
-	}
-	return h.Handle(runtime.NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
-}
-
 func (h DebugError) Handle(s *runtime.Status, requestId string, location string) *runtime.Status {
-	if s == nil {
+	if s == nil || s.OK() {
 		return s
 	}
 	s.SetRequestId(requestId)

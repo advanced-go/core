@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/strings"
 	"log"
-	"net/http"
 	"reflect"
 	"strconv"
 )
@@ -40,13 +39,6 @@ type ErrorHandler interface {
 // BypassError - bypass error handler
 type BypassError struct{}
 
-func (h BypassError) HandleDEP(requestId string, _ string, errs ...error) *Status {
-	if !IsErrors(errs) {
-		return NewStatusOK()
-	}
-	return NewStatusError(http.StatusInternalServerError, "", errs...)
-}
-
 func (h BypassError) Handle(s *Status, _ string, _ string) *Status {
 	return s
 }
@@ -54,20 +46,13 @@ func (h BypassError) Handle(s *Status, _ string, _ string) *Status {
 // LogError - log error handler
 type LogError struct{}
 
-func (h LogError) HandleDEP(requestId string, location string, errs ...error) *Status {
-	if !IsErrors(errs) {
-		return NewStatusOK()
-	}
-	return h.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
-}
-
 func (h LogError) Handle(s *Status, requestId string, callerLocation string) *Status {
-	if s == nil {
+	if s == nil || s.OK() {
 		return s
 	}
 	s.SetRequestId(requestId)
 	s.AddLocation(callerLocation)
-	if s != nil && s.IsErrors() && !s.ErrorsHandled() {
+	if s.IsErrors() && !s.ErrorsHandled() {
 		log.Println(formatter(s))
 		s.SetErrorsHandled()
 	}
