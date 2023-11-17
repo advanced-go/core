@@ -122,9 +122,9 @@ func newStatus(code int) *status {
 }
 
 // NewStatusOK - new OK status
-func NewStatusOK() Status {
-	return newStatus(http.StatusOK)
-}
+//func NewStatusOK() Status {
+//	return newStatus(http.StatusOK)
+//}
 
 // NewStatusError - new Status from a code, location, and optional errors
 func NewStatusError(code int, location string, errs ...error) Status {
