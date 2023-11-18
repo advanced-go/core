@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var status2 = newStatusOK()
+var status2 = new(statusOK)
 
 func NewStatusOK() Status {
 	return status2
@@ -13,7 +13,6 @@ func NewStatusOK() Status {
 
 type statusOK struct{}
 
-func newStatusOK() Status     { return new(statusOK) }
 func (s *statusOK) Code() int { return http.StatusOK }
 func (s *statusOK) OK() bool  { return true }
 func (s *statusOK) Http() int { return http.StatusOK }
