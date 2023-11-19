@@ -10,22 +10,50 @@ const (
 	XRequestId = "x-request-id"
 )
 
-type contextKey struct {
-	name string
-}
+type requestContextKey struct{}
 
-func (k *contextKey) String() string { return "context value " + k.name }
+//func (k *contextKey) String() string { return "context value " + k.name }
+
+type statusContextKey struct{}
 
 var (
-	requestContextKey = &contextKey{"request-id"}
+	requestKey = &requestContextKey{}
+	statusKey  = &statusContextKey{}
 )
+
+// NewStatusContext - creates a new Context with a Status
+func NewStatusContext(ctx context.Context, status Status) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	} else {
+		i := ctx.Value(statusKey)
+		if i != nil {
+			return ctx
+		}
+	}
+	return ContextWithValue(ctx, statusKey, status)
+}
+
+// StatusFromContext - return a Status from a context
+func StatusFromContext(ctx any) Status {
+	if ctx == nil {
+		return nil
+	}
+	if ctx2, ok := ctx.(context.Context); ok {
+		i := ctx2.Value(statusKey)
+		if status, ok2 := i.(Status); ok2 {
+			return status
+		}
+	}
+	return nil
+}
 
 // NewRequestIdContext - creates a new Context with a request id
 func NewRequestIdContext(ctx context.Context, requestId string) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
-		i := ctx.Value(requestContextKey)
+		i := ctx.Value(requestKey)
 		if i != nil {
 			return ctx
 		}
@@ -33,7 +61,7 @@ func NewRequestIdContext(ctx context.Context, requestId string) context.Context 
 	if requestId == "" {
 		requestId = uuid.New().String()
 	}
-	return ContextWithValue(ctx, requestContextKey, requestId)
+	return ContextWithValue(ctx, requestKey, requestId)
 }
 
 // NewRequestContext - creates a new Context with a request id from the request headers
@@ -53,7 +81,7 @@ func RequestIdFromContext(ctx any) string {
 		return ""
 	}
 	if ctx2, ok := ctx.(context.Context); ok {
-		i := ctx2.Value(requestContextKey)
+		i := ctx2.Value(requestKey)
 		if requestId, ok2 := i.(string); ok2 {
 			return requestId
 		}
