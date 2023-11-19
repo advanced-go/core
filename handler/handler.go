@@ -10,7 +10,7 @@ import (
 // Configure as last handler in chain
 //middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
 
-// HttpHostMetricsHandler - handler for Http request metrics
+// HttpHostMetricsHandler - handler for Http request metrics and access logging
 func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()

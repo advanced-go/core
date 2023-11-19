@@ -61,19 +61,22 @@ var defaultLogFn = func(traffic string, start time.Time, duration time.Duration,
 	fmt.Printf("%v\n", s)
 }
 
+// LogEgress - log egress traffic
 func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	Log(EgressTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
+// LogIngress - log ingress traffic
 func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	Log(IngressTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
+// LogInternal - log inter package calls
 func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	Log(InternalTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
-// Log - takes traffic as parameter.
+// Log - access logging
 func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	if handler == nil {
 		return
@@ -121,6 +124,7 @@ func newRequest(h http.Header, method, uri string) *http.Request {
 	return req
 }
 
+// NewStatusCodeClosure - return a func that will return the status code
 func NewStatusCodeClosure(status *runtime.Status) func() int {
 	return func() int {
 		return (*(status)).Code()

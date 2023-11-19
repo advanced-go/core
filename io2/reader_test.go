@@ -2,13 +2,13 @@ package io2
 
 import (
 	"fmt"
+	"io"
 	"strings"
 )
 
-*
 func ExampleStringReader() {
 	s := "This is an example of content"
-	r := NewReaderCloser(strings.NewReader(s), nil)
+	r := io.NopCloser(strings.NewReader(s))
 	var buf = make([]byte, len(s))
 	cnt, err := r.Read(buf)
 
@@ -18,6 +18,7 @@ func ExampleStringReader() {
 	//test: NewReaderCloser(s,nil) -> [error:<nil>] [cnt:29] [content:This is an example of content]
 
 }
+
 /*
 func ExampleIOError() {
 	s := "This is an example of content"
