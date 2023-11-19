@@ -72,7 +72,7 @@ func TextToList(buf []byte) []string {
 func ListToTextPair(s []string) []TextPair {
 	var pair []TextPair
 	for _, line := range s {
-		key, val, err := splitLine(removeCrLf(line), pairDelimiter)
+		key, val, err := SplitLine(removeCrLf(line), pairDelimiter)
 		if err == nil {
 			pair = append(pair, TextPair{strings.TrimSpace(key), strings.TrimLeft(val, " ")})
 		} else {
@@ -94,7 +94,7 @@ func TextToMap(buf []byte) (map[string]string, error) {
 	var err error
 	for {
 		line, err = reader.ReadString('\n')
-		k, v, err0 := parseMapLine(line)
+		k, v, err0 := ParseMapLine(line)
 		if err0 != nil {
 			return m, err0
 		}
@@ -119,7 +119,7 @@ func parseLine(line string) string {
 	return removeCrLf(line)
 }
 
-func parseMapLine(line string) (string, string, error) {
+func ParseMapLine(line string) (string, string, error) {
 	if len(line) == 0 {
 		return "", "", nil
 	}
@@ -127,7 +127,7 @@ func parseMapLine(line string) (string, string, error) {
 	if isEmpty(line) || isComment(line) {
 		return "", "", nil
 	}
-	key, val, err1 := splitLine(line, mapDelimiter)
+	key, val, err1 := SplitLine(line, mapDelimiter)
 	if err1 != nil {
 		return "", "", fmt.Errorf("invalid argument : line does not contain the ':' delimeter : [%v]", line)
 	}
@@ -155,7 +155,7 @@ func removeCrLf(s string) string {
 	return s
 }
 
-func splitLine(line, substring string) (string, string, error) {
+func SplitLine(line, substring string) (string, string, error) {
 	var err error
 	var key string
 	var val string
