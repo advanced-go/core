@@ -50,16 +50,18 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 	if bytes != nil {
 		req.Body = nopCloser{bytes}
 	}
-	host, _ := readHostHeader(buf)
-	if len(host) > 0 {
-		req.Header.Add("Host", host)
-		scheme := "https://"
-		if strings.Index(host, "local") > -1 {
-			scheme = "http://"
+	/*
+		host, _ := readHostHeader(buf)
+		if len(host) > 0 {
+			req.Header.Add("Host", host)
+			scheme := "https://"
+			if strings.Index(host, "local") > -1 {
+				scheme = "http://"
+			}
+			u, _ := url.Parse(scheme + host + req.URL.String())
+			req.URL = u
 		}
-		u, _ := url.Parse(scheme + host + req.URL.String())
-		req.URL = u
-	}
+	*/
 	return req, nil
 }
 
