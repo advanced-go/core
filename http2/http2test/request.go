@@ -98,45 +98,6 @@ func readHostHeader(buf []byte) (string, error) {
 	return "", nil
 }
 
-func parseLine(line string) string {
-	if isEmpty(line) || isComment(line) {
-		return ""
-	}
-	return removeCrLf(line)
-}
-
 func isEmpty(line string) bool {
 	return len(line) == 0 || line == "" || line == "\r\n" || line == "\n"
-}
-
-func isComment(line string) bool {
-	return strings.Index(line, comment) != -1
-}
-
-func removeCrLf(s string) string {
-	index := strings.Index(s, "\r")
-	if index != -1 {
-		s = s[:index]
-	}
-	index = strings.Index(s, "\n")
-	if index != -1 {
-		s = s[:index]
-	}
-	return s
-}
-
-func parseMapLine(line string) (string, string, error) {
-	if len(line) == 0 {
-		return "", "", nil
-	}
-	line = strings.TrimLeft(line, " ")
-	if isEmpty(line) || isComment(line) {
-		return "", "", nil
-	}
-	key, val, err1 := strings2.SplitLine(line, mapDelimiter)
-	if err1 != nil {
-		return "", "", fmt.Errorf("invalid argument : line does not contain the ':' delimeter : [%v]", line)
-	}
-	val = removeCrLf(val)
-	return strings.TrimSpace(key), strings.TrimLeft(val, " "), nil
 }
