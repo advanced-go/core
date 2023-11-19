@@ -2,9 +2,7 @@ package http2test
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/http2"
 	"github.com/advanced-go/core/io2"
-	"net/http"
 )
 
 func Example_ReadContent_Empty() {
@@ -66,16 +64,4 @@ func _Example_ReadContent_Available() {
 	//  }
 	//]
 
-}
-
-func Example_ReadContentFromLocation() {
-	h := make(http.Header)
-	h.Add(http2.ContentLocation, "file://[cwd]/resource/activity.json")
-	buf, status := ReadContentFromLocation(h)
-
-	fmt.Printf("test: ReadContentFromLocation() -> [status:%v] [content:%v]\n", status, len(buf))
-
-	//Output:
-	//test: ReadContentFromLocation() -> [status:OK] [content:525]
-	
 }
