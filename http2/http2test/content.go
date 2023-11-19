@@ -3,7 +3,12 @@ package http2test
 import (
 	"bufio"
 	"bytes"
+	"errors"
+	"github.com/advanced-go/core/http2"
+	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/runtime"
 	"io"
+	"net/http"
 	"net/url"
 )
 
@@ -37,4 +42,17 @@ func ReadContent(rawHttp []byte) (*bytes.Buffer, error) {
 		}
 	}
 	return content, nil
+}
+
+func ReadContentFromLocation(h http.Header) ([]byte, runtime.Status) {
+	content := h.Get(http2.ContentLocation)
+	if len(content) == 0 {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidContent, "ReadContentFromLocation()", errors.New("error: content-location is empty"))
+	}
+	u, _ := url.Parse(content)
+	buf, err := io2.ReadFile(u)
+	if err != nil {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidContent, "ReadContentFromLocation()", err)
+	}
+	return buf, runtime.NewStatusOK()
 }
