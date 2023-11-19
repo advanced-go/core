@@ -13,12 +13,12 @@ const (
 var cbLocation = PkgUri + "/StatusCircuitBreaker"
 
 // StatusSelectFn - typedef for a function that determines when to select a status
-type StatusSelectFn func(status *runtime.Status) bool
+type StatusSelectFn func(status runtime.Status) bool
 
 // StatusCircuitBreaker - Circuit breaker functionality based on a runtime.Status. Configuration provides the
 // limit and burst for rate limiting, and a function to determine the selection of statuses.
 type StatusCircuitBreaker interface {
-	Allow(status *runtime.Status) bool
+	Allow(status runtime.Status) bool
 	Limit() rate.Limit
 	SetLimit(limit rate.Limit)
 	Burst() int
@@ -31,7 +31,7 @@ type circuitConfig struct {
 }
 
 // Allow - allow the event based on the status
-func (c *circuitConfig) Allow(status *runtime.Status) bool {
+func (c *circuitConfig) Allow(status runtime.Status) bool {
 	if status == nil {
 		return false
 	}

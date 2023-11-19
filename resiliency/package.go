@@ -1,13 +1,5 @@
 package resiliency
 
-import (
-	"reflect"
+const (
+	PkgUri = "github.com/advanced-go/core/resiliency"
 )
-
-type pkg struct{}
-
-var (
-	PkgUri = reflect.TypeOf(any(pkg{})).PkgPath()
-)
-
-const ()

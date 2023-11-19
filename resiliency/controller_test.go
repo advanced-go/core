@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-var handler = func(ctx any, r *http.Request, body any) (any, *runtime.Status) {
+var handler = func(ctx any, r *http.Request, body any) (any, runtime.Status) {
 	return nil, runtime.NewStatusOK()
 }
 
 func Example_Controller() {
-	c := NewController("test", Threshold{time.Millisecond * 500}, nil, nil)
+	c := NewController("test", Threshold{time.Millisecond * 500}, nil)
 	fmt.Printf("test: NewController() -> [err:%v] %v\n", nil, c)
 
-	c = NewController("test", Threshold{time.Millisecond * 500}, handler, nil)
+	c = NewController("test", Threshold{time.Millisecond * 500}, handler)
 	fmt.Printf("test: NewController() -> [err:%v] %v\n", nil, c)
 
 	//Output:

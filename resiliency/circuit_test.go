@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var okSelect = func(status *runtime.Status) bool { return status.OK() }
+var okSelect = func(status runtime.Status) bool { return status.OK() }
 
 func Example_CircuitBreaker_Error() {
 	_, err := NewStatusCircuitBreaker(0, 50, 0, okSelect)

@@ -12,7 +12,7 @@ import (
 
 // StatusAgent - an agent that will manage returning an endpoint back to receiving traffic
 type StatusAgent interface {
-	Run(quit <-chan struct{}, status chan *runtime.Status)
+	Run(quit <-chan struct{}, status chan runtime.Status)
 }
 
 type runArgs struct {
@@ -57,7 +57,7 @@ var runTable = []runArgs{
 var agentRunLoc = PkgUri + "/StatusAgent/Run"
 
 // PingFn - typedef for a ping function that returns a status
-type pingFn func(ctx context.Context) *runtime.Status
+type pingFn func(ctx context.Context) runtime.Status
 
 type agentConfig struct {
 	timeout time.Duration
@@ -86,11 +86,11 @@ func NewStatusAgent(timeout time.Duration, ping pingFn, cb StatusCircuitBreaker)
 }
 
 // Run - run the agent
-func (cf *agentConfig) Run(quit <-chan struct{}, status chan *runtime.Status) {
+func (cf *agentConfig) Run(quit <-chan struct{}, status chan runtime.Status) {
 	go run(cf.table, cf.ping, cf.timeout, cf.cb, quit, status)
 }
 
-func run(table []runArgs, ping pingFn, timeout time.Duration, target StatusCircuitBreaker, quit <-chan struct{}, status chan *runtime.Status) {
+func run(table []runArgs, ping pingFn, timeout time.Duration, target StatusCircuitBreaker, quit <-chan struct{}, status chan runtime.Status) {
 	start := time.Now().UTC()
 	limiterTime := time.Now().UTC()
 	i := 0
@@ -131,7 +131,7 @@ func run(table []runArgs, ping pingFn, timeout time.Duration, target StatusCircu
 	}
 }
 
-func callPing(ctx context.Context, fn pingFn, timeout time.Duration) *runtime.Status {
+func callPing(ctx context.Context, fn pingFn, timeout time.Duration) runtime.Status {
 	if ctx == nil {
 		ctx = context.Background()
 	}
