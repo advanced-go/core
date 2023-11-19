@@ -13,6 +13,7 @@ var (
 	win      = false
 )
 
+// init - set the base path and windows flag
 func init() {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -24,6 +25,7 @@ func init() {
 	basePath = cwd
 }
 
+// ReadFile - read a file from the given URL template
 func ReadFile(u *url.URL) ([]byte, error) {
 	if u == nil {
 		return nil, errors.New("error: Url is nil")

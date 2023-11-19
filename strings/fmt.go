@@ -84,6 +84,7 @@ func ParseTimestamp(s string) (time.Time, error) {
 	return time.Date(year, time.Month(month), day, hour, min, sec, ns*1000, time.UTC), nil
 }
 
+// ParseDuration - parse a duration string which contains the time unit abbreviation: m, s, ms, µs
 func ParseDuration(s string) (time.Duration, error) {
 	if s == "" {
 		return 0, nil

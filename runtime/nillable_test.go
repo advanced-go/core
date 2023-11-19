@@ -5,68 +5,34 @@ import (
 )
 
 type testStruct struct {
-	vers  string
-	count int
+	id string
 }
 
-func ExampleIsNil() {
-	var i any
-	var p *int
+func Example_genericConstraints() {
+	s := testGeneric[testStruct](testStruct{})
+	fmt.Printf("test: testGeneric() -> %v\n", s)
 
-	fmt.Printf("test: IsNil(nil) -> %v\n", IsNil2(nil))
-	fmt.Printf("test: IsNil(i) -> %v\n", IsNil2(i))
-	fmt.Printf("test: IsNil(pi) -> %v\n", IsNil2(p))
+	s = testGeneric[Nillable](nil)
+	fmt.Printf("test: testGeneric() -> %v\n", s)
 
 	//Output:
-	//test: IsNil(nil) -> true
-	//test: IsNil(i) -> true
-	//test: IsNil(pi) -> true
+	//test: testGeneric() -> type testStruct
+	//test: testGeneric() -> <nil>
 
 }
 
-/*
-func ExampleIsPointer() {
-	var i any
-	var s string
-	var data = testStruct{}
-	var count int
-	var bytes []byte
-
-	fmt.Printf("any : %v\n", IsPointer(i))
-	fmt.Printf("int : %v\n", IsPointer(count))
-	fmt.Printf("int * : %v\n", IsPointer(&count))
-	fmt.Printf("string : %v\n", IsPointer(s))
-	fmt.Printf("string * : %v\n", IsPointer(&s))
-	fmt.Printf("struct : %v\n", IsPointer(data))
-	fmt.Printf("struct * : %v\n", IsPointer(&data))
-	fmt.Printf("[]byte : %v\n", IsPointer(bytes))
-	//fmt.Printf("Struct * : %v\n", IsPointer(&data))
-
-	//Output:
-	// any : false
-	// int : false
-	// int * : true
-	// string : false
-	// string * : true
-	// struct : false
-	// struct * : true
-	// []byte : false
-
+// testConstraints - Get constraints
+type testConstraints interface {
+	testStruct | Nillable
 }
 
-
-*/
-
-func Example_Nillable() {
-	b := isNillable[Nillable](nil)
-
-	fmt.Printf("test: isNil() -> %v", b)
-
-	//Output:
-	//test: isNil() -> true
-
-}
-
-func isNillable[T Nillable](t T) bool {
-	return t == nil
+func testGeneric[T testConstraints](t T) string {
+	switch any(t).(type) {
+	case testStruct:
+		return "type testStruct"
+	case Nillable:
+		return "<nil>"
+	default:
+		return ""
+	}
 }

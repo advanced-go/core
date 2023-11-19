@@ -11,13 +11,8 @@ const (
 	EndDelimiter   = "}"
 )
 
-// Resolver - template parameter name value lookup
-type Resolver interface {
-	Lookup(name string) (string, error)
-}
-
-// Expand - templated function to expand a template string, utilizing a resolver
-func Expand(fn func(string) (string, error), t string) (string, error) {
+// Expand - templated function to expand a template string, utilizing a template variable lookup function
+func Expand(t string, fn func(string) (string, error)) (string, error) {
 	if fn == nil || len(t) == 0 {
 		return t, nil
 	}

@@ -9,6 +9,7 @@ const (
 	PkgUri = "github.com/advanced-go/core/json2"
 )
 
+// Marshal - JSON marshal with runtime.Status
 func Marshal(t any) ([]byte, runtime.Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
@@ -17,6 +18,7 @@ func Marshal(t any) ([]byte, runtime.Status) {
 	return buf, runtime.NewStatusOK()
 }
 
+// Unmarshal - JSON unmarshal with runtime.Status
 func Unmarshal(buf []byte, t any) runtime.Status {
 	err := json.Unmarshal(buf, t)
 	if err != nil {
@@ -24,17 +26,3 @@ func Unmarshal(buf []byte, t any) runtime.Status {
 	}
 	return runtime.NewStatusOK()
 }
-
-/*
-func Unmarshal[T any](buf []byte) (T, *runtime.Status) {
-	var t T
-
-	err := json.Unmarshal(buf, &t)
-	if err != nil {
-		return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, runtime.PkgUri+"/UnmarshalType", err)
-	}
-	return t, runtime.NewStatusOK()
-}
-
-
-*/

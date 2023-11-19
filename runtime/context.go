@@ -101,6 +101,7 @@ func IsProxyable(ctx context.Context) ([]any, bool) {
 	return nil, false
 }
 
+// RequestId - return a request id from any type
 func RequestId(t any) string {
 	if t == nil {
 		return ""
@@ -120,6 +121,7 @@ func RequestId(t any) string {
 	return ""
 }
 
+// GetOrCreateRequestId - return a request id from any type, creating a new id if needed
 func GetOrCreateRequestId(t any) string {
 	requestId := RequestId(t)
 	if requestId == "" {

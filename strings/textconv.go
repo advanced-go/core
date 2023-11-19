@@ -68,6 +68,7 @@ func TextToList(buf []byte) []string {
 	return list
 }
 
+// ListToTextPair - Create a slice of TextPair from a list of pair delimited items
 func ListToTextPair(s []string) []TextPair {
 	var pair []TextPair
 	for _, line := range s {

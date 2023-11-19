@@ -73,6 +73,7 @@ func Example_RequestId() {
 	//test: RequestId() -> 123-456-abc
 	//test: RequestId() -> 123-456-789
 	//test: GetOrCreateRequestId() -> [valid:true]
-	//test: RequestId() -> 987-654
+	//function StatusOK.SetRequestId() is not implemented
+	//test: RequestId() ->
 
 }

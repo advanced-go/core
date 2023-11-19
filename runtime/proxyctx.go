@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"context"
-	"net/http"
 	"time"
 )
 
@@ -40,23 +39,4 @@ func (p *proxyContext) add(proxy any) {
 func (p *proxyContext) withValue(key, val any) context.Context {
 	p.ctx = context.WithValue(p.ctx, key, val)
 	return p
-}
-
-func DoHandlerProxy(ctx context.Context) func(ctx any, r *http.Request, body any) (any, *Status) {
-	if proxies, ok := IsProxyable(ctx); ok {
-		do := findDoProxy(proxies)
-		if do != nil {
-			return do
-		}
-	}
-	return nil
-}
-
-func findDoProxy(proxies []any) func(ctx any, r *http.Request, body any) (any, *Status) {
-	for _, p := range proxies {
-		if fn, ok := p.(func(ctx any, r *http.Request, body any) (any, *Status)); ok {
-			return fn
-		}
-	}
-	return nil
 }

@@ -21,11 +21,11 @@ func lookup(name string) (string, error) {
 func ExampleExpand_InvalidLookup() {
 	// Lookup name not found
 	s := "test{not-valid}"
-	_, err := Expand(lookup, s)
-	fmt.Printf("test: Expand[testResolver](%v) ->  : %v\n", s, err)
+	_, err := Expand(s, lookup)
+	fmt.Printf("test: Expand(%v) ->  : %v\n", s, err)
 
 	//Output:
-	//test: Expand[testResolver](test{not-valid}) ->  : invalid argument : template variable is invalid: not-valid
+	//test: Expand(test{not-valid}) ->  : invalid argument : template variable is invalid: not-valid
 
 }
 
@@ -33,21 +33,21 @@ func ExampleExpand_InvalidDelimiters() {
 	var err error
 	// Mismatched delimiters - too many end delimiters
 	s := "resources/test-file-name{env}}and{next}{last}.txt"
-	_, err = Expand(lookup, s)
+	_, err = Expand(s, lookup)
 
 	fmt.Printf("Path Input  : %v\n", s)
 	fmt.Printf("Path Output : %v\n", err)
 
 	// Mismatched delimiters - too many begin delimiters, this is valid as the extra begin delimiters are skipped
 	s = "resources/test-file-name{env}and{next}{{last}.txt"
-	path, err0 := Expand(lookup, s)
+	path, err0 := Expand(s, lookup)
 
 	fmt.Printf("Path Input  : %v\n", s)
 	fmt.Printf("Path Output : %v %v\n", path, err0)
 
 	// Mismatched delimiters - embedded begin delimiter
 	s = "resources/test-file-name{env}and{next{}{last}.txt"
-	path, err0 = Expand(lookup, s)
+	path, err0 = Expand(s, lookup)
 	fmt.Printf("Path Input  : %v\n", s)
 	fmt.Printf("Path Output : %v %v\n", path, err0)
 
@@ -63,19 +63,19 @@ func ExampleExpand_InvalidDelimiters() {
 func ExampleExpand_Valid() {
 	s := ""
 
-	path, err := Expand(lookup, s)
+	path, err := Expand(s, lookup)
 	fmt.Printf("test: Expand() -> [error:%v] [path:%v]\n", err, path)
 
 	s = "resources/test-file-name-and-ext.txt"
-	path, err = Expand(lookup, s)
+	path, err = Expand(s, lookup)
 	fmt.Printf("test: Expand(%v) -> [error:%v] [path:%v]\n", s, err, path)
 
 	s = "resources/test-file-name{env}and{next}{last}.txt"
-	path, err = Expand(lookup, s)
+	path, err = Expand(s, lookup)
 	fmt.Printf("test: Expand(%v) -> [error:%v] [path:%v]\n", s, err, path)
 
 	s = "resources/test-file-name_{env}.txt"
-	path, err = Expand(lookup, s)
+	path, err = Expand(s, lookup)
 	fmt.Printf("test: Expand(%v) -> [error:%v] [path:%v]\n", s, err, path)
 
 	//Output:

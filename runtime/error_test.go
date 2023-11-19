@@ -7,19 +7,19 @@ import (
 )
 
 func Example_DefaultErrorFormat() {
-	s := NewStatusOK()
+	s := NewStatus(http.StatusNotFound)
 	s.SetRequestId("1234-5678")
-	// Adding on reverse to mirror call stack
+	// Adding in reverse to mirror call stack
 	s.AddLocation("github.com/advanced-go/location-2")
 	s.AddLocation("github.com/advanced-go/location-1")
-	if st, ok := any(s).(*status); ok {
+	if st, ok := any(s).(*statusState); ok {
 		st.errs = append(st.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
 	str := DefaultErrorFormatter(s)
 	fmt.Printf("test: DefaultErrorFormatter() -> %v", str)
 
 	//Output:
-	//test: DefaultErrorFormatter() -> { "code":200, "status":"OK", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: DefaultErrorFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 

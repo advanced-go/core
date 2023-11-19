@@ -11,6 +11,7 @@ const (
 	markupValue  = "\"%v\":%v"
 )
 
+// WriteJsonMarkup - write the markup for a name/value pair
 func WriteJsonMarkup(sb *strings.Builder, name, value string, stringValue bool) {
 	if sb.Len() == 0 {
 		sb.WriteString("{")
@@ -28,6 +29,7 @@ func WriteJsonMarkup(sb *strings.Builder, name, value string, stringValue bool) 
 	}
 }
 
+// JsonMarkup - markup a name/value pair
 func JsonMarkup(name, value string, stringValue bool) string {
 	if len(value) == 0 {
 		return fmt.Sprintf(markupNull, name)
