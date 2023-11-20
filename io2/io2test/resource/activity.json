@@ -1,0 +1,22 @@
+[
+  {
+    "ActivityID": "123456",
+    "ActivityType": "action",
+    "Agent": "Controller",
+    "AgentUri": "https://somehost.com/id",
+    "Assignment": "case#",
+    "Controller": "egress",
+    "Behavior": "timeout",
+    "Description": "decreased timeout"
+  },
+  {
+    "ActivityID": "101010",
+    "ActivityType": "trace",
+    "Agent": "Controller2",
+    "AgentUri": "https://somehost.com/id2",
+    "Assignment": "case#5",
+    "Controller": "",
+    "Behavior": "",
+    "Description": "created action"
+  }
+]

@@ -3,6 +3,7 @@ package io2
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"net/url"
 	"os"
 	"strings"
@@ -48,4 +49,16 @@ func createFname(u *url.URL) string {
 		name = strings.ReplaceAll(name, "/", "\\")
 	}
 	return name
+}
+
+func ReadFileFromPath(path string) ([]byte, runtime.Status) {
+	if len(path) == 0 {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, "ReadFileFromPath()", errors.New("error: path is empty"))
+	}
+	u, _ := url.Parse(path)
+	buf, err := ReadFile(u)
+	if err != nil {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidContent, "ReadFileFromPath()", err)
+	}
+	return buf, runtime.NewStatusOK()
 }

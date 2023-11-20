@@ -43,6 +43,15 @@ func Example_ReadFile() {
 
 }
 
+func Example_ReadFileFromPath() {
+	buf, status := ReadFileFromPath("file://[cwd]/io2test/resource/activity.json")
+	fmt.Printf("test: ReadContentFromLocation() -> [status:%v] [content:%v]\n", status, len(buf))
+
+	//Output:
+	//test: ReadContentFromLocation() -> [status:OK] [content:525]
+
+}
+
 /*
 func _Example_createFName() {
 	s := "file://[cwd]/io2test/resource/http/html-response.txt"
