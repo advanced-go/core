@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var (
+const (
 	bytesLoc = PkgUri + "/WriteBytes"
 )
 
@@ -24,6 +24,7 @@ func marshal(t any) ([]byte, runtime.Status) {
 	return buf, runtime.NewStatusOK()
 }
 
+// WriteBytes -
 func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
 	var buf []byte
 

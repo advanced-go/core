@@ -12,19 +12,6 @@ const (
 	FileScheme = "file://"
 )
 
-// ParsePkgUrl - parse a package raw Uri
-/*
-func ParsePkgUrl(rawUri string) *url.URL {
-	u, err := url.Parse(FileScheme + rawUri)
-	if err != nil {
-		return nil
-	}
-	return u
-}
-
-
-*/
-
 // ParseRaw - parse a raw Uri without error
 func ParseRaw(rawUri string) *url.URL {
 	u, _ := url.Parse(rawUri)
@@ -50,6 +37,7 @@ func ParseUri(uri string) (scheme, host, path string) {
 	return u.Scheme, u.Host, u.Path
 }
 
+// BuildUrl - build a URL expanding a template
 func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 	if url == nil {
 		return nil, errors.New("invalid parameter: URL is nil")

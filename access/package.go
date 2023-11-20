@@ -71,7 +71,7 @@ func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp
 	Log(IngressTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
-// LogInternal - log inter package calls
+// LogInternal - log internal package calls
 func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	Log(InternalTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }

@@ -51,6 +51,7 @@ func createFname(u *url.URL) string {
 	return name
 }
 
+// ReadFileFromPath - read a file given a templated path
 func ReadFileFromPath(path string) ([]byte, runtime.Status) {
 	if len(path) == 0 {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, "ReadFileFromPath()", errors.New("error: path is empty"))

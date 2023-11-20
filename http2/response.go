@@ -35,6 +35,7 @@ func isHttpResponseMessage(buf []byte) bool {
 	return false
 }
 
+// ReadResponse - read a Http response given a URL
 func ReadResponse(uri *url.URL) (*http.Response, error) {
 	if uri == nil {
 		return nil, errors.New("error: Uri is nil")

@@ -8,7 +8,9 @@ import (
 	"io"
 )
 
-var deserializeLoc = PkgUri + "/Deserialize"
+const (
+	deserializeLoc = PkgUri + "/Deserialize"
+)
 
 // Deserialize - provide deserialization of a request/response body
 func Deserialize[T any](body io.ReadCloser) (T, runtime.Status) {
