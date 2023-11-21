@@ -12,7 +12,7 @@ import (
 type Exchange func(req *http.Request) (*http.Response, error)
 
 const (
-	doLocation = PkgUri + "/Do"
+	doLocation = PkgPath + "/Do"
 )
 
 var (

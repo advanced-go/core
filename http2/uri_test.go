@@ -3,6 +3,7 @@ package http2
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 /*
@@ -109,5 +110,21 @@ func Example_BuildUrl_EmptyQuery() {
 
 	//Output:
 	//test: OriginalUrl() -> http://localhost:8080/base-path/resource
+
+}
+
+func Example_ValidateUri() {
+	u, _ := url.Parse("github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+
+	u, _ = url.Parse("go://github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+
+	u, _ = url.Parse("https://www.google.com/github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+
+	//Output:
+	//test: url.Parse() -> [scheme:go] [host:github.com] [path:/advanced-go/example-domain/activity:entry]
+	//test: url.Parse() -> [scheme:https] [host:www.google.com] [path:/github.com/advanced-go/example-domain/activity:entry]
 
 }

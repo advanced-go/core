@@ -43,6 +43,25 @@ func (h BypassError) Handle(s Status, _ string, _ string) Status {
 	return s
 }
 
+// DebugError - debug error handler
+type DebugError struct{}
+
+func (h DebugError) Handle(s Status, requestId string, location string) Status {
+	if s == nil || s.OK() {
+		return NewStatusOK()
+	}
+	if s.OK() {
+		return s
+	}
+	s.SetRequestId(requestId)
+	s.AddLocation(location)
+	if s.IsErrors() {
+		log.Println(formatter(s))
+		setErrorsHandled(s)
+	}
+	return s
+}
+
 // LogError - log error handler
 type LogError struct{}
 

@@ -11,8 +11,7 @@ import (
 type pkg struct{}
 
 const (
-	PkgUri          = "github.com/advanced-go/core/access"
-	PkgPath         = "/advanced-go/core/access"
+	//PkgPath          = "github.com/advanced-go/core/access"
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"

@@ -7,11 +7,11 @@ import (
 type pkg struct{}
 
 const (
-	PkgUri = "github.com/advanced-go/core/runtime"
+	PkgPath = "github.com/advanced-go/core/runtime"
 )
 
-// PathFromUri - return a path from a scheme less uri
-func PathFromUri(rawUri string) string {
+// PathFromUri2 - return a path from a scheme less uri
+func PathFromUri2(rawUri string) string {
 	i := strings.Index(rawUri, "/")
 	if i < 0 {
 		return "[uri invalid]"

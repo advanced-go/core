@@ -1,10 +1,10 @@
 package http2
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/json2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
@@ -13,17 +13,20 @@ import (
 )
 
 const (
-	bytesLoc = PkgUri + "/WriteBytes"
+	bytesLoc = PkgPath + "/WriteBytes"
 )
 
+/*
 func marshal(t any) ([]byte, runtime.Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgUri+"/Marshal", err)
+		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgPath+"/Marshal", err)
 	}
 	return buf, runtime.NewStatusOK()
 }
 
+
+*/
 // WriteBytes -
 func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
 	var buf []byte
@@ -53,7 +56,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		if strings.Contains(contentType, "json") {
 			var status runtime.Status
 
-			buf, status = marshal(content)
+			buf, status = json2.Marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}

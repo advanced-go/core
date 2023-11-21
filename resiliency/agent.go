@@ -54,7 +54,9 @@ var runTable = []runArgs{
 	//{limit: rate.Limit(250), burst: 250, dur: time.Millisecond * 3, cb: nil}, //
 }
 
-var agentRunLoc = PkgUri + "/StatusAgent/Run"
+const (
+	agentRunLoc = PkgPath + "/StatusAgent/Run"
+)
 
 // PingFn - typedef for a ping function that returns a status
 type pingFn func(ctx context.Context) runtime.Status

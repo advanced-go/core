@@ -10,7 +10,9 @@ const (
 	maxLimit = rate.Limit(100)
 )
 
-var cbLocation = PkgUri + "/StatusCircuitBreaker"
+const (
+	cbLocation = PkgPath + "/StatusCircuitBreaker"
+)
 
 // StatusSelectFn - typedef for a function that determines when to select a status
 type StatusSelectFn func(status runtime.Status) bool

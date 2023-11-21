@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	deserializeLoc = PkgUri + "/Deserialize"
+	deserializeLoc = PkgPath + "/Deserialize"
 )
 
 // Deserialize - provide deserialization of a request/response body

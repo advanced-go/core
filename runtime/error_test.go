@@ -23,6 +23,35 @@ func Example_DefaultErrorFormat() {
 
 }
 
+func ExampleDebugHandler_Handle() {
+	location := "/DebugHandler"
+	origin := "github.com/module/package/calling-fn"
+	ctx := NewRequestIdContext(nil, "123-request-id")
+	err := errors.New("test error")
+	var h DebugError
+
+	//status := runtime.NewStatusError(0, location, err)
+	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx), location)
+	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
+
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
+	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, errorsHandled(s))
+
+	s = NewStatusError(http.StatusInternalServerError, location)
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(s, GetOrCreateRequestId(ctx), origin), errorsHandled(s))
+
+	//s = runtime.NewStatusError(runtime.StatusInternal, location, err)
+	//errors := s.IsErrors()
+	//s1 := h.HandleStatus(s, runtime.GetOrCreateRequestId(ctx), "")
+	//fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
+
+	//Output:
+	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
+	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
+	//test: HandleStatus(nil,s) -> [OK] [handled:false]
+
+}
+
 func ExampleLogHandler_Handle() {
 	location := "/LogHandler"
 	ctx := NewRequestIdContext(nil, "")
