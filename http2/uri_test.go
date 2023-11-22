@@ -113,15 +113,21 @@ func Example_BuildUrl_EmptyQuery() {
 
 }
 
-func Example_ValidateUri() {
-	u, _ := url.Parse("github.com/advanced-go/example-domain/activity:entry")
-	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+func _Example_ValidateUri() {
+	u, err := url.Parse("urn:github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [err:%v] [scheme:%v] [host:%v] [path:%v]\n", err, u.Scheme, u.Host, u.Path)
 
-	u, _ = url.Parse("go://github.com/advanced-go/example-domain/activity:entry")
-	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+	scheme, host, path := ParseUri("urn:github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: ParseUri() -> [err:%v] [scheme:%v] [host:%v] [path:%v]\n", nil, scheme, host, path)
 
-	u, _ = url.Parse("https://www.google.com/github.com/advanced-go/example-domain/activity:entry")
-	fmt.Printf("test: url.Parse() -> [scheme:%v] [host:%v] [path:%v]\n", u.Scheme, u.Host, u.Path)
+	u, err = url.Parse("github.com.advanced-go.example-domain.activity:/entry")
+	fmt.Printf("test: url.Parse() -> [err:%v] [scheme:%v] [host:%v] [path:%v]\n", err, u.Scheme, u.Host, u.Path)
+
+	u, err = url.Parse("go://github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [err:%v] [scheme:%v] [host:%v] [path:%v]\n", err, u.Scheme, u.Host, u.Path)
+
+	u, err = url.Parse("https://www.google.com/github.com/advanced-go/example-domain/activity:entry")
+	fmt.Printf("test: url.Parse() -> [err:%v] [scheme:%v] [host:%v] [path:%v]\n", err, u.Scheme, u.Host, u.Path)
 
 	//Output:
 	//test: url.Parse() -> [scheme:go] [host:github.com] [path:/advanced-go/example-domain/activity:entry]
