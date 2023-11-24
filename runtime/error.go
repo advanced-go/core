@@ -43,10 +43,10 @@ func (h BypassError) Handle(s Status, _ string, _ string) Status {
 	return s
 }
 
-// DebugError - debug error handler
-type DebugError struct{}
+// TestError - test error handler
+type TestError struct{}
 
-func (h DebugError) Handle(s Status, requestId string, location string) Status {
+func (h TestError) Handle(s Status, requestId string, location string) Status {
 	if s == nil || s.OK() {
 		return NewStatusOK()
 	}
