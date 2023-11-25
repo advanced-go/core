@@ -64,3 +64,25 @@ func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 	}
 	return u, nil
 }
+
+// UprootUrn - uproot an embedded urn in a uri
+func UprootUrn(uri string) (nid, nss string, ok bool) {
+	if uri == "" {
+		return
+	}
+	u, err := url.Parse(uri)
+	if err != nil {
+		return err.Error(), "", false
+	}
+	str := strings.Split(u.Path[1:], ":")
+	switch len(str) {
+	case 0:
+		return
+	case 1:
+		return str[0], "", false
+	case 2:
+		nid = str[0]
+		nss = str[1]
+	}
+	return nid, nss, true
+}

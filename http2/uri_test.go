@@ -134,3 +134,28 @@ func _Example_ValidateUri() {
 	//test: url.Parse() -> [scheme:https] [host:www.google.com] [path:/github.com/advanced-go/example-domain/activity:entry]
 
 }
+
+func Example_Uproot() {
+	uri := ""
+	nid, nss, ok := UprootUrn(uri)
+	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
+
+	uri = "https://www.google.com/search?q=golang"
+	nid, nss, ok = UprootUrn(uri)
+	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
+
+	uri = "https://www.google.com/github.com/test/search?q=golang"
+	nid, nss, ok = UprootUrn(uri)
+	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
+
+	uri = "https://www.google.com/github.com/test:search?q=golang"
+	nid, nss, ok = UprootUrn(uri)
+	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
+
+	//Output:
+	//test: Uproot() -> [nid:] [nss:] [ok:false]
+	//test: Uproot(https://www.google.com/search?q=golang) -> [nid:search] [nss:] [ok:false]
+	//test: Uproot(https://www.google.com/github.com/test/search?q=golang) -> [nid:github.com/test/search] [nss:] [ok:false]
+	//test: Uproot(https://www.google.com/github.com/test:search?q=golang) -> [nid:github.com/test] [nss:search] [ok:true]
+
+}
