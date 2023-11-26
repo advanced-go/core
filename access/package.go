@@ -11,7 +11,6 @@ import (
 type pkg struct{}
 
 const (
-	//PkgPath          = "github.com/advanced-go/core/access"
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"
@@ -35,13 +34,13 @@ func SetLogHandler(fn LogHandler) {
 	}
 }
 
-func DisableDebugLogHandler() {
+func DisableTestLogHandler() {
 	if runtime.IsDebugEnvironment() {
 		handler = nil
 	}
 }
 
-func EnableDebugLogHandler() {
+func EnableTestLogHandler() {
 	if runtime.IsDebugEnvironment() {
 		SetLogHandler(defaultLogFn)
 	}
