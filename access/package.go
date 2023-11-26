@@ -110,17 +110,20 @@ func AddRequestId(req *http.Request) string {
 	return id
 }
 
-// TO DO : Add more header attributes?
-func newRequest(h http.Header, method, uri string) *http.Request {
+// NewRequest - create a new request
+func NewRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)
-
 	if err != nil {
 		req, err = http.NewRequest(method, "http://invalid-uri.com", nil)
 	}
-	requestId := runtime.RequestId(h)
-	if len(requestId) > 0 {
-		req.Header.Add(runtime.XRequestId, requestId)
-	}
+	/*
+		requestId := runtime.RequestId(h)
+		if len(requestId) > 0 {
+			req.Header.Add(runtime.XRequestId, requestId)
+		}
+
+	*/
+	req.Header = h
 	return req
 }
 

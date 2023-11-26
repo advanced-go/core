@@ -40,3 +40,17 @@ func Example_LogAccess() {
 	//Output:
 
 }
+
+func Example_NewRequest() {
+	h := make(http.Header)
+	h.Add("key-1", "value-1")
+	h.Add("key-2", "value-2")
+	h.Add(runtime.XRequestId, "123-456")
+
+	r := NewRequest(h, "GET", "https://www.google.com/search?q=golang")
+	fmt.Printf("test: NewRequest() -> [method:%v] [uri:%v] [header:%v]\n", r.Method, r.URL.String(), r.Header)
+
+	//Output:
+	//test: NewRequest() -> [method:GET] [uri:https://www.google.com/search?q=golang] [header:map[Key-1:[value-1] Key-2:[value-2] X-Request-Id:[123-456]]]
+
+}
