@@ -21,7 +21,7 @@ type LogHandler func(traffic string, start time.Time, duration time.Duration, re
 
 var (
 	handler         LogHandler
-	internalLogging = true
+	internalLogging = false
 )
 
 func GetLogHandler() LogHandler {
@@ -59,6 +59,7 @@ var defaultLogFn = func(traffic string, start time.Time, duration time.Duration,
 	fmt.Printf("%v\n", s)
 }
 
+/*
 // LogEgress - log egress traffic
 func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	Log(EgressTraffic, start, duration, req, resp, threshold, thresholdFlags)
@@ -74,6 +75,8 @@ func LogInternal(start time.Time, duration time.Duration, req *http.Request, res
 	Log(InternalTraffic, start, duration, req, resp, threshold, thresholdFlags)
 }
 
+*/
+
 // Log - access logging
 func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
 	if handler == nil {
@@ -86,11 +89,10 @@ func Log(traffic string, start time.Time, duration time.Duration, req *http.Requ
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(h http.Header, method, uri string, statusCode func() int) func() {
+func LogDeferred(traffic string, req *http.Request, threshold int, thresholdFlags string, statusCode func() int) func() {
 	start := time.Now().UTC()
-	req := newRequest(h, method, uri)
 	return func() {
-		LogInternal(start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, -1, "")
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, threshold, thresholdFlags)
 	}
 }
 

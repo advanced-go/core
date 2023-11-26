@@ -146,7 +146,7 @@ func Example_Uproot() {
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	// valid embedded path only
-	uri = "/github.com/advanced/go:search?q=golang"
+	uri = "/github.com/advanced-go/example-domain/activity:entry"
 	nid, nss, ok = UprootUrn(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 

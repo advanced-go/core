@@ -3,7 +3,9 @@ package access
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
+	"net/http"
 	"reflect"
+	"time"
 )
 
 func Example_PackageUri() {
@@ -12,11 +14,7 @@ func Example_PackageUri() {
 
 	//Output:
 	//test: PkgUri  = "github.com/advanced-go/core/access"
-	
-}
 
-func Example_LogAccess() {
-	// w := WrapDo[defaultLogFn](nil,nil,nil)
 }
 
 func ExampleNewStatusCodeFn() {
@@ -28,5 +26,17 @@ func ExampleNewStatusCodeFn() {
 
 	//Output:
 	//test: NewStatusCode(&status) -> [statusCode:4]
+
+}
+
+func Example_LogAccess() {
+	start := time.Now().UTC()
+	r, _ := http.NewRequest("PUT", "/github.com/advanced-go/example-domain/activity:entry", nil)
+	r.Host = "localhost:8080"
+	s := fmtLog(EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: 200}, -1, "")
+
+	fmt.Printf("test: fmtlog() -> %v\n", s)
+
+	//Output:
 
 }
