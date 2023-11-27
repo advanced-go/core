@@ -13,10 +13,38 @@ With the release of Go generics, a new paradigm has emerged: generic behaviors. 
 
 What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
+## runtime
+[Runtime][runtimepkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+
+The error and output types are designed to be used as template parameters.
+
+~~~
+// ErrorHandler - template parameter error handler interface
+type ErrorHandler interface {
+	Handle(location string, errs ...error) *runtime.Status
+	HandleWithContext(ctx context.Context, location string, errs ...error) *runtime.Status
+	HandleStatus(s *runtime.Status) *runtime.Status
+}
 
 
-## exchange
-[Exchange][exchangepkg] provides functionality for processing an Http request/response. Exchange functionality is provied via a templated function, utilizing
+~~~
+
+Context functionality is provied for a request Id, and a ProxyContext used for testing:
+
+~~~
+// ContextWithRequestId - creates a new Context with a request id
+func ContextWithRequestId(ctx context.Context, requestId string) context.Context {
+    // implementation details
+}
+
+// ContextWithProxy - create a new Context interface, containing a proxy
+func ContextWithProxy(ctx context.Context, proxy any) context.Context {
+    // implementation details
+}
+~~~
+
+## http2
+[Http2][http2pkg] provides functionality for processing an Http request/response. Exchange functionality is provied via a templated function, utilizing
 template paramters for error processing, deserialization type, and the function for processing the http.Client.Do():
 
 ~~~
@@ -52,38 +80,28 @@ func WriteResponse(w http.ResponseWriter, buf []byte, status *runtime.Status, he
 }
 ~~~
 
-## runtime
-[Runtime][runtimepkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
-The error and output types are designed to be used as template parameters.
 
-~~~
-// ErrorHandler - template parameter error handler interface
-type ErrorHandler interface {
-	Handle(location string, errs ...error) *runtime.Status
-	HandleWithContext(ctx context.Context, location string, errs ...error) *runtime.Status
-	HandleStatus(s *runtime.Status) *runtime.Status
-}
+## io2
+[io2][io2pkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
-// OutputHandler - template parameter output handler interface
-type OutputHandler interface {
-	Write(s string)
-}
-~~~
+## json2
+[Json2][json2pkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
-Context functionality is provied for a request Id, and a ProxyContext used for testing:
+## access
+[Access][accesspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
-~~~
-// ContextWithRequestId - creates a new Context with a request id
-func ContextWithRequestId(ctx context.Context, requestId string) context.Context {
-    // implementation details
-}
+## handler
+[Handler][handlerpkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
-// ContextWithProxy - create a new Context interface, containing a proxy
-func ContextWithProxy(ctx context.Context, proxy any) context.Context {
-    // implementation details
-}
-~~~
+## strings
+[Strings][stringspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+
+## resiliency
+[Resiliency][resiliencypkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+
+
+
 
 [emuller]: <https://www.youtube.com/watch?v=ltqV6pDKZD8>
 [rgriesemer]: <https://www.youtube.com/watch?v=0ReKdcpNyQg>
@@ -93,7 +111,12 @@ func ContextWithProxy(ctx context.Context, proxy any) context.Context {
 [runix]: <https://en.wikipedia.org/wiki/Research_Unix>
 [tutorialspoint]: <https://www.tutorialspoint.com/cplusplus/cpp_templates.htm>
 [boost]: <https://www.boost.org/>
-[exchangepkg]: <https://pkg.go.dev/github.com/gotemplates/core/exchange>
-[runtimepkg]: <https://pkg.go.dev/github.com/gotemplates/core/runtime>
-
+[http2pkg]: <https://pkg.go.dev/github.com/advanced-go/core/http2>
+[runtimepkg]: <https://pkg.go.dev/github.com/advanced-go/core/runtime>
+[io2pkg]: <https://pkg.go.dev/github.com/advanced-go/core/io2>
+[json2pkg]: <https://pkg.go.dev/github.com/advanced-go/core/json2>
+[accesspkg]: <https://pkg.go.dev/github.com/advanced-go/core/access>
+[handlerpkg]: <https://pkg.go.dev/github.com/advanced-go/core/handler>
+[stringspkg]: <https://pkg.go.dev/github.com/advanced-go/core/strings>
+[resiliencypkg]: <https://pkg.go.dev/github.com/advanced-go/core/resiliency][=tghtvfcx>
 
