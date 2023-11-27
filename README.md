@@ -103,14 +103,7 @@ func WriteResponse(w http.ResponseWriter, buf []byte, status *runtime.Status, he
 
 
 
-[emuller]: <https://www.youtube.com/watch?v=ltqV6pDKZD8>
-[rgriesemer]: <https://www.youtube.com/watch?v=0ReKdcpNyQg>
-[rpike]:  <https://go-proverbs.github.io/>
-[kbeck]: <https://www.oreilly.com/library/view/test-driven-development/0321146530/>
-[dmcilroy]: <https://en.wikipedia.org/wiki/Unix_philosophy>
-[runix]: <https://en.wikipedia.org/wiki/Research_Unix>
-[tutorialspoint]: <https://www.tutorialspoint.com/cplusplus/cpp_templates.htm>
-[boost]: <https://www.boost.org/>
+
 [http2pkg]: <https://pkg.go.dev/github.com/advanced-go/core/http2>
 [runtimepkg]: <https://pkg.go.dev/github.com/advanced-go/core/runtime>
 [io2pkg]: <https://pkg.go.dev/github.com/advanced-go/core/io2>
