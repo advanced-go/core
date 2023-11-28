@@ -98,6 +98,11 @@ func NewStatus(code int) Status {
 	return newStatus(code)
 }
 
+// NewStatusOKContent - new Status OK with content
+func NewStatusOKContent() Status {
+	return newStatus(http.StatusOK)
+}
+
 func newStatus(code int) *statusState {
 	s := new(statusState)
 	s.code = code
