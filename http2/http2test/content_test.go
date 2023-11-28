@@ -68,23 +68,23 @@ func _Example_ReadContent_Available() {
 }
 
 // http.HandlerFunc testing
-func handleFn(w http.ResponseWriter, r *http.Request) {
+func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("in handle()\n")
 }
 
-type handleFunc func(w http.ResponseWriter, r *http.Request)
+type handlerFunc func(w http.ResponseWriter, r *http.Request)
 
-func (f handleFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) { f(w, r) }
+func (f handlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) { f(w, r) }
 
 func Example_HandlerFunc() {
 	var serve http.Handler
 
-	serve = handleFunc(handleFn)
+	serve = handlerFunc(handler)
 	serve.ServeHTTP(nil, nil)
-	fmt.Printf("test: http.HandlerFunc() -> %v\n", "")
+	fmt.Printf("test: handlerFunc() -> %v\n", "")
 
 	//Output:
 	//in handle()
-	//test: http.HandlerFunc() ->
+	//test: handlerFunc() ->
 
 }
