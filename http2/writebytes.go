@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	bytesLoc = PkgPath + "/WriteBytes"
+	bytesLoc = PkgPath + ":WriteBytes"
 )
 
 /*

@@ -3,6 +3,7 @@ package http2test
 import (
 	"fmt"
 	"github.com/advanced-go/core/io2"
+	"net/http"
 )
 
 func Example_ReadContent_Empty() {
@@ -63,5 +64,27 @@ func _Example_ReadContent_Available() {
 	//    "StatusCode":  202
 	//  }
 	//]
+
+}
+
+// http.HandlerFunc testing
+func handleFn(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("in handle()\n")
+}
+
+type handleFunc func(w http.ResponseWriter, r *http.Request)
+
+func (f handleFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) { f(w, r) }
+
+func Example_HandlerFunc() {
+	var serve http.Handler
+
+	serve = handleFunc(handleFn)
+	serve.ServeHTTP(nil, nil)
+	fmt.Printf("test: http.HandlerFunc() -> %v\n", "")
+
+	//Output:
+	//in handle()
+	//test: http.HandlerFunc() ->
 
 }

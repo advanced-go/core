@@ -38,11 +38,11 @@ func ExampleParseLine() {
 	fmt.Printf("test: parseLine(keyLf) -> [key:%v]\n", key)
 
 	line = "key : value\r\n"
-	key1, val, err := parseMapLine(line)
+	key1, val, err := ParseMapLine(line)
 	fmt.Printf("test: parseMapLine(key : valueCrLf) -> [key:%v] [val:%v] [error:%v]\n", key1, val, err)
 
 	line = "key : value\n"
-	key1, val, err = parseMapLine(line)
+	key1, val, err = ParseMapLine(line)
 	fmt.Printf("test: parseMapLine(key : valueLf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
 
 	//Output:
@@ -93,7 +93,7 @@ func TestTextToMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := parseMapLine(tt.args.line)
+			got, got1, err := ParseMapLine(tt.args.line)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseLine() error = %v, wantErr %v", err, tt.wantErr)
 				return
