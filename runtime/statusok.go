@@ -31,8 +31,12 @@ func (s *statusOK) SetDuration(_ time.Duration) Status {
 func (s *statusOK) RequestId() string         { return "" }
 func (s *statusOK) SetRequestId(_ any) Status { return notImplementedSet("SetRequestId()", s) }
 
-func (s *statusOK) Location() []string          { return nil }
-func (s *statusOK) AddLocation(_ string) Status { return notImplementedSet("AddLocation()", s) }
+func (s *statusOK) Location() []string { return nil }
+
+// AddLocation - allowed
+func (s *statusOK) AddLocation(_ string) Status {
+	return s //notImplementedSet("AddLocation()", s)
+}
 
 func (s *statusOK) IsContent() bool                 { return false }
 func (s *statusOK) Content() any                    { return nil }
