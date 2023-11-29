@@ -61,5 +61,5 @@ func ReadFileFromPath(path string) ([]byte, runtime.Status) {
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidContent, "ReadFileFromPath()", err)
 	}
-	return buf, runtime.NewStatusOK()
+	return buf, runtime.StatusOK()
 }

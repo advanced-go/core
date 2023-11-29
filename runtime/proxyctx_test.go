@@ -88,22 +88,3 @@ func ExampleProxyContext_Proxy() {
 	//test: proxyDo(*http.Request) -> true
 
 }
-
-/*
-func doHandler(ctx any, r *http.Request, body any) (any, Status) {
-	return nil, NewStatusOK()
-}
-
-func Example_DoHandlerProxy() {
-	ctx := NewProxyContext(nil, doHandler)
-
-	fn := DoHandlerProxy(ctx)
-	fmt.Printf("test: DoHandlerProxy() -> [proxy:%v]\n", fn != nil)
-
-	//Output:
-	//test: DoHandlerProxy() -> [proxy:true]
-
-}
-
-
-*/

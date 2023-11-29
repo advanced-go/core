@@ -6,6 +6,10 @@ import (
 	"net/http"
 )
 
+const (
+	writeStatusContentLoc = ":writeStatusContent"
+)
+
 func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status runtime.Status, location string) {
 	var e E
 
@@ -14,13 +18,13 @@ func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status ru
 	}
 	buf, rc, status1 := WriteBytes(status.Content(), status.ContentHeader().Get(ContentType))
 	if !status1.OK() {
-		e.Handle(status, status.RequestId(), location+"/writeStatusContent")
+		e.Handle(status, status.RequestId(), location+writeStatusContentLoc)
 		return
 	}
 	w.Header().Set(ContentType, rc)
 	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
 	_, err := w.Write(buf)
 	if err != nil {
-		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, location+"/writeStatusContent", err), "", "")
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, location+writeStatusContentLoc, err), "", "")
 	}
 }

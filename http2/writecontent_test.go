@@ -11,7 +11,7 @@ func Example_writeStatusContent() {
 	r := NewRecorder()
 
 	// No content
-	writeStatusContent[runtime.TestError](r, runtime.NewStatusOK(), "test location")
+	writeStatusContent[runtime.TestError](r, runtime.StatusOK(), "test location")
 	r.Result().Header = r.Header()
 	buf, status := io2.ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)

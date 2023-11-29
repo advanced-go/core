@@ -15,11 +15,11 @@ func Example_DefaultErrorFormat() {
 	if st, ok := any(s).(*statusState); ok {
 		st.errs = append(st.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
-	str := DefaultErrorFormatter(s)
-	fmt.Printf("test: DefaultErrorFormatter() -> %v", str)
+	str := defaultErrorFormatter(s)
+	fmt.Printf("test: defaultErrorFormatter() -> %v", str)
 
 	//Output:
-	//test: DefaultErrorFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: defaultErrorFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 

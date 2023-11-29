@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var okPing = func(ctx context.Context) runtime.Status { return runtime.NewStatusOK() }
+var okPing = func(ctx context.Context) runtime.Status { return runtime.StatusOK() }
 
 func createTable() []runArgs {
 	var table []runArgs
@@ -38,7 +38,7 @@ func Example_runTest() {
 	status := make(chan runtime.Status, 100)
 	//cb, _ := NewStatusCircuitBreaker( 100, 100, 0, func(s *runtime.Status) bool { return s.OK() })
 
-	//go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.NewStatusOK() }, 0, cb, quit, status)
+	//go run(createTable(), func(ctx context.Context) *runtime.Status { return runtime.StatusOK() }, 0, cb, quit, status)
 	if idiomaticGo {
 		done := make(chan struct{})
 		go func(chan struct{}, chan runtime.Status) {

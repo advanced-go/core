@@ -16,17 +16,6 @@ const (
 	bytesLoc = PkgPath + ":WriteBytes"
 )
 
-/*
-func marshal(t any) ([]byte, runtime.Status) {
-	buf, err := json.Marshal(t)
-	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, runtime.PkgPath+"/Marshal", err)
-	}
-	return buf, runtime.NewStatusOK()
-}
-
-
-*/
 // WriteBytes -
 func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
 	var buf []byte
@@ -66,7 +55,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		}
 	}
 	if strings.Contains(contentType, "json") {
-		return buf, ContentTypeJson, runtime.NewStatusOK()
+		return buf, ContentTypeJson, runtime.StatusOK()
 	}
-	return buf, http.DetectContentType(buf), runtime.NewStatusOK()
+	return buf, http.DetectContentType(buf), runtime.StatusOK()
 }

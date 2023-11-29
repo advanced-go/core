@@ -17,21 +17,19 @@ const (
 	ErrorsName     = "errors"
 )
 
+// FormatOutput - output formatting type
 type FormatOutput func(s Status) string
 
+// SetFormatOutput - optional override of output formatting
 func SetFormatOutput(fn FormatOutput) {
 	if fn != nil {
 		formatter = fn
 	}
 }
 
-var formatter FormatOutput = DefaultErrorFormatter
-
-// ErrorHandleFn - function type for error handling
-//type ErrorHandleFn func(requestId, location string, errs ...error) *Status
+var formatter FormatOutput = defaultErrorFormatter
 
 // ErrorHandler - template parameter error handler interface
-// Handle(requestId string, location string, errs ...error) *Status
 type ErrorHandler interface {
 	Handle(s Status, requestId string, callerLocation string) Status
 }
@@ -47,8 +45,8 @@ func (h BypassError) Handle(s Status, _ string, _ string) Status {
 type TestError struct{}
 
 func (h TestError) Handle(s Status, requestId string, location string) Status {
-	if s == nil || s.OK() {
-		return NewStatusOK()
+	if s == nil {
+		return StatusOK()
 	}
 	if s.OK() {
 		return s
@@ -67,7 +65,7 @@ type LogError struct{}
 
 func (h LogError) Handle(s Status, requestId string, callerLocation string) Status {
 	if s == nil {
-		return NewStatusOK()
+		return StatusOK()
 	}
 	if s.OK() {
 		return s
@@ -81,6 +79,8 @@ func (h LogError) Handle(s Status, requestId string, callerLocation string) Stat
 	return s
 }
 
+// ErrorHandleFn - function type for error handling
+//type ErrorHandleFn func(requestId, location string, errs ...error) *Status
 // NewErrorHandler - templated function providing an error handle function via a closure
 /*
 func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
@@ -89,21 +89,19 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 		return e.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
 	}
 }
-
-
 */
 
-func DefaultErrorFormatter(s Status) string {
+func defaultErrorFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		strings.JsonMarkup(StatusCodeName, str, false),
 		strings.JsonMarkup(StatusName, s.Description(), true),
 		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
-		FormatTrace(TraceName, s.Location()),
-		FormatErrors(ErrorsName, s.Errors()))
+		formatTrace(TraceName, s.Location()),
+		formatErrors(ErrorsName, s.Errors()))
 }
 
-func FormatErrors(name string, errs []error) string {
+func formatErrors(name string, errs []error) string {
 	if len(errs) == 0 {
 		return fmt.Sprintf("\"%v\" : null", name)
 	}
@@ -117,7 +115,7 @@ func FormatErrors(name string, errs []error) string {
 	return result + " ]"
 }
 
-func FormatTrace(name string, trace []string) string {
+func formatTrace(name string, trace []string) string {
 	if len(trace) == 0 {
 		return fmt.Sprintf("\"%v\" : null", name)
 	}
@@ -131,6 +129,7 @@ func FormatTrace(name string, trace []string) string {
 	return result + " ]"
 }
 
+// NewInvalidBodyTypeError - invalid type error
 func NewInvalidBodyTypeError(t any) error {
 	return errors.New(fmt.Sprintf("invalid body type: %v", reflect.TypeOf(t)))
 }

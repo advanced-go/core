@@ -47,7 +47,7 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 			if err != nil {
 				return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
 			}
-			return resp, runtime.NewStatusOK()
+			return resp, runtime.StatusOK()
 		}
 		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
 			do := findProxy(proxies)

@@ -32,5 +32,5 @@ func Deserialize[T any](body io.ReadCloser) (T, runtime.Status) {
 			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, deserializeLoc, err)
 		}
 	}
-	return t, runtime.NewStatusOK()
+	return t, runtime.StatusOK()
 }

@@ -93,7 +93,7 @@ func NewRequest(ctx any, method string, uri any, variant string, body io.Reader)
 		req.Header.Add(ContentLocation, variant)
 	}
 	req.Header.Add(runtime.XRequestId, requestId)
-	return req, runtime.NewStatusOK()
+	return req, runtime.StatusOK()
 }
 
 func newContext(ctx any) context.Context {

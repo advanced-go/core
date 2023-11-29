@@ -8,7 +8,7 @@ import (
 )
 
 var handler = func(ctx any, r *http.Request, body any) (any, runtime.Status) {
-	return nil, runtime.NewStatusOK()
+	return nil, runtime.StatusOK()
 }
 
 func Example_Controller() {

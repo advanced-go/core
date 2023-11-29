@@ -6,23 +6,25 @@ import (
 )
 
 const (
-	PkgPath = "github.com/advanced-go/core/json2"
+	PkgPath      = "github.com/advanced-go/core/json2"
+	marshalLoc   = ":Marshal"
+	unMarshalLoc = ":Unmarshal"
 )
 
 // Marshal - JSON marshal with runtime.Status
 func Marshal(t any) ([]byte, runtime.Status) {
 	buf, err := json.Marshal(t)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, PkgPath+"/Marshal", err)
+		return nil, runtime.NewStatusError(runtime.StatusJsonEncodeError, PkgPath+marshalLoc, err)
 	}
-	return buf, runtime.NewStatusOK()
+	return buf, runtime.StatusOK()
 }
 
 // Unmarshal - JSON unmarshal with runtime.Status
 func Unmarshal(buf []byte, t any) runtime.Status {
 	err := json.Unmarshal(buf, t)
 	if err != nil {
-		return runtime.NewStatusError(runtime.StatusJsonDecodeError, PkgPath+"/Unmarshal", err)
+		return runtime.NewStatusError(runtime.StatusJsonDecodeError, PkgPath+unMarshalLoc, err)
 	}
-	return runtime.NewStatusOK()
+	return runtime.StatusOK()
 }
