@@ -98,8 +98,8 @@ func NewStatus(code int) Status {
 	return newStatus(code)
 }
 
-// NewStatusOKContent - new Status OK with content
-func NewStatusOKContent() Status {
+// NewStatusOK - new Status OK with content
+func NewStatusOK() Status {
 	return newStatus(http.StatusOK)
 }
 
