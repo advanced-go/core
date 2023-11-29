@@ -6,6 +6,7 @@ import (
 	strings2 "github.com/advanced-go/core/strings"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,8 +22,17 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		host = req.URL.Host
 	}
 	url := req.URL.String()
-	if len(req.URL.Scheme) == 0 {
-		url = "http://" + host + req.URL.Path
+	if len(host) == 0 {
+		//url = "urn:" + url
+	} else {
+		if len(req.URL.Scheme) == 0 {
+			url = "http://" + host + req.URL.Path
+		}
+	}
+	path := req.URL.Path
+	i := strings.Index(path, ":")
+	if i >= 0 {
+		path = path[i+1:]
 	}
 	d := int(duration / time.Duration(1e6))
 	s := fmt.Sprintf("{ \"traffic\":\"%v\", "+
@@ -46,7 +56,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		fmtstr(req.Method),
 		fmtstr(url),  // fmtstr(req.URL.String()),
 		fmtstr(host), // fmtstr(req.URL.Host),
-		fmtstr(req.URL.Path),
+		fmtstr(path),
 
 		resp.StatusCode,
 
