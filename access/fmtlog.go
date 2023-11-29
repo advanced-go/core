@@ -31,7 +31,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"\"request-id\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
-		"\"url\":%v, "+
+		"\"uri\":%v, "+
 		"\"host\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
