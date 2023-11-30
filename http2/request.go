@@ -9,13 +9,11 @@ import (
 	"net/url"
 )
 
-type nopCloser struct {
-	io.Reader
-}
-
-func (nopCloser) Close() error { return nil }
-
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
+
+const (
+	newRequestLoc = PkgPath + ":NewRequest"
+)
 
 func ReadCookies(req *http.Request) map[string]*http.Cookie {
 	if req == nil {
@@ -65,8 +63,9 @@ func UpdateHeaders(req *http.Request) *http.Request {
 	return req
 }
 
-// TO DO: if the ctx is an http.Header, then need to add to the new request
-func NewRequest(ctx any, method string, uri any, variant string, body io.Reader) (*http.Request, runtime.Status) {
+// NewRequest - create a new Http request adding the request id
+// TO DO: if the ctx is a http.Header, then need to add to the new request
+func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request, runtime.Status) {
 	newCtx := newContext(ctx)
 
 	// Create request id and add to context
@@ -75,7 +74,7 @@ func NewRequest(ctx any, method string, uri any, variant string, body io.Reader)
 		newCtx = runtime.NewRequestIdContext(newCtx, requestId)
 	}
 	if len(method) == 0 {
-		method = "GET"
+		method = http.MethodGet
 	}
 	s := "https://somedomain.com/invalid-uri-or-type"
 	if url, ok := uri.(*url.URL); ok {
@@ -87,11 +86,11 @@ func NewRequest(ctx any, method string, uri any, variant string, body io.Reader)
 	}
 	req, err := http.NewRequestWithContext(newCtx, method, s, body)
 	if err != nil {
-		return nil, runtime.NewStatusError(http.StatusBadRequest, "/NewRequest", err)
+		return nil, runtime.NewStatusError(http.StatusBadRequest, newRequestLoc, err)
 	}
-	if len(variant) != 0 {
-		req.Header.Add(ContentLocation, variant)
-	}
+	//if len(variant) != 0 {
+	//	req.Header.Add(ContentLocation, variant)
+	//	}
 	req.Header.Add(runtime.XRequestId, requestId)
 	return req, runtime.StatusOK()
 }

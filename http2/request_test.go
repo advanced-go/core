@@ -8,26 +8,26 @@ import (
 )
 
 func Example_NewRequest_Nil() {
-	newReq, status := NewRequest(nil, "get", "https://www/google.com/search?q=golang", "variant:location", nil)
-	fmt.Printf("test: NewRequest(nil) -> [status:%v] [req-len:%v] [ctx-len:%v] [var:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())), newReq.Header.Get(ContentLocation))
+	newReq, status := NewRequest(nil, "get", "https://www/google.com/search?q=golang", nil)
+	fmt.Printf("test: NewRequest(nil) -> [status:%v] [req-len:%v] [ctx-len:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())))
 
 	//Output:
-	//test: NewRequest(nil) -> [status:OK] [req-len:36] [ctx-len:36] [var:variant:location]
+	//test: NewRequest(nil) -> [status:OK] [req-len:36] [ctx-len:36]
 
 }
 
 func Example_NewRequest_Context() {
 	ctx := context.Background()
-	newReq, status := NewRequest(ctx, "get", "https://www/google.com/search?q=golang", "variant:location-2", nil)
-	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v] [var:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())), newReq.Header.Get(ContentLocation))
+	newReq, status := NewRequest(ctx, "get", "https://www/google.com/search?q=golang", nil)
+	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())))
 
 	ctx = runtime.NewRequestIdContext(context.Background(), "123456")
-	newReq, status = NewRequest(ctx, "get", "https://www/google.com/search?q=golang", "variant:location", nil)
-	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v] [var:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())), newReq.Header.Get(ContentLocation))
+	newReq, status = NewRequest(ctx, "get", "https://www/google.com/search?q=golang", nil)
+	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())))
 
 	//Output:
-	//test: NewRequest(ctx) -> [status:OK] [req-len:36] [ctx-len:36] [var:variant:location-2]
-	//test: NewRequest(ctx) -> [status:OK] [req-len:6] [ctx-len:6] [var:variant:location]
+	//test: NewRequest(ctx) -> [status:OK] [req-len:36] [ctx-len:36]
+	//test: NewRequest(ctx) -> [status:OK] [req-len:6] [ctx-len:6]
 
 }
 
@@ -35,17 +35,17 @@ func Example_NewRequest_Request() {
 	//ctx := context.Background()
 
 	req, _ := http.NewRequest("", "https://www/google.com/search?q=golang", nil)
-	newReq, status := NewRequest(req, "get", "https://www/google.com/search?q=golang", "variant:location-2", nil)
-	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v] [var:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())), newReq.Header.Get(ContentLocation))
+	newReq, status := NewRequest(req, "get", "https://www/google.com/search?q=golang", nil)
+	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())))
 
 	req, _ = http.NewRequest("", "https://www/google.com/search?q=golang", nil)
 	req.Header.Add(runtime.XRequestId, "1234-5678")
-	newReq, status = NewRequest(req, "get", "https://www/google.com/search?q=golang", "variant:location-3", nil)
-	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v] [var:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())), newReq.Header.Get(ContentLocation))
+	newReq, status = NewRequest(req, "get", "https://www/google.com/search?q=golang", nil)
+	fmt.Printf("test: NewRequest(ctx) -> [status:%v] [req-len:%v] [ctx-len:%v]\n", status, len(runtime.RequestId(newReq)), len(runtime.RequestId(newReq.Context())))
 
 	//Output:
-	//test: NewRequest(ctx) -> [status:OK] [req-len:36] [ctx-len:36] [var:variant:location-2]
-	//test: NewRequest(ctx) -> [status:OK] [req-len:9] [ctx-len:9] [var:variant:location-3]
+	//test: NewRequest(ctx) -> [status:OK] [req-len:36] [ctx-len:36]
+	//test: NewRequest(ctx) -> [status:OK] [req-len:9] [ctx-len:9]
 
 }
 
