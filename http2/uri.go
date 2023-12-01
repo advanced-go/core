@@ -80,7 +80,7 @@ func UprootUrn(uri string) (nid, nss string, ok bool) {
 	case 0:
 		return
 	case 1:
-		return str[0], "", false
+		return str[0], "", true
 	case 2:
 		nid = str[0]
 		nss = str[1]

@@ -140,7 +140,7 @@ func Example_Uproot() {
 	nid, nss, ok := UprootUrn(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
-	// invalid path only
+	// valid path only and an empty nss
 	uri = "/search?q=golang"
 	nid, nss, ok = UprootUrn(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
@@ -164,10 +164,10 @@ func Example_Uproot() {
 
 	//Output:
 	//test: Uproot() -> [nid:] [nss:] [ok:false]
-	//test: Uproot(/search?q=golang) -> [nid:search] [nss:] [ok:false]
-	//test: Uproot(/github.com/advanced/go:search?q=golang) -> [nid:github.com/advanced/go] [nss:search] [ok:true]
-	//test: Uproot(https://www.google.com/search?q=golang) -> [nid:search] [nss:] [ok:false]
-	//test: Uproot(https://www.google.com/github.com/test/search?q=golang) -> [nid:github.com/test/search] [nss:] [ok:false]
+	//test: Uproot(/search?q=golang) -> [nid:search] [nss:] [ok:true]
+	//test: Uproot(/github.com/advanced-go/example-domain/activity:entry) -> [nid:github.com/advanced-go/example-domain/activity] [nss:entry] [ok:true]
+	//test: Uproot(https://www.google.com/search?q=golang) -> [nid:search] [nss:] [ok:true]
+	//test: Uproot(https://www.google.com/github.com/test/search?q=golang) -> [nid:github.com/test/search] [nss:] [ok:true]
 	//test: Uproot(https://www.google.com/github.com/test:search?q=golang) -> [nid:github.com/test] [nss:search] [ok:true]
-
+	
 }
