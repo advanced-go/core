@@ -87,16 +87,15 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 	}
 }
 
-func AddRequestId(req *http.Request) string {
-	if req == nil {
-		return ""
+func AddRequestId(req *http.Request) {
+	if req != nil {
+		req.Header = AddRequestIdHeader(req.Header)
 	}
-	return AddRequestIdHeader(req.Header)
 }
 
-func AddRequestIdHeader(h http.Header) string {
+func AddRequestIdHeader(h http.Header) http.Header {
 	if h == nil {
-		return ""
+		h = make(http.Header)
 	}
 	id := h.Get(runtime.XRequestId)
 	if len(id) == 0 {
@@ -104,7 +103,7 @@ func AddRequestIdHeader(h http.Header) string {
 		id = uid.String()
 		h.Set(runtime.XRequestId, id)
 	}
-	return id
+	return h
 }
 
 /*
