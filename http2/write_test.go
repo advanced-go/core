@@ -22,11 +22,11 @@ func ExampleWriteResponse_NoStatus() {
 	str := "text response"
 
 	w := httptest.NewRecorder()
-	WriteResponse[runtime.TestError](w, nil, nil, nil)
+	WriteResponse[runtime.Output](w, nil, nil, nil)
 	fmt.Printf("test: WriteResponse(w,nil,nil) -> [status:%v] [body:%v]\n", w.Code, w.Body.String())
 
 	w = httptest.NewRecorder()
-	WriteResponse[runtime.TestError](w, str, nil, nil)
+	WriteResponse[runtime.Output](w, str, nil, nil)
 	fmt.Printf("test: WriteResponse(w,%v,nil) -> [status:%v] [body:%v]\n", str, w.Code, w.Body.String())
 
 	//Output:
@@ -40,7 +40,7 @@ func ExampleWriteResponse_StatusOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(http.StatusOK)
-	WriteResponse[runtime.TestError](w, str, status, nil)
+	WriteResponse[runtime.Output](w, str, status, nil)
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [body:%v] [header:%v]\n", str, status, w.Body.String(), resp.Header)
 
@@ -55,7 +55,7 @@ func ExampleWriteResponse_StatusOK_InvalidKV() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(runtime.StatusOK).SetRequestId("123456-id")
-	status1 := WriteResponse[runtime.TestError, string](w, str, status, []Attr{{ContentType,"")
+	status1 := WriteResponse[runtime.Output, string](w, str, status, []Attr{{ContentType,"")
 	resp := w.Result()
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
 
@@ -73,18 +73,18 @@ func ExampleWriteResponse_StatusNotOK() {
 
 	w := httptest.NewRecorder()
 	status := runtime.NewStatus(http.StatusServiceUnavailable).SetContent(str, false)
-	WriteResponse[runtime.TestError](w, nil, status, nil)
+	WriteResponse[runtime.Output](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
 	status = runtime.NewStatus(http.StatusNotFound).SetContent([]byte("not found"), false)
-	WriteResponse[runtime.TestError](w, nil, status, nil)
+	WriteResponse[runtime.Output](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
 	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), false)
-	WriteResponse[runtime.TestError](w, nil, status, nil)
+	WriteResponse[runtime.Output](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
@@ -95,7 +95,7 @@ func ExampleWriteResponse_StatusNotOK() {
 		Update:       false,
 		Delete:       false,
 	}, false)
-	WriteResponse[runtime.TestError](w, nil, status, nil)
+	WriteResponse[runtime.Output](w, nil, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
@@ -110,12 +110,12 @@ func Example_RequestBody() {
 	w := httptest.NewRecorder()
 
 	body := io.NopCloser(bytes.NewReader([]byte("error content")))
-	WriteResponse[runtime.TestError](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
+	WriteResponse[runtime.Output](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	body = io.NopCloser(bytes.NewReader([]byte("foo")))
 	w = httptest.NewRecorder()
-	WriteResponse[runtime.TestError](w, body, nil,
+	WriteResponse[runtime.Output](w, body, nil,
 		[]Attr{{"key", "value"}, {"key1", "value1"}, {"key2", "value2"}})
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 

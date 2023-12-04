@@ -28,7 +28,7 @@ func ExampleDebugHandler_Handle() {
 	origin := "github.com/module/package/calling-fn"
 	ctx := NewRequestIdContext(nil, "123-request-id")
 	err := errors.New("test error")
-	var h TestError
+	var h Output
 
 	//status := runtime.NewStatusError(0, location, err)
 	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx), location)
@@ -56,7 +56,7 @@ func ExampleLogHandler_Handle() {
 	location := "/LogHandler"
 	ctx := NewRequestIdContext(nil, "")
 	err := errors.New("test error")
-	var h LogError
+	var h Log
 
 	//s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
 	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId(ctx), location)

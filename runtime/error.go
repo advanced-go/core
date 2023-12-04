@@ -34,17 +34,17 @@ type ErrorHandler interface {
 	Handle(s Status, requestId string, callerLocation string) Status
 }
 
-// BypassError - bypass error handler
-type BypassError struct{}
+// Bypass - bypass error handler
+type Bypass struct{}
 
-func (h BypassError) Handle(s Status, _ string, _ string) Status {
+func (h Bypass) Handle(s Status, _ string, _ string) Status {
 	return s
 }
 
-// TestError - test error handler
-type TestError struct{}
+// Output - standard output error handler
+type Output struct{}
 
-func (h TestError) Handle(s Status, requestId string, location string) Status {
+func (h Output) Handle(s Status, requestId string, location string) Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -60,10 +60,10 @@ func (h TestError) Handle(s Status, requestId string, location string) Status {
 	return s
 }
 
-// LogError - log error handler
-type LogError struct{}
+// Log - log error handler
+type Log struct{}
 
-func (h LogError) Handle(s Status, requestId string, callerLocation string) Status {
+func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	if s == nil {
 		return StatusOK()
 	}
