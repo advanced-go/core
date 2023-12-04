@@ -6,19 +6,43 @@ Core was inspired to capitalize on the Go language for application development. 
 What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
 ## runtime
-[Runtime][runtimepkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+[Runtime][runtimepkg] implements environment, request context, status, and error types. The status type is used as a function return value, and provides error, location, http content and status codes. 
 
-The error and output types are designed to be used as template parameters.
-
+The error handler types are designed to be used as template parameters.
 ~~~
-// ErrorHandler - template parameter error handler interface
-type ErrorHandler interface {
-	Handle(location string, errs ...error) *runtime.Status
-	HandleWithContext(ctx context.Context, location string, errs ...error) *runtime.Status
-	HandleStatus(s *runtime.Status) *runtime.Status
+// Status - used to add additional context to error handling
+type Status interface {
+    Code() int
+    OK() bool
+    Http() int
+
+    IsErrors() bool
+    Errors() []error
+    FirstError() error
+
+    Duration() time.Duration
+    SetDuration(duration time.Duration) Status
+
+    RequestId() string
+    SetRequestId(requestId any) Status
+
+    Location() []string
+    AddLocation(location string) Status
+
+    IsContent() bool
+    Content() any
+    ContentHeader() http.Header
+    ContentString() string
+    SetContent(content any, jsonContent bool) Status
+
+    Description() string
+    String() string
 }
 
-
+// ErrorHandler - template parameter error handler interface
+type ErrorHandler interface {
+    Handle(s Status, requestId string, callerLocation string) Status
+}
 ~~~
 
 Context functionality is provied for a request Id, and a ProxyContext used for testing:
