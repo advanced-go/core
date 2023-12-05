@@ -143,9 +143,7 @@ func ReadFileFromPath(path string) ([]byte, runtime.Status) {
 [Strings][stringspkg] provides various functions dealing with strings, such as template expansion and formatting. 
 
 ## resiliency
-[Resiliency][resiliencypkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
-
-
+[Resiliency][resiliencypkg] implements types for testing and developing resiliency concepts.
 
 
 [runtimepkg]: <https://pkg.go.dev/github.com/advanced-go/core/runtime>
