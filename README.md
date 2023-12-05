@@ -65,7 +65,7 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status)
 }
 ~~~
 
-Generic deserialization is also provided:
+Generic deserialization is supported:
 
 ~~~
 // Deserialize - provide deserialization of a request/response body
