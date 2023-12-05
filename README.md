@@ -75,15 +75,6 @@ func Deserialize[T any](body io.ReadCloser) (T, runtime.Status) {
 }
 ~~~
 
-Testing Http calls is implemented through a proxy design pattern: a context.Context interface that contains an http.Client.Do() call.
-
-~~~
-// HttpExchange - interface for Http request/response interaction
-type HttpExchange interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-~~~
-
 Also included is a common HTTP write response function:
 
 ~~~
@@ -93,6 +84,21 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
     // implementation details
 }
 ~~~
+
+## http2test
+[Http2test][http2pkg] provides functionality for testing HTTP calls. 
+
+Reading a response and a request will deserialize the type including the content.
+~~~
+func ReadResponse(uri *url.URL) (*http.Response, error) {
+  // implementation details
+}
+func ReadRequest(uri *url.URL) (*http.Request, error) {
+  // implementation details
+}
+~~~
+
+
 
 ## access
 [Access][accesspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
