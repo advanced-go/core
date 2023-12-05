@@ -124,7 +124,7 @@ func() (status runtime.Status) {
 ~~~
 
 ## handler
-[Handler][handlerpkg] proivdesan HTTP handler that manages ingress traffic access logging. 
+[Handler][handlerpkg] proivdes an HTTP handler that manages ingress traffic access logging. 
 
 ## io2
 [Io2][io2pkg] implements read functionality for file and io.ReaderCloser, returning a runtime.Status. 
