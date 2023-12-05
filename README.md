@@ -1,7 +1,7 @@
 # core
 
 Core provides functionaliy for common development tasks such as: error handling, HTTP exchange functionality, HTTP handler testing, and access logging. 
-What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
+The following packages and specific implementations are as follows:  
 
 ## runtime
 [Runtime][runtimepkg] implements environment, request context, status, and error types. The status type is used as a function return value, and provides additional context for an error, such as location, request id, http content and status codes. The error handler types are designed to be used as generic parameters.
@@ -56,20 +56,20 @@ func ContextWithProxy(ctx context.Context, proxy any) context.Context {
 ~~~
 
 ## http2
-[Http2][http2pkg] provides functionality for processing an Http request/response. Exchange functionality is provied via a templated function, utilizing
-template paramters for error processing, deserialization type, and the function for processing the http.Client.Do():
+[Http2][http2pkg] provides functionality for processing HTTP request/response. The Do() function also supports reading a response from disk or via a ctx.Context proxy.
 
 ~~~
-func Do[E runtime.ErrorHandler, H Exchange, T any](req *http.Request) (resp *http.Response, t T, status *runtime.Status) {
+// Do - do a Http exchange with a runtime.Status
+func Do(req *http.Request) (resp *http.Response, status runtime.Status)
     // implementation details
 }
 ~~~
 
-The deserialization function is also templated:
+Generic deserialization is also provided:
 
 ~~~
-// Deserialize - templated function, providing deserialization of a request/response body
-func Deserialize[E runtime.ErrorHandler, T any](body io.ReadCloser) (T, *runtime.Status) {
+// Deserialize - provide deserialization of a request/response body
+func Deserialize[T any](body io.ReadCloser) (T, runtime.Status) {
     // implementation details
 }
 ~~~
@@ -83,11 +83,12 @@ type HttpExchange interface {
 }
 ~~~
 
-Exchange also includes a common http write response function:
+Also included is a common HTTP write response function:
 
 ~~~
-// WriteResponse - write a http.Response, utilizing the data, status, and headers for controlling the content
-func WriteResponse(w http.ResponseWriter, buf []byte, status *runtime.Status, headers ...string) {
+// WriteResponse - write a http.Response, utilizing the content, status, and headers
+// Only supports []byte, string, io.Reader, and io.ReaderCloser for content
+func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
     // implementation details
 }
 ~~~
