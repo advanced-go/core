@@ -1,8 +1,6 @@
 # core
 
-Core was inspired to capitalize on the Go language for application development. Determining the patterns that need to be employed is critical for writing clear idiomatic Go code. This YouTube video [Edward Muller - Go Anti-Patterns][emuller], does an excellent job of framing idiomatic go. 
-[Robert Griesemer - The Evolution of Go][rgriesemer], @ 4:00 minutes, also presents an important analogy between Go modules, packages, closures, and LEGO® bricks. Reviewing the Go standard library packaging structure provides a blueprint for an application architecture, and underscores how essential package design is for idiomatic Go. 
-
+Core provides functionaliy for common development tasks such as: error handling, HTTP exchange functionality, HTTP handler testing, and access logging. 
 What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
 ## runtime
