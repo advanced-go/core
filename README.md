@@ -6,9 +6,7 @@ Core was inspired to capitalize on the Go language for application development. 
 What follows is a description of the packages in Core, highlighting specific patterns and template implementations.  
 
 ## runtime
-[Runtime][runtimepkg] implements environment, request context, status, and error types. The status type is used as a function return value, and provides error, location, http content and status codes. 
-
-The error handler types are designed to be used as template parameters.
+[Runtime][runtimepkg] implements environment, request context, status, and error types. The status type is used as a function return value, and provides additional context for an error, such as location, request id, http content and status codes. The error handler types are designed to be used as generic parameters.
 ~~~
 // Status - used to add additional context to error handling
 type Status interface {
@@ -39,7 +37,7 @@ type Status interface {
     String() string
 }
 
-// ErrorHandler - template parameter error handler interface
+// ErrorHandler - generic parameter error handler interface
 type ErrorHandler interface {
     Handle(s Status, requestId string, callerLocation string) Status
 }
