@@ -1,7 +1,7 @@
 # core
 
 Core provides functionaliy for common development tasks such as: error handling, HTTP exchange functionality, HTTP handler testing, and access logging. 
-The following packages and specific implementations are as follows:  
+The packages and specific implementations are as follows:  
 
 ## runtime
 [Runtime][runtimepkg] implements environment, request context, status, and error types. The status type is used as a function return value, and provides additional context for an error, such as location, request id, http content and status codes. The error handler types are designed to be used as generic parameters.
