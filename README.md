@@ -56,7 +56,7 @@ func ContextWithProxy(ctx context.Context, proxy any) context.Context {
 ~~~
 
 ## http2
-[Http2][http2pkg] provides functionality for processing HTTP request/response exchange. The Do() function also supports reading a response from disk or via a proxy.
+[Http2][http2pkg] provides functionality for processing HTTP request/response exchange. The Do() function supports reading a response from disk or via a proxy.
 
 ~~~
 // Do - do a Http exchange with a runtime.Status
