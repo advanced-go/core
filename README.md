@@ -115,11 +115,11 @@ func LogDeferred(traffic string, req *http.Request, threshold int, thresholdFlag
  // implementation details
 }
 
-// Defered logging example for an HTTP handler.
+// Defered internal traffic logging example for an HTTP handler.
 func() (status runtime.Status) {
-		defer access.LogDeferred(access.InternalTraffic, r, -1, "", access.NewStatusCodeClosure(&status))()
-		return httpHandler[runtime.Log](nil, w, r)
-	}()
+    defer access.LogDeferred(access.InternalTraffic, r, -1, "", access.NewStatusCodeClosure(&status))()
+    return httpHandler[runtime.Log](nil, w, r)
+}()
 
 ~~~
 
