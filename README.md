@@ -101,7 +101,7 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 Several functions are provided to facilitate automated testing when a Test_httpHandler(t *testing.T) is used. 
 
 ## access
-[Access][accesspkg] implements access logging via am application configurable access log handler. Logging of internal traffic is supported and can be configured at runtime.
+[Access][accesspkg] implements access logging via an application configurable access log handler. Logging of internal traffic is supported and is configured at runtime.
 
 Direct and deferred logging are supported. The threshold attributes provide indication of requests that do not meet an SLO.
 ~~~
