@@ -136,9 +136,8 @@ func ReadFileFromPath(path string) ([]byte, runtime.Status) {
 ~~~
 
 ## json2
-[Json2][json2pkg] implements read functionality for file and io.ReaderCloser, returning a runtime.Status.
+[Json2][json2pkg] provides Marshal and Unmarshal functions that wrap Golang json functionality with a returned runtime.Status.
 
-status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
 ## strings
 [Strings][stringspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
