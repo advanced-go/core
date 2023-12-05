@@ -123,9 +123,8 @@ func() (status runtime.Status) {
 
 ~~~
 
-
 ## handler
-[Handler][handlerpkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+[Handler][handlerpkg] proiveds an HTTP handler that implements ingress traffic access logging. 
 
 ## io2
 [Io2][io2pkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
