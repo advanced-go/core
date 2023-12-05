@@ -124,13 +124,21 @@ func() (status runtime.Status) {
 ~~~
 
 ## handler
-[Handler][handlerpkg] proiveds an HTTP handler that implements ingress traffic access logging. 
+[Handler][handlerpkg] proivdesan HTTP handler that manages ingress traffic access logging. 
 
 ## io2
-[Io2][io2pkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+[Io2][io2pkg] implements read functionality for file and io.ReaderCloser, returning a runtime.Status. 
+~~~
+// ReadFileFromPath - read a file given a templated relative path: file://[cwd]/io2test/resource/html-response.txt
+func ReadFileFromPath(path string) ([]byte, runtime.Status) {
+// implementation details
+}
+~~~
 
 ## json2
-[Json2][json2pkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+[Json2][json2pkg] implements read functionality for file and io.ReaderCloser, returning a runtime.Status.
+
+status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
 
 ## strings
 [Strings][stringspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
