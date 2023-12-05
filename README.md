@@ -98,6 +98,8 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 }
 ~~~
 
+Several functions are provided to facilitate automated testing when a Test_httpHandler(t *testing.T) is used. 
+
 
 
 ## access
