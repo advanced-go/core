@@ -100,10 +100,29 @@ func ReadRequest(uri *url.URL) (*http.Request, error) {
 
 Several functions are provided to facilitate automated testing when a Test_httpHandler(t *testing.T) is used. 
 
-
-
 ## access
-[Access][accesspkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
+[Access][accesspkg] implements access logging via am application configurable access log handler. Logging of internal traffic is supported and can be configured at runtime.
+
+Direct and deferred logging are supported. The threshold attributes provide indication of requests that do not meet an SLO.
+~~~
+// Log - access logging
+func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+ // implementation details
+}
+
+// LogDeferred - deferred accessing logging
+func LogDeferred(traffic string, req *http.Request, threshold int, thresholdFlags string, statusCode func() int) func() {
+ // implementation details
+}
+
+// Defered logging example for an HTTP handler.
+func() (status runtime.Status) {
+		defer access.LogDeferred(access.InternalTraffic, r, -1, "", access.NewStatusCodeClosure(&status))()
+		return httpHandler[runtime.Log](nil, w, r)
+	}()
+
+~~~
+
 
 ## handler
 [Handler][handlerpkg] implements environment, request context, status, error, and output types. The status type is used extensively as a function return value, and provides error, http, and gRPC status codes. 
