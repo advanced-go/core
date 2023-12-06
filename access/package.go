@@ -17,7 +17,7 @@ const (
 )
 
 // LogHandler - access logging handler
-type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string)
+type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string)
 
 var (
 	handler         LogHandler
@@ -54,8 +54,8 @@ func EnableInternalLogging() {
 	internalLogging = true
 }
 
-var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
-	s := fmtLog(traffic, start, duration, req, resp, threshold, thresholdFlags)
+var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) {
+	s := fmtLog(traffic, start, duration, req, resp, routeName, threshold, thresholdFlags)
 	fmt.Printf("%v\n", s)
 }
 
@@ -78,21 +78,21 @@ func LogInternal(start time.Time, duration time.Duration, req *http.Request, res
 */
 
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
+func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) {
 	if handler == nil {
 		return
 	}
 	if traffic == InternalTraffic && !internalLogging {
 		return
 	}
-	handler(traffic, start, duration, req, resp, threshold, thresholdFlags)
+	handler(traffic, start, duration, req, resp, routeName, threshold, thresholdFlags)
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, threshold int, thresholdFlags string, statusCode func() int) func() {
+func LogDeferred(traffic string, req *http.Request, routeName string, threshold int, thresholdFlags string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, threshold, thresholdFlags)
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, threshold, thresholdFlags)
 	}
 }
 

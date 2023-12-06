@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) string {
+func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) string {
 	if req == nil {
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
@@ -38,6 +38,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 	s := fmt.Sprintf("{ \"traffic\":\"%v\", "+
 		"\"start\":%v, "+
 		"\"duration\":%v, "+
+		"\"route\":%v, "+
 		"\"request-id\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
@@ -50,6 +51,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		traffic,
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
+		fmtstr(routeName),
 
 		fmtstr(req.Header.Get(runtime.XRequestId)),
 		fmtstr(req.Proto),
