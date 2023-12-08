@@ -26,6 +26,7 @@ func Example_FmtLog_Urn() {
 
 	req, err := http.NewRequest("select", "github.com/advanced-go/example-domain/activity:entry", nil)
 	req.Header.Add(runtime.XRequestId, "123-456")
+	req.Header.Add("RelatesTo", "fmtlog testing")
 	fmt.Printf("test: NewRequest() -> [err:%v] %v\n", err, req)
 	resp := http.Response{StatusCode: http.StatusOK}
 	s := fmtLog(InternalTraffic, start, time.Since(start), req, &resp, "route", -1, "")

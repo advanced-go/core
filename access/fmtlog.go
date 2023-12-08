@@ -39,6 +39,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		"\"start\":%v, "+
 		"\"duration\":%v, "+
 		"\"route\":%v, "+
+		"\"relates-to\":%v, "+
 		"\"request-id\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
@@ -52,7 +53,7 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
 		fmtstr(routeName),
-
+		fmtstr(req.Header.Get("RelatesTo")),
 		fmtstr(req.Header.Get(runtime.XRequestId)),
 		fmtstr(req.Proto),
 		fmtstr(req.Method),
