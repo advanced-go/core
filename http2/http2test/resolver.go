@@ -1,28 +1,28 @@
-package http2
+package http2test
 
 import (
 	"github.com/advanced-go/core/runtime"
 	"strings"
 )
 
-type Resolver func(string) string
+type resolverFunc func(string) string
 
 var (
-	defaultOrigin          = "http://localhost:8080"
-	resolver      Resolver = defaultResolver
-	list          []Resolver
+	defaultOrigin = "http://localhost:8080"
+	list          []resolverFunc
 )
 
-func SetDefaultOrigin(s string) {
-	if !runtime.IsDebugEnvironment() {
-		return
+/*
+	func SetDefaultOrigin(s string) {
+		if !runtime.IsDebugEnvironment() {
+			return
+		}
+		if len(s) != 0 {
+			defaultOrigin = s
+		}
 	}
-	if len(s) != 0 {
-		defaultOrigin = s
-	}
-}
-
-func AddResolver(fn Resolver) {
+*/
+func addResolver(fn resolverFunc) {
 	if !runtime.IsDebugEnvironment() || fn == nil {
 		return
 	}
@@ -30,8 +30,8 @@ func AddResolver(fn Resolver) {
 	list = append(list, fn)
 }
 
-// Resolve - resolve a string to an url.
-func Resolve(s string) string {
+// resolve - resolve a string to an url.
+func resolve(s string) string {
 	if !runtime.IsDebugEnvironment() {
 		return defaultResolver(s)
 	}
