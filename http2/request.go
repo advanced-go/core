@@ -88,9 +88,6 @@ func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request,
 	if err != nil {
 		return nil, runtime.NewStatusError(http.StatusBadRequest, newRequestLoc, err)
 	}
-	//if len(variant) != 0 {
-	//	req.Header.Add(ContentLocation, variant)
-	//	}
 	req.Header.Add(runtime.XRequestId, requestId)
 	return req, runtime.StatusOK()
 }
