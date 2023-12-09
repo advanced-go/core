@@ -14,14 +14,15 @@ type requestContextKey struct{}
 
 //func (k *contextKey) String() string { return "context value " + k.name }
 
-type statusContextKey struct{}
+//type statusContextKey struct{}
 
 var (
 	requestKey = &requestContextKey{}
-	statusKey  = &statusContextKey{}
+	//statusKey  = &statusContextKey{}
 )
 
 // NewStatusContext - creates a new Context with a Status
+/*
 func NewStatusContext(ctx context.Context, status Status) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
@@ -48,6 +49,8 @@ func StatusFromContext(ctx any) Status {
 	return nil
 }
 
+
+*/
 // NewRequestIdContext - creates a new Context with a request id
 func NewRequestIdContext(ctx context.Context, requestId string) context.Context {
 	if ctx == nil {

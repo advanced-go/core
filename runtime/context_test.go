@@ -73,11 +73,11 @@ func Example_RequestId() {
 	//test: RequestId() -> 123-456-abc
 	//test: RequestId() -> 123-456-789
 	//test: GetOrCreateRequestId() -> [valid:true]
-	//function StatusOK.SetRequestId() is not implemented
-	//test: RequestId() ->
-
+	//test: RequestId() -> 987-654
+	
 }
 
+/*
 func Example_StatusContext() {
 	status := NewStatus(http.StatusNotFound)
 	ctx := NewStatusContext(nil, status)
@@ -90,3 +90,6 @@ func Example_StatusContext() {
 	//test: NewStatusContext() -> Not Found
 
 }
+
+
+*/

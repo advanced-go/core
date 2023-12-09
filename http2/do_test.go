@@ -6,42 +6,6 @@ import (
 	"net/http"
 )
 
-/*
-const (
-	helloWorldUri         = "proxy://www.somestupidname.come"
-	serviceUnavailableUri = "http://www.unavailable.com"
-	http503FileName       = "file://[cwd]/http2test/resource/http-503.txt"
-)
-
-// When reading http from a text file, be sure you have the expected blank line between header and body.
-// If there is not a blank line after the header section, even if there is not a body, you will receive an
-// Unexpected EOF error when calling the golang http.ReadResponse function.
-func exchangeProxy(req *http.Request) (*http.Response, error) {
-	if req == nil || req.URL == nil {
-		return nil, errors.New("request or request URL is nil")
-	}
-	switch http2test.Pattern(req) {
-	case http2test.HttpErrorUri, http2test.BodyIOErrorUri:
-		return http2test.ErrorProxy(req)
-	case helloWorldUri:
-		resp := http2test.NewResponse(http.StatusOK, []byte("<html><body><h1>Hello, World</h1></body></html>"), "content-type", "text/html", "content-length", "1234")
-		return resp, nil
-	case serviceUnavailableUri:
-		// Read the response from an embedded file system.
-		//
-		// ReadResponseTest(name string)  is only used for calls from do_test.go. When calling from other test
-		// files, use the ReadResponse(f fs.FS, name string)
-		//
-		resp, err := ReadResponse(ParseRaw(http503FileName))
-		return resp, err
-	default:
-		fmt.Printf("test: doProxy(req) : unmatched pattern %v", http2test.Pattern(req))
-	}
-	return nil, nil
-}
-var exchangeCtx = runtime.NewProxyContext(nil, exchangeProxy)
-*/
-
 func ExampleDo_InvalidArgument() {
 	_, s := Do(nil)
 	fmt.Printf("test: Do(nil) -> [%v]\n", s)
