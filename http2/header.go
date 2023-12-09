@@ -13,7 +13,33 @@ const (
 	ContentTypeJson = "application/json"
 	ContentType     = "Content-Type"
 	ContentLength   = "Content-Length"
+	RelatesTo       = "RelatesTo"
 )
+
+func forwardDefaults(dest http.Header, src http.Header) http.Header {
+	if dest == nil {
+		dest = make(http.Header)
+	}
+	if src == nil {
+		return dest
+	}
+	// TO DO : add other default headers
+	dest.Set(ContentLocation, src.Get(ContentLocation))
+	dest.Set(runtime.XRequestId, src.Get(runtime.XRequestId))
+	dest.Set(RelatesTo, src.Get(RelatesTo))
+	return dest
+}
+
+func Forward(dest http.Header, src http.Header, names ...string) http.Header {
+	dest = forwardDefaults(dest, src)
+	if src == nil {
+		return dest
+	}
+	for _, name := range names {
+		dest.Set(name, src.Get(name))
+	}
+	return dest
+}
 
 func HeaderValue(name string, r *http.Request) string {
 	if r == nil {

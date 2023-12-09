@@ -1,14 +1,12 @@
 package http2
 
 import (
-	"errors"
 	"fmt"
-	"github.com/advanced-go/core/http2/http2test"
-	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 
+/*
 const (
 	helloWorldUri         = "proxy://www.somestupidname.come"
 	serviceUnavailableUri = "http://www.unavailable.com"
@@ -41,8 +39,8 @@ func exchangeProxy(req *http.Request) (*http.Response, error) {
 	}
 	return nil, nil
 }
-
 var exchangeCtx = runtime.NewProxyContext(nil, exchangeProxy)
+*/
 
 func ExampleDo_InvalidArgument() {
 	_, s := Do(nil)
@@ -53,59 +51,41 @@ func ExampleDo_InvalidArgument() {
 
 }
 
-func ExampleDo_Proxy_HttpError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, http2test.HttpErrorUri, nil)
-	resp, err := Do(req)
-	fmt.Printf("test: Do(req) -> [%v] [response:%v]\n", err, resp)
+func ExampleDo_GatewayTimeout() {
+	status1 := runtime.NewStatus(http.StatusGatewayTimeout)
+	req, _ := http.NewRequestWithContext(NewStatusContext(nil, status1), http.MethodGet, "file://[cwd]/http2test/resource/http-503.txt", nil)
+	resp, status := Do(req)
+	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [status:%v] [body:%v]\n",
+		resp != nil, status.Code(), status, resp.Body != nil)
 
 	//Output:
-	//test: Do(req) -> [Internal Error [http: connection has been hijacked]] [response:&{internal server error 500  0 0 map[] <nil> 0 [] false false map[] <nil> <nil>}]
+	//test: Do(req) -> [resp:true] [statusCode:504] [status:Timeout] [body:false]
 
 }
-
-func ExampleDo_Proxy_IOError() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, http2test.BodyIOErrorUri, nil)
-	resp, err := Do(req)
-	fmt.Printf("test: Do(req) -> [%v] [resp:%v] [statusCode:%v] [body:%v]\n", err, resp != nil, resp.StatusCode, resp.Body != nil)
-
-	defer resp.Body.Close()
-	buf, s2 := io2.ReadAll(resp.Body)
-	fmt.Printf("test: ReadAll(resp.Body) -> [%v] [body:%v]\n", s2, string(buf))
-
-	//Output:
-	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [body:true]
-	//test: ReadAll(resp.Body) -> [I/O Failure [unexpected EOF]] [body:]
-
-}
-
-func ExampleDo_Proxy_HellowWorld() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, helloWorldUri, nil)
-	resp, err := Do(req)
-	fmt.Printf("test: Do(req) -> [%v] [resp:%v] [statusCode:%v] [content-type:%v] [content-length:%v] [body:%v]\n",
-		err, resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Header.Get("content-length"), resp.Body != nil)
-
-	defer resp.Body.Close()
-	buf, status := io2.ReadAll(resp.Body)
-	fmt.Printf("test: ReadAll(resp.Body) -> [status:%v] [body:%v]\n", status, string(buf))
-
-	//Output:
-	//test: Do(req) -> [OK] [resp:true] [statusCode:200] [content-type:text/html] [content-length:1234] [body:true]
-	//test: ReadAll(resp.Body) -> [status:OK] [body:<html><body><h1>Hello, World</h1></body></html>]
-
-}
-
-func ExampleDo_Proxy_ServiceUnavailable() {
-	req, _ := http.NewRequestWithContext(exchangeCtx, http.MethodGet, serviceUnavailableUri, nil)
-	resp, _ := Do(req)
-	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [content-type:%v] [body:%v]\n",
-		resp != nil, resp.StatusCode, resp.Header.Get("content-type"), resp.Body != nil)
+func ExampleDo_ServiceUnavailable_Uri() {
+	req, _ := http.NewRequest(http.MethodGet, "file://[cwd]/http2test/resource/http-503.txt", nil)
+	resp, status := Do(req)
+	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [errs:%v] [content-type:%v] [body:%v]\n",
+		resp != nil, status.Code(), status.Errors(), resp.Header.Get("content-type"), resp.Body != nil)
 
 	//defer resp.Body.Close()
 	//buf, ioError := io.ReadAll(resp.Body)
 	//fmt.Printf("test: ReadAll(resp.Body) -> [err:%v] [body:%v]\n", ioError, string(buf))
 
 	//Output:
-	//test: Do(req) -> [resp:true] [statusCode:503] [content-type:text/html] [body:true]
+	//test: Do(req) -> [resp:true] [statusCode:503] [errs:[]] [content-type:text/html] [body:true]
+
+}
+
+func ExampleDo_ServiceUnavailable_ContentLocation() {
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	req.Header.Add(ContentLocation, "file://[cwd]/http2test/resource/http-503.txt")
+	resp, status := Do(req)
+	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [errs:%v] [content-type:%v] [body:%v]\n",
+		resp != nil, status.Code(), status.Errors(), resp.Header.Get("content-type"), resp.Body != nil)
+
+	//Output:
+	//test: Do(req) -> [resp:true] [statusCode:503] [errs:[]] [content-type:text/html] [body:true]
 
 }
 

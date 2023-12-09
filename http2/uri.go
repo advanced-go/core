@@ -10,8 +10,8 @@ import (
 
 const (
 	UrnScheme    = "urn"
-	UrnSeperator = ":"
-	FileScheme   = "file://"
+	UrnSeparator = ":"
+	FileScheme   = "file"
 )
 
 // ParseRaw - parse a raw Uri without error
@@ -78,9 +78,9 @@ func UprootUrn(uri string) (nid, nss string, ok bool) {
 	}
 	var str []string
 	if u.Path[0] == '/' {
-		str = strings.Split(u.Path[1:], UrnSeperator)
+		str = strings.Split(u.Path[1:], UrnSeparator)
 	} else {
-		str = strings.Split(u.Path, UrnSeperator)
+		str = strings.Split(u.Path, UrnSeparator)
 	}
 	switch len(str) {
 	case 0:

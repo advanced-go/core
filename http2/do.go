@@ -3,16 +3,16 @@ package http2
 import (
 	"crypto/tls"
 	"errors"
+	"github.com/advanced-go/core/http2/io"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
+	"net/url"
 	"time"
 )
 
-// Exchange - interface for Http request/response interaction
-type Exchange func(req *http.Request) (*http.Response, error)
-
 const (
-	doLocation = PkgPath + "/Do"
+	doLocation     = PkgPath + ":Do"
+	doReadLocation = PkgPath + ":Do/readFromFile"
 )
 
 var (
@@ -39,32 +39,27 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
-	var doProxy Exchange
 
 	if runtime.IsDebugEnvironment() {
-		if req.URL.Scheme == "file" {
-			resp, err = ReadResponse(req.URL)
-			if err != nil {
-				return resp, runtime.NewStatusError(http.StatusInternalServerError, doLocation, err)
-			}
-			return resp, runtime.StatusOK()
+		status = StatusFromContext(req.Context())
+		if status != nil {
+			resp = new(http.Response)
+			resp.StatusCode = status.Http()
+			resp.Status = status.Description()
+			return
 		}
-		if proxies, ok := runtime.IsProxyable(req.Context()); ok {
-			do := findProxy(proxies)
-			if do != nil {
-				doProxy = do
-			}
+		resp, status = readFromFile(req)
+		if resp != nil || !status.OK() {
+			return
 		}
 	}
-	if doProxy != nil {
-		resp, err = doProxy(req)
-	} else {
-		resp, err = Client.Do(req)
-	}
+	resp, err = Client.Do(req)
 	if err != nil {
-		// can happen because of an errant proxy, or when there is a connectivity error, even with a valid URL
+		// Happens as a result of a connectivity error, even with a valid URL
 		if resp == nil {
-			resp = &http.Response{StatusCode: http.StatusInternalServerError, Status: "internal server error"}
+			resp = new(http.Response)
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Status = "internal server error"
 		}
 		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
 	}
@@ -81,11 +76,28 @@ func DoT[T any](req *http.Request) (resp *http.Response, t T, status runtime.Sta
 	return
 }
 
-func findProxy(proxies []any) func(*http.Request) (*http.Response, error) {
-	for _, p := range proxies {
-		if fn, ok := p.(func(*http.Request) (*http.Response, error)); ok {
-			return fn
+func readFromFile(req *http.Request) (*http.Response, runtime.Status) {
+	var uri *url.URL
+	var err error
+
+	if req.URL.Scheme == FileScheme {
+		uri = req.URL
+	} else {
+		location := req.Header.Get(ContentLocation)
+		if len(location) == 0 {
+			return nil, runtime.StatusOK()
+		}
+		uri, err = url.Parse(location)
+		if err != nil {
+			return nil, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err)
 		}
 	}
-	return nil
+	if uri == nil {
+		return nil, runtime.StatusOK()
+	}
+	resp, err1 := io.ReadResponse(uri)
+	if err1 != nil {
+		return resp, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err1)
+	}
+	return resp, runtime.NewStatus(resp.StatusCode)
 }

@@ -1,4 +1,4 @@
-package http2test
+package io
 
 import (
 	"bufio"
@@ -12,29 +12,13 @@ import (
 	"strings"
 )
 
-var http11Bytes = []byte("HTTP/1.1")
-var http12Bytes = []byte("HTTP/1.2")
-var http20Bytes = []byte("HTTP/2.0")
+var (
+	http11Bytes = []byte("HTTP/1.1")
+	http12Bytes = []byte("HTTP/1.2")
+	http20Bytes = []byte("HTTP/2.0")
+)
 
-func isHttpResponseMessage(buf []byte) bool {
-	if buf == nil {
-		return false
-	}
-	l := len(http11Bytes)
-	if bytes.Equal(buf[0:l], http11Bytes) {
-		return true
-	}
-	l = len(http12Bytes)
-	if bytes.Equal(buf[0:l], http12Bytes) {
-		return true
-	}
-	l = len(http20Bytes)
-	if bytes.Equal(buf[0:l], http20Bytes) {
-		return true
-	}
-	return false
-}
-
+// ReadResponse - read a Http response given a URL
 func ReadResponse(uri *url.URL) (*http.Response, error) {
 	if uri == nil {
 		return nil, errors.New("error: Uri is nil")
@@ -64,4 +48,23 @@ func ReadResponse(uri *url.URL) (*http.Response, error) {
 		}
 		return resp, nil
 	}
+}
+
+func isHttpResponseMessage(buf []byte) bool {
+	if buf == nil {
+		return false
+	}
+	l := len(http11Bytes)
+	if bytes.Equal(buf[0:l], http11Bytes) {
+		return true
+	}
+	l = len(http12Bytes)
+	if bytes.Equal(buf[0:l], http12Bytes) {
+		return true
+	}
+	l = len(http20Bytes)
+	if bytes.Equal(buf[0:l], http20Bytes) {
+		return true
+	}
+	return false
 }

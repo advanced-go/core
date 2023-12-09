@@ -29,7 +29,8 @@ func Example_ReadRequest_GET() {
 	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [&{GET / HTTP/1.1 1 1 map[] {} <nil> 0 [] false foo.com map[] map[] <nil> map[]  / <nil> <nil> <nil> <nil>}]
+	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [&{GET /advanced-go/example-domain/activity/entry?v=v2 HTTP/1.1 1 1 map[Accept:[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8] Accept-Charset:[ISO-8859-1,utf-8;q=0.7,*;q=0.7] Accept-Encoding:[gzip,deflate\r\n] Accept-Language:[en-us,en;q=0.5] Connection:[close] Content-Length:[7] Content-Location:[github.com/advanced-go/example-domain/activity/EntryV1] Keep-Alive:[300] Proxy-Connection:[keep-alive] User-Agent:[Fake]] {
+	//} <nil> 7 [] true localhost:8080 map[] map[] <nil> map[]  /advanced-go/example-domain/activity/entry?v=v2 <nil> <nil> <nil> <nil>}]
 
 }
 

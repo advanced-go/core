@@ -18,7 +18,7 @@ func Example_ReadContent_Empty() {
 	}
 
 	//Output:
-	//test: ReadContent() -> [err:<nil>] [bytes:0]
+	//test: ReadContent() -> [err:<nil>] [bytes:2]
 
 }
 

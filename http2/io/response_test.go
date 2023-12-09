@@ -1,4 +1,4 @@
-package http2
+package io
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/http2test/resource/html-response.txt"
+	s := "file://[cwd]/iotest/html-response.txt"
 	u, _ := url.Parse(s)
 	//req, err := http.NewRequest("GET", s, nil)
 	//fmt.Printf("test: http.NewRequest() -> [err:%v]\n", err)
@@ -21,7 +21,7 @@ func Example_ReadResponse() {
 	s = string(buf)
 
 	//Output:
-	//test: ReadResponse(file://[cwd]/http2test/resource/html-response.txt) -> [err:<nil>] [status:200]
+	//test: ReadResponse(file://[cwd]/iotest/html-response.txt) -> [err:<nil>] [status:200]
 	//test: ReadAll() -> [status:OK] <html>
 	//<body>
 	//<h1>Hello, World!</h1>
