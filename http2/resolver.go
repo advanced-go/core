@@ -33,7 +33,7 @@ func AddResolver(fn Resolver) {
 // Resolve - resolve a string to an url.
 func Resolve(s string) string {
 	if !runtime.IsDebugEnvironment() {
-		return ""
+		return defaultResolver(s)
 	}
 	if list != nil {
 		for _, r := range list {
@@ -43,7 +43,7 @@ func Resolve(s string) string {
 			}
 		}
 	}
-	return resolver(s)
+	return defaultResolver(s)
 }
 
 func defaultResolver(u string) string {
