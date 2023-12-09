@@ -98,9 +98,14 @@ func NewStatus(code int) Status {
 	return newStatus(code)
 }
 
-// NewStatusOK - new Status OK with content
+// NewStatusOK - new Status OK with state
 func NewStatusOK() Status {
 	return newStatus(http.StatusOK)
+}
+
+// NewStatusWithContent - new Status with content
+func NewStatusWithContent(code int, content any, jsonContent bool) Status {
+	return newStatus(code).SetContent(content, jsonContent)
 }
 
 func newStatus(code int) *statusState {
