@@ -47,17 +47,3 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	return
 }
-
-// writeMinResponse - write a http.Response, with status, optional headers and optional status content
-/*
-func writeMinResponse[E runtime.ErrorHandler](w http.ResponseWriter, status runtime.Status, headers any) {
-	if status == nil {
-		status = runtime.StatusOK()
-	}
-	w.WriteHeader(status.Http())
-	SetHeaders(w, headers)
-	writeStatusContent[E](w, status, minWriteLoc)
-}
-
-
-*/
