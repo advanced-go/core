@@ -76,3 +76,32 @@ func Example_RequestId() {
 	//test: RequestId() -> 987-654
 
 }
+
+func Example_ContentLocation() {
+	ctx := NewContentLocationContext(context.Background(), nil)
+	uri, ok := ContentLocationFromContext(ctx)
+	fmt.Printf("test: ContentLocationFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	h := make(http.Header)
+	ctx = NewContentLocationContext(context.Background(), h)
+	uri, ok = ContentLocationFromContext(ctx)
+	fmt.Printf("test: ContentLocationFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	h.Add(ContentLocation, "https://www.google.com/search?q=golang")
+	ctx = NewContentLocationContext(context.Background(), h)
+	uri, ok = ContentLocationFromContext(ctx)
+	fmt.Printf("test: ContentLocationFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	h = make(http.Header)
+	h.Add(ContentLocation, "file://[cwd]/runtimetest/test.txt")
+	ctx = NewContentLocationContext(context.Background(), h)
+	uri, ok = ContentLocationFromContext(ctx)
+	fmt.Printf("test: ContentLocationFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	//Output:
+	//test: ContentLocationFromContext() ->  [ok:false] [uri:]
+	//test: ContentLocationFromContext() ->  [ok:false] [uri:]
+	//test: ContentLocationFromContext() ->  [ok:false] [uri:]
+	//test: ContentLocationFromContext() ->  [ok:true] [uri:file://[cwd]/runtimetest/test.txt]
+	
+}
