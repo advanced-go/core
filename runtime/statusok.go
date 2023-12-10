@@ -15,9 +15,10 @@ func StatusOK() Status {
 
 type statusEmpty struct{}
 
-func (s *statusEmpty) Code() int { return http.StatusOK }
-func (s *statusEmpty) OK() bool  { return true }
-func (s *statusEmpty) Http() int { return http.StatusOK }
+func (s *statusEmpty) Code() int      { return http.StatusOK }
+func (s *statusEmpty) OK() bool       { return true }
+func (s *statusEmpty) NotFound() bool { return false }
+func (s *statusEmpty) Http() int      { return http.StatusOK }
 
 func (s *statusEmpty) IsErrors() bool    { return false }
 func (s *statusEmpty) Errors() []error   { return nil }

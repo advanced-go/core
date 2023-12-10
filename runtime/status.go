@@ -57,6 +57,7 @@ func isErrors(errs []error) bool {
 type Status interface {
 	Code() int
 	OK() bool
+	NotFound() bool
 	Http() int
 
 	IsErrors() bool
@@ -131,8 +132,9 @@ func NewStatusError(code int, location string, errs ...error) Status {
 }
 
 // Code - functions
-func (s *statusState) Code() int { return s.code }
-func (s *statusState) OK() bool  { return s.code == http.StatusOK }
+func (s *statusState) Code() int      { return s.code }
+func (s *statusState) OK() bool       { return s.code == http.StatusOK }
+func (s *statusState) NotFound() bool { return s.code == http.StatusNotFound }
 
 // IsErrors - determine errors status
 func (s *statusState) IsErrors() bool  { return s.errs != nil && len(s.errs) > 0 }
