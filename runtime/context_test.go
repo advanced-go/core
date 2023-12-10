@@ -103,5 +103,5 @@ func Example_ContentLocation() {
 	//test: ContentLocationFromContext() ->  [ok:false] [uri:]
 	//test: ContentLocationFromContext() ->  [ok:false] [uri:]
 	//test: ContentLocationFromContext() ->  [ok:true] [uri:file://[cwd]/runtimetest/test.txt]
-	
+
 }
