@@ -163,3 +163,32 @@ func ContentLocationFromContext(ctx context.Context) (string, bool) {
 	}
 	return "", false
 }
+
+type statusT struct{}
+
+var (
+	statusKey = statusT{}
+)
+
+// NewStatusContext - creates a new Context with a Status
+func NewStatusContext(ctx context.Context, status Status) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return context.WithValue(ctx, statusKey, status)
+}
+
+// StatusFromContext - return a Status from a context2
+func StatusFromContext(ctx context.Context) Status {
+	if ctx == nil {
+		return nil
+	}
+	i := ctx.Value(statusKey)
+	if i == nil {
+		return nil
+	}
+	if status, ok := i.(Status); ok {
+		return status
+	}
+	return nil
+}
