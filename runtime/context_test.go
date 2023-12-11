@@ -147,5 +147,5 @@ func Example_FileUrl_Urn() {
 	//test: FileUrlFromContext() ->  [ok:false] [uri:]
 	//test: FileUrlFromContext() ->  [ok:false] [uri:]
 	//test: FileUrlFromContext() ->  [ok:true] [uri:urn:status:ok]
-	
+
 }
