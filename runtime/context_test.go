@@ -105,3 +105,25 @@ func Example_ContentLocation() {
 	//test: ContentLocationFromContext() ->  [ok:true] [uri:file://[cwd]/runtimetest/test.txt]
 
 }
+
+func Example_FileUrl() {
+	ctx := NewFileUrlContext(context.Background(), "")
+	uri, ok := FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	url := "https://www.google.com/search?q=golang"
+	ctx = NewFileUrlContext(context.Background(), url)
+	uri, ok = FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	url = "file://[cwd]/runtimetest/test.txt"
+	ctx = NewFileUrlContext(context.Background(), url)
+	uri, ok = FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	//Output:
+	//test: FileUrlFromContext() ->  [ok:false] [uri:]
+	//test: FileUrlFromContext() ->  [ok:false] [uri:]
+	//test: FileUrlFromContext() ->  [ok:true] [uri:file://[cwd]/runtimetest/test.txt]
+
+}

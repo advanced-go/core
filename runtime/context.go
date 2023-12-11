@@ -15,10 +15,12 @@ const (
 
 type requestContextKey struct{}
 type contentLocationT struct{}
+type fileUrlLocationT struct{}
 
 var (
 	requestKey         = requestContextKey{}
 	contentLocationKey = contentLocationT{}
+	fileUrlKey         = fileUrlLocationT{}
 )
 
 // NewRequestIdContext - creates a new Context with a request id
@@ -153,6 +155,31 @@ func ContentLocationFromContext(ctx context.Context) (string, bool) {
 		return "", false
 	}
 	i := ctx.Value(contentLocationKey)
+	if i == nil {
+		return "", false
+	}
+	if location, ok := i.(string); ok {
+		if strings.HasPrefix(location, FileScheme) {
+			return location, true
+		}
+	}
+	return "", false
+}
+
+// NewFileUrlContext - creates a new Context with a content location
+func NewFileUrlContext(ctx context.Context, url string) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return context.WithValue(ctx, fileUrlKey, url)
+}
+
+// FileUrlFromContext - return a content location from a context
+func FileUrlFromContext(ctx context.Context) (string, bool) {
+	if ctx == nil {
+		return "", false
+	}
+	i := ctx.Value(fileUrlKey)
 	if i == nil {
 		return "", false
 	}

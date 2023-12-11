@@ -15,7 +15,7 @@ func ExampleDo_InvalidArgument() {
 
 }
 
-func ExampleDo_GatewayTimeout() {
+func ExampleDo_GatewayTimeout_Status() {
 	status1 := runtime.NewStatus(http.StatusGatewayTimeout)
 	req, _ := http.NewRequestWithContext(NewStatusContext(nil, status1), http.MethodGet, "file://[cwd]/http2test/resource/http-503.txt", nil)
 	resp, status := Do(req)
