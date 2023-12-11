@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -160,3 +161,18 @@ func testFunc[T func() int](param T) T {
 
 
 */
+
+func ExampleStatus_Marshalling() {
+	status := NewStatusError(http.StatusGatewayTimeout, "ExampleStatus_Marshaling")
+	s := ""
+
+	buf, err := json.Marshal(status)
+	if len(buf) > 0 {
+		s = string(buf)
+	}
+	fmt.Printf("test: Marshal() -> [err:%v] [str:%v]\n", err, s)
+
+	//Output:
+	//test: Marshal() -> [err:<nil>] [str:{"code":200,"duration":-1,"handled":false,"request-id":"","location":["ExampleStatus_Marshaling"],"errs":null,"content":null,"header":null}]
+
+}

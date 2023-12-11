@@ -13,7 +13,7 @@ func Example_DefaultErrorFormat() {
 	s.AddLocation("github.com/advanced-go/location-2")
 	s.AddLocation("github.com/advanced-go/location-1")
 	if st, ok := any(s).(*statusState); ok {
-		st.errs = append(st.errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
+		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
 	str := defaultErrorFormatter(s)
 	fmt.Printf("test: defaultErrorFormatter() -> %v", str)

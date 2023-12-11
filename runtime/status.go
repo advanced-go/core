@@ -84,6 +84,18 @@ type Status interface {
 }
 
 type statusState struct {
+	SCode      int           `json:"code"` //type codes.Code uint32
+	SDuration  time.Duration `json:"duration"`
+	Handled    bool          `json:"handled"`
+	SRequestId string        `json:"request-id"`
+	SLocation  []string      `json:"location"`
+	Errs       []error       `json:"errs"`
+	SContent   any           `json:"content"`
+	Header     http.Header   `json:"header"`
+}
+
+/*
+type statusState struct {
 	code      int //type codes.Code uint32
 	duration  time.Duration
 	handled   bool
@@ -93,6 +105,7 @@ type statusState struct {
 	content   any
 	header    http.Header
 }
+*/
 
 // NewStatus - new Status from a code
 func NewStatus(code int) Status {
@@ -111,20 +124,20 @@ func NewStatusWithContent(code int, content any, jsonContent bool) Status {
 
 func newStatus(code int) *statusState {
 	s := new(statusState)
-	s.code = code
-	s.duration = NilDuration
+	s.SCode = code
+	s.SDuration = NilDuration
 	return s
 }
 
 // NewStatusError - new Status from a code, location, and optional errors
 func NewStatusError(code int, location string, errs ...error) Status {
 	s := newStatus(code)
-	s.location = append(s.location, location)
+	s.SLocation = append(s.SLocation, location)
 	if !isErrors(errs) {
-		s.code = http.StatusOK
+		s.SCode = http.StatusOK
 	} else {
 		if code == 0 {
-			s.code = http.StatusInternalServerError
+			s.SCode = http.StatusInternalServerError
 		}
 		s.addErrors(errs...)
 	}
@@ -132,28 +145,28 @@ func NewStatusError(code int, location string, errs ...error) Status {
 }
 
 // Code - functions
-func (s *statusState) Code() int      { return s.code }
-func (s *statusState) OK() bool       { return s.code == http.StatusOK }
-func (s *statusState) NotFound() bool { return s.code == http.StatusNotFound }
+func (s *statusState) Code() int      { return s.SCode }
+func (s *statusState) OK() bool       { return s.SCode == http.StatusOK }
+func (s *statusState) NotFound() bool { return s.SCode == http.StatusNotFound }
 
 // IsErrors - determine errors status
-func (s *statusState) IsErrors() bool  { return s.errs != nil && len(s.errs) > 0 }
-func (s *statusState) Errors() []error { return s.errs }
+func (s *statusState) IsErrors() bool  { return s.Errs != nil && len(s.Errs) > 0 }
+func (s *statusState) Errors() []error { return s.Errs }
 func (s *statusState) FirstError() error {
 	if s.IsErrors() {
-		return s.errs[0]
+		return s.Errs[0]
 	}
 	return nil
 }
 func errorsHandled(s Status) bool {
 	if st, ok := any(s).(*statusState); ok {
-		return st.handled
+		return st.Handled
 	}
 	return false
 }
 func setErrorsHandled(s Status) {
 	if st, ok := any(s).(*statusState); ok {
-		st.handled = true
+		st.Handled = true
 	}
 }
 func (s *statusState) addErrors(errs ...error) {
@@ -161,44 +174,44 @@ func (s *statusState) addErrors(errs ...error) {
 		if e == nil {
 			continue
 		}
-		s.errs = append(s.errs, e)
+		s.Errs = append(s.Errs, e)
 	}
 }
 
 // Duration - get duration
-func (s *statusState) Duration() time.Duration { return s.duration }
+func (s *statusState) Duration() time.Duration { return s.SDuration }
 func (s *statusState) SetDuration(duration time.Duration) Status {
-	s.duration = duration
+	s.SDuration = duration
 	return s
 }
 
 // RequestId  - request id
-func (s *statusState) RequestId() string { return s.requestId }
+func (s *statusState) RequestId() string { return s.SRequestId }
 func (s *statusState) SetRequestId(requestId any) Status {
-	if len(s.requestId) != 0 {
+	if len(s.SRequestId) != 0 {
 		return s
 	}
 	id := RequestId(requestId)
 	if len(id) > 0 {
-		s.requestId = id
+		s.SRequestId = id
 	}
 	return s
 }
 
 // Location - location
-func (s *statusState) Location() []string { return s.location }
+func (s *statusState) Location() []string { return s.SLocation }
 func (s *statusState) AddLocation(location string) Status {
 	if len(location) >= 0 {
-		s.location = append(s.location, location)
+		s.SLocation = append(s.SLocation, location)
 	}
 	return s
 }
 
 // IsContent - content
-func (s *statusState) IsContent() bool { return s.content != nil }
-func (s *statusState) Content() any    { return s.content }
+func (s *statusState) IsContent() bool { return s.SContent != nil }
+func (s *statusState) Content() any    { return s.SContent }
 func (s *statusState) ContentString() string {
-	switch ptr := s.content.(type) {
+	switch ptr := s.SContent.(type) {
 	case string:
 		return ptr
 	case []byte:
@@ -211,7 +224,7 @@ func (s *statusState) SetContent(content any, jsonContent bool) Status {
 	if content == nil {
 		return s
 	}
-	s.content = content
+	s.SContent = content
 	if jsonContent {
 		s.ContentHeader().Set(contentType, contentTypeJson)
 	}
@@ -220,19 +233,19 @@ func (s *statusState) SetContent(content any, jsonContent bool) Status {
 
 // ContentHeader - header map
 func (s *statusState) ContentHeader() http.Header {
-	if s.header == nil {
-		s.header = make(http.Header)
+	if s.Header == nil {
+		s.Header = make(http.Header)
 	}
-	return s.header
+	return s.Header
 }
 
 func (s *statusState) Http() int {
 	// Catch all valid http status codes
-	if s.code >= http.StatusContinue {
-		return s.code
+	if s.SCode >= http.StatusContinue {
+		return s.SCode
 	}
 	// map known
-	switch s.code {
+	switch s.SCode {
 	case StatusInvalidArgument:
 		return http.StatusInternalServerError
 	case StatusDeadlineExceeded:
@@ -244,14 +257,14 @@ func (s *statusState) Http() int {
 
 func (s *statusState) String() string {
 	if s.IsErrors() {
-		return fmt.Sprintf("%v %v", s.Description(), s.errs)
+		return fmt.Sprintf("%v %v", s.Description(), s.Errs)
 	} else {
 		return fmt.Sprintf("%v", s.Description())
 	}
 }
 
 func (s *statusState) Description() string {
-	switch s.code {
+	switch s.SCode {
 	// Mapped
 	case StatusInvalidContent:
 		return "Invalid Content"
@@ -319,5 +332,5 @@ func (s *statusState) Description() string {
 				return "Unrecoverable data loss or corruption"
 		*/
 	}
-	return fmt.Sprintf("error: code not mapped: %v", s.code)
+	return fmt.Sprintf("error: code not mapped: %v", s.SCode)
 }
