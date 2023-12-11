@@ -6,7 +6,6 @@ import (
 	"github.com/advanced-go/core/http2/io"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"net/url"
 	"time"
 )
 
@@ -40,18 +39,17 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	}
 	var err error
 
-	if runtime.IsDebugEnvironment() {
-		status = StatusFromContext(req.Context())
-		if status != nil {
-			resp = new(http.Response)
-			resp.StatusCode = status.Http()
-			resp.Status = status.Description()
-			return
+	if req.URL.Scheme == FileScheme {
+		resp1, err1 := io.ReadResponse(req.URL)
+		if err1 != nil {
+			if resp1 == nil {
+				resp1 = new(http.Response)
+				resp1.StatusCode = http.StatusInternalServerError
+				resp1.Status = "internal server error"
+			}
+			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err1)
 		}
-		resp, status = readFromFile(req)
-		if resp != nil || !status.OK() {
-			return
-		}
+		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
 	resp, err = Client.Do(req)
 	if err != nil {
@@ -76,28 +74,32 @@ func DoT[T any](req *http.Request) (resp *http.Response, t T, status runtime.Sta
 	return
 }
 
+/*
 func readFromFile(req *http.Request) (*http.Response, runtime.Status) {
 	var uri *url.URL
 	var err error
 
-	if req.URL.Scheme == FileScheme {
-		uri = req.URL
-	} else {
-		location := req.Header.Get(ContentLocation)
-		if len(location) == 0 {
+
+		if req.URL.Scheme == FileScheme {
+			uri = req.URL
+		} else {
+			location := req.Header.Get(ContentLocation)
+			if len(location) == 0 {
+				return nil, runtime.StatusOK()
+			}
+			uri, err = url.Parse(location)
+			if err != nil {
+				return nil, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err)
+			}
+		}
+		if uri == nil {
 			return nil, runtime.StatusOK()
 		}
-		uri, err = url.Parse(location)
-		if err != nil {
-			return nil, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err)
-		}
-	}
-	if uri == nil {
-		return nil, runtime.StatusOK()
-	}
-	resp, err1 := io.ReadResponse(uri)
+	resp, err1 := io.ReadResponse(req.URL)
 	if err1 != nil {
 		return resp, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err1)
 	}
 	return resp, runtime.NewStatus(resp.StatusCode)
 }
+
+*/
