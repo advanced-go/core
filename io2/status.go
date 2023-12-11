@@ -18,16 +18,20 @@ type statusState2 struct {
 	Err      string `json:"err"`
 }
 
-func ReadStatus(u *url.URL) runtime.Status {
-	if u == nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, errors.New("URL is nil"))
+func ReadStatus(uri string) runtime.Status {
+	if len(uri) == 0 {
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, errors.New("uir is empty"))
 	}
-	if u.String() == StatusOK {
+	if uri == StatusOK {
 		return runtime.StatusOK()
 	}
-	buf, err := ReadFile(u)
+	u, err := url.Parse(uri)
 	if err != nil {
-		return runtime.NewStatusError(runtime.StatusIOError, statusLoc, err)
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, err)
+	}
+	buf, err1 := ReadFile(u)
+	if err1 != nil {
+		return runtime.NewStatusError(runtime.StatusIOError, statusLoc, err1)
 	}
 	var status statusState2
 	err = json.Unmarshal(buf, &status)

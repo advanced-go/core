@@ -3,7 +3,6 @@ package io2
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 )
 
 func ExampleReadStatus_Marshal() {
@@ -25,7 +24,7 @@ func ExampleReadStatus_Marshal() {
 }
 
 func ExampleReadStatus_Unarshal() {
-	uri, _ := url.Parse("file://[cwd]/io2test/resource/status-504.json")
+	uri := "file://[cwd]/io2test/resource/status-504.json"
 
 	status := ReadStatus(uri)
 	fmt.Printf("test: Unmarshal() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.Errors())
@@ -36,7 +35,7 @@ func ExampleReadStatus_Unarshal() {
 }
 
 func ExampleReadStatus_OK() {
-	uri, _ := url.Parse(StatusOK)
+	uri := StatusOK
 
 	status := ReadStatus(uri)
 	fmt.Printf("test: Unmarshal() -> [code:%v]\n", status.Code())

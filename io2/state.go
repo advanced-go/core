@@ -11,13 +11,17 @@ const (
 	readStateLoc = PkgPath + ":ReadState"
 )
 
-func ReadState[T any](u *url.URL) (t T, status runtime.Status) {
-	if u == nil {
-		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("URL is nil"))
+func ReadState[T any](uri string) (t T, status runtime.Status) {
+	if len(uri) == 0 {
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("Uir is empty"))
 	}
-	buf, err := ReadFile(u)
+	u, err := url.Parse(uri)
 	if err != nil {
-		return t, runtime.NewStatusError(runtime.StatusIOError, readStateLoc, err)
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, err)
+	}
+	buf, err1 := ReadFile(u)
+	if err != nil {
+		return t, runtime.NewStatusError(runtime.StatusIOError, readStateLoc, err1)
 	}
 	err = json.Unmarshal(buf, &t)
 	if err != nil {

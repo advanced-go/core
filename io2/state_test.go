@@ -2,7 +2,6 @@ package io2
 
 import (
 	"fmt"
-	"net/url"
 )
 
 type address struct {
@@ -12,11 +11,11 @@ type address struct {
 }
 
 func ExampleReadState() {
-	u, _ := url.Parse("file://[cwd]/io2test/resource/address.json")
-	t, status := ReadState[address](u)
+	uri := "file://[cwd]/io2test/resource/address.json"
+	t, status := ReadState[address](uri)
 	fmt.Printf("test: ReadState() -> [address:%v] [status:%v]\n", t, status)
 
 	//Output:
 	//test: ReadState() -> [address:{frisco texas 75034}] [status:OK]
-	
+
 }
