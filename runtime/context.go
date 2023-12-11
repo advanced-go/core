@@ -11,6 +11,7 @@ const (
 	XRequestId      = "x-request-id"
 	ContentLocation = "Content-Location"
 	FileScheme      = "file://"
+	UrnScheme       = "urn:"
 )
 
 type requestContextKey struct{}
@@ -183,9 +184,9 @@ func FileUrlFromContext(ctx context.Context) (string, bool) {
 	if i == nil {
 		return "", false
 	}
-	if location, ok := i.(string); ok {
-		if strings.HasPrefix(location, FileScheme) {
-			return location, true
+	if uri, ok := i.(string); ok {
+		if strings.HasPrefix(uri, FileScheme) || strings.HasPrefix(uri, UrnScheme) {
+			return uri, true
 		}
 	}
 	return "", false

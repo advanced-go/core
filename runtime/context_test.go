@@ -106,7 +106,7 @@ func Example_ContentLocation() {
 
 }
 
-func Example_FileUrl() {
+func Example_FileUrl_File() {
 	ctx := NewFileUrlContext(context.Background(), "")
 	uri, ok := FileUrlFromContext(ctx)
 	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
@@ -126,4 +126,26 @@ func Example_FileUrl() {
 	//test: FileUrlFromContext() ->  [ok:false] [uri:]
 	//test: FileUrlFromContext() ->  [ok:true] [uri:file://[cwd]/runtimetest/test.txt]
 
+}
+
+func Example_FileUrl_Urn() {
+	ctx := NewFileUrlContext(context.Background(), "")
+	uri, ok := FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	url := "https://www.google.com/search?q=golang"
+	ctx = NewFileUrlContext(context.Background(), url)
+	uri, ok = FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	url = "urn:status:ok"
+	ctx = NewFileUrlContext(context.Background(), url)
+	uri, ok = FileUrlFromContext(ctx)
+	fmt.Printf("test: FileUrlFromContext() ->  [ok:%v] [uri:%v]\n", ok, uri)
+
+	//Output:
+	//test: FileUrlFromContext() ->  [ok:false] [uri:]
+	//test: FileUrlFromContext() ->  [ok:false] [uri:]
+	//test: FileUrlFromContext() ->  [ok:true] [uri:urn:status:ok]
+	
 }
