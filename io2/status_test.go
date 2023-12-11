@@ -34,3 +34,14 @@ func ExampleReadStatus_Unarshal() {
 	//test: Unmarshal() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]
 
 }
+
+func ExampleReadStatus_OK() {
+	uri, _ := url.Parse(StatusOK)
+
+	status := ReadStatus(uri)
+	fmt.Printf("test: Unmarshal() -> [code:%v]\n", status.Code())
+
+	//Output:
+	//test: Unmarshal() -> [code:200]
+
+}

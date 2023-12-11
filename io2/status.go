@@ -9,6 +9,7 @@ import (
 
 const (
 	statusLoc = PkgPath + ":ReadStatus"
+	StatusOK  = "urn:status:ok"
 )
 
 type statusState2 struct {
@@ -18,6 +19,12 @@ type statusState2 struct {
 }
 
 func ReadStatus(u *url.URL) runtime.Status {
+	if u == nil {
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, errors.New("URL is nil"))
+	}
+	if u.String() == StatusOK {
+		return runtime.StatusOK()
+	}
 	buf, err := ReadFile(u)
 	if err != nil {
 		return runtime.NewStatusError(runtime.StatusIOError, statusLoc, err)

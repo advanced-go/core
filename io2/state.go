@@ -1,0 +1,27 @@
+package io2
+
+import (
+	"encoding/json"
+	"errors"
+	"github.com/advanced-go/core/runtime"
+	"net/url"
+)
+
+const (
+	readStateLoc = PkgPath + ":ReadState"
+)
+
+func ReadState[T any](u *url.URL) (t T, status runtime.Status) {
+	if u == nil {
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("URL is nil"))
+	}
+	buf, err := ReadFile(u)
+	if err != nil {
+		return t, runtime.NewStatusError(runtime.StatusIOError, readStateLoc, err)
+	}
+	err = json.Unmarshal(buf, &t)
+	if err != nil {
+		return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, readStateLoc, err)
+	}
+	return t, runtime.StatusOK()
+}
