@@ -172,6 +172,9 @@ func NewFileUrlContext(ctx context.Context, url string) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	if len(url) == 0 {
+		return ctx
+	}
 	return context.WithValue(ctx, fileUrlKey, url)
 }
 
