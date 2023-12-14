@@ -78,6 +78,6 @@ func OverrideLookup(t any) func(string) string {
 		}
 	}
 	return func(_ string) string {
-		return fmt.Sprintf("error: invalid Lookup type: %v", reflect.TypeOf(t))
+		return fmt.Sprintf("error: invalid override Lookup type: %v", reflect.TypeOf(t))
 	}
 }
