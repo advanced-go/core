@@ -56,7 +56,7 @@ func funcFromType(t any) func(string) string {
 	return func(k string) string { return k }
 }
 
-func LookupFromType(t any) func(string) string {
+func OverrideLookup(t any) func(string) string {
 	if t != nil {
 		switch ptr := t.(type) {
 		case string:

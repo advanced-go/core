@@ -84,11 +84,11 @@ func ExampleLookup_Func() {
 }
 
 func Example_LookupFromType() {
-	l := LookupFromType(nil)
+	l := OverrideLookup(nil)
 
-	fmt.Printf("test: LookupFromType(nil) -> [type:%v] [value:%v]\n", reflect.TypeOf(l), l(""))
+	fmt.Printf("test: OverrideLookup(nil) -> [type:%v] [value:%v]\n", reflect.TypeOf(l), l(""))
 
 	//Output:
-	//test: LookupFromType(nil) -> [type:func(string) string] [value:error: invalid Lookup type: <nil>]
+	//test: OverrideLookup(nil) -> [type:func(string) string] [value:error: invalid Lookup type: <nil>]
 
 }
