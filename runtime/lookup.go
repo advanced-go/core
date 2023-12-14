@@ -71,7 +71,7 @@ func LookupFromType(t any) func(string) string {
 				if len(v) > 0 {
 					return v
 				}
-				return k
+				return ""
 			}
 		case func(string) string:
 			return ptr
