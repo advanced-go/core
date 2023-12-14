@@ -57,22 +57,25 @@ func funcFromType(t any) func(string) string {
 }
 
 func LookupFromType(t any) func(string) string {
-	if t == nil {
-		return func(k string) string { return k }
-	}
-	switch ptr := t.(type) {
-	case string:
-		return func(_ string) string { return ptr }
-	case map[string]string:
-		return func(k string) string {
-			v := ptr[k]
-			if len(v) > 0 {
-				return v
+	if t != nil {
+		switch ptr := t.(type) {
+		case string:
+			if len(ptr) == 0 {
+				return func(k string) string { return k }
+			} else {
+				return func(_ string) string { return ptr }
 			}
-			return k
+		case map[string]string:
+			return func(k string) string {
+				v := ptr[k]
+				if len(v) > 0 {
+					return v
+				}
+				return k
+			}
+		case func(string) string:
+			return ptr
 		}
-	case func(string) string:
-		return ptr
 	}
 	return func(_ string) string {
 		return fmt.Sprintf("error: invalid Lookup type: %v", reflect.TypeOf(t))
