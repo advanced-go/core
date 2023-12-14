@@ -12,7 +12,7 @@ var (
 )
 
 func setDefaultLookup(t any) {
-	newDefault := lookupFromType(t)
+	newDefault := LookupFromType(t)
 	if newDefault == nil {
 		defaultLookup = func(key string) string {
 			return fmt.Sprintf("error: invalid default Lookup type: %v", reflect.TypeOf(t))
@@ -27,7 +27,7 @@ func setOverrideLookup(t any) {
 		overrideLookup = nil
 		return
 	}
-	overrideLookup = lookupFromType(t)
+	overrideLookup = LookupFromType(t)
 	if overrideLookup == nil {
 		overrideLookup = func(key string) string {
 			return fmt.Sprintf("error: invalid override Lookup type: %v", reflect.TypeOf(t))
@@ -45,7 +45,7 @@ func lookup(key string) string {
 	return defaultLookup(key)
 }
 
-func lookupFromType(t any) func(string) string {
+func LookupFromType(t any) func(string) string {
 	switch ptr := t.(type) {
 	case string:
 		return func(k string) string { return ptr }
