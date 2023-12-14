@@ -1,13 +1,12 @@
 package http2
 
 import (
-	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 
 func init() {
-	fmt.Println("a.go -> init()")
+	//fmt.Println("a.go -> init()")
 }
 
 func example() {

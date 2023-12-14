@@ -3,7 +3,6 @@ package http2
 import (
 	"crypto/tls"
 	"errors"
-	"fmt"
 	"github.com/advanced-go/core/http2/io"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
@@ -20,7 +19,7 @@ var (
 )
 
 func init() {
-	fmt.Println("do.go -> init()")
+	//fmt.Println("do.go -> init()")
 	t, ok := http.DefaultTransport.(*http.Transport)
 	if ok {
 		// Used clone instead of assignment due to presence of sync.Mutex fields
