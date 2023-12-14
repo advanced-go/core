@@ -19,7 +19,6 @@ var (
 )
 
 func init() {
-	//fmt.Println("do.go -> init()")
 	t, ok := http.DefaultTransport.(*http.Transport)
 	if ok {
 		// Used clone instead of assignment due to presence of sync.Mutex fields
