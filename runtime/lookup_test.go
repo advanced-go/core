@@ -1,6 +1,9 @@
 package runtime
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 func ExampleLookup_Invalid() {
 	value := "constant"
@@ -77,5 +80,15 @@ func ExampleLookup_Func() {
 	//Output:
 	//test: LookupFromContext() -> [value:value-0] [result:value-1]
 	//test: LookupFromContext() -> [value:not-in-lookup] [result:not-in-lookup]
+
+}
+
+func Example_LookupFromType() {
+	l := LookupFromType(nil)
+
+	fmt.Printf("test: LookupFromType(nil) -> [type:%v] [value:%v]\n", reflect.TypeOf(l), l(""))
+
+	//Output:
+	//test: LookupFromType(nil) -> [type:func(string) string] [value:error: invalid Lookup type: <nil>]
 
 }
