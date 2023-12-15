@@ -35,7 +35,7 @@ func ExampleReadStatus_Unarshal() {
 }
 
 func ExampleReadStatus_OK() {
-	uri := StatusOK
+	uri := StatusOKUri
 
 	status := ReadStatus(uri)
 	fmt.Printf("test: Unmarshal() -> [code:%v]\n", status.Code())

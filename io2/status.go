@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	statusLoc = PkgPath + ":ReadStatus"
-	StatusOK  = "urn:status:ok"
+	statusLoc   = PkgPath + ":ReadStatus"
+	StatusOKUri = "urn:status:ok"
 )
 
 type statusState2 struct {
@@ -19,10 +19,7 @@ type statusState2 struct {
 }
 
 func ReadStatus(uri string) runtime.Status {
-	if len(uri) == 0 {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, errors.New("uir is empty"))
-	}
-	if uri == StatusOK {
+	if len(uri) == 0 || uri == StatusOKUri {
 		return runtime.StatusOK()
 	}
 	u, err := url.Parse(uri)
