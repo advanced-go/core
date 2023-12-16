@@ -33,7 +33,7 @@ func Example_LogAccess() {
 	start := time.Now().UTC()
 	r, _ := http.NewRequest("PUT", "/github.com/advanced-go/example-domain/activity:entry", nil)
 	r.Host = "localhost:8080"
-	s := fmtLog(EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: 200}, "route", -1, "")
+	s := defaultFormatter(Origin{Region: "us", Zone: "zone", App: "ai-agent"}, EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: 200}, "route", "primary", -1, "")
 
 	fmt.Printf("test: fmtlog() -> %v\n", s)
 

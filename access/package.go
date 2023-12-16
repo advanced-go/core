@@ -1,7 +1,6 @@
 package access
 
 import (
-	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"github.com/google/uuid"
 	"net/http"
@@ -16,33 +15,53 @@ const (
 	IngressTraffic  = "ingress"
 )
 
-// LogHandler - access logging handler
-type LogHandler func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string)
+type Origin struct {
+	Region     string
+	Zone       string
+	SubZone    string
+	App        string
+	InstanceId string
+}
+
+// Formatter - log formatting
+type Formatter func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
+
+// SetFormatter - override log formatting
+func SetFormatter(fn Formatter) {
+	if fn != nil {
+		formatter = fn
+	}
+}
+
+// Logger - log function
+type Logger func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
+
+// SetLogger - override logging
+func SetLogger(fn Logger) {
+	if fn != nil {
+		logger = fn
+	}
+}
+
+//func GetLogger() Logger {
+//	return logger
+//}
 
 var (
-	handler         LogHandler
 	internalLogging = false
+	formatter       = defaultFormatter
+	logger          = defaultLogger
 )
 
-func GetLogHandler() LogHandler {
-	return handler
-}
-
-func SetLogHandler(fn LogHandler) {
-	if fn != nil {
-		handler = fn
+func DisableTestLogger() {
+	if runtime.IsDebugEnvironment() {
+		logger = nil
 	}
 }
 
-func DisableTestLogHandler() {
+func EnableTestLogger() {
 	if runtime.IsDebugEnvironment() {
-		handler = nil
-	}
-}
-
-func EnableTestLogHandler() {
-	if runtime.IsDebugEnvironment() {
-		SetLogHandler(defaultLogFn)
+		SetLogger(defaultLogger)
 	}
 }
 
@@ -54,45 +73,22 @@ func EnableInternalLogging() {
 	internalLogging = true
 }
 
-var defaultLogFn = func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) {
-	s := fmtLog(traffic, start, duration, req, resp, routeName, threshold, thresholdFlags)
-	fmt.Printf("%v\n", s)
-}
-
-/*
-// LogEgress - log egress traffic
-func LogEgress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
-	Log(EgressTraffic, start, duration, req, resp, threshold, thresholdFlags)
-}
-
-// LogIngress - log ingress traffic
-func LogIngress(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
-	Log(IngressTraffic, start, duration, req, resp, threshold, thresholdFlags)
-}
-
-// LogInternal - log internal package calls
-func LogInternal(start time.Time, duration time.Duration, req *http.Request, resp *http.Response, threshold int, thresholdFlags string) {
-	Log(InternalTraffic, start, duration, req, resp, threshold, thresholdFlags)
-}
-
-*/
-
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) {
-	if handler == nil {
+func Log(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+	if logger == nil {
 		return
 	}
 	if traffic == InternalTraffic && !internalLogging {
 		return
 	}
-	handler(traffic, start, duration, req, resp, routeName, threshold, thresholdFlags)
+	logger(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, routeName string, threshold int, thresholdFlags string, statusCode func() int) func() {
+func LogDeferred(o Origin, traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, threshold, thresholdFlags)
+		Log(o, traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, routeTo, threshold, thresholdFlags)
 	}
 }
 

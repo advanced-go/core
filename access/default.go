@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	strings2 "github.com/advanced-go/core/strings"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, threshold int, thresholdFlags string) string {
+func defaultFormatter(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	if req == nil {
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
@@ -38,23 +39,25 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 	s := fmt.Sprintf("{ \"traffic\":\"%v\", "+
 		"\"start\":%v, "+
 		"\"duration\":%v, "+
-		"\"route\":%v, "+
-		"\"relates-to\":%v, "+
 		"\"request-id\":%v, "+
+		"\"relates-to\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
 		"\"uri\":%v, "+
 		"\"host\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
+		"\"route-name\":%v, "+
+		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
 		"\"threshold-flags\":%v }",
 		traffic,
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
-		fmtstr(routeName),
-		fmtstr(req.Header.Get("RelatesTo")),
+
 		fmtstr(req.Header.Get(runtime.XRequestId)),
+		fmtstr(req.Header.Get(runtime.XRelatesTo)),
+
 		fmtstr(req.Proto),
 		fmtstr(req.Method),
 		fmtstr(url),  // fmtstr(req.URL.String()),
@@ -62,7 +65,8 @@ func fmtLog(traffic string, start time.Time, duration time.Duration, req *http.R
 		fmtstr(path),
 
 		resp.StatusCode,
-
+		fmtstr(routeName),
+		fmtstr(routeTo),
 		threshold,
 		fmtstr(thresholdFlags),
 	)
@@ -75,4 +79,9 @@ func fmtstr(value string) string {
 		return "null"
 	}
 	return "\"" + value + "\""
+}
+
+var defaultLogger = func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+	log.Default().Printf("%v\n", s)
 }

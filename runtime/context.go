@@ -8,6 +8,7 @@ import (
 
 const (
 	XRequestId = "x-request-id"
+	XRelatesTo = "x-relates-to"
 )
 
 type requestContextKey struct{}

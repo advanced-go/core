@@ -27,8 +27,6 @@ func SetFormatter(fn Formatter) {
 	}
 }
 
-var formatter Formatter = defaultFormatter
-
 // Logger - log function
 type Logger func(s Status)
 
@@ -40,8 +38,9 @@ func SetLogger(fn Logger) {
 }
 
 var (
+	formatter            = defaultFormatter
+	logger               = defaultLogger
 	defaultLogger Logger = func(s Status) { log.Default().Println(formatter(s)) }
-	logger        Logger = defaultLogger
 )
 
 // ErrorHandler - template parameter error handler interface
