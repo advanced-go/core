@@ -8,7 +8,7 @@ import (
 
 // FmtTimestamp - format time.Time into the following string format : 2023-04-14 14:14:45.522460
 func FmtTimestamp(t time.Time) string {
-	buf := []byte{}
+	var buf []byte
 	t = t.UTC()
 	year, month, day := t.Date()
 	itoa(&buf, year, 4)

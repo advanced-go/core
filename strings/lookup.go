@@ -35,7 +35,7 @@ func setOverrideLookup(t any) {
 	}
 }
 
-func lookup(key string) string {
+func Lookup(key string) string {
 	if overrideLookup != nil {
 		val := overrideLookup(key)
 		if len(val) > 0 {

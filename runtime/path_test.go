@@ -6,10 +6,8 @@ import (
 )
 
 func Example_PackageUri() {
-	pkgUri2 := reflect.TypeOf(any(pkg{})).PkgPath()
-	//pkgPath2 := PathFromUri2(pkgUri2)
-
-	fmt.Printf("test: PkgPath = \"%v\"\n", pkgUri2)
+	pkgPath := reflect.TypeOf(any(pkg{})).PkgPath()
+	fmt.Printf("test: PkgPath = \"%v\"\n", pkgPath)
 	//fmt.Printf("test: PkgPath = \"%v\"\n", pkgPath2)
 
 	//Output:

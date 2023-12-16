@@ -17,17 +17,32 @@ const (
 	ErrorsName     = "errors"
 )
 
-// FormatOutput - output formatting type
-type FormatOutput func(s Status) string
+// Formatter - output formatting type
+type Formatter func(s Status) string
 
-// SetFormatOutput - optional override of output formatting
-func SetFormatOutput(fn FormatOutput) {
+// SetFormatter - optional override of output formatting
+func SetFormatter(fn Formatter) {
 	if fn != nil {
 		formatter = fn
 	}
 }
 
-var formatter FormatOutput = defaultErrorFormatter
+var formatter Formatter = defaultFormatter
+
+// Logger - log function
+type Logger func(s Status)
+
+// SetLogger - optional override of logging
+func SetLogger(fn Logger) {
+	if fn != nil {
+		logger = fn
+	}
+}
+
+var (
+	defaultLogger Logger = func(s Status) { log.Default().Println(formatter(s)) }
+	logger        Logger = defaultLogger
+)
 
 // ErrorHandler - template parameter error handler interface
 type ErrorHandler interface {
@@ -54,7 +69,7 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 	s.SetRequestId(requestId)
 	s.AddLocation(location)
 	if s.IsErrors() {
-		log.Println(formatter(s))
+		fmt.Printf("%v", formatter(s))
 		setErrorsHandled(s)
 	}
 	return s
@@ -73,7 +88,7 @@ func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	s.SetRequestId(requestId)
 	s.AddLocation(callerLocation)
 	if s.IsErrors() && !errorsHandled(s) {
-		log.Println(formatter(s))
+		logger(s) //log.Println(formatter(s))
 		setErrorsHandled(s)
 	}
 	return s
@@ -91,7 +106,7 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 }
 */
 
-func defaultErrorFormatter(s Status) string {
+func defaultFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		strings.JsonMarkup(StatusCodeName, str, false),

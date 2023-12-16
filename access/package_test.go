@@ -9,11 +9,11 @@ import (
 )
 
 func Example_PackageUri() {
-	pkgUri2 := reflect.TypeOf(any(pkg{})).PkgPath()
-	fmt.Printf("test: PkgUri  = \"%v\"\n", pkgUri2)
+	pkgPath := reflect.TypeOf(any(pkg{})).PkgPath()
+	fmt.Printf("test: PkgPath  = \"%v\"\n", pkgPath)
 
 	//Output:
-	//test: PkgUri  = "github.com/advanced-go/core/access"
+	//test: PkgPath  = "github.com/advanced-go/core/access"
 
 }
 

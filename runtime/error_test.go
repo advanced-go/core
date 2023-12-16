@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Example_DefaultErrorFormat() {
+func Example_DefaultFormat() {
 	s := NewStatus(http.StatusNotFound)
 	s.SetRequestId("1234-5678")
 	// Adding in reverse to mirror call stack
@@ -15,16 +15,16 @@ func Example_DefaultErrorFormat() {
 	if st, ok := any(s).(*statusState); ok {
 		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
-	str := defaultErrorFormatter(s)
-	fmt.Printf("test: defaultErrorFormatter() -> %v", str)
+	str := defaultFormatter(s)
+	fmt.Printf("test: defaultFormatter() -> %v", str)
 
 	//Output:
-	//test: defaultErrorFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: defaultFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 
-func ExampleDebugHandler_Handle() {
-	location := "/DebugHandler"
+func ExampleOutputHandler_Handle() {
+	location := "/OutputHandler"
 	origin := "github.com/module/package/calling-fn"
 	ctx := NewRequestIdContext(nil, "123-request-id")
 	err := errors.New("test error")
@@ -47,9 +47,10 @@ func ExampleDebugHandler_Handle() {
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
+	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "trace" : [ "/OutputHandler","/OutputHandler" ], "errors" : [ "test error" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
-
+	
 }
 
 func ExampleLogHandler_Handle() {

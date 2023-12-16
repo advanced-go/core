@@ -113,13 +113,18 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 	}
 }
 
-func AddRequestId(req *http.Request) {
-	if req != nil {
-		req.Header = AddRequestIdHeader(req.Header)
+func AddRequestId(t any) {
+	if req, ok := t.(*http.Request); ok {
+		req.Header = addRequestIdHeader(req.Header)
+		return
+	}
+	if h, ok := t.(http.Header); ok {
+		addRequestIdHeader(h)
+		return
 	}
 }
 
-func AddRequestIdHeader(h http.Header) http.Header {
+func addRequestIdHeader(h http.Header) http.Header {
 	if h == nil {
 		h = make(http.Header)
 	}
@@ -131,13 +136,3 @@ func AddRequestIdHeader(h http.Header) http.Header {
 	}
 	return h
 }
-
-/*
-func ValidateKVHeaders(kv ...string) error {
-	if (len(kv) & 1) == 1 {
-		return errors.New("invalid number of kv items: number is odd, missing a value")
-	}
-	return nil
-}
-
-*/

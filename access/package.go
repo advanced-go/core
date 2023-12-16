@@ -116,13 +116,6 @@ func NewRequest(h http.Header, method, uri string) *http.Request {
 	if err != nil {
 		req, err = http.NewRequest(method, "http://invalid-uri.com", nil)
 	}
-	/*
-		requestId := runtime.RequestId(h)
-		if len(requestId) > 0 {
-			req.Header.Add(runtime.XRequestId, requestId)
-		}
-
-	*/
 	req.Header = h
 	return req
 }
