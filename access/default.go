@@ -36,7 +36,13 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		path = path[i+1:]
 	}
 	d := int(duration / time.Duration(1e6))
-	s := fmt.Sprintf("{ \"traffic\":\"%v\", "+
+	s := fmt.Sprintf("{"+
+		"\"region\":%v, "+
+		"\"zone\":%v, "+
+		"\"sub-zone\":%v, "+
+		"\"app\":%v, "+
+		"\"instance-id\":%v, "+
+		" \"traffic\":\"%v\", "+
 		"\"start\":%v, "+
 		"\"duration\":%v, "+
 		"\"request-id\":%v, "+
@@ -51,20 +57,26 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
 		"\"threshold-flags\":%v }",
+		fmtstr(o.Region),
+		fmtstr(o.Zone),
+		fmtstr(o.SubZone),
+		fmtstr(o.App),
+		fmtstr(o.InstanceId),
+
 		traffic,
 		strings2.FmtTimestamp(start),
 		strconv.Itoa(d),
 
 		fmtstr(req.Header.Get(runtime.XRequestId)),
 		fmtstr(req.Header.Get(runtime.XRelatesTo)),
-
 		fmtstr(req.Proto),
 		fmtstr(req.Method),
-		fmtstr(url),  // fmtstr(req.URL.String()),
-		fmtstr(host), // fmtstr(req.URL.Host),
+		fmtstr(url),
+		fmtstr(host),
 		fmtstr(path),
 
 		resp.StatusCode,
+
 		fmtstr(routeName),
 		fmtstr(routeTo),
 		threshold,

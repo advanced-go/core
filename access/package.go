@@ -15,12 +15,18 @@ const (
 	IngressTraffic  = "ingress"
 )
 
+// Origin - log source location
 type Origin struct {
 	Region     string
 	Zone       string
 	SubZone    string
 	App        string
 	InstanceId string
+}
+
+// SetOrigin - initialize the origin
+func SetOrigin(o Origin) {
+	origin = o
 }
 
 // Formatter - log formatting
@@ -49,8 +55,10 @@ func SetLogger(fn Logger) {
 
 var (
 	internalLogging = false
-	formatter       = defaultFormatter
-	logger          = defaultLogger
+
+	origin    = Origin{}
+	formatter = defaultFormatter
+	logger    = defaultLogger
 )
 
 func DisableTestLogger() {
@@ -74,21 +82,21 @@ func EnableInternalLogging() {
 }
 
 // Log - access logging
-func Log(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
 	if logger == nil {
 		return
 	}
 	if traffic == InternalTraffic && !internalLogging {
 		return
 	}
-	logger(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(o Origin, traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
+func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(o, traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, routeTo, threshold, thresholdFlags)
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, routeTo, threshold, thresholdFlags)
 	}
 }
 

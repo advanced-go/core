@@ -9,13 +9,14 @@ import (
 
 func Example_Formatter() {
 	start := time.Now().UTC()
+	SetOrigin(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
 
 	req, err := http.NewRequest("GET", "https://www.google.com/search?q=test", nil)
 	req.Header.Add(runtime.XRequestId, "123-456")
 	req.Header.Add(runtime.XRelatesTo, "your-id")
 	fmt.Printf("test: NewRequest() -> [err:%v] %v\n", err, req)
 	resp := http.Response{StatusCode: http.StatusOK}
-	s := defaultFormatter(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"}, EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, "")
+	s := defaultFormatter(origin, EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, "")
 	fmt.Printf("test: formatter() -> %v\n", s)
 
 	//Output:
@@ -30,7 +31,7 @@ func Example_Formatter_Urn() {
 	req.Header.Add(runtime.XRelatesTo, "fmtlog testing")
 	fmt.Printf("test: NewRequest() -> [err:%v] %v\n", err, req)
 	resp := http.Response{StatusCode: http.StatusOK}
-	s := defaultFormatter(Origin{}, InternalTraffic, start, time.Since(start), req, &resp, "route", "primary", -1, "")
+	s := defaultFormatter(origin, InternalTraffic, start, time.Since(start), req, &resp, "route", "primary", -1, "")
 	fmt.Printf("test: fmtLog() -> %v\n", s)
 
 	//Output:
