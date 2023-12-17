@@ -90,16 +90,16 @@ func GetOrCreateRequestId(t any) string {
 
 func AddRequestId(t any) http.Header {
 	if req, ok := t.(*http.Request); ok {
-		req.Header = addRequestIdHeader(req.Header)
+		req.Header = addRequestId(req.Header)
 		return req.Header
 	}
 	if h, ok := t.(http.Header); ok {
-		return addRequestIdHeader(h)
+		return addRequestId(h)
 	}
 	return make(http.Header)
 }
 
-func addRequestIdHeader(h http.Header) http.Header {
+func addRequestId(h http.Header) http.Header {
 	if h == nil {
 		h = make(http.Header)
 	}
