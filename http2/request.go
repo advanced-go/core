@@ -49,17 +49,11 @@ func createValue(v []string) string {
 	return value
 }
 
-func UpdateHeaders(req *http.Request) *http.Request {
+func UpdateHeaders_OLD(req *http.Request) *http.Request {
 	if req == nil {
 		return nil
 	}
-	AddRequestId(req)
-	//if log.AccessFromContext(req.Context()) != nil {
-	//	return req
-	//}
-	//	if fn := log.Access(); fn != nil {
-	//		return req.Clone(log.NewAccessContext(req.Context()))
-	//	}
+	runtime.AddRequestId(req)
 	return req
 }
 

@@ -87,3 +87,27 @@ func GetOrCreateRequestId(t any) string {
 	}
 	return requestId
 }
+
+func AddRequestId(t any) http.Header {
+	if req, ok := t.(*http.Request); ok {
+		req.Header = addRequestIdHeader(req.Header)
+		return req.Header
+	}
+	if h, ok := t.(http.Header); ok {
+		return addRequestIdHeader(h)
+	}
+	return make(http.Header)
+}
+
+func addRequestIdHeader(h http.Header) http.Header {
+	if h == nil {
+		h = make(http.Header)
+	}
+	id := h.Get(XRequestId)
+	if len(id) == 0 {
+		uid, _ := uuid.NewUUID()
+		id = uid.String()
+		h.Set(XRequestId, id)
+	}
+	return h
+}
