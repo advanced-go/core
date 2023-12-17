@@ -113,15 +113,15 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 	}
 }
 
-func AddRequestId(t any) {
+func AddRequestId(t any) http.Header {
 	if req, ok := t.(*http.Request); ok {
 		req.Header = addRequestIdHeader(req.Header)
-		return
+		return req.Header
 	}
 	if h, ok := t.(http.Header); ok {
-		addRequestIdHeader(h)
-		return
+		return addRequestIdHeader(h)
 	}
+	return make(http.Header)
 }
 
 func addRequestIdHeader(h http.Header) http.Header {
