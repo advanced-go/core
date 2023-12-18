@@ -3,8 +3,10 @@ package io2
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/url"
+	"reflect"
 )
 
 const (
@@ -21,6 +23,9 @@ type statusState2 struct {
 func ReadStatus(t any) runtime.Status {
 	uri := ""
 
+	if t == nil {
+		return runtime.StatusOK()
+	}
 	if s, ok := t.(string); ok {
 		if len(s) == 0 || s == StatusOKUri {
 			return runtime.StatusOK()
@@ -31,12 +36,12 @@ func ReadStatus(t any) runtime.Status {
 			if len(l) == 0 || len(l) == 1 {
 				return runtime.StatusOK()
 			}
-			if len(l[2]) == 0 || l[2] == StatusOKUri {
+			if len(l[1]) == 0 || l[1] == StatusOKUri {
 				return runtime.StatusOK()
 			}
-			uri = l[2]
+			uri = l[1]
 		} else {
-			return runtime.NewStatus(runtime.StatusInvalidArgument)
+			return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, errors.New(fmt.Sprintf("error: URI parameter is an invalid type: %v", reflect.TypeOf(t))))
 		}
 	}
 	//if len(uri) == 0 || uri == StatusOKUri {

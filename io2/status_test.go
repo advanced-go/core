@@ -23,7 +23,7 @@ func ExampleReadStatus_Marshal() {
 
 }
 
-func ExampleReadStatus_Unarshal() {
+func ExampleReadStatus_Unmarshal() {
 	uri := "file://[cwd]/io2test/resource/status-504.json"
 
 	status := ReadStatus(uri)
@@ -35,12 +35,25 @@ func ExampleReadStatus_Unarshal() {
 }
 
 func ExampleReadStatus_OK() {
-	uri := StatusOKUri
+	status := ReadStatus(nil)
+	fmt.Printf("test: ReadStatus(nil) -> [code:%v]\n", status.Code())
 
-	status := ReadStatus(uri)
-	fmt.Printf("test: Unmarshal() -> [code:%v]\n", status.Code())
+	uri := StatusOKUri
+	status = ReadStatus(uri)
+	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v]\n", uri, status.Code())
+
+	uri2 := []string{""}
+	status = ReadStatus(uri2)
+	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri2, status.Code(), status)
+
+	uri2 = []string{"", ""}
+	status = ReadStatus(uri2)
+	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri2, status.Code(), status)
 
 	//Output:
-	//test: Unmarshal() -> [code:200]
+	//test: ReadStatus(nil) -> [code:200]
+	//test: ReadStatus("urn:status:ok") -> [code:200]
+	//test: ReadStatus("[]") -> [code:200] [status:OK]
+	//test: ReadStatus("[ ]") -> [code:200] [status:OK]
 
 }

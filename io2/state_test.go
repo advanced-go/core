@@ -2,6 +2,7 @@ package io2
 
 import (
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 )
 
 const (
@@ -13,6 +14,34 @@ type address struct {
 	City    string
 	State   string
 	ZipCode string
+}
+
+func ExampleReadState_Error() {
+	_, status := ReadState[address](nil)
+	fmt.Printf("test: ReadState(nil) -> [status:%v]\n", status)
+
+	_, status = ReadState[address]("")
+	fmt.Printf("test: ReadState(\"\") -> [status:%v]\n", status)
+
+	var list []string
+	_, status = ReadState[runtime.Nillable](list)
+	fmt.Printf("test: ReadState(%v) -> [status:%v]\n", list, status)
+
+	list = []string{"", ""}
+	_, status = ReadState[runtime.Nillable](list)
+	fmt.Printf("test: ReadState(%v) -> [status:%v]\n", list, status)
+
+	n := 1234
+	_, status = ReadState[runtime.Nillable](n)
+	fmt.Printf("test: ReadState(%v) -> [status:%v]\n", n, status)
+
+	//Output:
+	//test: ReadState(nil) -> [status:Invalid Argument [error: URI is nil]]
+	//test: ReadState("") -> [status:Invalid Argument [error: URI is empty]]
+	//test: ReadState([]) -> [status:Invalid Argument [error: URI list is empty]]
+	//test: ReadState([ ]) -> [status:Invalid Argument [error: URI list item empty]]
+	//test: ReadState(1234) -> [status:Invalid Argument [error: URI parameter is an invalid type: int]]
+	
 }
 
 func ExampleReadState() {

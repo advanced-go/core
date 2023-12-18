@@ -3,8 +3,10 @@ package io2
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/url"
+	"reflect"
 )
 
 const (
@@ -12,9 +14,28 @@ const (
 	readResultsLoc = PkgPath + ":ReadResults"
 )
 
-func ReadState[T any](uri string) (t T, status runtime.Status) {
-	if len(uri) == 0 {
-		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("Uir is empty"))
+func ReadState[T any](in any) (t T, status runtime.Status) {
+	uri := ""
+	if in == nil {
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is nil"))
+	}
+	if s, ok := in.(string); ok {
+		if len(s) == 0 {
+			return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is empty"))
+		}
+		uri = s
+	} else {
+		if l, ok1 := in.([]string); ok1 {
+			if len(l) == 0 {
+				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list is empty"))
+			}
+			if len(l[0]) == 0 {
+				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list item empty"))
+			}
+			uri = l[0]
+		} else {
+			return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New(fmt.Sprintf("error: URI parameter is an invalid type: %v", reflect.TypeOf(in))))
+		}
 	}
 	u, err := url.Parse(uri)
 	if err != nil {
