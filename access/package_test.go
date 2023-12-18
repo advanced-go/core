@@ -59,16 +59,17 @@ func Example_NewRequest() {
 
 }
 
-func ExampleLogDeferred() {
+func ExampleLogDeferred_Test1() {
 	EnableTestLogger()
 	SetOrigin(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
-	status := loggingTest()
+	status := loggingTest1()
 	fmt.Printf("test: LogDeferred() -> %v\n", status)
 
 	//Output:
 }
 
-func loggingTest() (status runtime.Status) {
+// default status variable
+func loggingTest1() (status runtime.Status) {
 	h := make(http.Header)
 	h.Add(runtime.XRequestId, "x-request-id")
 	h.Add(runtime.XRelatesTo, "x-relates-to")
@@ -76,4 +77,25 @@ func loggingTest() (status runtime.Status) {
 	status = runtime.NewStatus(http.StatusGatewayTimeout)
 	time.Sleep(time.Millisecond * 500)
 	return
+}
+
+func ExampleLogDeferred_Test2() {
+	EnableTestLogger()
+	SetOrigin(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
+	status := loggingTest2()
+	fmt.Printf("test: LogDeferred() -> %v\n", status)
+
+	//Output:
+}
+
+// non-default status variable
+func loggingTest2() runtime.Status {
+	var status runtime.Status
+	h := make(http.Header)
+	h.Add(runtime.XRequestId, "x-request-id")
+	h.Add(runtime.XRelatesTo, "x-relates-to")
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", &status)()
+	status = runtime.NewStatus(http.StatusServiceUnavailable)
+	time.Sleep(time.Millisecond * 500)
+	return status
 }
