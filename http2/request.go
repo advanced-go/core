@@ -49,14 +49,6 @@ func createValue(v []string) string {
 	return value
 }
 
-func UpdateHeaders_OLD(req *http.Request) *http.Request {
-	if req == nil {
-		return nil
-	}
-	runtime.AddRequestId(req)
-	return req
-}
-
 // NewRequest - create a new Http request adding the request id
 // TO DO: if the ctx is a http.Header, then need to add to the new request
 func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request, runtime.Status) {

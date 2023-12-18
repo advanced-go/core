@@ -14,11 +14,11 @@ func ExampleSelect() {
 	resp.Header.Add("key1", "value1")
 	resp.Header.Add("key2", "value2")
 
-	CreateHeaders(h, &resp, "key", "key2")
+	CreateHeaders_OLD(h, &resp, "key", "key2")
 	fmt.Printf("test: CreateHeaders() -> %v\n", h)
 
 	h = http.Header{}
-	CreateHeaders(h, &resp, "*")
+	CreateHeaders_OLD(h, &resp, "*")
 	fmt.Printf("test: CreateHeaders() -> %v\n", h)
 
 	//Output:

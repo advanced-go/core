@@ -7,12 +7,11 @@ import (
 )
 
 const (
-	ContentLocation = "Content-Location"
-	ContentTypeText = "text/plain" // charset=utf-8
+	//ContentLocation = "Content-Location"
+	//ContentTypeText = "text/plain" // charset=utf-8
 	ContentTypeJson = "application/json"
 	ContentType     = "Content-Type"
 	ContentLength   = "Content-Length"
-	RelatesTo       = "RelatesTo"
 )
 
 func forwardDefaults(dest http.Header, src http.Header) http.Header {
@@ -23,9 +22,8 @@ func forwardDefaults(dest http.Header, src http.Header) http.Header {
 		return dest
 	}
 	// TO DO : add other default headers
-	dest.Set(ContentLocation, src.Get(ContentLocation))
 	dest.Set(runtime.XRequestId, src.Get(runtime.XRequestId))
-	dest.Set(RelatesTo, src.Get(RelatesTo))
+	dest.Set(runtime.XRelatesTo, src.Get(runtime.XRelatesTo))
 	return dest
 }
 
@@ -40,19 +38,19 @@ func Forward(dest http.Header, src http.Header, names ...string) http.Header {
 	return dest
 }
 
-func HeaderValue(name string, r *http.Request) string {
+func HeaderValue_OLD(name string, r *http.Request) string {
 	if r == nil {
 		return "invalid-request"
 	}
 	return r.Header.Get(name)
 }
 
-func GetContentLocation(req *http.Request) string {
-	if req != nil && req.Header != nil {
-		return req.Header.Get(ContentLocation)
-	}
-	return ""
-}
+//func GetContentLocation(req *http.Request) string {
+//	if req != nil && req.Header != nil {
+//		return req.Header.Get(ContentLocation)
+//	}
+//	return ""
+//}
 
 func GetContentType(headers any) string {
 	if pairs, ok := headers.([]Attr); ok {
@@ -77,7 +75,7 @@ func GetContentType(headers any) string {
 	return ""
 }
 
-func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
+func CreateHeaders_OLD(h http.Header, resp *http.Response, keys ...string) {
 	if resp == nil || len(keys) == 0 {
 		return
 	}
