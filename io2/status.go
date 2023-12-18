@@ -18,10 +18,30 @@ type statusState2 struct {
 	Err      string `json:"err"`
 }
 
-func ReadStatus(uri string) runtime.Status {
-	if len(uri) == 0 || uri == StatusOKUri {
-		return runtime.StatusOK()
+func ReadStatus(t any) runtime.Status {
+	uri := ""
+
+	if s, ok := t.(string); ok {
+		if len(s) == 0 || s == StatusOKUri {
+			return runtime.StatusOK()
+		}
+		uri = s
+	} else {
+		if l, ok1 := t.([]string); ok1 {
+			if len(l) == 0 || len(l) == 1 {
+				return runtime.StatusOK()
+			}
+			if len(l[2]) == 0 || l[2] == StatusOKUri {
+				return runtime.StatusOK()
+			}
+			uri = l[2]
+		} else {
+			return runtime.NewStatus(runtime.StatusInvalidArgument)
+		}
 	}
+	//if len(uri) == 0 || uri == StatusOKUri {
+	//	return runtime.StatusOK()
+	//}
 	u, err := url.Parse(uri)
 	if err != nil {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, err)
