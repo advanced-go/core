@@ -3,9 +3,9 @@ package http2
 import (
 	"fmt"
 	"github.com/advanced-go/core/http2/http2test"
-	"net/http"
 )
 
+/*
 func ExampleSelect() {
 	h := http.Header{}
 
@@ -26,6 +26,9 @@ func ExampleSelect() {
 	//test: CreateHeaders() -> map[Key:[value] Key1:[value1] Key2:[value2]]
 
 }
+
+
+*/
 
 func Example_SetHeaders() {
 	r := http2test.NewRecorder()

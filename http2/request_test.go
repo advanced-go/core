@@ -61,16 +61,3 @@ func Example_Clone() {
 	//test: Clone() ->  [origUrl:localhost:8080] [cloneUrl:localhost:8080]
 
 }
-
-/*
-func Example_NewRequest() {
-	req, status := NewRequest(nil, "PUT", "https://somedomain.com/invalid-uri-or-type", "")
-
-	fmt.Printf("test: NewRequest() [status:%v] %v\n", status, req)
-
-	//Output:
-
-}
-
-
-*/
