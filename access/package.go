@@ -49,10 +49,6 @@ func SetLogger(fn Logger) {
 	}
 }
 
-//func GetLogger() Logger {
-//	return logger
-//}
-
 var (
 	internalLogging = false
 
@@ -93,10 +89,10 @@ func Log(traffic string, start time.Time, duration time.Duration, req *http.Requ
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
+func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, status *runtime.Status) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode()}, routeName, routeTo, threshold, thresholdFlags)
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: (*status).Code(), Status: (*status).Description()}, routeName, routeTo, threshold, thresholdFlags)
 	}
 }
 
@@ -125,8 +121,19 @@ func NewRequest(h http.Header, method, uri string) *http.Request {
 }
 
 // NewStatusCodeClosure - return a func that will return the status code
-func NewStatusCodeClosure(status *runtime.Status) func() int {
-	return func() int {
-		return (*(status)).Code()
+//func NewStatusCodeClosure(status *runtime.Status) func() int {
+//	return func() int {
+//		return (*(status)).Code()
+//	}
+//}
+
+/*
+func LogDeferred2(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, status *runtime.Status) func() {
+	start := time.Now().UTC()
+	return func() {
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: (*status).Code(), Status: (*status).Description()}, routeName, routeTo, threshold, thresholdFlags)
 	}
 }
+
+
+*/

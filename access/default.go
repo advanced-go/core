@@ -53,6 +53,7 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		"\"host\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
+		"\"status\":%v, "+
 		"\"route-name\":%v, "+
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
@@ -76,6 +77,7 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		fmtstr(path),
 
 		resp.StatusCode,
+		fmtstr(resp.Status),
 
 		fmtstr(routeName),
 		fmtstr(routeTo),
