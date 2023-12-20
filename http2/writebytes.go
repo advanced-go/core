@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/io2"
-	"github.com/advanced-go/core/json2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
@@ -45,7 +44,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		if strings.Contains(contentType, "json") {
 			var status runtime.Status
 
-			buf, status = json2.Marshal(content)
+			buf, status = io2.Marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}
