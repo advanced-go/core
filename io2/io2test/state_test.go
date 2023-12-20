@@ -1,4 +1,4 @@
-package io2
+package io2test
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	addressUrl   = "file://[cwd]/io2test/resource/address.json"
-	status504Url = "file://[cwd]/io2test/resource/status-504.json"
+	addressUrl   = "file://[cwd]/resource/address.json"
+	status504Url = "file://[cwd]/resource/status-504.json"
 )
 
 type address struct {
@@ -41,7 +41,7 @@ func ExampleReadState_Error() {
 	//test: ReadState([]) -> [status:Invalid Argument [error: URI list is empty]]
 	//test: ReadState([ ]) -> [status:Invalid Argument [error: URI list item empty]]
 	//test: ReadState(1234) -> [status:Invalid Argument [error: URI parameter is an invalid type: int]]
-	
+
 }
 
 func ExampleReadState() {

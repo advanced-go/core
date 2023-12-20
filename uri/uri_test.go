@@ -6,17 +6,6 @@ import (
 	"net/url"
 )
 
-/*
-	func Example_ParsePkgUrl() {
-		s := "github.com/advanced-go/core/runtime"
-		u := ParsePkgUrl(s)
-		fmt.Printf("test: ParsePkgUri(%v) %v\n", s, u)
-
-		//Output:
-		//test: ParsePkgUri(github.com/advanced-go/core/runtime) file://github.com/advanced-go/core/runtime
-
-}
-*/
 func ExampleParseUri_Url() {
 	uri := "www.google.com"
 	scheme, host, path := ParseUri(uri)

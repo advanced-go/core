@@ -3,7 +3,7 @@ package access
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	strings2 "github.com/advanced-go/core/strings"
+	strings2 "github.com/advanced-go/core/strings2"
 	"log"
 	"net/http"
 	"strconv"

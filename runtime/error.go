@@ -3,7 +3,6 @@ package runtime
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/strings"
 	"log"
 	"reflect"
 	"strconv"
@@ -108,9 +107,9 @@ func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
 func defaultFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
-		strings.JsonMarkup(StatusCodeName, str, false),
-		strings.JsonMarkup(StatusName, s.Description(), true),
-		strings.JsonMarkup(RequestIdName, s.RequestId(), true),
+		jsonMarkup(StatusCodeName, str, false),
+		jsonMarkup(StatusName, s.Description(), true),
+		jsonMarkup(RequestIdName, s.RequestId(), true),
 		formatTrace(TraceName, s.Location()),
 		formatErrors(ErrorsName, s.Errors()))
 }
@@ -146,4 +145,22 @@ func formatTrace(name string, trace []string) string {
 // NewInvalidBodyTypeError - invalid type error
 func NewInvalidBodyTypeError(t any) error {
 	return errors.New(fmt.Sprintf("invalid body type: %v", reflect.TypeOf(t)))
+}
+
+const (
+	markupNull   = "\"%v\":null"
+	markupString = "\"%v\":\"%v\""
+	markupValue  = "\"%v\":%v"
+)
+
+// jsonMarkup - markup a name/value pair
+func jsonMarkup(name, value string, stringValue bool) string {
+	if len(value) == 0 {
+		return fmt.Sprintf(markupNull, name)
+	}
+	format := markupString
+	if !stringValue {
+		format = markupValue
+	}
+	return fmt.Sprintf(format, name, value)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 // ReadFile - read a file from the given URL template
-func ReadFile(u *url.URL) ([]byte, error) {
+func ReadFile_UNUSED(u *url.URL) ([]byte, error) {
 	if u == nil {
 		return nil, errors.New("error: Url is nil")
 	}
@@ -22,12 +22,12 @@ func ReadFile(u *url.URL) ([]byte, error) {
 }
 
 // ReadFileFromPath - read a file given a templated path
-func ReadFileFromPath(path string) ([]byte, runtime.Status) {
+func ReadFileFromPath_UNUSED(path string) ([]byte, runtime.Status) {
 	if len(path) == 0 {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, "ReadFileFromPath()", errors.New("error: path is empty"))
 	}
 	u, _ := url.Parse(path)
-	buf, err := ReadFile(u)
+	buf, err := ReadFile_UNUSED(u)
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidContent, "ReadFileFromPath()", err)
 	}

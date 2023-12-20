@@ -3,7 +3,6 @@ package uri
 import (
 	"errors"
 	"fmt"
-	strings2 "github.com/advanced-go/core/strings"
 	"net/url"
 	"strings"
 )
@@ -54,7 +53,7 @@ func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 	if template == "" {
 		return url, nil
 	}
-	url2, err := strings2.Expand(template, func(name string) (string, error) {
+	url2, err := Expand(template, func(name string) (string, error) {
 		return LookupUrl(name, url)
 	},
 	)

@@ -1,6 +1,7 @@
 package uri
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"strings"
@@ -28,6 +29,12 @@ func init() {
 }
 
 func FileName(u *url.URL) string {
+	if u == nil {
+		return "error: URL is nil"
+	}
+	if !IsFileScheme(u) {
+		return fmt.Sprintf("error: scheme is invalid [%v]", u.Scheme)
+	}
 	name := basePath
 	if u.Host == CwdVariable {
 		name += u.Path

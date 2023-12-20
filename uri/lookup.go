@@ -2,7 +2,6 @@ package uri
 
 import (
 	"errors"
-	"github.com/advanced-go/core/runtime"
 	"net/url"
 	"strings"
 )
@@ -31,5 +30,5 @@ func LookupUrl(name string, url *url.URL) (string, error) {
 		//case MethodName:
 		//	return method, nil
 	}
-	return runtime.LookupEnv(name)
+	return LookupEnv(name)
 }

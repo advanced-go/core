@@ -1,4 +1,4 @@
-package strings
+package json2
 
 import (
 	"fmt"

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
 
@@ -33,20 +32,20 @@ func ExampleProxyContext() {
 	v2 := "value 2"
 	v3 := "value 3"
 
-	ctx := runtime.NewProxyContext(nil, proxyDo)
+	ctx := NewProxyContext(nil, proxyDo)
 
 	fmt.Printf("test: isProxyContext(ctx) -> %v\n", testProxyContext(ctx))
 	fmt.Printf("test: Values() -> [key1:%v] [key2:%v] [key3:%v]\n", ctx.Value(k1), ctx.Value(k2), ctx.Value(k3))
 
-	ctx1 := runtime.ContextWithValue(ctx, k1, v1)
+	ctx1 := ContextWithValue(ctx, k1, v1)
 	fmt.Printf("test: isProxyContext(ctx1) -> %v\n", testProxyContext(ctx1))
 	fmt.Printf("test: Values() -> [key1:%v] [key2:%v] [key3:%v]\n", ctx1.Value(k1), ctx1.Value(k2), ctx1.Value(k3))
 
-	ctx2 := runtime.ContextWithValue(ctx, k2, v2)
+	ctx2 := ContextWithValue(ctx, k2, v2)
 	fmt.Printf("test: isProxyContext(ctx2) -> %v\n", testProxyContext(ctx2))
 	fmt.Printf("test: Values() -> [key1:%v] [key2:%v] [key3:%v]\n", ctx2.Value(k1), ctx2.Value(k2), ctx2.Value(k3))
 
-	ctx3 := runtime.ContextWithValue(ctx, k3, v3)
+	ctx3 := ContextWithValue(ctx, k3, v3)
 	fmt.Printf("test: isProxyContext(ctx3) -> %v\n", testProxyContext(ctx3))
 	fmt.Printf("test: Values() -> [key1:%v] [key2:%v] [key3:%v]\n", ctx3.Value(k1), ctx3.Value(k2), ctx3.Value(k3))
 
@@ -63,12 +62,12 @@ func ExampleProxyContext() {
 }
 
 func ExampleProxyContext_Proxy() {
-	ctx0 := runtime.NewProxyContext(nil, proxyGet)
-	ctx := runtime.NewProxyContext(ctx0, proxyDo)
+	ctx0 := NewProxyContext(nil, proxyGet)
+	ctx := NewProxyContext(ctx0, proxyDo)
 	ok1 := testProxyContext(ctx)
 
 	fmt.Printf("test: isProxyContext(ctx) -> %v\n", ok1)
-	if proxies, ok := runtime.IsProxyable(ctx); ok {
+	if proxies, ok := IsProxyable(ctx); ok {
 		for _, p := range proxies {
 			if fn, ok2 := p.(func(*http.Request) (*http.Response, error)); ok2 {
 				if fn != nil {

@@ -13,11 +13,11 @@ func parseRaw(rawUri string) *url.URL {
 
 func Example_ReadFileRaw() {
 	s := "file://[cwd]/io2test/resource/html-response.txt"
-	buf, err := ReadFile(parseRaw(s))
+	buf, err := ReadFile_UNUSED(parseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	s = "file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt"
-	buf, err = ReadFile(parseRaw(s))
+	buf, err = ReadFile_UNUSED(parseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
@@ -29,12 +29,12 @@ func Example_ReadFileRaw() {
 func Example_ReadFile() {
 	s := "file://[cwd]/io2test/resource/html-response.txt"
 	u, _ := url.Parse(s)
-	buf, err := ReadFile(u)
+	buf, err := ReadFile_UNUSED(u)
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	s = "file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt"
 	u, _ = url.Parse(s)
-	buf, err = ReadFile(u)
+	buf, err = ReadFile_UNUSED(u)
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
@@ -44,7 +44,7 @@ func Example_ReadFile() {
 }
 
 func Example_ReadFileFromPath() {
-	buf, status := ReadFileFromPath("file://[cwd]/io2test/resource/activity.json")
+	buf, status := ReadFileFromPath_UNUSED("file://[cwd]/io2test/resource/activity.json")
 	fmt.Printf("test: ReadContentFromLocation() -> [status:%v] [content:%v]\n", status, len(buf))
 
 	//Output:

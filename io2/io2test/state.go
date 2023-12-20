@@ -1,17 +1,20 @@
-package io2
+package io2test
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
+	uri2 "github.com/advanced-go/core/uri"
 	"net/url"
+	"os"
 	"reflect"
 )
 
 const (
-	readStateLoc   = PkgPath + ":ReadState"
-	readResultsLoc = PkgPath + ":ReadResults"
+	readStateLoc   = io2.PkgPath + ":ReadState"
+	readResultsLoc = io2.PkgPath + ":ReadResults"
 )
 
 func ReadState[T any](in any) (t T, status runtime.Status) {
@@ -41,7 +44,7 @@ func ReadState[T any](in any) (t T, status runtime.Status) {
 	if err != nil {
 		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, err)
 	}
-	buf, err1 := ReadFile(u)
+	buf, err1 := os.ReadFile(uri2.FileName(u))
 	if err != nil {
 		return t, runtime.NewStatusError(runtime.StatusIOError, readStateLoc, err1)
 	}
