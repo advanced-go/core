@@ -201,7 +201,7 @@ func (s *statusState) SetRequestId(requestId any) Status {
 // Location - location
 func (s *statusState) Location() []string { return s.SLocation }
 func (s *statusState) AddLocation(location string) Status {
-	if len(location) >= 0 {
+	if len(location) > 0 {
 		s.SLocation = append(s.SLocation, location)
 	}
 	return s
