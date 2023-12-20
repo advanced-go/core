@@ -1,4 +1,4 @@
-package io2test
+package io2
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ func parseRaw(rawUri string) *url.URL {
 }
 
 func Example_ReadFileRaw() {
-	s := "file://[cwd]/resource/html-response.txt"
+	s := "file://[cwd]/io2test/resource/html-response.txt"
 	buf, err := ReadFile(parseRaw(s))
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
@@ -21,13 +21,13 @@ func Example_ReadFileRaw() {
 	fmt.Printf("test: ReadFileRaw(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
-	//test: ReadFileRaw(file://[cwd]/resource/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFileRaw(file://[cwd]/io2test/resource/html-response.txt) -> [err:<nil>] [buf:188]
 	//test: ReadFileRaw(file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt) -> [err:<nil>] [buf:188]
 
 }
 
 func Example_ReadFile() {
-	s := "file://[cwd]/resource/html-response.txt"
+	s := "file://[cwd]/io2test/resource/html-response.txt"
 	u, _ := url.Parse(s)
 	buf, err := ReadFile(u)
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
@@ -38,13 +38,13 @@ func Example_ReadFile() {
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
-	//test: ReadFile(file://[cwd]/resource/html-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFile(file://[cwd]/io2test/resource/html-response.txt) -> [err:<nil>] [buf:188]
 	//test: ReadFile(file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt) -> [err:<nil>] [buf:188]
 
 }
 
 func Example_ReadFileFromPath() {
-	buf, status := ReadFileFromPath("file://[cwd]/resource/activity.json")
+	buf, status := ReadFileFromPath("file://[cwd]/io2test/resource/activity.json")
 	fmt.Printf("test: ReadFileFromPath() -> [status:%v] [content:%v]\n", status, len(buf))
 
 	//Output:

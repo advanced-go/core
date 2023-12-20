@@ -1,4 +1,4 @@
-package io2test
+package io2
 
 import (
 	"errors"

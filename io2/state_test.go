@@ -1,4 +1,4 @@
-package io2test
+package io2
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	addressUrl   = "file://[cwd]/resource/address.json"
-	status504Url = "file://[cwd]/resource/status-504.json"
+	addressUrl   = "file://[cwd]/io2test/resource/address.json"
+	status504Url = "file://[cwd]/io2test/resource/status-504.json"
 )
 
 type address struct {

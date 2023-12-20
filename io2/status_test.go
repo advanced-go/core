@@ -1,4 +1,4 @@
-package io2test
+package io2
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ func ExampleReadStatus_Marshal() {
 }
 
 func ExampleReadStatus_Unmarshal() {
-	uri := "file://[cwd]/resource/status-504.json"
+	uri := "file://[cwd]/io2test/resource/status-504.json"
 
 	status := ReadStatus(uri)
 	fmt.Printf("test: Unmarshal() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.Errors())

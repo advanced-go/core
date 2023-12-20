@@ -1,10 +1,9 @@
-package io2test
+package io2
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
 	uri2 "github.com/advanced-go/core/uri"
 	"net/url"
@@ -13,8 +12,8 @@ import (
 )
 
 const (
-	readStateLoc   = io2.PkgPath + ":ReadState"
-	readResultsLoc = io2.PkgPath + ":ReadResults"
+	readStateLoc   = PkgPath + ":ReadState"
+	readResultsLoc = PkgPath + ":ReadResults"
 )
 
 func ReadState[T any](in any) (t T, status runtime.Status) {
