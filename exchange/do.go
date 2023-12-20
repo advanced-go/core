@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	Client = http.DefaultClient
+	client = http.DefaultClient
 )
 
 func init() {
@@ -27,9 +27,9 @@ func init() {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		transport.MaxIdleConns = 200
 		transport.MaxIdleConnsPerHost = 100
-		Client = &http.Client{Transport: transport, Timeout: time.Second * 5}
+		client = &http.Client{Transport: transport, Timeout: time.Second * 5}
 	} else {
-		Client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
+		client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
 	}
 }
 
@@ -51,13 +51,13 @@ func do(req *http.Request) (resp *http.Response, status runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
-	resp, err = Client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
 		// catch connectivity error, even with a valid URL
 		if resp == nil {
 			resp = new(http.Response)
 			resp.StatusCode = http.StatusInternalServerError
-			resp.Status = "internal server error"
+			resp.Status = internalError
 		}
 		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
 	}

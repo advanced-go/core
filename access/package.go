@@ -2,7 +2,6 @@ package access
 
 import (
 	"github.com/advanced-go/core/runtime"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
@@ -97,6 +96,7 @@ func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, t
 }
 
 // AddRequestId - function copied from package http2
+/*
 func AddRequestId(req *http.Request) string {
 	if req == nil {
 		return ""
@@ -110,6 +110,9 @@ func AddRequestId(req *http.Request) string {
 	return id
 }
 
+
+*/
+
 // NewRequest - create a new request
 func NewRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)
@@ -119,21 +122,3 @@ func NewRequest(h http.Header, method, uri string) *http.Request {
 	req.Header = h
 	return req
 }
-
-// NewStatusCodeClosure - return a func that will return the status code
-//func NewStatusCodeClosure(status *runtime.Status) func() int {
-//	return func() int {
-//		return (*(status)).Code()
-//	}
-//}
-
-/*
-func LogDeferred2(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, status *runtime.Status) func() {
-	start := time.Now().UTC()
-	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: (*status).Code(), Status: (*status).Description()}, routeName, routeTo, threshold, thresholdFlags)
-	}
-}
-
-
-*/

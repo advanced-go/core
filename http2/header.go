@@ -46,13 +46,6 @@ func HeaderValue_OLD(name string, r *http.Request) string {
 
 */
 
-//func GetContentLocation(req *http.Request) string {
-//	if req != nil && req.Header != nil {
-//		return req.Header.Get(ContentLocation)
-//	}
-//	return ""
-//}
-
 func GetContentType(headers any) string {
 	if pairs, ok := headers.([]Attr); ok {
 		for _, pair := range pairs {
@@ -124,9 +117,6 @@ func AddHeaders(req *http.Request, header http.Header) {
 		req.Header.Add(key, createValue(element))
 	}
 }
-
-
-
 
 func createValue(v []string) string {
 	if v == nil {

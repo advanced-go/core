@@ -1,4 +1,4 @@
-package http2
+package http2test
 
 import (
 	"crypto/tls"
@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	doLocation     = PkgPath + ":Do"
-	doReadResponse = PkgPath + ":readReponse"
+	doLocation     = ":Do"
+	doReadResponse = ":readReponse"
 	internalError  = "Internal Error"
 )
 

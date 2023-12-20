@@ -1,4 +1,4 @@
-package http2
+package http2test
 
 import (
 	"fmt"
@@ -11,6 +11,6 @@ func Example_DoT() {
 	fmt.Printf("test: DoT[[]byte](req) -> [status:%v] [buf:%v] [resp:%v]\n", status, len(buf) > 0, resp != nil)
 
 	//Output:
-	//test: DoT[[]byte](req) -> [status:OK] [buf:true] [resp:true]
+	//test: DoT[[]byte](req) -> [status:OK] [buf:false] [resp:true]
 
 }

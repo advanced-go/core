@@ -1,4 +1,4 @@
-package http2
+package http2test
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	deserializeLoc = PkgPath + "/Deserialize"
+	deserializeLoc = ":Deserialize"
 )
 
 // Deserialize - provide deserialization of a request/response body

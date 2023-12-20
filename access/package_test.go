@@ -17,22 +17,6 @@ func Example_PackageUri() {
 
 }
 
-/*
-func ExampleNewStatusCodeFn() {
-	var status runtime.Status
-
-	fn := NewStatusCodeClosure(&status)
-	status = runtime.NewStatus(runtime.StatusDeadlineExceeded)
-	fmt.Printf("test: NewStatusCode(&status) -> [statusCode:%v]\n", fn())
-
-	//Output:
-	//test: NewStatusCode(&status) -> [statusCode:4]
-
-}
-
-
-*/
-
 func Example_LogAccess() {
 	start := time.Now().UTC()
 	r, _ := http.NewRequest("PUT", "/github.com/advanced-go/example-domain/activity:entry", nil)
