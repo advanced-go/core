@@ -38,34 +38,35 @@ func Example_Resolver() {
 
 }
 
-/*
-func Example_resolve() {
+func Example_Resolver_2() {
 	var s = ""
-	url := resolve(s)
+	r := NewResolver("http://localhost:8080", echo)
+	url := r.Resolve(s)
 
-	fmt.Printf("test: resolve(%v) -> [%v]\n", s, url)
+	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
 
 	s = "http://"
-	url = resolve(s)
-	fmt.Printf("test: resolve(%v) -> [%v]\n", s, url)
+	url = r.Resolve(s)
+	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
 
 	s = "/test/resource?env=dev&cust=1"
-	url = resolve(s)
-	fmt.Printf("test: resolve(%v) -> [%v]\n", s, url)
+	url = r.Resolve(s)
+	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
 
 	s = "https://www.google.com/search?q=testing"
-	url = resolve(s)
+	url = r.Resolve(s)
 	fmt.Printf("test: resolve(%v) -> [%v]\n", s, url)
 
 	//Output:
-	//test: resolve() -> []
-	//test: resolve(http://) -> [http://]
-	//test: resolve(/test/resource?env=dev&cust=1) -> [http://localhost:8080/test/resource?env=dev&cust=1]
-	//test: resolve(https://www.google.com/search?q=testing) -> [https://www.google.com/search?q=testing]
+	//test: Resolve() -> []
+	//test: Resolve(http://) -> [http://]
+	//test: Resolve(/test/resource?env=dev&cust=1) -> [http://localhost:8080/test/resource?env=dev&cust=1]
+	//test: Resolve(https://www.google.com/search?q=testing) -> [https://www.google.com/search?q=testing]
 
 }
 
-func Example_addResolver() {
+/*
+func Example_Resolver_Override() {
 	pattern := "/endpoint/resource"
 
 	uri := resolve(pattern)

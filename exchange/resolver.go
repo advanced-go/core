@@ -32,11 +32,17 @@ func (r *resolver) Resolve(key string) string {
 	if r.overrideFn != nil {
 		uri = r.overrideFn(key)
 		if len(uri) > 0 {
+			if strings.HasPrefix(key, "/") {
+				return r.defaultHost + uri
+			}
 			return uri
 		}
 	}
 	uri = r.defaultFn(key)
 	if len(uri) > 0 {
+		if strings.HasPrefix(key, "/") {
+			return r.defaultHost + uri
+		}
 		return uri
 	}
 	if strings.HasPrefix(key, "/") {
