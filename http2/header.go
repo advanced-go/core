@@ -7,8 +7,6 @@ import (
 )
 
 const (
-	//ContentLocation = "Content-Location"
-	//ContentTypeText = "text/plain" // charset=utf-8
 	ContentTypeJson = "application/json"
 	ContentType     = "Content-Type"
 	ContentLength   = "Content-Length"

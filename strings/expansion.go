@@ -11,7 +11,7 @@ const (
 	EndDelimiter   = "}"
 )
 
-// Expand - templated function to expand a template string, utilizing a template variable lookup function
+// Expand - expand a template string, utilizing a template variable lookup function
 func Expand(t string, fn func(string) (string, error)) (string, error) {
 	if fn == nil || len(t) == 0 {
 		return t, nil

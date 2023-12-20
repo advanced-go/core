@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/advanced-go/core/http2/io"
 	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/uri"
 	"net/http"
 	"time"
 )
@@ -39,7 +40,7 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	}
 	var err error
 
-	if req.URL.Scheme == FileScheme {
+	if req.URL.Scheme == uri.FileScheme {
 		resp1, err1 := io.ReadResponse(req.URL)
 		if err1 != nil {
 			if resp1 == nil {
