@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/http2/io"
+	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/io2"
 	"net/http"
 )
@@ -28,7 +28,7 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
 	}
 	path = basePath + respName
-	resp, err1 := io.ReadResponse(ParseRaw(path))
+	resp, err1 := exchange.ReadResponse(ParseRaw(path))
 	if err1 != nil {
 		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: err1}}, nil, nil
 	}

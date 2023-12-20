@@ -1,9 +1,8 @@
-package http2
+package exchange
 
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/runtime"
 	"github.com/advanced-go/core/uri"
 	"net/http"
@@ -34,15 +33,14 @@ func init() {
 	}
 }
 
-// Do - do a Http exchange with a runtime.Status
-func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
+func do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
 
 	if uri.IsFileScheme(req.URL) {
-		resp1, err1 := exchange.ReadResponse(req.URL)
+		resp1, err1 := ReadResponse(req.URL)
 		if err1 != nil {
 			if resp1 == nil {
 				resp1 = new(http.Response)

@@ -1,4 +1,4 @@
-package io
+package exchange
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func readAll(body io.ReadCloser) ([]byte, runtime.Status) {
 }
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/iotest/html-response.txt"
+	s := "file://[cwd]/exchangetest/html-response.txt"
 	u, _ := url.Parse(s)
 	//req, err := http.NewRequest("GET", s, nil)
 	//fmt.Printf("test: http.NewRequest() -> [err:%v]\n", err)
@@ -34,7 +34,7 @@ func Example_ReadResponse() {
 	s = string(buf)
 
 	//Output:
-	//test: ReadResponse(file://[cwd]/iotest/html-response.txt) -> [err:<nil>] [status:200]
+	//test: ReadResponse(file://[cwd]/exchangetest/html-response.txt) -> [err:<nil>] [status:200]
 	//test: ReadAll() -> [status:OK] <html>
 	//<body>
 	//<h1>Hello, World!</h1>
