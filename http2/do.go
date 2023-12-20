@@ -12,7 +12,8 @@ import (
 
 const (
 	doLocation     = PkgPath + ":Do"
-	doReadLocation = PkgPath + ":Do/readFromFile"
+	doReadResponse = PkgPath + ":readReponse"
+	internalError  = "Internal Error"
 )
 
 var (
@@ -40,21 +41,21 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	}
 	var err error
 
-	if req.URL.Scheme == uri.FileScheme {
+	if uri.IsFileScheme(req.URL) {
 		resp1, err1 := io.ReadResponse(req.URL)
 		if err1 != nil {
 			if resp1 == nil {
 				resp1 = new(http.Response)
 				resp1.StatusCode = http.StatusInternalServerError
-				resp1.Status = "internal server error"
+				resp1.Status = internalError
 			}
-			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err1)
+			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadResponse, err1)
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
 	resp, err = Client.Do(req)
 	if err != nil {
-		// Happens as a result of a connectivity error, even with a valid URL
+		// catch connectivity error, even with a valid URL
 		if resp == nil {
 			resp = new(http.Response)
 			resp.StatusCode = http.StatusInternalServerError
@@ -64,43 +65,3 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	}
 	return resp, runtime.NewStatus(resp.StatusCode)
 }
-
-// DoT - do a Http exchange with deserialization
-func DoT[T any](req *http.Request) (resp *http.Response, t T, status runtime.Status) {
-	resp, status = Do(req)
-	if !status.OK() {
-		return nil, t, status
-	}
-	t, status = Deserialize[T](resp.Body)
-	return
-}
-
-/*
-func readFromFile(req *http.Request) (*http.Response, runtime.Status) {
-	var uri *url.URL
-	var err error
-
-
-		if req.URL.Scheme == FileScheme {
-			uri = req.URL
-		} else {
-			location := req.Header.Get(ContentLocation)
-			if len(location) == 0 {
-				return nil, runtime.StatusOK()
-			}
-			uri, err = url.Parse(location)
-			if err != nil {
-				return nil, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err)
-			}
-		}
-		if uri == nil {
-			return nil, runtime.StatusOK()
-		}
-	resp, err1 := io.ReadResponse(req.URL)
-	if err1 != nil {
-		return resp, runtime.NewStatusError(http.StatusInternalServerError, doReadLocation, err1)
-	}
-	return resp, runtime.NewStatus(resp.StatusCode)
-}
-
-*/

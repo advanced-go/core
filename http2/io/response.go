@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -19,18 +20,18 @@ var (
 )
 
 // ReadResponse - read a Http response given a URL
-func ReadResponse(uri *url.URL) (*http.Response, error) {
-	if uri == nil {
+func ReadResponse(u *url.URL) (*http.Response, error) {
+	if u == nil {
 		return nil, errors.New("error: Uri is nil")
 	}
-	if uri.Scheme != "file" {
-		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", uri.Scheme))
+	if u.Scheme != "file" {
+		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", u.Scheme))
 	}
-	path := uri.Path
+	path := u.Path
 	if strings.HasPrefix(path, "/") {
 		path = path[1:]
 	}
-	buf, err := io2.ReadFile(uri)
+	buf, err := os.ReadFile(uri.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), "file does not exist") {
 			return &http.Response{StatusCode: http.StatusNotFound}, nil

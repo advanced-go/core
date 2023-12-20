@@ -14,6 +14,13 @@ const (
 	FileScheme   = "file"
 )
 
+func IsFileScheme(u *url.URL) bool {
+	if u == nil {
+		return false
+	}
+	return u.Scheme == FileScheme
+}
+
 // ParseRaw - parse a raw Uri without error
 func ParseRaw(rawUri string) *url.URL {
 	u, _ := url.Parse(rawUri)
