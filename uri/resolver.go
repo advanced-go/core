@@ -40,8 +40,10 @@ func (r *resolver) Resolve(id string, values url.Values) string {
 	override := false
 	url := ""
 	if r.overrideFn != nil {
-		override = true
 		url = r.overrideFn(id)
+		if len(url) > 0 {
+			override = true
+		}
 	}
 	if len(url) == 0 && r.defaultFn != nil {
 		url = r.defaultFn(id)
