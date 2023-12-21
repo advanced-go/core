@@ -37,8 +37,10 @@ func (r *resolver) SetOverride(t any) {
 
 // Resolve - perform resolution
 func (r *resolver) Resolve(id string, values url.Values) string {
+	override := false
 	url := ""
 	if r.overrideFn != nil {
+		override = true
 		url = r.overrideFn(id)
 	}
 	if len(url) == 0 && r.defaultFn != nil {
@@ -53,7 +55,7 @@ func (r *resolver) Resolve(id string, values url.Values) string {
 	if strings.HasPrefix(url, "/") {
 		url = r.defaultHost + url
 	}
-	if values != nil {
+	if !override && values != nil {
 		url = url + "?" + values.Encode()
 	}
 	return url

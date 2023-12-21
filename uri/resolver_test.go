@@ -108,8 +108,12 @@ func Example_Resolver_Override() {
 	r := NewResolver("http://localhost:8080", testDefault)
 	r.SetOverride(testOverride)
 
+	v := make(url.Values)
+	v.Add("param-1", "value-1")
+	v.Add("param-2", "value-2")
+
 	id := resolvedId
-	url := r.Resolve(id, nil)
+	url := r.Resolve(id, v)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = pathId
