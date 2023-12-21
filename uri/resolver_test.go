@@ -2,6 +2,7 @@ package uri
 
 import (
 	"fmt"
+	"net/url"
 )
 
 const (
@@ -49,19 +50,19 @@ func Example_Resolver_Passthrough() {
 	r := NewResolver("http://localhost:8080", nil)
 
 	id := ""
-	val := r.Resolve(id)
+	val := r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
 	id = "test"
-	val = r.Resolve(id)
+	val = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
 	id = "/google/search?q=golang"
-	val = r.Resolve(id)
+	val = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
 	id = "https://www.google.com/google:search?q=golang"
-	val = r.Resolve(id)
+	val = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
 	//Output:
@@ -75,24 +76,28 @@ func Example_Resolver_Passthrough() {
 func Example_Resolver_Default() {
 	r := NewResolver("http://localhost:8080", testDefault)
 
+	v := make(url.Values)
+	v.Add("param-1", "value-1")
+	v.Add("param-2", "value-2")
+
 	id := resolvedId
-	url := r.Resolve(id)
+	url := r.Resolve(id, v)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = pathId
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = bypassId
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = googleUrl
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: Resolve("resolved") -> http://localhost:8080/advanced-go/example-domain/activity:entry
+	//test: Resolve("resolved") -> http://localhost:8080/advanced-go/example-domain/activity:entry?param-1=value-1&param-2=value-2
 	//test: Resolve("path") -> http://localhost:8080/advanced-go/example-domain/activity:entry
 	//test: Resolve("bypass") -> bypass
 	//test: Resolve("https://www.google.com/search?q=golang") -> https://www.google.com/search?q=golang
@@ -104,19 +109,19 @@ func Example_Resolver_Override() {
 	r.SetOverride(testOverride)
 
 	id := resolvedId
-	url := r.Resolve(id)
+	url := r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = pathId
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = bypassId
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	id = overrideBypassId
-	url = r.Resolve(id)
+	url = r.Resolve(id, nil)
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	//Output:
@@ -124,5 +129,18 @@ func Example_Resolver_Override() {
 	//test: Resolve("path") -> file://[cwd]/io2/io2test/resource/html-response.txt
 	//test: Resolve("bypass") -> bypass
 	//test: Resolve("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
-	
+
+}
+
+func Example_Values() {
+	v := make(url.Values)
+
+	v.Add("param-1", "value-1")
+	v.Add("param-2", "value-2")
+
+	fmt.Printf("test: Values.Encode() -> %v\n", v.Encode())
+
+	//Output:
+	//test: Values.Encode() -> param-1=value-1&param-2=value-2
+
 }

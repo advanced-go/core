@@ -2,6 +2,7 @@ package uri
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 )
@@ -12,7 +13,7 @@ type ResolveFunc func(string) string
 // Resolver - resolver interface
 type Resolver interface {
 	SetOverride(t any)
-	Resolve(id string) string
+	Resolve(id string, values url.Values) string
 }
 
 // NewResolver - create a resolver
@@ -35,7 +36,7 @@ func (r *resolver) SetOverride(t any) {
 }
 
 // Resolve - perform resolution
-func (r *resolver) Resolve(id string) string {
+func (r *resolver) Resolve(id string, values url.Values) string {
 	url := ""
 	if r.overrideFn != nil {
 		url = r.overrideFn(id)
@@ -51,6 +52,9 @@ func (r *resolver) Resolve(id string) string {
 	}
 	if strings.HasPrefix(url, "/") {
 		return r.defaultHost + url
+	}
+	if values != nil {
+		return url + "?" + values.Encode()
 	}
 	return url
 }
