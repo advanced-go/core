@@ -6,15 +6,6 @@ import (
 	"strings"
 )
 
-// ResolveFunc - type for resolution
-type ResolveFunc func(string) string
-
-// Resolver - resolver interface
-type Resolver interface {
-	SetOverride(t any)
-	Resolve(key string) string
-}
-
 type resolver struct {
 	defaultHost string
 	overrideFn  ResolveFunc
@@ -27,35 +18,24 @@ func (r *resolver) SetOverride(t any) {
 }
 
 // Resolve - perform resolution
-func (r *resolver) Resolve(key string) string {
-	uri := ""
+func (r *resolver) Resolve(id string) string {
+	url := ""
 	if r.overrideFn != nil {
-		uri = r.overrideFn(key)
-		if len(uri) > 0 {
-			if strings.HasPrefix(key, "/") {
-				return r.defaultHost + uri
-			}
-			return uri
-		}
+		url = r.overrideFn(id)
 	}
-	uri = r.defaultFn(key)
-	if len(uri) > 0 {
-		if strings.HasPrefix(key, "/") {
-			return r.defaultHost + uri
-		}
-		return uri
+	if len(url) == 0 && r.defaultFn != nil {
+		url = r.defaultFn(id)
 	}
-	if strings.HasPrefix(key, "/") {
-		return r.defaultHost + "/" + uri
+	if len(url) == 0 {
+		url = id
 	}
-	return key
-}
-
-func NewResolver(defaultHost string, defaultFn ResolveFunc) Resolver {
-	r := new(resolver)
-	r.defaultHost = defaultHost
-	r.defaultFn = defaultFn
-	return r
+	if len(url) == 0 {
+		return "error: id cannot be resolved to a URL"
+	}
+	if strings.HasPrefix(url, "/") {
+		return r.defaultHost + url
+	}
+	return url
 }
 
 func resolveFuncFromType(value any) func(key string) string {

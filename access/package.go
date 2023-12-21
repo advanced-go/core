@@ -12,6 +12,7 @@ const (
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"
+	failsafeUri     = "https://invalid-uri.com"
 )
 
 // Origin - log source location
@@ -95,29 +96,11 @@ func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, t
 	}
 }
 
-// AddRequestId - function copied from package http2
-/*
-func AddRequestId(req *http.Request) string {
-	if req == nil {
-		return ""
-	}
-	id := req.Header.Get(runtime.XRequestId)
-	if len(id) == 0 {
-		uid, _ := uuid.NewUUID()
-		id = uid.String()
-		req.Header.Set(runtime.XRequestId, id)
-	}
-	return id
-}
-
-
-*/
-
 // NewRequest - create a new request
 func NewRequest(h http.Header, method, uri string) *http.Request {
 	req, err := http.NewRequest(method, uri, nil)
 	if err != nil {
-		req, err = http.NewRequest(method, "http://invalid-uri.com", nil)
+		req, err = http.NewRequest(method, failsafeUri, nil)
 	}
 	req.Header = h
 	return req

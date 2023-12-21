@@ -19,13 +19,13 @@ var (
 	http20Bytes = []byte("HTTP/2.0")
 )
 
-// ReadResponse - read a Http response given a URL
-func ReadResponse(u *url.URL) (*http.Response, error) {
+// readResponse - read a Http response given a URL
+func readResponse(u *url.URL) (*http.Response, error) {
 	if u == nil {
-		return nil, errors.New("error: Uri is nil")
+		return nil, errors.New("error: URL is nil")
 	}
 	if u.Scheme != "file" {
-		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", u.Scheme))
+		return nil, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme))
 	}
 	path := u.Path
 	if strings.HasPrefix(path, "/") {

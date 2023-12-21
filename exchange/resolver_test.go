@@ -2,107 +2,122 @@ package exchange
 
 import "fmt"
 
-func echo(key string) string {
-	return key
+const (
+	resolvedId       = "resolved"
+	bypassId         = "bypass"
+	overrideBypassId = "overrideBypass"
+	pathId           = "path"
+
+	activityUrl  = "http://localhost:8080/advanced-go/example-domain/activity:entry"
+	activityPath = "/advanced-go/example-domain/activity:entry"
+	googleUrl    = "https://www.google.com/search?q=golang"
+	googlePath   = "/serach?q=golang"
+)
+
+func testDefault(id string) string {
+	switch id {
+	case resolvedId:
+		return activityUrl
+	case pathId:
+		return activityPath
+	case bypassId:
+		return ""
+	case overrideBypassId:
+		return activityPath
+	}
+	return id
 }
 
-func empty(key string) string {
-	return ""
+func testOverride(id string) string {
+	switch id {
+	case resolvedId:
+		return googleUrl
+	case pathId:
+		return googlePath
+	case overrideBypassId:
+		return ""
+	}
+	return id
 }
 
-func Example_Resolver() {
-	r := NewResolver("http://localhost:8080", echo)
+func Example_Resolver_Passthrough() {
+	r := NewResolver("http://localhost:8080", nil)
 
-	key := "test"
-	val := r.Resolve(key)
-	fmt.Printf("test: Resolver(\"%v\") -> %v\n", key, val)
+	id := ""
+	val := r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
-	key = ""
-	val = r.Resolve(key)
-	fmt.Printf("test: Resolver(\"%v\") -> %v\n", key, val)
+	id = "test"
+	val = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
-	key = "/"
-	val = r.Resolve(key)
-	fmt.Printf("test: Resolver(\"%v\") -> %v\n", key, val)
+	id = "/google/search?q=golang"
+	val = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
-	r = NewResolver("http://localhost:8080", empty)
-	key = "/"
-	val = r.Resolve(key)
-	fmt.Printf("test: Resolver(\"%v\") -> %v\n", key, val)
+	id = "https://www.google.com/google:search?q=golang"
+	val = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
 
 	//Output:
-	//test: Resolver("test") -> test
-	//test: Resolver("") ->
-	//test: Resolver("/") -> /
-	//test: Resolver("/") -> http://localhost:8080/
+	//test: Resolve("") -> error: id cannot be resolved to a URL
+	//test: Resolve("test") -> test
+	//test: Resolve("/google/search?q=golang") -> http://localhost:8080/google/search?q=golang
+	//test: Resolve("https://www.google.com/google:search?q=golang") -> https://www.google.com/google:search?q=golang
 
 }
 
-func Example_Resolver_2() {
-	var s = ""
-	r := NewResolver("http://localhost:8080", echo)
-	url := r.Resolve(s)
+func Example_Resolver_Default() {
+	r := NewResolver("http://localhost:8080", testDefault)
 
-	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
+	id := resolvedId
+	url := r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	s = "http://"
-	url = r.Resolve(s)
-	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
+	id = pathId
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	s = "/test/resource?env=dev&cust=1"
-	url = r.Resolve(s)
-	fmt.Printf("test: Resolve(%v) -> [%v]\n", s, url)
+	id = bypassId
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	s = "https://www.google.com/search?q=testing"
-	url = r.Resolve(s)
-	fmt.Printf("test: resolve(%v) -> [%v]\n", s, url)
+	id = googleUrl
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: Resolve() -> []
-	//test: Resolve(http://) -> [http://]
-	//test: Resolve(/test/resource?env=dev&cust=1) -> [http://localhost:8080/test/resource?env=dev&cust=1]
-	//test: Resolve(https://www.google.com/search?q=testing) -> [https://www.google.com/search?q=testing]
+	//test: Resolve("resolved") -> http://localhost:8080/advanced-go/example-domain/activity:entry
+	//test: Resolve("path") -> http://localhost:8080/advanced-go/example-domain/activity:entry
+	//test: Resolve("bypass") -> bypass
+	//test: Resolve("https://www.google.com/search?q=golang") -> https://www.google.com/search?q=golang
 
 }
 
-/*
 func Example_Resolver_Override() {
-	pattern := "/endpoint/resource"
+	r := NewResolver("http://localhost:8080", testDefault)
+	r.SetOverride(testOverride)
 
-	uri := resolve(pattern)
-	fmt.Printf("test: resolve(%v) -> %v\n", pattern, uri)
+	id := resolvedId
+	url := r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	addResolver(func(s string) string {
-		if s == pattern {
-			return "https://github.com/acccount/go-ai-agent/core"
-		}
-		return ""
-	})
+	id = pathId
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	uri = resolve("invalid")
-	fmt.Printf("test: resolve(%v) -> %v\n", pattern, uri)
+	id = bypassId
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
-	uri = resolve(pattern)
-	fmt.Printf("test: resolve(%v) -> %v\n", pattern, uri)
-
-	pattern2 := "/endpoint/resource2"
-	addResolver(func(s string) string {
-		if s == pattern2 {
-			return "https://gitlab.com/entry/idiomatic-go"
-		}
-		return ""
-	})
-
-	uri = resolve(pattern2)
-	fmt.Printf("test: resolve(%v) -> %v\n", pattern2, uri)
+	id = overrideBypassId
+	url = r.Resolve(id)
+	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: resolve(/endpoint/resource) -> http://localhost:8080/endpoint/resource
-	//test: resolve(/endpoint/resource) -> invalid
-	//test: resolve(/endpoint/resource) -> https://github.com/acccount/go-ai-agent/core
-	//test: resolve(/endpoint/resource2) -> https://gitlab.com/entry/idiomatic-go
+	//test: Resolve("resolved") -> https://www.google.com/search?q=golang
+	//test: Resolve("path") -> http://localhost:8080/serach?q=golang
+	//test: Resolve("bypass") -> bypass
+	//test: Resolve("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
 
 }
-
-
-*/
