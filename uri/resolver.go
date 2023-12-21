@@ -51,10 +51,10 @@ func (r *resolver) Resolve(id string, values url.Values) string {
 		return "error: id cannot be resolved to a URL"
 	}
 	if strings.HasPrefix(url, "/") {
-		return r.defaultHost + url
+		url = r.defaultHost + url
 	}
 	if values != nil {
-		return url + "?" + values.Encode()
+		url = url + "?" + values.Encode()
 	}
 	return url
 }
