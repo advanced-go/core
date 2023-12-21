@@ -34,16 +34,16 @@ func testDefault(id string) string {
 	return id
 }
 
-func testOverride(id string) string {
+func testOverride(id string) (string, string) {
 	switch id {
 	case resolvedId:
-		return fileUrl
+		return fileUrl, ""
 	case pathId:
-		return filePath
+		return filePath, ""
 	case overrideBypassId:
-		return ""
+		return "", ""
 	}
-	return id
+	return id, ""
 }
 
 func Example_Resolver_Passthrough() {
@@ -106,7 +106,7 @@ func Example_Resolver_Default() {
 
 func Example_Resolver_Override() {
 	r := NewResolver("http://localhost:8080", testDefault)
-	r.SetOverride(testOverride)
+	r.SetOverride(testOverride, "")
 
 	v := make(url.Values)
 	v.Add("param-1", "value-1")
