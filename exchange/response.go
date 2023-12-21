@@ -13,6 +13,13 @@ import (
 	"strings"
 )
 
+const (
+	contentType     = "Content-Type"
+	contentTypeJson = "application/json"
+	contentTypeText = "text/plain"
+	jsonSuffix      = ".json"
+)
+
 var (
 	http11Bytes = []byte("HTTP/1.1")
 	http12Bytes = []byte("HTTP/1.2")
@@ -34,18 +41,18 @@ func readResponse(u *url.URL) (*http.Response, error) {
 	buf, err := os.ReadFile(uri.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), "file does not exist") {
-			return &http.Response{StatusCode: http.StatusNotFound}, nil
+			return &http.Response{StatusCode: http.StatusNotFound}, err
 		}
-		return &http.Response{StatusCode: http.StatusInternalServerError}, nil
+		return &http.Response{StatusCode: http.StatusInternalServerError}, err
 	}
 	if isHttpResponseMessage(buf) {
 		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 	} else {
 		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: io.NopCloser(bytes.NewReader(buf))}
-		if strings.HasSuffix(path, ".json") {
-			resp.Header.Add("Content-Type", "application/json")
+		if strings.HasSuffix(path, jsonSuffix) {
+			resp.Header.Add(contentType, contentTypeJson)
 		} else {
-			resp.Header.Add("Content-Type", "text/plain")
+			resp.Header.Add(contentType, contentTypeText)
 		}
 		return resp, nil
 	}
