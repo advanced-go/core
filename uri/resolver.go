@@ -1,10 +1,27 @@
-package exchange
+package uri
 
 import (
 	"fmt"
 	"reflect"
 	"strings"
 )
+
+// ResolveFunc - type for resolution
+type ResolveFunc func(string) string
+
+// Resolver - resolver interface
+type Resolver interface {
+	SetOverride(t any)
+	Resolve(id string) string
+}
+
+// NewResolver - create a resolver
+func NewResolver(defaultHost string, defaultFn ResolveFunc) Resolver {
+	r := new(resolver)
+	r.defaultHost = defaultHost
+	r.defaultFn = defaultFn
+	return r
+}
 
 type resolver struct {
 	defaultHost string

@@ -1,6 +1,8 @@
-package exchange
+package uri
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	resolvedId       = "resolved"

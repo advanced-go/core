@@ -15,23 +15,6 @@ const (
 	doLoc       = PkgPath + ":Do"
 )
 
-// ResolveFunc - type for resolution
-type ResolveFunc func(string) string
-
-// Resolver - resolver interface
-type Resolver interface {
-	SetOverride(t any)
-	Resolve(id string) string
-}
-
-// NewResolver - create a resolver
-func NewResolver(defaultHost string, defaultFn ResolveFunc) Resolver {
-	r := new(resolver)
-	r.defaultHost = defaultHost
-	r.defaultFn = defaultFn
-	return r
-}
-
 // Do - process a Http exchange with a runtime.Status
 func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	r := access.NewRequest(req.Header, req.Method, doLoc)
