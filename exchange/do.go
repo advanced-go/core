@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	doLocation     = PkgPath + ":Do"
+	doLocation     = PkgPath + ":do"
 	doReadResponse = PkgPath + ":readReponse"
 	internalError  = "Internal Error"
 )
@@ -35,7 +35,7 @@ func init() {
 
 func do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
 	}
 	var err error
 
@@ -47,7 +47,7 @@ func do(req *http.Request) (resp *http.Response, status runtime.Status) {
 				resp1.StatusCode = http.StatusInternalServerError
 				resp1.Status = internalError
 			}
-			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadResponse, err1)
+			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadResponse, err1).AddLocation(doLocation)
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}

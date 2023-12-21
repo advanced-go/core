@@ -1,6 +1,7 @@
 package exchange
 
 import (
+	"errors"
 	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
@@ -10,14 +11,17 @@ import (
 type pkg struct{}
 
 const (
-	PkgPath     = "github.com/advanced-go/core/exchange"
-	doRouteName = "http-exchange"
-	doLoc       = PkgPath + ":Do"
+	PkgPath      = "github.com/advanced-go/core/exchange"
+	doRouteName  = "http-exchange"
+	doHandlerLoc = PkgPath + ":Do"
 )
 
 // Do - process a Http exchange with a runtime.Status
 func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
-	r := access.NewRequest(req.Header, req.Method, doLoc)
+	if req == nil {
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil")) //.SetCode(runtime.StatusInvalidArgument)
+	}
+	r := access.NewRequest(req.Header, req.Method, doHandlerLoc)
 	defer access.LogDeferred(access.InternalTraffic, r, doRouteName, "", -1, "", &status)()
 	return do(req)
 }
