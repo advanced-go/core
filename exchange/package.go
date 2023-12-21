@@ -27,6 +27,6 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 }
 
 // ReadResponse - read a Http response given a URL
-func ReadResponse(u *url.URL) (*http.Response, error) {
+func ReadResponse(u *url.URL) (*http.Response, runtime.Status) {
 	return readResponse(u)
 }

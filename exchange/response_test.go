@@ -25,8 +25,8 @@ func Example_ReadResponse() {
 	//req, err := http.NewRequest("GET", s, nil)
 	//fmt.Printf("test: http.NewRequest() -> [err:%v]\n", err)
 
-	resp, err0 := ReadResponse(u)
-	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, err0, resp.StatusCode)
+	resp, status0 := ReadResponse(u)
+	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, status0, resp.StatusCode)
 
 	buf, status := readAll(resp.Body)
 	fmt.Printf("test: readAll() -> [status:%v] %v", status, string(buf))

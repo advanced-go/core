@@ -40,14 +40,14 @@ func do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	var err error
 
 	if uri.IsFileScheme(req.URL) {
-		resp1, err1 := ReadResponse(req.URL)
-		if err1 != nil {
-			if resp1 == nil {
-				resp1 = new(http.Response)
-				resp1.StatusCode = http.StatusInternalServerError
-				resp1.Status = internalError
-			}
-			return resp1, runtime.NewStatusError(http.StatusInternalServerError, doReadResponse, err1).AddLocation(doLocation)
+		resp1, status1 := readResponse(req.URL)
+		if !status1.OK() {
+			//if resp1 == nil {
+			//	resp1 = new(http.Response)
+			//	resp1.StatusCode = http.StatusInternalServerError
+			//	resp1.Status = internalError
+			//}
+			return resp1, status1.AddLocation(doLocation)
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}

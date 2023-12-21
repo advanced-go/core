@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
@@ -14,10 +15,11 @@ import (
 )
 
 const (
-	contentType     = "Content-Type"
-	contentTypeJson = "application/json"
-	contentTypeText = "text/plain"
-	jsonSuffix      = ".json"
+	contentType          = "Content-Type"
+	contentTypeJson      = "application/json"
+	contentTypeText      = "text/plain"
+	jsonSuffix           = ".json"
+	readResponseLocatiom = PkgPath + ":readResponse"
 )
 
 var (
@@ -27,12 +29,14 @@ var (
 )
 
 // readResponse - read a Http response given a URL
-func readResponse(u *url.URL) (*http.Response, error) {
+func readResponse(u *url.URL) (*http.Response, runtime.Status) {
+	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: "Internal Error"}
+
 	if u == nil {
-		return nil, errors.New("error: URL is nil")
+		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, errors.New("error: URL is nil"))
 	}
-	if u.Scheme != "file" {
-		return nil, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme))
+	if !uri.IsFileScheme(u) {
+		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	}
 	path := u.Path
 	if strings.HasPrefix(path, "/") {
@@ -41,12 +45,16 @@ func readResponse(u *url.URL) (*http.Response, error) {
 	buf, err := os.ReadFile(uri.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), "file does not exist") {
-			return &http.Response{StatusCode: http.StatusNotFound}, err
+			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, err)
 		}
-		return &http.Response{StatusCode: http.StatusInternalServerError}, err
+		return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocatiom, err)
 	}
 	if isHttpResponseMessage(buf) {
-		return http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
+		resp1, err2 := http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
+		if err2 != nil {
+			return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocatiom, err)
+		}
+		return resp1, runtime.StatusOK()
 	} else {
 		resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: io.NopCloser(bytes.NewReader(buf))}
 		if strings.HasSuffix(path, jsonSuffix) {
@@ -54,7 +62,7 @@ func readResponse(u *url.URL) (*http.Response, error) {
 		} else {
 			resp.Header.Add(contentType, contentTypeText)
 		}
-		return resp, nil
+		return resp, runtime.StatusOK()
 	}
 }
 

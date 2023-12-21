@@ -28,9 +28,9 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
 	}
 	path = basePath + respName
-	resp, err1 := exchange.ReadResponse(ParseRaw(path))
-	if err1 != nil {
-		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: err1}}, nil, nil
+	resp, status1 := exchange.ReadResponse(ParseRaw(path))
+	if !status1.OK() {
+		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1.FirstError()}}, nil, nil
 	}
 	return nil, req, resp
 }
