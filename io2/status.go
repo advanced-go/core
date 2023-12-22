@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	statusLoc   = ":ReadStatus"
+	statusLoc   = PkgPath + ":ReadStatus"
 	StatusOKUri = "urn:status:ok"
 )
 

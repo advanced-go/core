@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	readStateLoc   = PkgPath + ":ReadState"
-	readResultsLoc = PkgPath + ":ReadResults"
+	readStateLoc = PkgPath + ":ReadState"
 )
 
 func ReadState[T any](in any) (t T, status runtime.Status) {

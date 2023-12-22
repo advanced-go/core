@@ -6,10 +6,11 @@ import (
 )
 
 const (
-	stringValueError = "error: stringFromType() value parameter is nil"
-	listValueError   = "error: listFromType() value parameter is nil"
+	//stringValueError = "error: stringFromType() value parameter is nil"
+	listValueError = "error: ListFromType() value parameter is nil"
 )
 
+/*
 // LookupFunctionConstraints - lookup function constraints
 type LookupFunctionConstraints interface {
 	func(string) string | func(string) []string
@@ -19,14 +20,14 @@ type LookupFunctionConstraints interface {
 func LookupFromType[F LookupFunctionConstraints](t any) (r F) {
 	switch ptr := any(&r).(type) {
 	case *func(string) string:
-		*ptr = stringFromType(t)
+		*ptr = StringFromType(t)
 	case *func(string) []string:
-		*ptr = listFromType(t)
+		*ptr = ListFromType(t)
 	}
 	return r
 }
 
-func stringFromType(value any) func(key string) string {
+func StringFromType(value any) func(key string) string {
 	if value == nil {
 		return func(k string) string { return stringValueError }
 	}
@@ -49,23 +50,31 @@ func stringFromType(value any) func(key string) string {
 	}
 }
 
-func listFromType(value any) func(key string) []string {
+*/
+
+// ListFromType - given the value to returned, create a function returning that value
+func ListFromType(value any) func(key string) []string {
 	if value == nil {
 		return func(key string) []string { return []string{listValueError} }
 	}
 	if s, ok := value.(string); ok {
 		return func(key string) []string { return []string{s, ""} }
 	}
-	if s, ok := value.([]string); ok {
-		return func(key string) []string { return s }
+	if l, ok := value.([]string); ok {
+		return func(key string) []string { return l }
 	}
 	if m, ok := value.(map[string][]string); ok {
-		return func(key string) []string { return m[key] }
+		return func(key string) []string {
+			if v, ok1 := m[key]; ok1 {
+				return v
+			}
+			return nil
+		}
 	}
 	if fn, ok := value.(func(string) []string); ok {
 		return fn
 	}
 	return func(key string) []string {
-		return []string{fmt.Sprintf("error: listFromType() value parameter is an invalid type: %v", reflect.TypeOf(value))}
+		return []string{fmt.Sprintf("error: ListFromType() value parameter is an invalid type: %v", reflect.TypeOf(value))}
 	}
 }
