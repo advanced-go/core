@@ -34,26 +34,51 @@ func ExampleReadStatus_Unmarshal() {
 
 }
 
-func ExampleReadStatus_OK() {
-	status := ReadStatus(nil)
+func ExampleReadStatus_Const() {
+	status := ReadStatus("")
 	fmt.Printf("test: ReadStatus(nil) -> [code:%v]\n", status.Code())
 
 	uri := StatusOKUri
 	status = ReadStatus(uri)
 	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v]\n", uri, status.Code())
 
-	uri2 := []string{""}
-	status = ReadStatus(uri2)
-	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri2, status.Code(), status)
+	uri = StatusNotFoundUri
+	status = ReadStatus(uri)
+	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
-	uri2 = []string{"", ""}
-	status = ReadStatus(uri2)
-	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri2, status.Code(), status)
+	uri = StatusTimeoutUri
+	status = ReadStatus(uri)
+	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
 	//Output:
 	//test: ReadStatus(nil) -> [code:200]
 	//test: ReadStatus("urn:status:ok") -> [code:200]
-	//test: ReadStatus("[]") -> [code:200] [status:OK]
-	//test: ReadStatus("[ ]") -> [code:200] [status:OK]
+	//test: ReadStatus("urn:status:notfound") -> [code:404] [status:Not Found]
+	//test: ReadStatus("urn:status:timeout") -> [code:504] [status:Timeout]
+
+}
+
+func Example_isStatusURL() {
+	u := ""
+	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/activity.json"
+	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status/activity.json"
+	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status-504.json"
+	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status/status-504.json"
+	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	//Output:
+	//test: isStateURL("") -> false
+	//test: isStateURL("file://[cwd]/io2test/resource/activity.json") -> false
+	//test: isStateURL("file://[cwd]/io2test/resource/status/activity.json") -> false
+	//test: isStateURL("file://[cwd]/io2test/resource/status-504.json") -> true
+	//test: isStateURL("file://[cwd]/io2test/resource/status/status-504.json") -> true
 
 }

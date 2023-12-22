@@ -1,34 +1,68 @@
 package uri
 
 import (
-	"errors"
-	"net/url"
-	"strings"
+	"fmt"
+	"reflect"
 )
 
 const (
-	SchemeName = "scheme"
-	HostName   = "host"
-	PathName   = "path"
-	QueryName  = "query"
-	//MethodName = "method"
+	stringValueError = "error: stringFromType() value parameter is nil"
 )
 
-func LookupUrl(name string, url *url.URL) (string, error) {
-	if url == nil {
-		return "", errors.New("invalid argument: Url is nil")
+// LookupFunc - lookup function
+type LookupFunc func(string) string
+
+// Lookup - lookup interface
+type Lookup interface {
+	SetFunc(value any)
+	Value(key string) (string, bool)
+}
+
+type uriLookup struct {
+	fn LookupFunc
+}
+
+// NewLookup - new uri lookup
+func NewLookup() Lookup {
+	return new(uriLookup)
+}
+
+// SetFunc - set the lookup function
+func (l *uriLookup) SetFunc(value any) {
+	l.fn = stringFromType(value)
+}
+
+// Value - return the value associated with the key
+func (l *uriLookup) Value(key string) (string, bool) {
+	if l.fn == nil || len(key) == 0 {
+		return "", false
 	}
-	switch strings.ToLower(name) {
-	case SchemeName:
-		return url.Scheme, nil
-	case HostName:
-		return url.Host, nil
-	case PathName:
-		return url.Path, nil
-	case QueryName:
-		return url.RawQuery, nil
-		//case MethodName:
-		//	return method, nil
+	val := l.fn(key)
+	if len(val) > 0 {
+		return val, true
 	}
-	return LookupEnv(name)
+	return "", false
+}
+
+func stringFromType(value any) func(key string) string {
+	if value == nil {
+		return func(k string) string { return stringValueError }
+	}
+	switch ptr := value.(type) {
+	case string:
+		return func(k string) string { return ptr }
+	case map[string]string:
+		return func(k string) string {
+			v := ptr[k]
+			if len(v) > 0 {
+				return v
+			}
+			return ""
+		}
+	case func(string) string:
+		return ptr
+	}
+	return func(k string) string {
+		return fmt.Sprintf("error: stringFromType() value parameter is an invalid type: %v", reflect.TypeOf(value))
+	}
 }

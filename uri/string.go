@@ -54,7 +54,7 @@ func BuildUrl(url *url.URL, template string) (*url.URL, error) {
 		return url, nil
 	}
 	url2, err := Expand(template, func(name string) (string, error) {
-		return LookupUrl(name, url)
+		return LookupVariable(name, url)
 	},
 	)
 	if err != nil {

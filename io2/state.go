@@ -3,41 +3,42 @@ package io2
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/advanced-go/core/runtime"
 	uri2 "github.com/advanced-go/core/uri"
 	"net/url"
 	"os"
-	"reflect"
+	"strings"
 )
 
 const (
 	readStateLoc = PkgPath + ":ReadState"
 )
 
-func ReadState[T any](in any) (t T, status runtime.Status) {
-	uri := ""
-	if in == nil {
-		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is nil"))
+func ReadState[T any](uri string) (t T, status runtime.Status) {
+	if len(uri) == 0 {
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is empty"))
 	}
-	if s, ok := in.(string); ok {
-		if len(s) == 0 {
-			return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is empty"))
-		}
-		uri = s
-	} else {
-		if l, ok1 := in.([]string); ok1 {
-			if len(l) == 0 {
-				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list is empty"))
+	/*
+		if s, ok := in.(string); ok {
+			if len(s) == 0 {
+				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI is empty"))
 			}
-			if len(l[0]) == 0 {
-				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list item empty"))
-			}
-			uri = l[0]
+			uri = s
 		} else {
-			return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New(fmt.Sprintf("error: URI parameter is an invalid type: %v", reflect.TypeOf(in))))
+			if l, ok1 := in.([]string); ok1 {
+				if len(l) == 0 {
+					return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list is empty"))
+				}
+				if len(l[0]) == 0 {
+					return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New("error: URI list item empty"))
+				}
+				uri = l[0]
+			} else {
+				return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, errors.New(fmt.Sprintf("error: URI parameter is an invalid type: %v", reflect.TypeOf(in))))
+			}
 		}
-	}
+
+	*/
 	u, err := url.Parse(uri)
 	if err != nil {
 		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, readStateLoc, err)
@@ -71,4 +72,14 @@ func ReadResults[T any](urls []string) (t T, status runtime.Status) {
 		}
 	}
 	return t, ReadStatus(urls[1])
+}
+
+func ReadValues[T any](uri string) (t T, status runtime.Status) {
+	uri = strings.ToLower(uri)
+	if isStatusURL(uri) {
+		return t, ReadStatus(uri)
+	} else {
+		return ReadState[T](uri)
+	}
+
 }
