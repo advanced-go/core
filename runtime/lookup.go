@@ -52,8 +52,31 @@ func StringFromType(value any) func(key string) string {
 
 */
 
-// ListFromType - given the value to returned, create a function returning that value
-func ListFromType(value any) func(key string) []string {
+// ListLookupFunc - list lookup function
+type ListLookupFunc func(string) []string
+
+// NewListLookup - new list lookup from a value type
+func NewListLookup(value any) ListLookupFunc {
+	if value == nil {
+		return nil
+	}
+	return ListFromType(value)
+}
+
+// ListLookup - lookup function
+func ListLookup(key string, fn ListLookupFunc) []string {
+	if fn == nil || len(key) == 0 {
+		return nil
+	}
+	val := fn(key)
+	if len(val) > 0 {
+		return val
+	}
+	return nil
+}
+
+// ListFromType - create a function returning the value
+func ListFromType(value any) ListLookupFunc {
 	if value == nil {
 		return func(key string) []string { return []string{listValueError} }
 	}
