@@ -14,7 +14,7 @@ type LookupFunc func(string) string
 
 // Lookup - lookup interface
 type Lookup interface {
-	SetFunc(value any)
+	SetOverride(value any)
 	Value(key string) (string, bool)
 }
 
@@ -27,8 +27,8 @@ func NewLookup() Lookup {
 	return new(uriLookup)
 }
 
-// SetFunc - set the lookup function
-func (l *uriLookup) SetFunc(value any) {
+// SetOverride - override the default behavior
+func (l *uriLookup) SetOverride(value any) {
 	l.fn = stringFromType(value)
 }
 

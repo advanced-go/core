@@ -74,7 +74,7 @@ func Example_UriLookup() {
 	fmt.Printf("test: Lookup(\"%v\") -> [value:%v] [ok:%v]\n", k, v, ok)
 
 	// set function
-	l.SetFunc(map[string]string{passThroughKey: "value-pass-through"})
+	l.SetOverride(map[string]string{passThroughKey: "value-pass-through"})
 	k = ""
 	v, ok = l.Value(k)
 	fmt.Printf("test: Lookup(\"%v\") -> [value:%v] [ok:%v]\n", k, v, ok)
@@ -87,7 +87,7 @@ func Example_UriLookup() {
 	v, ok = l.Value(k)
 	fmt.Printf("test: Lookup(\"%v\") -> [value:%v] [ok:%v]\n", k, v, ok)
 
-	l.SetFunc(map[string]string{passThroughKey: "value-pass-through", nobodyHomeKey: "value-nobody-home"})
+	l.SetOverride(map[string]string{passThroughKey: "value-pass-through", nobodyHomeKey: "value-nobody-home"})
 	k = passThroughKey
 	v, ok = l.Value(k)
 	fmt.Printf("test: Lookup(\"%v\") -> [value:%v] [ok:%v]\n", k, v, ok)
