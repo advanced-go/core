@@ -42,3 +42,18 @@ func NewLookup[T LookupResultConstraints, F LookupFunctionConstraints](defaultFn
 	l.defaultFn = defaultFn
 	return l
 }
+
+/*
+// LookupFromType - create a function from a type
+func LookupFromType[F LookupFunctionConstraints](t any) (r F) {
+	switch ptr := any(&r).(type) {
+	case *func(string) string:
+		*ptr = StringFromType(t)
+	case *func(string) []string:
+		*ptr = ListFromType(t)
+	}
+	return r
+}
+
+
+*/

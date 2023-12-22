@@ -28,7 +28,7 @@ func NewListLookup() ListLookup {
 }
 
 func (l *listLookup) SetLookupFunc(value any) {
-	l.lookupFn = listFromType(value)
+	l.lookupFn = ListFromType(value)
 }
 
 func (l *listLookup) Lookup(key string) []string {
@@ -38,8 +38,8 @@ func (l *listLookup) Lookup(key string) []string {
 	return l.lookupFn(key)
 }
 
-// listFromType - create a function returning the value
-func listFromType(value any) ListLookupFunc {
+// ListFromType - create a function returning the value
+func ListFromType(value any) ListLookupFunc {
 	if value == nil {
 		return func(key string) []string { return []string{listValueError} }
 	}
