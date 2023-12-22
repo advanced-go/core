@@ -96,8 +96,8 @@ func isStatusURL(url string) bool {
 	if i == -1 {
 		return false
 	}
-	if i == 0 {
-		return true
-	}
-	return strings.Index(url[i-1:], statusSegment) == -1
+	//if i == 0 {
+	//	return true
+	//}
+	return strings.LastIndex(url, "/") < i
 }
