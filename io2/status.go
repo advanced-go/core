@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 )
 
 const (
@@ -16,15 +15,7 @@ const (
 	StatusOKUri       = "urn:status:ok"
 	StatusNotFoundUri = "urn:status:notfound"
 	StatusTimeoutUri  = "urn:status:timeout"
-	statusToken       = "status"
-	statusSegment     = "/status/"
 )
-
-type statusState2 struct {
-	Code     int    `json:"code"`
-	Location string `json:"location"`
-	Err      string `json:"err"`
-}
 
 func ReadStatus(uri string) runtime.Status {
 	status1 := constStatus(uri)
@@ -62,7 +53,7 @@ func ReadStatus(uri string) runtime.Status {
 	if err1 != nil {
 		return runtime.NewStatusError(runtime.StatusIOError, statusLoc, err1)
 	}
-	var status statusState2
+	var status runtime.SerializedStatusState
 	err = json.Unmarshal(buf, &status)
 	if err != nil {
 		return runtime.NewStatusError(runtime.StatusJsonDecodeError, statusLoc, err)
@@ -86,18 +77,4 @@ func constStatus(url string) runtime.Status {
 		return runtime.NewStatus(http.StatusGatewayTimeout)
 	}
 	return nil
-}
-
-func isStatusURL(url string) bool {
-	if len(url) == 0 {
-		return false
-	}
-	i := strings.LastIndex(url, statusToken)
-	if i == -1 {
-		return false
-	}
-	//if i == 0 {
-	//	return true
-	//}
-	return strings.LastIndex(url, "/") < i
 }

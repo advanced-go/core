@@ -83,6 +83,13 @@ type Status interface {
 	String() string
 }
 
+// SerializedStatusState - serializable status state
+type SerializedStatusState struct {
+	Code     int    `json:"code"`
+	Location string `json:"location"`
+	Err      string `json:"err"`
+}
+
 type statusState struct {
 	SCode      int           `json:"code"` //type codes.Code uint32
 	SDuration  time.Duration `json:"duration"`

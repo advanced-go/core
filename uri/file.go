@@ -9,6 +9,8 @@ import (
 
 const (
 	CwdVariable = "[cwd]"
+	statusToken = "status"
+	//statusSegment     = "/status/"
 )
 
 var (
@@ -45,4 +47,15 @@ func FileName(u *url.URL) string {
 		name = strings.ReplaceAll(name, "/", "\\")
 	}
 	return name
+}
+
+func IsStatusURL(url string) bool {
+	if len(url) == 0 {
+		return false
+	}
+	i := strings.LastIndex(url, statusToken)
+	if i == -1 {
+		return false
+	}
+	return strings.LastIndex(url, "/") < i
 }

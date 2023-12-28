@@ -3,10 +3,11 @@ package io2
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 )
 
 func ExampleReadStatus_Marshal() {
-	status := statusState2{
+	status := runtime.SerializedStatusState{
 		Code:     504,
 		Location: "ExampleStatus2_Marshalling",
 		Err:      "error 1",
@@ -55,30 +56,5 @@ func ExampleReadStatus_Const() {
 	//test: ReadStatus("urn:status:ok") -> [code:200]
 	//test: ReadStatus("urn:status:notfound") -> [code:404] [status:Not Found]
 	//test: ReadStatus("urn:status:timeout") -> [code:504] [status:Timeout]
-
-}
-
-func Example_isStatusURL() {
-	u := ""
-	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
-
-	u = "file://[cwd]/io2test/resource/activity.json"
-	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
-
-	u = "file://[cwd]/io2test/resource/status/activity.json"
-	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
-
-	u = "file://[cwd]/io2test/resource/status-504.json"
-	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
-
-	u = "file://[cwd]/io2test/resource/status/status-504.json"
-	fmt.Printf("test: isStateURL(\"%v\") -> %v\n", u, isStatusURL(u))
-
-	//Output:
-	//test: isStateURL("") -> false
-	//test: isStateURL("file://[cwd]/io2test/resource/activity.json") -> false
-	//test: isStateURL("file://[cwd]/io2test/resource/status/activity.json") -> false
-	//test: isStateURL("file://[cwd]/io2test/resource/status-504.json") -> true
-	//test: isStateURL("file://[cwd]/io2test/resource/status/status-504.json") -> true
 
 }

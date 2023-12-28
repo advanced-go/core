@@ -76,7 +76,7 @@ func ReadResults[T any](urls []string) (t T, status runtime.Status) {
 
 func ReadValues[T any](uri string) (t T, status runtime.Status) {
 	uri = strings.ToLower(uri)
-	if isStatusURL(uri) {
+	if uri2.IsStatusURL(uri) {
 		return t, ReadStatus(uri)
 	} else {
 		return ReadState[T](uri)

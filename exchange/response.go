@@ -19,7 +19,7 @@ const (
 	contentTypeJson      = "application/json"
 	contentTypeText      = "text/plain"
 	jsonSuffix           = ".json"
-	readResponseLocatiom = PkgPath + ":readResponse"
+	readResponseLocation = PkgPath + ":readResponse"
 )
 
 var (
@@ -33,10 +33,10 @@ func readResponse(u *url.URL) (*http.Response, runtime.Status) {
 	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: "Internal Error"}
 
 	if u == nil {
-		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, errors.New("error: URL is nil"))
+		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New("error: URL is nil"))
 	}
 	if !uri.IsFileScheme(u) {
-		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
+		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	}
 	path := u.Path
 	if strings.HasPrefix(path, "/") {
@@ -45,14 +45,14 @@ func readResponse(u *url.URL) (*http.Response, runtime.Status) {
 	buf, err := os.ReadFile(uri.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), "file does not exist") {
-			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocatiom, err)
+			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, err)
 		}
-		return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocatiom, err)
+		return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocation, err)
 	}
 	if isHttpResponseMessage(buf) {
 		resp1, err2 := http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 		if err2 != nil {
-			return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocatiom, err)
+			return serverErr, runtime.NewStatusError(runtime.StatusIOError, readResponseLocation, err)
 		}
 		return resp1, runtime.StatusOK()
 	} else {
