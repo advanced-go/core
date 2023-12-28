@@ -12,7 +12,7 @@ var (
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
-// Only supports []byte, string, io.Reader, and io.ReaderCloser for content
+// Only supports []byte, string, io.Reader, and io2.ReaderCloser for content
 func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
 	var e E
 

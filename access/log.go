@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-type pkg struct{}
-
 const (
 	InternalTraffic = "internal"
 	EgressTraffic   = "egress"

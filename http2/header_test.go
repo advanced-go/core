@@ -2,7 +2,7 @@ package http2
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/http2/http2test"
+	"net/http/httptest"
 )
 
 /*
@@ -31,12 +31,12 @@ func ExampleSelect() {
 */
 
 func Example_SetHeaders() {
-	r := http2test.NewRecorder()
+	r := httptest.NewRecorder()
 
 	//SetHeaders(r, "key-only")
 	//fmt.Printf("test: SetHeaders() [err:%v] [cnt:%v]\n", err, len(r.Result().Header))
 
-	r = http2test.NewRecorder()
+	r = httptest.NewRecorder()
 	SetHeaders(r, []Attr{{"key1", "val-1"}, {"key-2", "val-2"}})
 	fmt.Printf("test: SetHeaders() [cnt:%v]\n", len(r.Result().Header))
 

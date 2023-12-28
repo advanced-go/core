@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/io2"
+	io2 "github.com/advanced-go/core/http2/io2"
 	"net/http"
 )
 

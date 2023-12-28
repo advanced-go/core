@@ -17,7 +17,7 @@ const (
 
 //}
 /*else {
-	resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: io.NopCloser(bytes.NewReader(buf))}
+	resp := &http.Response{StatusCode: http.StatusOK, Header: make(http.Header), Body: io2.NopCloser(bytes.NewReader(buf))}
 	if strings.HasSuffix(path, jsonSuffix) {
 		resp.Header.Add(contentType, contentTypeJson)
 	} else {

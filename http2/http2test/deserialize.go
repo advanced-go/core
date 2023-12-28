@@ -3,7 +3,7 @@ package http2test
 import (
 	"encoding/json"
 	"errors"
-	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/http2/io2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 )

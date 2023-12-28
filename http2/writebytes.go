@@ -3,7 +3,7 @@ package http2
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/io2"
+	io2 "github.com/advanced-go/core/http2/io2"
 	"github.com/advanced-go/core/json2"
 	"github.com/advanced-go/core/runtime"
 	"io"

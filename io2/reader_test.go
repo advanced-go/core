@@ -22,7 +22,7 @@ func ExampleStringReader() {
 /*
 func ExampleIOError() {
 	s := "This is an example of content"
-	r := NewReaderCloser(strings2.NewReader(s), io.ErrUnexpectedEOF)
+	r := NewReaderCloser(strings2.NewReader(s), io2.ErrUnexpectedEOF)
 	var buf = make([]byte, len(s))
 	cnt, err := r.Read(buf)
 

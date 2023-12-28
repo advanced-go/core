@@ -4,18 +4,8 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"reflect"
 	"time"
 )
-
-func Example_PackageUri() {
-	pkgPath := reflect.TypeOf(any(pkg{})).PkgPath()
-	fmt.Printf("test: PkgPath  = \"%v\"\n", pkgPath)
-
-	//Output:
-	//test: PkgPath  = "github.com/advanced-go/core/access"
-
-}
 
 func Example_LogAccess() {
 	start := time.Now().UTC()

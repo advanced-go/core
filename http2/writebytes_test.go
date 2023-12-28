@@ -60,7 +60,7 @@ func Example_WriteBytes_Error() {
 	//Output:
 	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: <nil>]] [rc:]
 	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *string]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *io.Reader]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *io2.Reader]] [rc:]
 	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: int]] [rc:]
 	//test: WriteBytes() -> [buf:false] [status:I/O Failure [error on internal read]] [rc:]
 
@@ -79,12 +79,12 @@ func Example_WriteBytes() {
 	buf, rc, status = WriteBytes(errors.New(str), "")
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
 
-	str = "this is io.Reader content"
+	str = "this is io2.Reader content"
 	r := strings.NewReader(str)
 	buf, rc, status = WriteBytes(r, "")
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
 
-	str = "this is io.ReaderCloser content"
+	str = "this is io2.ReaderCloser content"
 	r = strings.NewReader(str)
 	buf, rc, status = WriteBytes(io.NopCloser(r), "")
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
@@ -93,8 +93,8 @@ func Example_WriteBytes() {
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is string content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is []byte content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is an error message] [rc:text/plain; charset=utf-8]
-	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io.Reader content] [rc:text/plain; charset=utf-8]
-	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io.ReaderCloser content] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io2.Reader content] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io2.ReaderCloser content] [rc:text/plain; charset=utf-8]
 
 }
 
