@@ -5,7 +5,6 @@ import (
 	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"net/url"
 )
 
 type pkg struct{}
@@ -24,9 +23,4 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	r := access.NewRequest(req.Header, req.Method, doHandlerLoc)
 	defer access.LogDeferred(access.InternalTraffic, r, doRouteName, "", -1, "", &status)()
 	return do(req)
-}
-
-// ReadResponse - read a Http response given a URL
-func ReadResponse(u *url.URL) (*http.Response, runtime.Status) {
-	return readResponse(u)
 }

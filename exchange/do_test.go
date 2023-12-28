@@ -24,3 +24,18 @@ func ExampleDo_ServiceUnavailable_Uri() {
 	//test: Do(req) -> [resp:true] [statusCode:503] [errs:[]] [content-type:text/html] [body:true]
 
 }
+
+/*
+func ExampleDo_ConnectivityError() {
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	resp, status := Do(req)
+	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [errs:%v] [content-type:%v] [body:%v]\n",
+		resp != nil, status.Code(), status.Errors(), resp.Header.Get("content-type"), resp.Body != nil)
+
+	//Output:
+	//test: Do(req) -> [resp:true] [statusCode:503] [errs:[]] [content-type:text/html] [body:true]
+
+}
+
+
+*/

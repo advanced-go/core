@@ -22,23 +22,72 @@ func readAll(body io.ReadCloser) ([]byte, runtime.Status) {
 func Example_ReadResponse() {
 	s := "file://[cwd]/exchangetest/html-response.txt"
 	u, _ := url.Parse(s)
-	//req, err := http.NewRequest("GET", s, nil)
-	//fmt.Printf("test: http.NewRequest() -> [err:%v]\n", err)
 
-	resp, status0 := ReadResponse(u)
-	fmt.Printf("test: ReadResponse(%v) -> [err:%v] [status:%v]\n", s, status0, resp.StatusCode)
+	resp, status0 := readResponse(u)
+	fmt.Printf("test: readResponse(%v) -> [status:%v] [statusCode:%v]\n", s, status0, resp.StatusCode)
 
 	buf, status := readAll(resp.Body)
-	fmt.Printf("test: readAll() -> [status:%v] %v", status, string(buf))
-
-	s = string(buf)
+	fmt.Printf("test: readAll() -> [status:%v] [content-length:%v]\n", status, len(buf)) //string(buf))
 
 	//Output:
-	//test: ReadResponse(file://[cwd]/exchangetest/html-response.txt) -> [err:<nil>] [status:200]
-	//test: ReadAll() -> [status:OK] <html>
-	//<body>
-	//<h1>Hello, World!</h1>
-	//</body>
-	//</html>
+	//test: readResponse(file://[cwd]/exchangetest/html-response.txt) -> [status:OK] [statusCode:200]
+	//test: readAll() -> [status:OK] [content-length:58]
+
+}
+
+func Example_ReadResponse_URL_Nil() {
+	resp, status0 := readResponse(nil)
+	fmt.Printf("test: readResponse(nil) -> [error:%v] [statusCode:%v]\n", status0.Errors(), resp.StatusCode)
+
+	//Output:
+	//test: readResponse(nil) -> [error:[error: URL is nil]] [statusCode:500]
+
+}
+
+func Example_ReadResponse_Invalid_Scheme() {
+	s := "https://www.google.com/search?q=golang"
+	u, _ := url.Parse(s)
+
+	resp, status0 := readResponse(u)
+	fmt.Printf("test: readResponse(%vl) -> [error:%v] [statusCode:%v]\n", s, status0.Errors(), resp.StatusCode)
+
+	//Output:
+	//test: readResponse(https://www.google.com/search?q=golangl) -> [error:[error: Invalid URL scheme : https]] [statusCode:500]
+
+}
+
+func Example_ReadResponse_HTTP_Error() {
+	s := "file://[cwd]/exchangetest/message.txt"
+	u, _ := url.Parse(s)
+
+	resp, status0 := readResponse(u)
+	fmt.Printf("test: readResponse(%v) -> [error:%v] [statusCode:%v]\n", s, status0.Errors(), resp.StatusCode)
+
+	//Output:
+	//test: readResponse(file://[cwd]/exchangetest/message.txt) -> [error:[malformed HTTP status code "text"]] [statusCode:500]
+
+}
+
+func Example_ReadResponse_NotFound() {
+	s := "file://[cwd]/exchangetest/not-found.txt"
+	u, _ := url.Parse(s)
+
+	resp, status0 := readResponse(u)
+	fmt.Printf("test: readResponse(%v) -> [error:%v] [statusCode:%v]\n", s, status0.Errors(), resp.StatusCode)
+
+	//Output:
+	//test: readResponse(file://[cwd]/exchangetest/not-found.txt) -> [error:[open C:\Users\markb\GitHub\core\exchange\exchangetest\not-found.txt: The system cannot find the file specified.]] [statusCode:404]
+
+}
+
+func Example_ReadResponse_EOF_Error() {
+	s := "file://[cwd]/exchangetest/http-503-error.txt"
+	u, _ := url.Parse(s)
+
+	resp, status0 := readResponse(u)
+	fmt.Printf("test: readResponse(%v) -> [error:%v] [statusCode:%v]\n", s, status0.Errors(), resp.StatusCode)
+
+	//Output:
+	//test: readResponse(file://[cwd]/exchangetest/http-503-error.txt) -> [error:[unexpected EOF]] [statusCode:500]
 
 }

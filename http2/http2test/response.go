@@ -1,4 +1,4 @@
-package exchange
+package http2test
 
 import (
 	"bufio"
@@ -14,13 +14,13 @@ import (
 )
 
 const (
-	readResponseLocation = PkgPath + ":readResponse"
+	readResponseLocation = ":readResponse"
 	fileExistsError      = "The system cannot find the file specified"
 )
 
 // readResponse - read a Http response given a URL
 func readResponse(u *url.URL) (*http.Response, runtime.Status) {
-	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: internalError}
+	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: "Internal Error"}
 
 	if u == nil {
 		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New("error: URL is nil"))
