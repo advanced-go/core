@@ -3,7 +3,6 @@ package access
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	strings2 "github.com/advanced-go/core/strings2"
 	"log"
 	"net/http"
 	"strconv"
@@ -65,7 +64,7 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		fmtstr(o.InstanceId),
 
 		traffic,
-		strings2.FmtTimestamp(start),
+		FmtTimestamp(start),
 		strconv.Itoa(d),
 
 		fmtstr(req.Header.Get(runtime.XRequestId)),

@@ -41,16 +41,6 @@ func IsDebugEnvironment() bool {
 	return rte == debug
 }
 
-/*
-func LookupEnv(name string) (string, error) {
-	if strings2.HasPrefix(name, EnvPrefix) {
-		return os.Getenv(name[len(EnvPrefix):]), nil
-	}
-	return "", errors.New(fmt.Sprintf("invalid argument : LookupEnv() template variable is invalid: %v", name))
-}
-
-
-*/
 // EnvStr - string representation for the environment
 func EnvStr() string {
 	switch rte {

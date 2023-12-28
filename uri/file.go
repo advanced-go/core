@@ -30,6 +30,13 @@ func init() {
 	basePath = cwd
 }
 
+func IsFileScheme(u *url.URL) bool {
+	if u == nil {
+		return false
+	}
+	return u.Scheme == FileScheme
+}
+
 func FileName(u *url.URL) string {
 	if u == nil {
 		return "error: URL is nil"
