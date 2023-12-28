@@ -11,7 +11,7 @@ import (
 
 const (
 	doLocation     = PkgPath + ":do"
-	doReadResponse = PkgPath + ":readReponse"
+	doReadResponse = PkgPath + ":readResponse"
 	internalError  = "Internal Error"
 )
 
