@@ -3,6 +3,7 @@ package runtime
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	uri2 "github.com/advanced-go/core/uri"
 	"net/http"
 	"os"
@@ -17,8 +18,11 @@ const (
 )
 
 func NewT[T any](uri string) (t T, status Status) {
-	if len(uri) == 0 {
-		return t, NewStatusError(StatusInvalidArgument, newTypeLoc, errors.New("error: URI is empty"))
+	if !uri2.IsFileScheme(uri) {
+		return t, NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
+	}
+	if !uri2.IsJson(uri) {
+		return t, NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
 	}
 	buf, err := os.ReadFile(uri2.FileName(uri))
 	if err != nil {
@@ -38,23 +42,29 @@ type serializedStatusState struct {
 }
 
 func NewS(uri string) Status {
-	status1 := statusFromConst(uri)
-	if status1 != nil {
-		return status1
+	status := statusFromConst(uri)
+	if status != nil {
+		return status
+	}
+	if !uri2.IsFileScheme(uri) {
+		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
+	}
+	if !uri2.IsJson(uri) {
+		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
 	}
 	buf, err1 := os.ReadFile(uri2.FileName(uri))
 	if err1 != nil {
 		return NewStatusError(StatusIOError, newStatusLoc, err1)
 	}
-	var status serializedStatusState
-	err := json.Unmarshal(buf, &status)
+	var status2 serializedStatusState
+	err := json.Unmarshal(buf, &status2)
 	if err != nil {
 		return NewStatusError(StatusJsonDecodeError, newStatusLoc, err)
 	}
-	if len(status.Err) > 0 {
-		return NewStatusError(status.Code, status.Location, errors.New(status.Err))
+	if len(status2.Err) > 0 {
+		return NewStatusError(status2.Code, status2.Location, errors.New(status2.Err))
 	}
-	return NewStatus(status.Code).AddLocation(status.Location)
+	return NewStatus(status2.Code).AddLocation(status2.Location)
 }
 
 func statusFromConst(url string) Status {
@@ -71,33 +81,3 @@ func statusFromConst(url string) Status {
 	}
 	return nil
 }
-
-/*
-func ReadStatus(uri string) runtime.Status {
-	status1 := constStatus(uri)
-	if status1 != nil {
-		return status1
-	}
-
-	u, err := url.Parse(uri)
-	if err != nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, statusLoc, err)
-	}
-	buf, err1 := os.ReadFile(uri2.FileName(u))
-	if err1 != nil {
-		return runtime.NewStatusError(runtime.StatusIOError, statusLoc, err1)
-	}
-	var status runtime.SerializedStatusState
-	err = json.Unmarshal(buf, &status)
-	if err != nil {
-		return runtime.NewStatusError(runtime.StatusJsonDecodeError, statusLoc, err)
-	}
-	if len(status.Err) > 0 {
-		return runtime.NewStatusError(status.Code, status.Location, errors.New(status.Err))
-	}
-	return runtime.NewStatus(status.Code).AddLocation(status.Location)
-}
-
-
-
-*/

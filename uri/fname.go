@@ -11,6 +11,7 @@ import (
 const (
 	CwdVariable = "[cwd]"
 	statusToken = "status"
+	JsonExt     = ".json"
 )
 
 var (
@@ -30,11 +31,21 @@ func init() {
 	basePath = cwd
 }
 
-func IsFileScheme(u *url.URL) bool {
+func IsJson(uri string) bool {
+	return strings.HasSuffix(uri, JsonExt)
+}
+
+func IsFileScheme(u any) bool {
 	if u == nil {
 		return false
 	}
-	return u.Scheme == FileScheme
+	if s, ok := u.(string); ok {
+		return strings.HasPrefix(s, FileScheme)
+	}
+	if u2, ok := u.(*url.URL); ok {
+		return u2.Scheme == FileScheme
+	}
+	return false
 }
 
 func FileName(uri any) string {

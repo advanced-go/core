@@ -20,8 +20,18 @@ func ExampleNewT_Error() {
 	_, status := NewT[address2]("")
 	fmt.Printf("test: NewT(\"\") -> [status:%v]\n", status)
 
+	s := "https://www.google.com/search"
+	_, status = NewT[address2](s)
+	fmt.Printf("test: NewT(%v) -> [status:%v]\n", s, status)
+
+	s = "file://[cwd]/runtimetest/address.txt"
+	_, status = NewT[address2](s)
+	fmt.Printf("test: NewT(%v) -> [status:%v]\n", s, status)
+
 	//Output:
-	//test: NewT("") -> [status:Invalid Argument [error: URI is empty]]
+	//test: NewT("") -> [status:Invalid Argument [error: URI is not of scheme file: ]]
+	//test: NewT(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
+	//test: NewT(file://[cwd]/runtimetest/address.txt) -> [status:Invalid Argument [error: URI is not a JSON file]]
 
 }
 
@@ -49,6 +59,24 @@ func ExampleStatus_Marshal() {
 
 	//Output:
 	//test: Marshal() -> [err:<nil>] [str:{"code":504,"location":"ExampleStatus2_Marshalling","err":"error 1"}]
+
+}
+func ExampleNewS_Error() {
+	status := NewS("")
+	fmt.Printf("test: NewS(\"\") -> [status:%v]\n", status)
+
+	s := "https://www.google.com/search"
+	status = NewS(s)
+	fmt.Printf("test: NewS(%v) -> [status:%v]\n", s, status)
+
+	s = "file://[cwd]/runtimetest/address.txt"
+	status = NewS(s)
+	fmt.Printf("test: NewS(%v) -> [status:%v]\n", s, status)
+
+	//Output:
+	//test: NewS("") -> [status:OK]
+	//test: NewS(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
+	//test: NewS(file://[cwd]/runtimetest/address.txt) -> [status:Invalid Argument [error: URI is not a JSON file]]
 
 }
 
