@@ -1,12 +1,34 @@
 package http2
 
 import (
+	"errors"
+	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"io"
+	"net/http"
+	"reflect"
 )
 
-// ReadAll - read the body with a runtime.Status
-func ReadAll(body io.ReadCloser) ([]byte, runtime.Status) {
+const (
+	readAllLoc = PkgPath + ":ReadAll"
+)
+
+// ReadAll - read the type body with a runtime.Status
+func ReadAll(t any) ([]byte, runtime.Status) {
+	if t == nil {
+		return nil, runtime.StatusOK()
+	}
+	if r, ok := t.(*http.Response); ok {
+		return readAllBody(r.Body)
+	}
+	if body, ok := t.(io.ReadCloser); ok {
+		return readAllBody(body)
+	}
+	return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, readAllLoc, errors.New(fmt.Sprintf("%v", reflect.TypeOf(t))))
+}
+
+// readAllBody - read the body with a runtime.Status
+func readAllBody(body io.ReadCloser) ([]byte, runtime.Status) {
 	if body == nil {
 		return nil, runtime.StatusOK()
 	}
@@ -17,7 +39,7 @@ func ReadAll(body io.ReadCloser) ([]byte, runtime.Status) {
 	}(body)
 	buf, err := io.ReadAll(body)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusIOError, PkgPath+":ReadAll", err)
+		return nil, runtime.NewStatusError(runtime.StatusIOError, readAllLoc, err)
 	}
 	return buf, runtime.StatusOK()
 }
