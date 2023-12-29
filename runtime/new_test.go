@@ -11,6 +11,7 @@ import (
 const (
 	address1Url = "file://[cwd]/runtimetest/address1.json"
 	address2Url = "file://[cwd]/runtimetest/address2.json"
+	status504   = "file://[cwd]/runtimetest/status-504.json"
 )
 
 type address2 struct {
@@ -58,7 +59,13 @@ func ExampleNew_URLError() {
 }
 
 func ExampleNew() {
-	addr, status := New[address2](address1Url)
+	addr, status := New[address2](status504)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", address1Url, addr, status)
+
+	addr, status = New[address2](address1Url)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", address1Url, addr, status)
+
+	addr, status = New[address2](uri.ParseRaw(status504))
 	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", address1Url, addr, status)
 
 	addr, status = New[address2](uri.ParseRaw(address1Url))
@@ -73,7 +80,9 @@ func ExampleNew() {
 	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", address2Url, addr, status)
 
 	//Output:
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{  }] [status:Timeout [error 1]]
 	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{frisco texas 75034}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{  }] [status:Timeout [error 1]]
 	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{frisco texas 75034}] [status:OK]
 	//test: New(file://[cwd]/runtimetest/address2.json) -> [addr:{vinton iowa 52349}] [status:OK]
 

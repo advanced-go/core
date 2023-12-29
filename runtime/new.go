@@ -24,8 +24,14 @@ func New[T any](v any) (t T, status Status) {
 	uri := ""
 	switch ptr := any(v).(type) {
 	case string:
+		if uri2.IsStatusURL(ptr) {
+			return t, NewS(ptr)
+		}
 		uri = ptr
 	case *url.URL:
+		if uri2.IsStatusURL(ptr.String()) {
+			return t, NewS(ptr.String())
+		}
 		uri = ptr.String()
 	case io.ReadCloser:
 		err := json.NewDecoder(ptr).Decode(&t)
