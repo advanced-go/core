@@ -44,7 +44,7 @@ func SetLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(s Status) { log.Default().Println(defaultFormatter(s)) }
+	defaultLogger Logger = func(s Status) { log.Default().Println(formatter(s)) }
 )
 
 // ErrorHandler - template parameter error handler interface
