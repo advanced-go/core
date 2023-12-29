@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -14,6 +15,8 @@ const (
 	TraceName      = "trace"
 	RequestIdName  = "request-id"
 	ErrorsName     = "errors"
+	GithubHost     = "github.com"
+	GithubTemplate = "%s/tree/main%s"
 )
 
 // Formatter - output formatting type
@@ -128,7 +131,7 @@ func formatTrace(name string, trace []string) string {
 		if i < len(trace)-1 {
 			result += ","
 		}
-		result += fmt.Sprintf("\"%v\"", trace[i])
+		result += fmt.Sprintf("\"%v\"", formatUri(trace[i]))
 	}
 	return result + " ]"
 }
@@ -180,9 +183,19 @@ func outputFormatTrace(name string, trace []string) string {
 		if i < len(trace)-1 {
 			result += ",\n"
 		}
-		result += fmt.Sprintf("  \"%v\"", trace[i])
+		result += fmt.Sprintf("  \"%v\"", formatUri(trace[i]))
 	}
 	return result + " \n]"
+}
+
+func formatUri(uri string) string {
+	if strings.HasPrefix(uri, GithubHost) {
+		i := strings.LastIndex(uri, "/")
+		if i != -1 {
+			return fmt.Sprintf(GithubTemplate, uri[:i], uri[i:])
+		}
+	}
+	return uri
 }
 
 // NewInvalidBodyTypeError - invalid type error
