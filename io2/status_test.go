@@ -1,11 +1,11 @@
 package io2
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 )
 
+/*
 func ExampleReadStatus_Marshal() {
 	status := runtime.SerializedStatusState{
 		Code:     504,
@@ -23,6 +23,9 @@ func ExampleReadStatus_Marshal() {
 	//test: Marshal() -> [err:<nil>] [str:{"code":504,"location":"ExampleStatus2_Marshalling","err":"error 1"}]
 
 }
+
+
+*/
 
 func ExampleReadStatus_Unmarshal() {
 	uri := "file://[cwd]/io2test/resource/status-504.json"

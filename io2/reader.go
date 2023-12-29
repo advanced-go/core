@@ -10,7 +10,12 @@ func ReadAll(body io.ReadCloser) ([]byte, runtime.Status) {
 	if body == nil {
 		return nil, runtime.StatusOK()
 	}
-	defer body.Close()
+	defer func(body io.ReadCloser) {
+		err := body.Close()
+		if err != nil {
+			
+		}
+	}(body)
 	buf, err := io.ReadAll(body)
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusIOError, PkgPath+":ReadAll", err)

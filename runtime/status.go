@@ -9,12 +9,9 @@ import (
 // https://grpc.github.io/grpc/core/md_doc_statuscodes.html
 
 const (
-	NilDuration       = time.Duration(-1)
-	contentType       = "Content-type"
-	contentTypeJson   = "application/json"
-	StatusOKUri       = "urn:status:ok"
-	StatusNotFoundUri = "urn:status:notfound"
-	StatusTimeoutUri  = "urn:status:timeout"
+	NilDuration     = time.Duration(-1)
+	contentType     = "Content-type"
+	contentTypeJson = "application/json"
 )
 
 const (
@@ -86,13 +83,6 @@ type Status interface {
 	String() string
 }
 
-// SerializedStatusState - serializable status state
-type SerializedStatusState struct {
-	Code     int    `json:"code"`
-	Location string `json:"location"`
-	Err      string `json:"err"`
-}
-
 type statusState struct {
 	SCode      int           `json:"code"` //type codes.Code uint32
 	SDuration  time.Duration `json:"duration"`
@@ -103,19 +93,6 @@ type statusState struct {
 	SContent   any           `json:"content"`
 	Header     http.Header   `json:"header"`
 }
-
-/*
-type statusState struct {
-	code      int //type codes.Code uint32
-	duration  time.Duration
-	handled   bool
-	requestId string
-	location  []string
-	errs      []error
-	content   any
-	header    http.Header
-}
-*/
 
 // NewStatus - new Status from a code
 func NewStatus(code int) Status {
