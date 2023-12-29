@@ -16,8 +16,8 @@ const (
 	googleUrl    = "https://www.google.com/search?q=golang"
 	//googlePath   = "/serach?q=golang"
 
-	fileUrl  = "file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt"
-	filePath = "file://[cwd]/io2/io2test/resource/html-response.txt"
+	fileUrl  = "file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt"
+	filePath = "file://[cwd]/uri/uritest/html-response.txt"
 )
 
 func testDefault(id string) string {
@@ -129,8 +129,8 @@ func Example_Resolver_Override() {
 	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: Resolve("resolved") -> file:///c:/Users/markb/GitHub/core/io2/io2test/resource/html-response.txt
-	//test: Resolve("path") -> file://[cwd]/io2/io2test/resource/html-response.txt
+	//test: Resolve("resolved") -> file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt
+	//test: Resolve("path") -> file://[cwd]/uri/uritest/html-response.txt
 	//test: Resolve("bypass") -> bypass
 	//test: Resolve("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
 

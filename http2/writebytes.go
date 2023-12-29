@@ -3,8 +3,6 @@ package http2
 import (
 	"errors"
 	"fmt"
-	io2 "github.com/advanced-go/core/http2/io2"
-	"github.com/advanced-go/core/json2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
@@ -30,14 +28,14 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 	case io.Reader:
 		var status runtime.Status
 
-		buf, status = io2.ReadAll(io.NopCloser(ptr))
+		buf, status = ReadAll(io.NopCloser(ptr))
 		if !status.OK() {
 			return nil, "", status
 		}
 	case io.ReadCloser:
 		var status runtime.Status
 
-		buf, status = io2.ReadAll(ptr)
+		buf, status = ReadAll(ptr)
 		if !status.OK() {
 			return nil, "", status
 		}
@@ -45,7 +43,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		if strings.Contains(contentType, "json") {
 			var status runtime.Status
 
-			buf, status = json2.Marshal(content)
+			buf, status = Marshal(content)
 			if !status.OK() {
 				return nil, "", status
 			}

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"reflect"
 	"strings"
 )
 
 const (
 	CwdVariable = "[cwd]"
 	statusToken = "status"
-	//statusSegment     = "/status/"
 )
 
 var (
@@ -37,10 +37,23 @@ func IsFileScheme(u *url.URL) bool {
 	return u.Scheme == FileScheme
 }
 
-func FileName(u *url.URL) string {
-	if u == nil {
+func FileName(uri any) string {
+	if uri == nil {
 		return "error: URL is nil"
 	}
+	if s, ok := uri.(string); ok {
+		if len(s) == 0 {
+			return "error: URL is empty"
+		}
+		return fileName(ParseRaw(s))
+	}
+	if u, ok := uri.(*url.URL); ok {
+		return fileName(u)
+	}
+	return fmt.Sprintf("error: invalid URL type: %v", reflect.TypeOf(uri))
+}
+
+func fileName(u *url.URL) string {
 	if !IsFileScheme(u) {
 		return fmt.Sprintf("error: scheme is invalid [%v]", u.Scheme)
 	}

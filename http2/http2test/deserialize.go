@@ -3,7 +3,7 @@ package http2test
 import (
 	"encoding/json"
 	"errors"
-	"github.com/advanced-go/core/http2/io2"
+	"github.com/advanced-go/core/http2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 )
@@ -21,7 +21,7 @@ func Deserialize[T any](body io.ReadCloser) (T, runtime.Status) {
 	}
 	switch ptr := any(&t).(type) {
 	case *[]byte:
-		buf, status := io2.ReadAll(body)
+		buf, status := http2.ReadAll(body)
 		if !status.OK() {
 			return t, status
 		}

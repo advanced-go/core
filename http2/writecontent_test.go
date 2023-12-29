@@ -2,7 +2,6 @@ package http2
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/http2/io2"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"net/http/httptest"
@@ -14,14 +13,14 @@ func Example_writeStatusContent() {
 	// No content
 	writeStatusContent[runtime.Output](r, runtime.StatusOK(), "test location")
 	r.Result().Header = r.Header()
-	buf, status := io2.ReadAll(r.Result().Body)
+	buf, status := ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Error message
 	r = httptest.NewRecorder()
 	writeStatusContent[runtime.Output](r, runtime.NewStatus(http.StatusInternalServerError).SetContent("error message", false), "test location")
 	r.Result().Header = r.Header()
-	buf, status = io2.ReadAll(r.Result().Body)
+	buf, status = ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Json
@@ -29,7 +28,7 @@ func Example_writeStatusContent() {
 	r = httptest.NewRecorder()
 	writeStatusContent[runtime.Output](r, runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true), "test location")
 	r.Result().Header = r.Header()
-	buf, status = io2.ReadAll(r.Result().Body)
+	buf, status = ReadAll(r.Result().Body)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	//Output:

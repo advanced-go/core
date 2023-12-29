@@ -35,7 +35,7 @@ func Example_DefaultFormat() {
 
 	//Output:
 	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/tree/main/location-1","github.com/advanced-go/tree/main/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
-	
+
 }
 
 func ExampleOutputHandler_Handle() {

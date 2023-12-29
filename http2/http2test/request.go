@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/io2"
+	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 const (
@@ -24,14 +25,14 @@ type nopCloser struct {
 
 func (nopCloser) Close() error { return nil }
 
-func ReadRequest(uri *url.URL) (*http.Request, error) {
-	if uri == nil {
-		return nil, errors.New("error: Uri is nil")
+func ReadRequest(u *url.URL) (*http.Request, error) {
+	if u == nil {
+		return nil, errors.New("error: URL is nil")
 	}
-	if uri.Scheme != "file" {
-		return nil, errors.New(fmt.Sprintf("error: Invalid Uri scheme : %v", uri.Scheme))
+	if !uri.IsFileScheme(u) {
+		return nil, errors.New(fmt.Sprintf("error: invalid URL scheme : %v", u.Scheme))
 	}
-	buf, err := io2.ReadFile(uri)
+	buf, err := os.ReadFile(uri.FileName(u))
 	if err != nil {
 		return nil, err
 	}
