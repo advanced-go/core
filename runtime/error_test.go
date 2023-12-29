@@ -15,11 +15,12 @@ func Example_DefaultFormat() {
 	if st, ok := any(s).(*statusState); ok {
 		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
-	str := defaultFormatter(s)
-	fmt.Printf("test: defaultFormatter() -> %v", str)
+	//SetOutputFormatter()
+	str := formatter(s)
+	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:
-	//test: defaultFormatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/location-1","github.com/advanced-go/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 
@@ -40,17 +41,12 @@ func ExampleOutputHandler_Handle() {
 	s = NewStatusError(http.StatusInternalServerError, location)
 	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(s, GetOrCreateRequestId(ctx), origin), errorsHandled(s))
 
-	//s = runtime.NewStatusError(runtime.StatusInternal, location, err)
-	//errors := s.IsErrors()
-	//s1 := h.HandleStatus(s, runtime.GetOrCreateRequestId(ctx), "")
-	//fmt.Printf("test: HandleStatus(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
-
 	//Output:
 	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
 	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "trace" : [ "/OutputHandler","/OutputHandler" ], "errors" : [ "test error" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
-	
+
 }
 
 func ExampleLogHandler_Handle() {

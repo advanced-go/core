@@ -26,6 +26,11 @@ func SetFormatter(fn Formatter) {
 	}
 }
 
+// SetOutputFormatter - optional override of output formatting
+func SetOutputFormatter() {
+	SetFormatter(OutputFormatter)
+}
+
 // Logger - log function
 type Logger func(s Status)
 
@@ -39,7 +44,7 @@ func SetLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(s Status) { log.Default().Println(formatter(s)) }
+	defaultLogger Logger = func(s Status) { log.Default().Println(defaultFormatter(s)) }
 )
 
 // ErrorHandler - template parameter error handler interface
@@ -114,6 +119,20 @@ func defaultFormatter(s Status) string {
 		formatErrors(ErrorsName, s.Errors()))
 }
 
+func formatTrace(name string, trace []string) string {
+	if len(trace) == 0 {
+		return fmt.Sprintf("\"%v\" : null", name)
+	}
+	result := fmt.Sprintf("\"%v\" : [ ", name)
+	for i := len(trace) - 1; i >= 0; i-- {
+		if i < len(trace)-1 {
+			result += ","
+		}
+		result += fmt.Sprintf("\"%v\"", trace[i])
+	}
+	return result + " ]"
+}
+
 func formatErrors(name string, errs []error) string {
 	if len(errs) == 0 {
 		return fmt.Sprintf("\"%v\" : null", name)
@@ -128,18 +147,42 @@ func formatErrors(name string, errs []error) string {
 	return result + " ]"
 }
 
-func formatTrace(name string, trace []string) string {
+func OutputFormatter(s Status) string {
+	str := strconv.Itoa(s.Code())
+	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
+		jsonMarkup(StatusCodeName, str, false),
+		jsonMarkup(StatusName, s.Description(), true),
+		jsonMarkup(RequestIdName, s.RequestId(), true),
+		outputFormatTrace(TraceName, s.Location()),
+		outputFormatErrors(ErrorsName, s.Errors()))
+}
+
+func outputFormatErrors(name string, errs []error) string {
+	if len(errs) == 0 {
+		return fmt.Sprintf("\"%v\" : null", name)
+	}
+	result := fmt.Sprintf("\n\"%v\" : [\n", name)
+	for i, e := range errs {
+		if i != 0 {
+			result += ",\n"
+		}
+		result += fmt.Sprintf("  \"%v\"", e.Error())
+	}
+	return result + " \n]"
+}
+
+func outputFormatTrace(name string, trace []string) string {
 	if len(trace) == 0 {
 		return fmt.Sprintf("\"%v\" : null", name)
 	}
-	result := fmt.Sprintf("\"%v\" : [ ", name)
+	result := fmt.Sprintf("\n\"%v\" : [\n", name)
 	for i := len(trace) - 1; i >= 0; i-- {
 		if i < len(trace)-1 {
-			result += ","
+			result += ",\n"
 		}
-		result += fmt.Sprintf("\"%v\"", trace[i])
+		result += fmt.Sprintf("  \"%v\"", trace[i])
 	}
-	return result + " ]"
+	return result + " \n]"
 }
 
 // NewInvalidBodyTypeError - invalid type error
