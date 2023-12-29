@@ -1,6 +1,7 @@
 package http2
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
@@ -41,13 +42,16 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		}
 	default:
 		if strings.Contains(contentType, "json") {
-			var status runtime.Status
+			var err error
 
-			buf, status = Marshal(content)
-			if !status.OK() {
-				return nil, "", status
+			buf, err = json.Marshal(content)
+			if err != nil {
+				status := runtime.NewStatusError(runtime.StatusJsonEncodeError, bytesLoc, err)
+				if !status.OK() {
+					return nil, "", status
+				}
 			}
-			return buf, contentType, status
+			return buf, contentType, runtime.StatusOK()
 		} else {
 			return nil, "", runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
