@@ -9,9 +9,12 @@ import (
 // https://grpc.github.io/grpc/core/md_doc_statuscodes.html
 
 const (
-	NilDuration     = time.Duration(-1)
-	contentType     = "Content-type"
-	contentTypeJson = "application/json"
+	NilDuration       = time.Duration(-1)
+	contentType       = "Content-type"
+	contentTypeJson   = "application/json"
+	StatusOKUri       = "urn:status:ok"
+	StatusNotFoundUri = "urn:status:notfound"
+	StatusTimeoutUri  = "urn:status:timeout"
 )
 
 const (

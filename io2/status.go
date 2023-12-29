@@ -11,10 +11,7 @@ import (
 )
 
 const (
-	statusLoc         = PkgPath + ":ReadStatus"
-	StatusOKUri       = "urn:status:ok"
-	StatusNotFoundUri = "urn:status:notfound"
-	StatusTimeoutUri  = "urn:status:timeout"
+	statusLoc = PkgPath + ":ReadStatus"
 )
 
 func ReadStatus(uri string) runtime.Status {
@@ -69,11 +66,11 @@ func constStatus(url string) runtime.Status {
 		return runtime.StatusOK()
 	}
 	switch url {
-	case StatusOKUri:
+	case runtime.StatusOKUri:
 		return runtime.StatusOK()
-	case StatusNotFoundUri:
+	case runtime.StatusNotFoundUri:
 		return runtime.NewStatus(http.StatusNotFound)
-	case StatusTimeoutUri:
+	case runtime.StatusTimeoutUri:
 		return runtime.NewStatus(http.StatusGatewayTimeout)
 	}
 	return nil

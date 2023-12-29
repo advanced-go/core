@@ -39,15 +39,15 @@ func ExampleReadStatus_Const() {
 	status := ReadStatus("")
 	fmt.Printf("test: ReadStatus(nil) -> [code:%v]\n", status.Code())
 
-	uri := StatusOKUri
+	uri := runtime.StatusOKUri
 	status = ReadStatus(uri)
 	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v]\n", uri, status.Code())
 
-	uri = StatusNotFoundUri
+	uri = runtime.StatusNotFoundUri
 	status = ReadStatus(uri)
 	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
-	uri = StatusTimeoutUri
+	uri = runtime.StatusTimeoutUri
 	status = ReadStatus(uri)
 	fmt.Printf("test: ReadStatus(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
