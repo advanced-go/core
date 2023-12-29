@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	uri2 "github.com/advanced-go/core/uri"
-	"net/http"
+	"io"
+	"net/url"
 	"os"
+	"reflect"
 )
 
 const (
@@ -14,15 +16,29 @@ const (
 	StatusNotFoundUri = "urn:status:notfound"
 	StatusTimeoutUri  = "urn:status:timeout"
 	newStatusLoc      = PkgPath + ":NewS"
-	newTypeLoc        = PkgPath + ":NewT"
+	newTypeLoc        = PkgPath + ":New"
 )
 
-func NewT[T any](uri string) (t T, status Status) {
-	if !uri2.IsFileScheme(uri) {
-		return t, NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
+// New - create a new type from JSON content
+func New[T any](v any) (t T, status Status) {
+	uri := ""
+	switch ptr := any(v).(type) {
+	case string:
+		uri = ptr
+	case *url.URL:
+		uri = ptr.String()
+	case io.ReadCloser:
+		err := json.NewDecoder(ptr).Decode(&t)
+		if err != nil {
+			return t, NewStatusError(StatusJsonDecodeError, newTypeLoc, err)
+		}
+		return t, StatusOK()
+	default:
+		return t, NewStatusError(StatusInvalidArgument, newTypeLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 	}
-	if !uri2.IsJson(uri) {
-		return t, NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
+	status = validateUri(uri)
+	if !status.OK() {
+		return
 	}
 	buf, err := os.ReadFile(uri2.FileName(uri))
 	if err != nil {
@@ -33,51 +49,4 @@ func NewT[T any](uri string) (t T, status Status) {
 		return t, NewStatusError(StatusJsonDecodeError, newTypeLoc, err)
 	}
 	return t, StatusOK()
-}
-
-type serializedStatusState struct {
-	Code     int    `json:"code"`
-	Location string `json:"location"`
-	Err      string `json:"err"`
-}
-
-func NewS(uri string) Status {
-	status := statusFromConst(uri)
-	if status != nil {
-		return status
-	}
-	if !uri2.IsFileScheme(uri) {
-		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
-	}
-	if !uri2.IsJson(uri) {
-		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
-	}
-	buf, err1 := os.ReadFile(uri2.FileName(uri))
-	if err1 != nil {
-		return NewStatusError(StatusIOError, newStatusLoc, err1)
-	}
-	var status2 serializedStatusState
-	err := json.Unmarshal(buf, &status2)
-	if err != nil {
-		return NewStatusError(StatusJsonDecodeError, newStatusLoc, err)
-	}
-	if len(status2.Err) > 0 {
-		return NewStatusError(status2.Code, status2.Location, errors.New(status2.Err))
-	}
-	return NewStatus(status2.Code).AddLocation(status2.Location)
-}
-
-func statusFromConst(url string) Status {
-	if len(url) == 0 {
-		return StatusOK()
-	}
-	switch url {
-	case StatusOKUri:
-		return StatusOK()
-	case StatusNotFoundUri:
-		return NewStatus(http.StatusNotFound)
-	case StatusTimeoutUri:
-		return NewStatus(http.StatusGatewayTimeout)
-	}
-	return nil
 }

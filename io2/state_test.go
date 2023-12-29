@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	addressUrl   = "file://[cwd]/io2test/resource/address.json"
+	addressUrl   = "file://[cwd]/io2test/resource/address1.json"
 	status504Url = "file://[cwd]/io2test/resource/status-504.json"
 )
 
