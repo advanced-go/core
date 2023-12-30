@@ -19,12 +19,6 @@ const (
 	pairDelimiter = ","
 )
 
-type nopCloser struct {
-	io.Reader
-}
-
-func (nopCloser) Close() error { return nil }
-
 func ReadRequest(u *url.URL) (*http.Request, error) {
 	if u == nil {
 		return nil, errors.New("error: URL is nil")
@@ -42,12 +36,12 @@ func ReadRequest(u *url.URL) (*http.Request, error) {
 	if err1 != nil {
 		return nil, err1
 	}
-	bytes, err2 := ReadContent(buf)
+	bytes1, err2 := ReadContent(buf)
 	if err2 != nil {
 		return req, err
 	}
-	if bytes != nil {
-		req.Body = nopCloser{bytes}
+	if bytes1 != nil {
+		req.Body = io.NopCloser(bytes1)
 	}
 	return req, nil
 }
