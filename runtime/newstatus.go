@@ -19,7 +19,7 @@ type serializedStatusState struct {
 	Err      string `json:"err"`
 }
 
-func NewS(uri string) Status {
+func NewStatusFrom(uri string) Status {
 	status := statusFromConst(uri)
 	if status != nil {
 		return status

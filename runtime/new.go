@@ -25,7 +25,7 @@ func New[T any](v any) (t T, status Status) {
 	switch ptr := v.(type) {
 	case string:
 		if uri2.IsStatusURL(ptr) {
-			return t, NewS(ptr)
+			return t, NewStatusFrom(ptr)
 		}
 		buf, status = NewBytes(ptr)
 		if !status.OK() {
@@ -33,7 +33,7 @@ func New[T any](v any) (t T, status Status) {
 		}
 	case *url.URL:
 		if uri2.IsStatusURL(ptr.String()) {
-			return t, NewS(ptr.String())
+			return t, NewStatusFrom(ptr.String())
 		}
 		buf, status = NewBytes(ptr.String())
 		if !status.OK() {

@@ -23,55 +23,55 @@ func ExampleStatus_Marshal() {
 
 }
 func ExampleNewS_Error() {
-	status := NewS("")
-	fmt.Printf("test: NewS(\"\") -> [status:%v]\n", status)
+	status := NewStatusFrom("")
+	fmt.Printf("test: NewStatusFrom(\"\") -> [status:%v]\n", status)
 
 	s := "https://www.google.com/search"
-	status = NewS(s)
-	fmt.Printf("test: NewS(%v) -> [status:%v]\n", s, status)
+	status = NewStatusFrom(s)
+	fmt.Printf("test: NewStatusFrom(%v) -> [status:%v]\n", s, status)
 
 	s = "file://[cwd]/runtimetest/address.txt"
-	status = NewS(s)
-	fmt.Printf("test: NewS(%v) -> [status:%v]\n", s, status)
+	status = NewStatusFrom(s)
+	fmt.Printf("test: NewStatusFrom(%v) -> [status:%v]\n", s, status)
 
 	//Output:
-	//test: NewS("") -> [status:OK]
-	//test: NewS(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
-	//test: NewS(file://[cwd]/runtimetest/address.txt) -> [status:Invalid Argument [error: URI is not a JSON file]]
+	//test: NewStatusFrom("") -> [status:OK]
+	//test: NewStatusFrom(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
+	//test: NewStatusFrom(file://[cwd]/runtimetest/address.txt) -> [status:Invalid Argument [error: URI is not a JSON file]]
 
 }
 
-func ExampleNewS() {
+func ExampleNewStatusFrom() {
 	uri := "file://[cwd]/runtimetest/status-504.json"
 
-	status := NewS(uri)
-	fmt.Printf("test: NewS() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.Errors())
+	status := NewStatusFrom(uri)
+	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.Errors())
 
 	//Output:
-	//test: NewS() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]
+	//test: NewStatusFrom() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]
 
 }
 
-func ExampleNewS_Const() {
-	status := NewS("")
-	fmt.Printf("test: NewS(nil) -> [code:%v]\n", status.Code())
+func ExampleNewStatusFrom_Const() {
+	status := NewStatusFrom("")
+	fmt.Printf("test: NewStatusFrom(nil) -> [code:%v]\n", status.Code())
 
 	uri := StatusOKUri
-	status = NewS(uri)
-	fmt.Printf("test: NewS(\"%v\") -> [code:%v]\n", uri, status.Code())
+	status = NewStatusFrom(uri)
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v]\n", uri, status.Code())
 
 	uri = StatusNotFoundUri
-	status = NewS(uri)
-	fmt.Printf("test: NewS(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
+	status = NewStatusFrom(uri)
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
 	uri = StatusTimeoutUri
-	status = NewS(uri)
-	fmt.Printf("test: NewS(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
+	status = NewStatusFrom(uri)
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
 
 	//Output:
-	//test: NewS(nil) -> [code:200]
-	//test: NewS("urn:status:ok") -> [code:200]
-	//test: NewS("urn:status:notfound") -> [code:404] [status:Not Found]
-	//test: NewS("urn:status:timeout") -> [code:504] [status:Timeout]
+	//test: NewStatusFrom(nil) -> [code:200]
+	//test: NewStatusFrom("urn:status:ok") -> [code:200]
+	//test: NewStatusFrom("urn:status:notfound") -> [code:404] [status:Not Found]
+	//test: NewStatusFrom("urn:status:timeout") -> [code:504] [status:Timeout]
 
 }
