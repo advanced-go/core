@@ -5,12 +5,14 @@ import (
 	"github.com/advanced-go/core/uri"
 	"io"
 	"os"
+	"reflect"
 	"strings"
 )
 
 const (
 	address1Url = "file://[cwd]/runtimetest/address1.json"
 	address2Url = "file://[cwd]/runtimetest/address2.json"
+	address3Url = "file://[cwd]/runtimetest/address3.json"
 	status504   = "file://[cwd]/runtimetest/status-504.json"
 )
 
@@ -61,35 +63,46 @@ func ExampleNew_URLError() {
 func ExampleNew() {
 	s := status504
 	addr, status := New[address2](s)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(s), addr, status)
 
 	s = address1Url
 	addr, status = New[address2](s)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(s), addr, status)
 
 	s = status504
-	addr, status = New[address2](uri.ParseRaw(s))
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	u := uri.ParseRaw(s)
+	addr, status = New[address2](u)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(u), addr, status)
 
 	s = address1Url
-	addr, status = New[address2](uri.ParseRaw(s))
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	u = uri.ParseRaw(s)
+	addr, status = New[address2](u)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(u), addr, status)
 
 	s = address2Url
 	buf, err := os.ReadFile(uri.FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
+	addr, status = New[address2](buf)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(buf), addr, status)
+
+	s = address3Url
+	buf, err = os.ReadFile(uri.FileName(s))
+	if err != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
+	}
 	body := io.NopCloser(strings.NewReader(string(buf)))
 	addr, status = New[address2](body)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(body), addr, status)
 
 	//Output:
-	//test: New(file://[cwd]/runtimetest/status-504.json) -> [addr:{  }] [status:Timeout [error 1]]
-	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{frisco texas 75034}] [status:OK]
-	//test: New(file://[cwd]/runtimetest/status-504.json) -> [addr:{  }] [status:Timeout [error 1]]
-	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{frisco texas 75034}] [status:OK]
-	//test: New(file://[cwd]/runtimetest/address2.json) -> [addr:{vinton iowa 52349}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:string] [addr:{  }] [status:Timeout [error 1]]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:string] [addr:{frisco texas 75034}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:*url.URL] [addr:{  }] [status:Timeout [error 1]]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:*url.URL] [addr:{frisco texas 75034}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/address2.json) -> [type:[]uint8] [addr:{vinton iowa 52349}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/address3.json) -> [type:io.nopCloserWriterTo] [addr:{forest city iowa 50436}] [status:OK]
 
 }
 
