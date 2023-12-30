@@ -9,6 +9,10 @@ import (
 	"os"
 )
 
+const (
+	newStatusLoc = PkgPath + ":NewS"
+)
+
 type serializedStatusState struct {
 	Code     int    `json:"code"`
 	Location string `json:"location"`

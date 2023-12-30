@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/uri"
 	"io"
+	"net/http"
 	"os"
 	"reflect"
 	"strings"
@@ -60,7 +61,27 @@ func ExampleNew_URLError() {
 
 }
 
-func ExampleNew() {
+func ExampleNew_Const_Status() {
+	s := StatusOKUri
+	addr, status := New[address2](s)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+
+	s = StatusNotFoundUri
+	addr, status = New[address2](s)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+
+	s = StatusTimeoutUri
+	addr, status = New[address2](s)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+
+	//Output:
+	//test: New(urn:status:ok) -> [addr:{  }] [status:OK]
+	//test: New(urn:status:notfound) -> [addr:{  }] [status:Not Found]
+	//test: New(urn:status:timeout) -> [addr:{  }] [status:Timeout]
+
+}
+
+func ExampleNew_Uri() {
 	s := status504
 	addr, status := New[address2](s)
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(s), addr, status)
@@ -79,13 +100,37 @@ func ExampleNew() {
 	addr, status = New[address2](u)
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(u), addr, status)
 
-	s = address2Url
+	//Output:
+	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:string] [addr:{  }] [status:Timeout [error 1]]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:string] [addr:{frisco texas 75034}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:*url.URL] [addr:{  }] [status:Timeout [error 1]]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:*url.URL] [addr:{frisco texas 75034}] [status:OK]
+
+}
+
+func ExampleNew_Bytes() {
+	s := address2Url
 	buf, err := os.ReadFile(uri.FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
-	addr, status = New[address2](buf)
+	addr, status := New[address2](buf)
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(buf), addr, status)
+
+	//Output:
+	//test: New(file://[cwd]/runtimetest/address2.json) -> [type:[]uint8] [addr:{vinton iowa 52349}] [status:OK]
+
+}
+
+func ExampleNew_Reader() {
+	s := address2Url
+	buf, err := os.ReadFile(uri.FileName(s))
+	if err != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
+	}
+	r := strings.NewReader(string(buf))
+	addr, status := New[address2](r)
+	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(r), addr, status)
 
 	s = address3Url
 	buf, err = os.ReadFile(uri.FileName(s))
@@ -97,31 +142,24 @@ func ExampleNew() {
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(body), addr, status)
 
 	//Output:
-	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:string] [addr:{  }] [status:Timeout [error 1]]
-	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:string] [addr:{frisco texas 75034}] [status:OK]
-	//test: New(file://[cwd]/runtimetest/status-504.json) -> [type:*url.URL] [addr:{  }] [status:Timeout [error 1]]
-	//test: New(file://[cwd]/runtimetest/address1.json) -> [type:*url.URL] [addr:{frisco texas 75034}] [status:OK]
-	//test: New(file://[cwd]/runtimetest/address2.json) -> [type:[]uint8] [addr:{vinton iowa 52349}] [status:OK]
+	//test: New(file://[cwd]/runtimetest/address2.json) -> [type:*strings.Reader] [addr:{vinton iowa 52349}] [status:OK]
 	//test: New(file://[cwd]/runtimetest/address3.json) -> [type:io.nopCloserWriterTo] [addr:{forest city iowa 50436}] [status:OK]
 
 }
 
-func ExampleNew_Const_Status() {
-	s := StatusOKUri
-	addr, status := New[address2](s)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+func ExampleNew_Response() {
+	s := address3Url
+	buf0, err := os.ReadFile(uri.FileName(s))
+	if err != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
+	}
+	r := new(http.Response)
+	r.Body = io.NopCloser(strings.NewReader(string(buf0)))
 
-	s = StatusNotFoundUri
-	addr, status = New[address2](s)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
-
-	s = StatusTimeoutUri
-	addr, status = New[address2](s)
-	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+	addr, status := New[address2](r)
+	fmt.Printf("test: NewBytes(%v) -> [type:%v] [addr%v] [status:%v]\n", s, reflect.TypeOf(r), addr, status)
 
 	//Output:
-	//test: New(urn:status:ok) -> [addr:{  }] [status:OK]
-	//test: New(urn:status:notfound) -> [addr:{  }] [status:Not Found]
-	//test: New(urn:status:timeout) -> [addr:{  }] [status:Timeout]
+	//test: NewBytes(file://[cwd]/runtimetest/address3.json) -> [type:*http.Response] [addr{forest city iowa 50436}] [status:OK]
 
 }
