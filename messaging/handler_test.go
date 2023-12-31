@@ -34,7 +34,7 @@ func Example_ProcessPing() {
 	uri1 := "github.com/advanced-go/example-domain/activity"
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("", "github.com/advanced-go/example-domain/activity:ping", nil)
-	status := Add(NewMailbox(uri1, nil))
+	status := HostExchange.Add(NewMailbox(uri1, nil))
 	if !status.OK() {
 		fmt.Printf("test: processPing() -> [status:%v]\n", status)
 	}
