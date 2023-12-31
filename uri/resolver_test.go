@@ -50,26 +50,26 @@ func Example_Resolver_Passthrough() {
 	r := NewResolver("http://localhost:8080", nil)
 
 	id := ""
-	val := r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
+	val := r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
 
 	id = "test"
-	val = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
 
 	id = "/google/search?q=golang"
-	val = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
 
 	id = "https://www.google.com/google:search?q=golang"
-	val = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, val)
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
 
 	//Output:
-	//test: Resolve("") -> error: id cannot be resolved to a URL
-	//test: Resolve("test") -> test
-	//test: Resolve("/google/search?q=golang") -> http://localhost:8080/google/search?q=golang
-	//test: Resolve("https://www.google.com/google:search?q=golang") -> https://www.google.com/google:search?q=golang
+	//test: Build("") -> error: id cannot be resolved to a URL
+	//test: Build("test") -> test
+	//test: Build("/google/search?q=golang") -> http://localhost:8080/google/search?q=golang
+	//test: Build("https://www.google.com/google:search?q=golang") -> https://www.google.com/google:search?q=golang
 
 }
 
@@ -81,26 +81,26 @@ func Example_Resolver_Default() {
 	v.Add("param-2", "value-2")
 
 	id := resolvedId
-	url := r.Resolve(id, v)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url := r.Build(id, v)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = pathId
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = bypassId
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = googleUrl
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: Resolve("resolved") -> http://localhost:8080/advanced-go/example-domain/activity:entry?param-1=value-1&param-2=value-2
-	//test: Resolve("path") -> http://localhost:8080/advanced-go/example-domain/activity:entry
-	//test: Resolve("bypass") -> bypass
-	//test: Resolve("https://www.google.com/search?q=golang") -> https://www.google.com/search?q=golang
+	//test: Build("resolved") -> http://localhost:8080/advanced-go/example-domain/activity:entry?param-1=value-1&param-2=value-2
+	//test: Build("path") -> http://localhost:8080/advanced-go/example-domain/activity:entry
+	//test: Build("bypass") -> bypass
+	//test: Build("https://www.google.com/search?q=golang") -> https://www.google.com/search?q=golang
 
 }
 
@@ -113,26 +113,26 @@ func Example_Resolver_Override() {
 	v.Add("param-2", "value-2")
 
 	id := resolvedId
-	url := r.Resolve(id, v)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url := r.Build(id, v)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = pathId
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = bypassId
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	id = overrideBypassId
-	url = r.Resolve(id, nil)
-	fmt.Printf("test: Resolve(\"%v\") -> %v\n", id, url)
+	url = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, url)
 
 	//Output:
-	//test: Resolve("resolved") -> file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt
-	//test: Resolve("path") -> file://[cwd]/uri/uritest/html-response.txt
-	//test: Resolve("bypass") -> bypass
-	//test: Resolve("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
+	//test: Build("resolved") -> file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt
+	//test: Build("path") -> file://[cwd]/uri/uritest/html-response.txt
+	//test: Build("bypass") -> bypass
+	//test: Build("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
 
 }
 

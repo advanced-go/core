@@ -13,7 +13,7 @@ type ResolveFunc func(string) string
 // Resolver - resolver interface
 type Resolver interface {
 	SetOverride(t any, host string)
-	Resolve(id string, values url.Values) string
+	Build(id string, values url.Values) string
 }
 
 // NewResolver - create a resolver
@@ -35,8 +35,8 @@ func (r *resolver) SetOverride(t any, host string) {
 	r.overrideFn = resolveFuncFromType(t, host)
 }
 
-// Resolve - perform resolution
-func (r *resolver) Resolve(id string, values url.Values) string {
+// Build - perform resolution
+func (r *resolver) Build(id string, values url.Values) string {
 	override := false
 	url := ""
 	host := ""
