@@ -7,28 +7,56 @@ import (
 	"github.com/advanced-go/core/uri"
 	"net/http"
 	"reflect"
+	"sync"
 )
 
 const (
-	PingResource  = "ping"
-	ContentLength = "Content-Length"
-	ContentType   = "Content-Type"
-	//ContentTypeText       = "text/plain" //charset=utf-8; charset=us-ascii"
+	PingResource          = "ping"
+	ContentLength         = "Content-Length"
+	ContentType           = "Content-Type"
+	muxAddLocation        = PkgPath + ":MuxAdd"
+	muxGetLocation        = PkgPath + ":MuxGet"
 	writeStatusContentLoc = PkgPath + ":writeStatusContent"
 	bytesLoc              = PkgPath + ":writeBytes"
 )
 
 type muxEntry struct {
-	pattern string
+	path    string
 	handler http.HandlerFunc
 }
 
-var routes []muxEntry
+var mux = new(sync.Map)
+
+func add(path string, handler func(w http.ResponseWriter, r *http.Request)) runtime.Status {
+	_, ok := mux.Load(path)
+	if ok {
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, muxAddLocation, errors.New(fmt.Sprintf("invalid argument: HTTP Handler already exists: [%v]", path)))
+	}
+	entry := new(muxEntry)
+	entry.path = path
+	entry.handler = handler
+	mux.Store(path, entry)
+	return runtime.StatusOK()
+}
+
+func get(path string) (*muxEntry, runtime.Status) {
+	v, ok := mux.Load(path)
+	if !ok {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, muxGetLocation, errors.New(fmt.Sprintf("invalid argument: HTTP Handler does not exists: [%v]", path)))
+	}
+	if entry, ok1 := v.(*muxEntry); ok1 {
+		return entry, runtime.StatusOK()
+	}
+	return nil, runtime.NewStatus(runtime.StatusInvalidContent)
+}
 
 // Handle - add pattern and Http handler mux entry
 // TO DO : panic on duplicate handler and pattern combination
-func Handle(pattern string, handler func(w http.ResponseWriter, r *http.Request)) {
-	routes = append(routes, muxEntry{pattern: pattern, handler: handler})
+func Handle(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+	status := add(path, handler)
+	if !status.OK() {
+		// Panic
+	}
 }
 
 // HttpHandler - handler for messaging
@@ -37,22 +65,21 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	for _, rt := range routes {
-		nid, rsc, ok := uri.UprootUrn(r.URL.Path)
-		if !ok {
-			continue
-		}
-		if nid != rt.pattern {
-			continue
-		}
-		if rsc == PingResource {
-			ProcessPing[runtime.Log](w, nid)
-			return
-		}
-		rt.handler(w, r)
+	nid, rsc, ok := uri.UprootUrn(r.URL.Path)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	w.WriteHeader(http.StatusNotFound)
+	entry, status := get(nid)
+	if !status.OK() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if rsc == PingResource {
+		ProcessPing[runtime.Log](w, nid)
+		return
+	}
+	entry.handler(w, r)
 }
 
 func ProcessPing[E runtime.ErrorHandler](w http.ResponseWriter, nid string) {

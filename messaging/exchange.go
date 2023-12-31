@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	dirSendCtrlLocation = PkgPath + ":Exchange/SendCtrl"
-	dirSendDataLocation = PkgPath + ":Exchange/SendData"
-	dirGetLocation      = PkgPath + ":Exchange/get"
-	dirAddLocation      = PkgPath + ":Exchange/add"
+	exSendCtrlLocation = PkgPath + ":Exchange/SendCtrl"
+	exSendDataLocation = PkgPath + ":Exchange/SendData"
+	exGetLocation      = PkgPath + ":Exchange/get"
+	exAddLocation      = PkgPath + ":Exchange/add"
 )
 
 // Exchange - exchange directory
@@ -67,7 +67,7 @@ func (d *exchange) SendCtrl(msg Message) runtime.Status {
 	}
 	mbox, status := d.get(msg.To)
 	if !status.OK() {
-		return status.AddLocation(dirSendCtrlLocation)
+		return status.AddLocation(exSendCtrlLocation)
 	}
 	mbox.SendCtrl(msg)
 	return runtime.StatusOK()
@@ -77,7 +77,7 @@ func (d *exchange) SendCtrl(msg Message) runtime.Status {
 func (d *exchange) SendData(msg Message) runtime.Status {
 	mbox, status := d.get(msg.To)
 	if !status.OK() {
-		return status.AddLocation(dirSendDataLocation)
+		return status.AddLocation(exSendDataLocation)
 	}
 	mbox.SendData(msg)
 	return runtime.StatusOK()
@@ -86,17 +86,17 @@ func (d *exchange) SendData(msg Message) runtime.Status {
 // Add - add a mailbox
 func (d *exchange) Add(m *Mailbox) runtime.Status {
 	if m == nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, dirAddLocation, errors.New("invalid argument: mailbox is nil"))
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox is nil"))
 	}
 	if len(m.uri) == 0 {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, dirAddLocation, errors.New("invalid argument: mailbox uri is empty"))
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox uri is empty"))
 	}
 	if m.ctrl == nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, dirAddLocation, errors.New("invalid argument: mailbox command channel is nil"))
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox command channel is nil"))
 	}
 	_, ok := d.m.Load(m.uri)
 	if ok {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, dirAddLocation, errors.New(fmt.Sprintf("invalid argument: exchange mailbox already exists: [%v]", m.uri)))
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New(fmt.Sprintf("invalid argument: exchange mailbox already exists: [%v]", m.uri)))
 	}
 	d.m.Store(m.uri, m)
 	m.unregister = func() {
@@ -107,16 +107,16 @@ func (d *exchange) Add(m *Mailbox) runtime.Status {
 
 func (d *exchange) get(uri string) (*Mailbox, runtime.Status) {
 	if len(uri) == 0 {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, dirGetLocation, errors.New("invalid argument: uri is empty"))
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, exGetLocation, errors.New("invalid argument: uri is empty"))
 	}
 	v, ok1 := d.m.Load(uri)
 	if !ok1 {
-		return nil, runtime.NewStatusError(http.StatusNotFound, dirGetLocation, errors.New(fmt.Sprintf("invalid URI: exchange mailbox not found [%v]", uri)))
+		return nil, runtime.NewStatusError(http.StatusNotFound, exGetLocation, errors.New(fmt.Sprintf("invalid URI: exchange mailbox not found [%v]", uri)))
 	}
 	if mbox, ok2 := v.(*Mailbox); ok2 {
 		return mbox, runtime.StatusOK()
 	}
-	return nil, runtime.NewStatusError(runtime.StatusInvalidContent, dirGetLocation, errors.New("invalid Mailbox type"))
+	return nil, runtime.NewStatusError(runtime.StatusInvalidContent, exGetLocation, errors.New("invalid Mailbox type"))
 }
 
 // Shutdown - close an item's mailbox

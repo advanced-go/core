@@ -30,7 +30,7 @@ func Example_HttpHandler() {
 
 }
 
-func Example_processPing() {
+func Example_ProcessPing() {
 	uri1 := "github.com/advanced-go/example-domain/activity"
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("", "github.com/advanced-go/example-domain/activity:ping", nil)
@@ -39,8 +39,8 @@ func Example_processPing() {
 		fmt.Printf("test: processPing() -> [status:%v]\n", status)
 	}
 	nid, rsc, ok := uri.UprootUrn(r.URL.Path)
-	ProcessPing[runtime.Output](w, nid)
-	buf, status1 := readAll(w.Result().Body)
+	ProcessPing[runtime.Bypass](w, nid)
+	buf, status1 := runtime.NewBytes(w.Result())
 	if !status1.OK() {
 		fmt.Printf("test: ReadAll() -> [status:%v]\n", status1)
 	}
