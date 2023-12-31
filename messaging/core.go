@@ -13,7 +13,7 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 
-	msgHandlerLoc = "github.com/advanced-go/messaging/core:MessageCacheHandler"
+	msgCacheHandlerLoc = PkgPath + ":MessageCacheHandler"
 )
 
 // MessageMap - map of messages
@@ -55,7 +55,7 @@ func NewMessageCacheHandler[E runtime.ErrorHandler](cache MessageCache) MessageH
 		err := cache.Add(msg)
 		if err != nil {
 			var e E
-			status := runtime.NewStatusError(runtime.StatusInvalidArgument, msgHandlerLoc, err)
+			status := runtime.NewStatusError(runtime.StatusInvalidArgument, msgCacheHandlerLoc, err)
 			e.Handle(status, "", "")
 		}
 	}

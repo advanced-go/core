@@ -14,10 +14,10 @@ const (
 	PingResource          = "ping"
 	ContentLength         = "Content-Length"
 	ContentType           = "Content-Type"
-	muxAddLocation        = PkgPath + ":MuxAdd"
-	muxGetLocation        = PkgPath + ":MuxGet"
-	writeStatusContentLoc = PkgPath + ":writeStatusContent"
-	bytesLoc              = PkgPath + ":writeBytes"
+	muxAddLocation        = PkgPath + ":Mux/add"
+	muxGetLocation        = PkgPath + ":Mux/get"
+	writeStatusContentLoc = PkgPath + ":Mux/writeStatusContent"
+	bytesLoc              = PkgPath + ":Mux/writeBytes"
 )
 
 type muxEntry struct {
@@ -55,7 +55,7 @@ func get(path string) (*muxEntry, runtime.Status) {
 func Handle(path string, handler func(w http.ResponseWriter, r *http.Request)) {
 	status := add(path, handler)
 	if !status.OK() {
-		// Panic
+		panic(status)
 	}
 }
 

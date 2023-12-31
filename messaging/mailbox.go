@@ -1,9 +1,5 @@
 package messaging
 
-const (
-	mailboxLoc = PkgPath + ":NewMailbox"
-)
-
 type Mailbox struct {
 	public     bool
 	uri        string
