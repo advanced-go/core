@@ -94,5 +94,5 @@ func Example_Do_Endpoint() {
 	//test: Do() -> [write-relatesTo:test-relates-to] [response-relatesTo:test-relates-to]
 	//test: Do() -> [write-statusCode:202] [response-statusCode:202]
 	//test: Do() -> [write-content:this is response write content] [response-content:this is response write content]
-	
+
 }

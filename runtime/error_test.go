@@ -20,6 +20,20 @@ func Example_FormatUri() {
 
 }
 
+func Example_FormatUri_Test() {
+	s := "github.com/advanced-go/core/runtime/testFunc"
+
+	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
+
+	s = "gitlab.com/advanced-go/core/runtime:testFunc"
+	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
+
+	//Output:
+	//test: formatUri(github.com/advanced-go/core/runtime:testFunc) -> github.com/advanced-go/core/tree/main/runtime:testFunc
+	//test: formatUri(gitlab.com/advanced-go/core/runtime:testFunc) -> gitlab.com/advanced-go/core/runtime:testFunc
+
+}
+
 func Example_DefaultFormat() {
 	s := NewStatus(http.StatusNotFound)
 	s.SetRequestId("1234-5678")
