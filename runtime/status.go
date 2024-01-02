@@ -280,6 +280,8 @@ func (s *statusState) Description() string {
 	//Http
 	case http.StatusOK:
 		return "OK"
+	case http.StatusAccepted:
+		return "Accepted"
 	case http.StatusBadRequest:
 		return "Bad Request"
 	case http.StatusGatewayTimeout:

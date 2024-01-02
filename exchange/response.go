@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"github.com/advanced-go/core/uri"
-	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -42,38 +41,4 @@ func readResponse(u *url.URL) (*http.Response, runtime.Status) {
 	}
 	return resp1, runtime.StatusOK()
 
-}
-
-type responseWriter struct {
-	statusCode int
-	header     http.Header
-	bytes      bytes.Buffer
-}
-
-func newResponseWriter() *responseWriter {
-	return new(responseWriter)
-}
-
-func (w *responseWriter) Header() http.Header {
-	return w.header
-}
-
-func (w *responseWriter) Write(p []byte) (int, error) {
-	return w.bytes.Write(p)
-}
-
-func (w *responseWriter) WriteHeader(statusCode int) {
-	w.statusCode = statusCode
-}
-
-func (w *responseWriter) Result() *http.Response {
-	r := new(http.Response)
-	if w.statusCode == 0 {
-		r.StatusCode = http.StatusOK
-	} else {
-		r.StatusCode = w.statusCode
-	}
-	r.Header = w.header
-	r.Body = io.NopCloser(bytes.NewReader(w.bytes.Bytes()))
-	return r
 }
