@@ -37,7 +37,7 @@ func Example_FormatUri_Test() {
 	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com/advanced-go/core/runtime/testFunc] [err:<nil>]
 	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com/advanced-go/core/runtime:testFunc] [err:<nil>]
 	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com:advanced-go/core/runtime.testFunc] [err:<nil>]
-	
+
 }
 
 func Example_DefaultFormat() {

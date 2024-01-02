@@ -17,7 +17,7 @@ const (
 )
 
 // NewBytes - create a []byte
-func NewBytes(v any) ([]byte, Status) {
+func newBytes(v any) ([]byte, Status) {
 	switch ptr := v.(type) {
 	case string:
 		return readBytes(ptr)
