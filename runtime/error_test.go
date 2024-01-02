@@ -21,17 +21,23 @@ func Example_FormatUri() {
 }
 
 func Example_FormatUri_Test() {
-	s := "github.com/advanced-go/core/runtime/testFunc"
+	s := "http://localhost:8080/github.com/advanced-go/core/runtime/testFunc"
+	req, err := http.NewRequest("", s, nil)
+	fmt.Printf("test: http.URL -> [req:%v] [url:%v] [err:%v]\n", req != nil, req.URL, err)
 
-	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
+	s = "http://localhost:8080/github.com/advanced-go/core/runtime:testFunc"
+	req, err = http.NewRequest("", s, nil)
+	fmt.Printf("test: http.URL -> [req:%v] [url:%v] [err:%v]\n", req != nil, req.URL, err)
 
-	s = "gitlab.com/advanced-go/core/runtime:testFunc"
-	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
+	s = "http://localhost:8080/github.com:advanced-go/core/runtime.testFunc"
+	req, err = http.NewRequest("", s, nil)
+	fmt.Printf("test: http.URL -> [req:%v] [url:%v] [err:%v]\n", req != nil, req.URL, err)
 
 	//Output:
-	//test: formatUri(github.com/advanced-go/core/runtime:testFunc) -> github.com/advanced-go/core/tree/main/runtime:testFunc
-	//test: formatUri(gitlab.com/advanced-go/core/runtime:testFunc) -> gitlab.com/advanced-go/core/runtime:testFunc
-
+	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com/advanced-go/core/runtime/testFunc] [err:<nil>]
+	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com/advanced-go/core/runtime:testFunc] [err:<nil>]
+	//test: http.URL -> [req:true] [url:http://localhost:8080/github.com:advanced-go/core/runtime.testFunc] [err:<nil>]
+	
 }
 
 func Example_DefaultFormat() {
