@@ -16,6 +16,7 @@ var (
 	endpoints = runtime.NewHandlerMap()
 )
 
+// RegisterEndpoint - add a map entry for a URI and HttpHandler
 func RegisterEndpoint(uri string, handler func(w http.ResponseWriter, r *http.Request)) runtime.Status {
 	return endpoints.AddHandler(uri, handler)
 }

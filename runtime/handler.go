@@ -13,16 +13,19 @@ const (
 	handlerGetLocation = PkgPath + ":Mux/get"
 )
 
+// HandlerMap - key value pairs of a URI -> HttpHandler
 type HandlerMap struct {
 	m *sync.Map
 }
 
+// NewHandlerMap - create a new HandlerMap
 func NewHandlerMap() *HandlerMap {
 	h := new(HandlerMap)
 	h.m = new(sync.Map)
 	return h
 }
 
+// AddHandler - add an HttpHandler to the map
 func (h *HandlerMap) AddHandler(uri string, handler func(w http.ResponseWriter, r *http.Request)) Status {
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, handlerAddLocation, errors.New("invalid argument: path is empty"))
@@ -42,6 +45,7 @@ func (h *HandlerMap) AddHandler(uri string, handler func(w http.ResponseWriter, 
 	return StatusOK()
 }
 
+// GetHandler - get an HttpHandler from the map, using a URI as the key
 func (h *HandlerMap) GetHandler(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
 	nid, _, ok := uri2.UprootUrn(uri)
 	if !ok {
@@ -50,6 +54,7 @@ func (h *HandlerMap) GetHandler(uri string) (func(w http.ResponseWriter, r *http
 	return h.GetHandlerFromNID(nid)
 }
 
+// GetHandlerFromNID - get an HttpHandler from the map, using an NID as a key
 func (h *HandlerMap) GetHandlerFromNID(nid string) (func(w http.ResponseWriter, r *http.Request), Status) {
 	v, ok := h.m.Load(nid)
 	if !ok {
