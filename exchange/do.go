@@ -36,8 +36,6 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
 	}
-	var err error
-
 	if uri.IsFileScheme(req.URL) {
 		resp1, status1 := readResponse(req.URL)
 		if !status1.OK() {
@@ -45,6 +43,29 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
+	handler, status1 := getEndpoint(req.URL)
+	if status1.OK() {
+		w := newResponseWriter()
+		handler(w, req)
+		resp = w.Result()
+		return resp, runtime.NewStatus(resp.StatusCode)
+	}
+	return DoHttp(req)
+}
+
+func DoHttp(req *http.Request) (resp *http.Response, status runtime.Status) {
+	if req == nil {
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
+	}
+	var err error
+
+	//if uri.IsFileScheme(req.URL) {
+	////	resp1, status1 := readResponse(req.URL)
+	//	if !status1.OK() {
+	//		return resp1, status1.AddLocation(doLocation)
+	//	}
+	//	return resp1, runtime.NewStatus(resp1.StatusCode)
+	//}
 	resp, err = client.Do(req)
 	if err != nil {
 		// catch connectivity error, even with a valid URL

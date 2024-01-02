@@ -7,53 +7,22 @@ import (
 	"github.com/advanced-go/core/uri"
 	"net/http"
 	"reflect"
-	"sync"
 )
 
 const (
 	PingResource          = "ping"
 	ContentLength         = "Content-Length"
 	ContentType           = "Content-Type"
-	muxAddLocation        = PkgPath + ":Mux/add"
-	muxGetLocation        = PkgPath + ":Mux/get"
 	writeStatusContentLoc = PkgPath + ":Mux/writeStatusContent"
 	bytesLoc              = PkgPath + ":Mux/writeBytes"
 )
 
-type muxEntry struct {
-	path    string
-	handler http.HandlerFunc
-}
-
-var mux = new(sync.Map)
-
-func add(path string, handler func(w http.ResponseWriter, r *http.Request)) runtime.Status {
-	_, ok := mux.Load(path)
-	if ok {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, muxAddLocation, errors.New(fmt.Sprintf("invalid argument: HTTP Handler already exists: [%v]", path)))
-	}
-	entry := new(muxEntry)
-	entry.path = path
-	entry.handler = handler
-	mux.Store(path, entry)
-	return runtime.StatusOK()
-}
-
-func get(path string) (*muxEntry, runtime.Status) {
-	v, ok := mux.Load(path)
-	if !ok {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, muxGetLocation, errors.New(fmt.Sprintf("invalid argument: HTTP Handler does not exists: [%v]", path)))
-	}
-	if entry, ok1 := v.(*muxEntry); ok1 {
-		return entry, runtime.StatusOK()
-	}
-	return nil, runtime.NewStatus(runtime.StatusInvalidContent)
-}
+var m = runtime.NewHandlerMap()
 
 // Handle - add pattern and Http handler mux entry
 // TO DO : panic on duplicate handler and pattern combination
 func Handle(path string, handler func(w http.ResponseWriter, r *http.Request)) {
-	status := add(path, handler)
+	status := m.AddHandler(path, handler)
 	if !status.OK() {
 		panic(status)
 	}
@@ -70,7 +39,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	entry, status := get(nid)
+	handler, status := m.GetHandlerFromNID(nid)
 	if !status.OK() {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -79,7 +48,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		ProcessPing[runtime.Log](w, nid)
 		return
 	}
-	entry.handler(w, r)
+	handler(w, r)
 }
 
 func ProcessPing[E runtime.ErrorHandler](w http.ResponseWriter, nid string) {
