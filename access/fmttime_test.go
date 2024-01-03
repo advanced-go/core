@@ -16,28 +16,3 @@ func _ExampleFmtTimestamp() {
 	//Output:
 
 }
-
-func stringer() string {
-	s := "in stringer()"
-	fmt.Printf("%v\n", s)
-	return s
-}
-
-type stringerFunc func() string
-
-func (f stringerFunc) String() string {
-	return f()
-}
-
-func Example_StringerFunc() {
-	var str fmt.Stringer
-
-	str = stringerFunc(stringer)
-	s := str.String()
-	fmt.Printf("test: stringerFunc() -> %v\n", s)
-
-	//Output:
-	//in stringer()
-	//test: stringerFunc() -> in stringer()
-
-}
