@@ -31,10 +31,12 @@ func init() {
 	basePath = cwd
 }
 
+// IsJson - does the URI have a .json extension
 func IsJson(uri string) bool {
 	return strings.HasSuffix(uri, JsonExt)
 }
 
+// IsFileScheme - determine if a string, or URL uses the file scheme
 func IsFileScheme(u any) bool {
 	if u == nil {
 		return false
@@ -48,6 +50,7 @@ func IsFileScheme(u any) bool {
 	return false
 }
 
+// FileName - return the OS correct file name from a URI
 func FileName(uri any) string {
 	if uri == nil {
 		return "error: URL is nil"
@@ -80,6 +83,7 @@ func fileName(u *url.URL) string {
 	return name
 }
 
+// IsStatusURL - determine if the file name of the URL contains the text 'status'
 func IsStatusURL(url string) bool {
 	if len(url) == 0 {
 		return false

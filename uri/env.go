@@ -11,6 +11,7 @@ const (
 	EnvPrefix = "$"
 )
 
+// LookupEnv - environment lookup
 func LookupEnv(name string) (string, error) {
 	if strings.HasPrefix(name, EnvPrefix) {
 		return os.Getenv(name[len(EnvPrefix):]), nil
