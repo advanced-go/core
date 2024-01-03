@@ -27,7 +27,7 @@ func New[T any](v any) (t T, status Status) {
 		if uri2.IsStatusURL(ptr) {
 			return t, NewStatusFrom(ptr)
 		}
-		buf, status = newBytes(ptr)
+		buf, status = NewBytes(ptr)
 		if !status.OK() {
 			return
 		}
@@ -44,7 +44,7 @@ func New[T any](v any) (t T, status Status) {
 		if uri2.IsStatusURL(ptr.String()) {
 			return t, NewStatusFrom(ptr.String())
 		}
-		buf, status = newBytes(ptr.String())
+		buf, status = NewBytes(ptr.String())
 		if !status.OK() {
 			return
 		}
@@ -70,7 +70,7 @@ func New[T any](v any) (t T, status Status) {
 		return
 	case *http.Response:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = newBytes(ptr)
+			buf, status = NewBytes(ptr)
 			if !status.OK() {
 				return
 			}
@@ -85,7 +85,7 @@ func New[T any](v any) (t T, status Status) {
 		return t, StatusOK()
 	case io.Reader:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = newBytes(ptr)
+			buf, status = NewBytes(ptr)
 			if !status.OK() {
 				return
 			}
@@ -99,7 +99,7 @@ func New[T any](v any) (t T, status Status) {
 		return t, StatusOK()
 	case io.ReadCloser:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = newBytes(ptr)
+			buf, status = NewBytes(ptr)
 			if !status.OK() {
 				return
 			}
@@ -115,9 +115,4 @@ func New[T any](v any) (t T, status Status) {
 	default:
 		return t, NewStatusError(StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 	}
-	//err := json.Unmarshal(buf, &t)
-	//if err != nil {
-	//	return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
-	//}
-	//return t, StatusOK()
 }
