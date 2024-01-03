@@ -54,6 +54,7 @@ func isErrors(errs []error) bool {
 	return !(len(errs) == 0 || (len(errs) == 1 && errs[0] == nil))
 }
 
+// Status - interface
 type Status interface {
 	Code() int
 	OK() bool
@@ -99,7 +100,7 @@ func NewStatus(code int) Status {
 	return newStatus(code)
 }
 
-// NewStatusOK - new Status OK with state
+// NewStatusOK - new Status OK
 func NewStatusOK() Status {
 	return newStatus(http.StatusOK)
 }
@@ -165,14 +166,14 @@ func (s *statusState) addErrors(errs ...error) {
 	}
 }
 
-// Duration - get duration
+// Duration - get/set duration
 func (s *statusState) Duration() time.Duration { return s.SDuration }
 func (s *statusState) SetDuration(duration time.Duration) Status {
 	s.SDuration = duration
 	return s
 }
 
-// RequestId  - request id
+// RequestId  - request id get/set
 func (s *statusState) RequestId() string { return s.SRequestId }
 func (s *statusState) SetRequestId(requestId any) Status {
 	if len(s.SRequestId) != 0 {
@@ -185,7 +186,7 @@ func (s *statusState) SetRequestId(requestId any) Status {
 	return s
 }
 
-// Location - location
+// Location - location add/get
 func (s *statusState) Location() []string { return s.SLocation }
 func (s *statusState) AddLocation(location string) Status {
 	if len(location) > 0 {
@@ -194,7 +195,7 @@ func (s *statusState) AddLocation(location string) Status {
 	return s
 }
 
-// IsContent - content
+// IsContent - content status, get/set, and string representation
 func (s *statusState) IsContent() bool { return s.SContent != nil }
 func (s *statusState) Content() any    { return s.SContent }
 func (s *statusState) ContentString() string {
@@ -226,6 +227,7 @@ func (s *statusState) ContentHeader() http.Header {
 	return s.Header
 }
 
+// Http - conversion of code to HTTP status code
 func (s *statusState) Http() int {
 	// Catch all valid http status codes
 	if s.SCode >= http.StatusContinue {
@@ -242,6 +244,7 @@ func (s *statusState) Http() int {
 	return http.StatusInternalServerError
 }
 
+// String - string representation
 func (s *statusState) String() string {
 	if s.IsErrors() {
 		return fmt.Sprintf("%v %v", s.Description(), s.Errs)
@@ -250,6 +253,7 @@ func (s *statusState) String() string {
 	}
 }
 
+// Description - string representation of status code
 func (s *statusState) Description() string {
 	switch s.SCode {
 	// Mapped

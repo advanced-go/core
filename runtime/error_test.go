@@ -130,6 +130,18 @@ func Example_InvalidTypeError() {
 }
 
 /*
+
+// ErrorHandleFn - function type for error handling
+//type ErrorHandleFn func(requestId, location string, errs ...error) *Status
+// NewErrorHandler - templated function providing an error handle function via a closure
+
+func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
+	var e E
+	return func(requestId string, location string, errs ...error) *Status {
+		return e.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
+	}
+}
+
 func ExampleErrorHandleFn() {
 	loc := PkgUri + "/ErrorHandleFn"
 

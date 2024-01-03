@@ -19,6 +19,7 @@ type serializedStatusState struct {
 	Err      string `json:"err"`
 }
 
+// NewStatusFrom - create a new Status from a URI
 func NewStatusFrom(uri string) Status {
 	status := statusFromConst(uri)
 	if status != nil {

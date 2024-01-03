@@ -50,7 +50,7 @@ var (
 	defaultLogger Logger = func(s Status) { log.Default().Println(formatter(s)) }
 )
 
-// ErrorHandler - template parameter error handler interface
+// ErrorHandler - error handler interface
 type ErrorHandler interface {
 	Handle(s Status, requestId string, callerLocation string) Status
 }
@@ -58,6 +58,7 @@ type ErrorHandler interface {
 // Bypass - bypass error handler
 type Bypass struct{}
 
+// Handle - bypass error handler
 func (h Bypass) Handle(s Status, _ string, _ string) Status {
 	return s
 }
@@ -65,6 +66,7 @@ func (h Bypass) Handle(s Status, _ string, _ string) Status {
 // Output - standard output error handler
 type Output struct{}
 
+// Handle - output error handler
 func (h Output) Handle(s Status, requestId string, location string) Status {
 	if s == nil {
 		return StatusOK()
@@ -84,6 +86,7 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 // Log - log error handler
 type Log struct{}
 
+// Handle - log error handler
 func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	if s == nil {
 		return StatusOK()
@@ -99,18 +102,6 @@ func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	}
 	return s
 }
-
-// ErrorHandleFn - function type for error handling
-//type ErrorHandleFn func(requestId, location string, errs ...error) *Status
-// NewErrorHandler - templated function providing an error handle function via a closure
-/*
-func NewErrorHandler[E ErrorHandler]() ErrorHandleFn {
-	var e E
-	return func(requestId string, location string, errs ...error) *Status {
-		return e.Handle(NewStatusError(http.StatusInternalServerError, location, errs...), requestId, "")
-	}
-}
-*/
 
 func defaultFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
@@ -150,6 +141,7 @@ func formatErrors(name string, errs []error) string {
 	return result + " ]"
 }
 
+// OutputFormatter - formatter for special output formatting
 func OutputFormatter(s Status) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",

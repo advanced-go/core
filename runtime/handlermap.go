@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	handlerAddLocation = PkgPath + ":Mux/add"
-	handlerGetLocation = PkgPath + ":Mux/get"
+	handlerAddLocation    = PkgPath + ":AddHandler"
+	handlerGetLocation    = PkgPath + ":GetHandler"
+	handlerGetNIDLocation = PkgPath + ":GetHandlerFromNID"
 )
 
 // HandlerMap - key value pairs of a URI -> HttpHandler
@@ -49,7 +50,7 @@ func (h *HandlerMap) AddHandler(uri string, handler func(w http.ResponseWriter, 
 func (h *HandlerMap) GetHandler(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
 	nid, _, ok := uri2.UprootUrn(uri)
 	if !ok {
-		return nil, NewStatusError(StatusInvalidArgument, handlerAddLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+		return nil, NewStatusError(StatusInvalidArgument, handlerGetLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
 	return h.GetHandlerFromNID(nid)
 }
@@ -58,7 +59,7 @@ func (h *HandlerMap) GetHandler(uri string) (func(w http.ResponseWriter, r *http
 func (h *HandlerMap) GetHandlerFromNID(nid string) (func(w http.ResponseWriter, r *http.Request), Status) {
 	v, ok := h.m.Load(nid)
 	if !ok {
-		return nil, NewStatusError(StatusInvalidArgument, handlerGetLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler does not exist: [%v]", nid)))
+		return nil, NewStatusError(StatusInvalidArgument, handlerGetNIDLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler does not exist: [%v]", nid)))
 	}
 	if handler, ok1 := v.(func(w http.ResponseWriter, r *http.Request)); ok1 {
 		return handler, StatusOK()

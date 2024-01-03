@@ -16,7 +16,7 @@ const (
 	readAllLoc  = PkgPath + ":readAll"
 )
 
-// NewBytes - create a []byte
+// NewBytes - create a []byte from a type
 func NewBytes(v any) ([]byte, Status) {
 	switch ptr := v.(type) {
 	case string:
