@@ -17,12 +17,12 @@ const (
 	bytesLoc              = PkgPath + ":Mux/writeBytes"
 )
 
-var m = runtime.NewHandlerMap()
+var proxy = runtime.NewProxy()
 
 // Handle - add pattern and Http handler mux entry
 // TO DO : panic on duplicate handler and pattern combination
 func Handle(path string, handler func(w http.ResponseWriter, r *http.Request)) {
-	status := m.AddHandler(path, handler)
+	status := proxy.Register(path, handler)
 	if !status.OK() {
 		panic(status)
 	}
@@ -39,7 +39,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	handler, status := m.GetHandlerFromNID(nid)
+	handler, status := proxy.LookupByNID(nid)
 	if !status.OK() {
 		w.WriteHeader(http.StatusNotFound)
 		return

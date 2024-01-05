@@ -66,14 +66,14 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(testContent))
 }
 
-func Example_Do_Endpoint() {
+func Example_Do_Proxyt() {
 	uri := "http://localhost:8080/github.com/advanced-go/core/exchange:Do"
 	req, _ := http.NewRequest("", uri, nil)
 
 	resp, status := Do(req)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp != nil, status)
 
-	status = RegisterEndpoint(uri, testHandler)
+	status = RegisterHandler(uri, testHandler)
 	fmt.Printf("test: RegisterEndpoint() -> [status:%v]\n", status)
 
 	resp, status = Do(req)
