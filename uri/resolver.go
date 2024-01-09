@@ -1,94 +1,123 @@
 package uri
 
 import (
+	"errors"
 	"fmt"
-	"net/url"
-	"reflect"
 	"strings"
+	"sync"
 )
 
-// ResolveFunc - type for resolution
-type ResolveFunc func(string) string
+// TO DO : Need to configure a way to set default authority
+const (
+	SchemeHttps = "https"
+	SchemeHttp  = "http"
+	localHost   = "localhost"
+)
+
+var (
+	localAuthority = ""
+)
+
+type Attr struct {
+	Key, Value string
+}
+
+func SetLocalAuthority(authority string) {
+	localAuthority = authority
+}
 
 // Resolver - resolver interface
 type Resolver interface {
-	SetOverride(t any, host string)
-	Build(id string, values url.Values) string
+	SetOverrides(values []Attr)
+	Build(authority, path string, values ...any) string
+	Authority(authority string) (string, error)
 }
 
 // NewResolver - create a resolver
-func NewResolver(defaultHost string, defaultFn ResolveFunc) Resolver {
+func NewResolver(localHost bool, authority []Attr) Resolver {
 	r := new(resolver)
-	r.defaultHost = defaultHost
-	r.defaultFn = defaultFn
+	r.localHost = localHost
+	r.authority = new(sync.Map)
+	for _, attr := range authority {
+		r.authority.Store(attr.Key, attr.Value)
+	}
 	return r
 }
 
 type resolver struct {
-	defaultHost string
-	overrideFn  func(string) (string, string)
-	defaultFn   ResolveFunc
+	authority *sync.Map
+	override  *sync.Map
+	localHost bool
 }
 
-// SetOverride - configure an override resolve func
-func (r *resolver) SetOverride(t any, host string) {
-	r.overrideFn = resolveFuncFromType(t, host)
+// SetOverrides - configure overrides
+func (r *resolver) SetOverrides(values []Attr) {
+	if len(values) == 0 {
+		r.override = nil
+		return
+	}
+	r.override = new(sync.Map)
+	for _, attr := range values {
+		r.override.Store(attr.Key, attr.Value)
+	}
 }
 
 // Build - perform resolution
-func (r *resolver) Build(id string, values url.Values) string {
-	override := false
-	url := ""
-	host := ""
-
-	if r.overrideFn != nil {
-		url, host = r.overrideFn(id)
-		if len(url) > 0 {
-			override = true
+func (r *resolver) Build(authority, path string, values ...any) string {
+	if len(authority) == 0 {
+		return "resolver error: invalid argument, authority is empty"
+	}
+	if len(path) == 0 {
+		return "resolver error: invalid argument, path is empty"
+	}
+	if r.override != nil {
+		if u, ok := r.overrideUrl(authority); ok {
+			return u
 		}
 	}
-	if len(url) == 0 && r.defaultFn != nil {
-		url = r.defaultFn(id)
-	}
-	if len(url) == 0 {
-		url = id
-	}
-	if len(url) == 0 {
-		return "error: id cannot be resolved to a URL"
-	}
-	if strings.HasPrefix(url, "/") {
-		if len(host) == 0 {
-			host = r.defaultHost
+	scheme := SchemeHttps
+	if r.localHost {
+		authority = localAuthority
+		scheme = SchemeHttp
+	} else {
+		var err error
+		authority, err = r.Authority(authority)
+		if err != nil {
+			return err.Error()
 		}
-		url = host + url
+		if strings.HasPrefix(authority, localHost) {
+			scheme = SchemeHttp
+		}
 	}
-	if !override && values != nil {
-		url = url + "?" + values.Encode()
+	if len(values) > 0 {
+		path = fmt.Sprintf(path, values...)
 	}
-	return url
+	url2 := scheme + "://" + authority + path
+	return url2
 }
 
-func resolveFuncFromType(value any, host string) func(key string) (id string, host string) {
-	if value == nil {
-		if len(host) == 0 {
-			return nil
+func (r *resolver) Authority(authority string) (string, error) {
+	t, ok := TemplateToken(authority)
+	if !ok {
+		return authority, nil
+	}
+	if v, ok2 := r.authority.Load(t); ok2 {
+		if s, ok3 := v.(string); ok3 {
+			return s, nil
 		}
-		return func(id string) (string, string) { return "", host }
 	}
-	switch ptr := value.(type) {
-	case string:
-		return func(id string) (string, string) { return ptr, host }
-	case map[string]string:
-		return func(id string) (string, string) {
-			if v, ok := ptr[id]; ok {
-				return v, host
-			}
-			return "", host
+	return "", errors.New(fmt.Sprintf("resolver error: authority not found for variable : %v", authority))
+}
+
+func (r *resolver) overrideUrl(authority string) (string, bool) {
+	t, ok := TemplateToken(authority)
+	if !ok {
+		return "", false
+	}
+	if v, ok2 := r.override.Load(t); ok2 {
+		if s, ok3 := v.(string); ok3 {
+			return s, true
 		}
-	case func(string) (string, string):
-		return ptr
 	}
-	return func(k string) (string, string) {
-		return fmt.Sprintf("error: resolveFuncFromType() value parameter is an invalid type: %v", reflect.TypeOf(value)), host
-	}
+	return "", false
 }

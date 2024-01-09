@@ -85,3 +85,34 @@ func ExampleExpand_Valid() {
 	//test: Expand(resources/test-file-name_{env}.txt) -> [error:<nil>] [path:resources/test-file-name_[ENV].txt]
 
 }
+
+func Example_TemplateToken() {
+	t := ""
+
+	v, ok := TemplateToken(t)
+	fmt.Printf("test: TemplateToken(\"\") -> [var:%v] [ok:%v]\n", v, ok)
+
+	t = "variable-name"
+	v, ok = TemplateToken(t)
+	fmt.Printf("test: TemplateToken(\"%v\") -> [var:%v] [ok:%v]\n", t, v, ok)
+
+	t = "{variable-name"
+	v, ok = TemplateToken(t)
+	fmt.Printf("test: TemplateToken(\"%v\") -> [var:%v] [ok:%v]\n", t, v, ok)
+
+	t = "variable-name}"
+	v, ok = TemplateToken(t)
+	fmt.Printf("test: TemplateToken(\"%v\") -> [var:%v] [ok:%v]\n", t, v, ok)
+
+	t = "{variable-name}"
+	v, ok = TemplateToken(t)
+	fmt.Printf("test: TemplateToken(\"%v\") -> [var:%v] [ok:%v]\n", t, v, ok)
+
+	//Output:
+	//test: TemplateToken("") -> [var:] [ok:false]
+	//test: TemplateToken("variable-name") -> [var:] [ok:false]
+	//test: TemplateToken("{variable-name") -> [var:] [ok:false]
+	//test: TemplateToken("variable-name}") -> [var:] [ok:false]
+	//test: TemplateToken("{variable-name}") -> [var:variable-nam] [ok:true]
+
+}

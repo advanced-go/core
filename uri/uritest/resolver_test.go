@@ -20,30 +20,58 @@ const (
 	filePath = "file://[cwd]/uri/uritest/html-response.txt"
 )
 
-func Example_Resolver_Passthrough() {
-	auth := "www.google.com"
-	path := "/%v?%v"
-	v := make(url.Values)
-
-	v.Add("param-1", "value-1")
-	v.Add("param-2", "value-2")
-
-	r := NewResolver(false, nil)
-
-	enc := v.Encode()
-	uri := r.Build(auth, path, "search", enc)
-	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", auth, path, uri)
-
-	//id = "/google/search?q=golang"
-	//val = r.Build(id, nil)
-	//fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
-
-	//Output:
-	//test: Build("www.google.com","/%v?%v") -> [uri:https://www.google.com/search?param-1=value-1&param-2=value-2]
-
+func testDefault(id string) string {
+	switch id {
+	case resolvedId:
+		return activityUrl
+	case pathId:
+		return activityPath
+	case bypassId:
+		return ""
+	case overrideBypassId:
+		return activityPath
+	}
+	return id
 }
 
-/*
+func testOverride(id string) (string, string) {
+	switch id {
+	case resolvedId:
+		return fileUrl, ""
+	case pathId:
+		return filePath, ""
+	case overrideBypassId:
+		return "", ""
+	}
+	return id, ""
+}
+
+func Example_Resolver_Passthrough() {
+	r := NewResolver("http://localhost:8080", nil)
+
+	id := ""
+	val := r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
+
+	id = "test"
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
+
+	id = "/google/search?q=golang"
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
+
+	id = "https://www.google.com/google:search?q=golang"
+	val = r.Build(id, nil)
+	fmt.Printf("test: Build(\"%v\") -> %v\n", id, val)
+
+	//Output:
+	//test: Build("") -> error: id cannot be resolved to a URL
+	//test: Build("test") -> test
+	//test: Build("/google/search?q=golang") -> http://localhost:8080/google/search?q=golang
+	//test: Build("https://www.google.com/google:search?q=golang") -> https://www.google.com/google:search?q=golang
+
+}
 
 func Example_Resolver_Default() {
 	r := NewResolver("http://localhost:8080", testDefault)
@@ -107,9 +135,6 @@ func Example_Resolver_Override() {
 	//test: Build("overrideBypass") -> http://localhost:8080/advanced-go/example-domain/activity:entry
 
 }
-
-
-*/
 
 func Example_Values() {
 	v := make(url.Values)

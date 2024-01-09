@@ -32,14 +32,24 @@ func Expand(t string, fn func(string) (string, error)) (string, error) {
 			continue
 		}
 		// Have a valid end delimiter, so lookup the variable
-		t, err := fn(sub[0])
+		t1, err := fn(sub[0])
 		if err != nil {
 			return "", err
 		}
-		buf.WriteString(t)
+		buf.WriteString(t1)
 		if len(sub) == 2 {
 			buf.WriteString(sub[1])
 		}
 	}
 	return buf.String(), nil
+}
+
+func TemplateToken(s string) (string, bool) {
+	if !strings.HasPrefix(s, BeginDelimiter) {
+		return "", false
+	}
+	if !strings.HasSuffix(s, EndDelimiter) {
+		return "", false
+	}
+	return s[1 : len(s)-2], true
 }
