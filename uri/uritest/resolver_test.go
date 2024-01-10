@@ -1,4 +1,4 @@
-package uri
+package uritest
 
 import (
 	"fmt"
