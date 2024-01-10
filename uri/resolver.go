@@ -29,6 +29,7 @@ func SetLocalAuthority(authority string) {
 // Resolver - resolver interface
 type Resolver interface {
 	SetLocalHostOverride(v bool)
+	SetAuthorities(values []Attr)
 	SetOverrides(values []Attr)
 	Build(authority, path string, values ...any) string
 	Authority(authority string) (string, error)
@@ -36,13 +37,20 @@ type Resolver interface {
 }
 
 // NewResolver - create a resolver
-func NewResolver(authorities []Attr) Resolver {
+func NewResolver() Resolver {
 	r := new(resolver)
-	//r.localHost = localHost
 	r.authority = new(sync.Map)
-	for _, attr := range authorities {
-		r.authority.Store(attr.Key, attr.Value)
-	}
+	return r
+}
+
+// NewResolverWithAuthorities - create a resolver with authorities
+func NewResolverWithAuthorities(values []Attr) Resolver {
+	r := new(resolver)
+	r.authority = new(sync.Map)
+	r.SetAuthorities(values)
+	//for _, attr := range authorities {
+	//	r.authority.Store(attr.Key, attr.Value)
+	//}
 	return r
 }
 
@@ -54,6 +62,17 @@ type resolver struct {
 
 func (r *resolver) SetLocalHostOverride(v bool) {
 	r.localHost = v
+}
+
+// SetAuthorities - configure authorities
+func (r *resolver) SetAuthorities(values []Attr) {
+	if len(values) == 0 {
+		return
+	}
+	r.authority = new(sync.Map)
+	for _, attr := range values {
+		r.authority.Store(attr.Key, attr.Value)
+	}
 }
 
 // SetOverrides - configure overrides

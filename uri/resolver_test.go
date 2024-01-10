@@ -6,100 +6,102 @@ import (
 )
 
 const (
+	MSFTKey        = "MSFT"
+	MSFTVariable   = "{MSFT}"
+	MSFTAuthority  = "www.microsoft.com"
+	GOOGLKey       = "GOOGL"
+	GOOGLVariable  = "{GOOGL}"
+	GOOGLAuthority = "www.google.com"
+
 	fileUrl = "file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt"
 )
 
 func Example_Authority() {
-	r := NewResolver([]Attr{{"test", "www.microsoft.com"}})
-	GOOGL := ""
+	key := ""
+	r := NewResolver() //WithAuthorities([]Attr{{"test", "www.microsoft.com"}})
 
-	s, err := r.Authority(GOOGL)
-	fmt.Printf("test: Authority(\"\") ->  [auth:%v] [err:%v]\n", s, err)
+	s, err := r.Authority(key)
+	fmt.Printf("test: Authority-Empty(\"\") ->  [auth:%v] [err:%v]\n", s, err)
 
-	GOOGL = "www.google.com"
-	s, err = r.Authority(GOOGL)
-	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", GOOGL, s, err)
+	key = GOOGLKey
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-No-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
-	GOOGL = "{www.google.com"
-	s, err = r.Authority(GOOGL)
-	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", GOOGL, s, err)
+	key = "{GOOGL"
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Invalid-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
-	GOOGL = "www.google.com}"
-	s, err = r.Authority(GOOGL)
-	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", GOOGL, s, err)
+	key = "GOOGL}"
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Invalid-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
-	GOOGL = "{www.google.com}"
-	s, err = r.Authority(GOOGL)
-	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", GOOGL, s, err)
+	key = GOOGLVariable
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Valid-Variable(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
-	GOOGL = "{test}"
-	s, err = r.Authority(GOOGL)
-	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", GOOGL, s, err)
+	r.SetAuthorities([]Attr{{GOOGLKey, GOOGLAuthority}, {MSFTKey, MSFTAuthority}})
+	key = GOOGLVariable
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
 	//Output:
-	//test: Authority("") ->  [auth:] [err:<nil>]
-	//test: Authority(www.google.com) ->  [auth:www.google.com] [err:<nil>]
-	//test: Authority({www.google.com) ->  [auth:{www.google.com] [err:<nil>]
-	//test: Authority(www.google.com}) ->  [auth:www.google.com}] [err:<nil>]
-	//test: Authority({www.google.com}) ->  [auth:] [err:resolver error: authority not found for variable: {www.google.com}]
-	//test: Authority({test}) ->  [auth:www.microsoft.com] [err:<nil>]
+	//test: Authority-Empty("") ->  [auth:] [err:<nil>]
+	//test: Authority-No-Variable-Markup(GOOGL) ->  [auth:GOOGL] [err:<nil>]
+	//test: Authority-Invalid-Variable-Markup({GOOGL) ->  [auth:{GOOGL] [err:<nil>]
+	//test: Authority-Invalid-Variable-Markup(GOOGL}) ->  [auth:GOOGL}] [err:<nil>]
+	//test: Authority-Valid-Variable({GOOGL}) ->  [auth:] [err:resolver error: authority not found for variable: {GOOGL}]
+	//test: Authority({GOOGL}) ->  [auth:www.google.com] [err:<nil>]
 
 }
 
 func Example_OverrideUrl() {
-	r := NewResolver([]Attr{{"test", "www.microsoft.com"}})
-	GOOGL := ""
+	r := NewResolverWithAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
+	key := ""
 
-	uri, ok := r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
+	uri, ok := r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Empty(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
 
-	GOOGL = "www.google.com"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	key = "www.google.com"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	GOOGL = "{www.google.com"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	key = "{www.google.com"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	GOOGL = "www.google.com}"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	key = "www.google.com}"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	GOOGL = "{www.google.com}"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Empty-Overrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	GOOGL = "{test}"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
-
-	r.SetOverrides([]Attr{{"test", "https://www.microsoft.com/office"}})
-
-	GOOGL = "{test}"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	r.SetOverrides([]Attr{{MSFTKey, "https://www.microsoft.com/office"}})
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Configured-Overrrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
 	r.SetLocalHostOverride(true)
-	GOOGL = "{test}"
-	uri, ok = r.OverrideUrl(GOOGL)
-	fmt.Printf("test: OverrideUrl(%v) ->  [uri:%v] [ok:%v]\n", GOOGL, uri, ok)
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Configured-Overrides-LocalHost-Override(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
 	//Output:
-	//test: OverrideUrl("") ->  [uri:] [ok:false]
-	//test: OverrideUrl(www.google.com) ->  [uri:] [ok:false]
-	//test: OverrideUrl({www.google.com) ->  [uri:] [ok:false]
-	//test: OverrideUrl(www.google.com}) ->  [uri:] [ok:false]
-	//test: OverrideUrl({www.google.com}) ->  [uri:] [ok:false]
-	//test: OverrideUrl({test}) ->  [uri:] [ok:false]
-	//test: OverrideUrl({test}) ->  [uri:https://www.microsoft.com/office] [ok:true]
-	//test: OverrideUrl({test}) ->  [uri:https://www.microsoft.com/office] [ok:true]
+	//test: OverrideUrl-Empty("") ->  [uri:] [ok:false]
+	//test: OverrideUrl-Invalid-Variable(www.google.com) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Invalid-Variable({www.google.com) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Invalid-Variable(www.google.com}) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Empty-Overrides({MSFT}) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Configured-Overrrides({MSFT}) ->  [uri:https://www.microsoft.com/office] [ok:true]
+	//test: OverrideUrl-Configured-Overrides-LocalHost-Override({MSFT}) ->  [uri:https://www.microsoft.com/office] [ok:true]
 
 }
 
 func Example_Build_Error() {
 	path := "/google/search"
 	GOOGL := ""
-	r := NewResolver(nil)
+	r := NewResolver()
 
 	uri := r.Build(GOOGL, path)
 	fmt.Printf("test: Build(\"\",\"%v\") -> [uri:%v]\n", path, uri)
@@ -122,7 +124,7 @@ func Example_Build_Passthrough() {
 	v.Add("param-1", "value-1")
 	v.Add("param-2", "value-2")
 
-	r := NewResolver(nil)
+	r := NewResolver()
 
 	enc := v.Encode()
 	uri := r.Build(GOOGL, path, "search", enc)
@@ -140,37 +142,50 @@ func Example_Build_Passthrough() {
 
 func Example_Build() {
 	path := "/some/resource/%v"
-	key := "MSFT"
-	MSFT := fmt.Sprintf("{%v}", key)
-	r := NewResolver([]Attr{{key, "www.microsoft.com"}})
+	r := NewResolverWithAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
 
-	GOOGL := "{GOOGL}"
-	uri := r.Build(GOOGL, path, "12345")
-	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", GOOGL, path, uri)
+	key := GOOGLVariable
+	uri := r.Build(key, path, "12345")
+	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
-	uri = r.Build(MSFT, path, "12345")
-	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", MSFT, path, uri)
+	key = MSFTVariable
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
+
+	r.SetAuthorities([]Attr{{GOOGLKey, GOOGLAuthority}})
+	key = MSFTVariable
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build-SetAuthorities(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
+
+	r.SetAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
+	key = MSFTVariable
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build-ResetAuthorities(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
 	r.SetLocalHostOverride(true)
-	uri = r.Build(MSFT, path, "12345")
-	fmt.Printf("test: Build-LocalHost(\"%v\",\"%v\") -> [uri:%v]\n", MSFT, path, uri)
+	key = MSFTVariable
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build-LocalHost(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
 	r.SetLocalHostOverride(false)
-	r.SetOverrides([]Attr{{key, fileUrl}})
-	uri = r.Build(MSFT, path, "12345")
-	fmt.Printf("test: Build-Override(\"%v\",\"%v\") -> [uri:%v]\n", MSFT, path, uri)
+	key = MSFTVariable
+	r.SetOverrides([]Attr{{MSFTKey, fileUrl}})
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build-Override(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
-	r.SetOverrides(nil)
-	uri = r.Build(MSFT, path, "12345")
-	fmt.Printf("test: Build-RemoveOverride(\"%v\",\"%v\") -> [uri:%v]\n", MSFT, path, uri)
+	r.SetOverrides([]Attr{{GOOGLKey, GOOGLAuthority}})
+	uri = r.Build(key, path, "12345")
+	fmt.Printf("test: Build-RemoveOverride(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
 	//Output:
 	//test: Build("{GOOGL}","/some/resource/%v") -> [uri:resolver error: authority not found for variable: {GOOGL}]
 	//test: Build("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
+	//test: Build-SetAuthorities("{MSFT}","/some/resource/%v") -> [uri:resolver error: authority not found for variable: {MSFT}]
+	//test: Build-ResetAuthorities("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
 	//test: Build-LocalHost("{MSFT}","/some/resource/%v") -> [uri:http://localhost:8080/some/resource/12345]
 	//test: Build-Override("{MSFT}","/some/resource/%v") -> [uri:file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt]
 	//test: Build-RemoveOverride("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
-
+	
 }
 
 func Example_Values() {
