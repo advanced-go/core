@@ -5,10 +5,15 @@ import (
 	"net/url"
 )
 
+// https://duckduckgo.com/?q=golang
+// https://www.google.com/search?q=golang
+// https://www.bing.com/search?q=golang
+// https://search.yahoo.com/search?p=golang
+
 const (
 	MSFTKey        = "MSFT"
 	MSFTVariable   = "{MSFT}"
-	MSFTAuthority  = "www.microsoft.com"
+	MSFTAuthority  = "www.bing.com"
 	GOOGLKey       = "GOOGL"
 	GOOGLVariable  = "{GOOGL}"
 	GOOGLAuthority = "www.google.com"
@@ -18,7 +23,7 @@ const (
 
 func Example_Authority() {
 	key := ""
-	r := NewResolver() //WithAuthorities([]Attr{{"test", "www.microsoft.com"}})
+	r := NewResolver() //WithAuthorities([]Attr{{"test", "www.bing.com"}})
 
 	s, err := r.Authority(key)
 	fmt.Printf("test: Authority-Empty(\"\") ->  [auth:%v] [err:%v]\n", s, err)
@@ -77,7 +82,7 @@ func Example_OverrideUrl() {
 	uri, ok = r.OverrideUrl(key)
 	fmt.Printf("test: OverrideUrl-Empty-Overrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	r.SetOverrides([]Attr{{MSFTKey, "https://www.microsoft.com/office"}})
+	r.SetOverrides([]Attr{{MSFTKey, "https://www.bing.com/office"}})
 	key = MSFTVariable
 	uri, ok = r.OverrideUrl(key)
 	fmt.Printf("test: OverrideUrl-Configured-Overrrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
@@ -93,8 +98,8 @@ func Example_OverrideUrl() {
 	//test: OverrideUrl-Invalid-Variable({www.google.com) ->  [uri:] [ok:false]
 	//test: OverrideUrl-Invalid-Variable(www.google.com}) ->  [uri:] [ok:false]
 	//test: OverrideUrl-Empty-Overrides({MSFT}) ->  [uri:] [ok:false]
-	//test: OverrideUrl-Configured-Overrrides({MSFT}) ->  [uri:https://www.microsoft.com/office] [ok:true]
-	//test: OverrideUrl-Configured-Overrides-LocalHost-Override({MSFT}) ->  [uri:https://www.microsoft.com/office] [ok:true]
+	//test: OverrideUrl-Configured-Overrrides({MSFT}) ->  [uri:https://www.bing.com/office] [ok:true]
+	//test: OverrideUrl-Configured-Overrides-LocalHost-Override({MSFT}) ->  [uri:https://www.bing.com/office] [ok:true]
 
 }
 
@@ -179,13 +184,13 @@ func Example_Build() {
 
 	//Output:
 	//test: Build("{GOOGL}","/some/resource/%v") -> [uri:resolver error: authority not found for variable: {GOOGL}]
-	//test: Build("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
+	//test: Build("{MSFT}","/some/resource/%v") -> [uri:https://www.bing.com/some/resource/12345]
 	//test: Build-SetAuthorities("{MSFT}","/some/resource/%v") -> [uri:resolver error: authority not found for variable: {MSFT}]
-	//test: Build-ResetAuthorities("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
+	//test: Build-ResetAuthorities("{MSFT}","/some/resource/%v") -> [uri:https://www.bing.com/some/resource/12345]
 	//test: Build-LocalHost("{MSFT}","/some/resource/%v") -> [uri:http://localhost:8080/some/resource/12345]
 	//test: Build-Override("{MSFT}","/some/resource/%v") -> [uri:file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt]
-	//test: Build-RemoveOverride("{MSFT}","/some/resource/%v") -> [uri:https://www.microsoft.com/some/resource/12345]
-	
+	//test: Build-RemoveOverride("{MSFT}","/some/resource/%v") -> [uri:https://www.bing.com/some/resource/12345]
+
 }
 
 func Example_Values() {
