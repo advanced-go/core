@@ -7,16 +7,10 @@ import (
 	"os"
 )
 
-// https://duckduckgo.com/?q=golang
-// https://www.google.com/search?q=golang
-// https://www.bing.com/search?q=golang
-// https://search.yahoo.com/search?p=golang
-
 const (
-	MSFTKey        = "MSFT"
-	MSFTVariable   = "{MSFT}"
-	MSFTAuthority  = "www.bing.com"
-	GOOGLKey       = "GOOGL"
+	MSFTVariable  = "{MSFT}"
+	MSFTAuthority = "www.bing.com"
+
 	GOOGLVariable  = "{GOOGL}"
 	GOOGLAuthority = "www.google.com"
 
@@ -31,7 +25,7 @@ func Example_Authority() {
 	s, err := r.Authority(key)
 	fmt.Printf("test: Authority-Empty(\"\") ->  [auth:%v] [err:%v]\n", s, err)
 
-	key = GOOGLKey
+	key = "GOOGL"
 	s, err = r.Authority(key)
 	fmt.Printf("test: Authority-No-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
@@ -47,7 +41,7 @@ func Example_Authority() {
 	s, err = r.Authority(key)
 	fmt.Printf("test: Authority-Valid-Variable(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
 
-	r.SetAuthorities([]Attr{{GOOGLKey, GOOGLAuthority}, {MSFTKey, MSFTAuthority}})
+	r.SetAuthorities([]Attr{{GOOGLVariable, GOOGLAuthority}, {MSFTVariable, MSFTAuthority}})
 	key = GOOGLVariable
 	s, err = r.Authority(key)
 	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
@@ -63,7 +57,7 @@ func Example_Authority() {
 }
 
 func Example_OverrideUrl() {
-	r := NewResolverWithAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
+	r := NewResolverWithAuthorities([]Attr{{MSFTVariable, MSFTAuthority}})
 	key := ""
 
 	uri, ok := r.OverrideUrl(key)
@@ -85,7 +79,7 @@ func Example_OverrideUrl() {
 	uri, ok = r.OverrideUrl(key)
 	fmt.Printf("test: OverrideUrl-Empty-Overrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	r.SetOverrides([]Attr{{MSFTKey, "https://www.bing.com/office"}})
+	r.SetOverrides([]Attr{{MSFTVariable, "https://www.bing.com/office"}})
 	key = MSFTVariable
 	uri, ok = r.OverrideUrl(key)
 	fmt.Printf("test: OverrideUrl-Configured-Overrrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
@@ -150,7 +144,7 @@ func Example_Build_Passthrough() {
 
 func Example_Build() {
 	path := "/some/resource/%v"
-	r := NewResolverWithAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
+	r := NewResolverWithAuthorities([]Attr{{MSFTVariable, MSFTAuthority}})
 
 	key := GOOGLVariable
 	uri := r.Build(key, path, "12345")
@@ -160,12 +154,12 @@ func Example_Build() {
 	uri = r.Build(key, path, "12345")
 	fmt.Printf("test: Build(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
-	r.SetAuthorities([]Attr{{GOOGLKey, GOOGLAuthority}})
+	r.SetAuthorities([]Attr{{GOOGLVariable, GOOGLAuthority}})
 	key = MSFTVariable
 	uri = r.Build(key, path, "12345")
 	fmt.Printf("test: Build-SetAuthorities(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
-	r.SetAuthorities([]Attr{{MSFTKey, MSFTAuthority}})
+	r.SetAuthorities([]Attr{{MSFTVariable, MSFTAuthority}})
 	key = MSFTVariable
 	uri = r.Build(key, path, "12345")
 	fmt.Printf("test: Build-ResetAuthorities(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
@@ -177,11 +171,11 @@ func Example_Build() {
 
 	r.SetLocalHostOverride(false)
 	key = MSFTVariable
-	r.SetOverrides([]Attr{{MSFTKey, fileUrl}})
+	r.SetOverrides([]Attr{{MSFTVariable, fileUrl}})
 	uri = r.Build(key, path, "12345")
 	fmt.Printf("test: Build-Override(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
-	r.SetOverrides([]Attr{{GOOGLKey, GOOGLAuthority}})
+	r.SetOverrides([]Attr{{GOOGLVariable, GOOGLAuthority}})
 	uri = r.Build(key, path, "12345")
 	fmt.Printf("test: Build-RemoveOverride(\"%v\",\"%v\") -> [uri:%v]\n", key, path, uri)
 
@@ -210,7 +204,7 @@ func Example_Values() {
 }
 
 func Example_Attr() {
-	values := []Attr{{MSFTKey, MSFTAuthority}, {GOOGLKey, GOOGLAuthority}}
+	values := []Attr{{"MSFT", MSFTAuthority}, {"GOOGL", GOOGLAuthority}}
 
 	buf, err := json.Marshal(values)
 	fmt.Printf("test: Attr() -> [buf:%v] [err:%v]\n", string(buf), err)

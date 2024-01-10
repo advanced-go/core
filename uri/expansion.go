@@ -46,10 +46,10 @@ func Expand(t string, fn func(string) (string, error)) (string, error) {
 
 func TemplateToken(s string) (string, bool) {
 	if !strings.HasPrefix(s, BeginDelimiter) {
-		return "", false
+		return s, false
 	}
 	if !strings.HasSuffix(s, EndDelimiter) {
-		return "", false
+		return s, false
 	}
 	return s[1 : len(s)-1], true
 }

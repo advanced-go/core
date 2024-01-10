@@ -71,7 +71,8 @@ func (r *resolver) SetAuthorities(values []Attr) {
 	}
 	r.authority = new(sync.Map)
 	for _, attr := range values {
-		r.authority.Store(attr.Key, attr.Value)
+		key, _ := TemplateToken(attr.Key)
+		r.authority.Store(key, attr.Value)
 	}
 }
 
@@ -83,7 +84,8 @@ func (r *resolver) SetOverrides(values []Attr) {
 	}
 	r.override = new(sync.Map)
 	for _, attr := range values {
-		r.override.Store(attr.Key, attr.Value)
+		key, _ := TemplateToken(attr.Key)
+		r.override.Store(key, attr.Value)
 	}
 }
 
