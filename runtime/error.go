@@ -22,8 +22,8 @@ const (
 // Formatter - output formatting type
 type Formatter func(s Status) string
 
-// SetFormatter - optional override of output formatting
-func SetFormatter(fn Formatter) {
+// SetErrorFormatter - optional override of output formatting
+func SetErrorFormatter(fn Formatter) {
 	if fn != nil {
 		formatter = fn
 	}
@@ -31,14 +31,14 @@ func SetFormatter(fn Formatter) {
 
 // SetOutputFormatter - optional override of output formatting
 func SetOutputFormatter() {
-	SetFormatter(OutputFormatter)
+	SetErrorFormatter(OutputFormatter)
 }
 
 // Logger - log function
 type Logger func(s Status)
 
-// SetLogger - optional override of logging
-func SetLogger(fn Logger) {
+// SetErrorLogger - optional override of logging
+func SetErrorLogger(fn Logger) {
 	if fn != nil {
 		logger = fn
 	}

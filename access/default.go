@@ -57,37 +57,37 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
 		"\"threshold-flags\":%v }",
-		fmtstr(o.Region),
-		fmtstr(o.Zone),
-		fmtstr(o.SubZone),
-		fmtstr(o.App),
-		fmtstr(o.InstanceId),
+		FmtJsonString(o.Region),
+		FmtJsonString(o.Zone),
+		FmtJsonString(o.SubZone),
+		FmtJsonString(o.App),
+		FmtJsonString(o.InstanceId),
 
 		traffic,
 		FmtTimestamp(start),
 		strconv.Itoa(d),
 
-		fmtstr(req.Header.Get(runtime.XRequestId)),
-		fmtstr(req.Header.Get(runtime.XRelatesTo)),
-		fmtstr(req.Proto),
-		fmtstr(req.Method),
-		fmtstr(url),
-		fmtstr(host),
-		fmtstr(path),
+		FmtJsonString(req.Header.Get(runtime.XRequestId)),
+		FmtJsonString(req.Header.Get(runtime.XRelatesTo)),
+		FmtJsonString(req.Proto),
+		FmtJsonString(req.Method),
+		FmtJsonString(url),
+		FmtJsonString(host),
+		FmtJsonString(path),
 
 		resp.StatusCode,
-		fmtstr(resp.Status),
+		FmtJsonString(resp.Status),
 
-		fmtstr(routeName),
-		fmtstr(routeTo),
+		FmtJsonString(routeName),
+		FmtJsonString(routeTo),
 		threshold,
-		fmtstr(thresholdFlags),
+		FmtJsonString(thresholdFlags),
 	)
 
 	return s
 }
 
-func fmtstr(value string) string {
+func FmtJsonString(value string) string {
 	if len(value) == 0 {
 		return "null"
 	}
