@@ -51,5 +51,5 @@ func TemplateToken(s string) (string, bool) {
 	if !strings.HasSuffix(s, EndDelimiter) {
 		return "", false
 	}
-	return s[1 : len(s)-2], true
+	return s[1 : len(s)-1], true
 }

@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	localAuthority = ""
+	localAuthority = "localhost:8080"
 )
 
 type Attr struct {
@@ -28,17 +28,19 @@ func SetLocalAuthority(authority string) {
 
 // Resolver - resolver interface
 type Resolver interface {
+	SetLocalHostOverride(v bool)
 	SetOverrides(values []Attr)
 	Build(authority, path string, values ...any) string
 	Authority(authority string) (string, error)
+	OverrideUrl(authority string) (string, bool)
 }
 
 // NewResolver - create a resolver
-func NewResolver(localHost bool, authority []Attr) Resolver {
+func NewResolver(authorities []Attr) Resolver {
 	r := new(resolver)
-	r.localHost = localHost
+	//r.localHost = localHost
 	r.authority = new(sync.Map)
-	for _, attr := range authority {
+	for _, attr := range authorities {
 		r.authority.Store(attr.Key, attr.Value)
 	}
 	return r
@@ -48,6 +50,10 @@ type resolver struct {
 	authority *sync.Map
 	override  *sync.Map
 	localHost bool
+}
+
+func (r *resolver) SetLocalHostOverride(v bool) {
+	r.localHost = v
 }
 
 // SetOverrides - configure overrides
@@ -71,7 +77,7 @@ func (r *resolver) Build(authority, path string, values ...any) string {
 		return "resolver error: invalid argument, path is empty"
 	}
 	if r.override != nil {
-		if u, ok := r.overrideUrl(authority); ok {
+		if u, ok := r.OverrideUrl(authority); ok {
 			return u
 		}
 	}
@@ -106,12 +112,12 @@ func (r *resolver) Authority(authority string) (string, error) {
 			return s, nil
 		}
 	}
-	return "", errors.New(fmt.Sprintf("resolver error: authority not found for variable : %v", authority))
+	return "", errors.New(fmt.Sprintf("resolver error: authority not found for variable: %v", authority))
 }
 
-func (r *resolver) overrideUrl(authority string) (string, bool) {
+func (r *resolver) OverrideUrl(authority string) (string, bool) {
 	t, ok := TemplateToken(authority)
-	if !ok {
+	if !ok || r.override == nil {
 		return "", false
 	}
 	if v, ok2 := r.override.Load(t); ok2 {
