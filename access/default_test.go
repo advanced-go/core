@@ -17,6 +17,7 @@ func Example_Formatter() {
 	req.Header.Add(runtime.XRelatesTo, "your-id")
 	fmt.Printf("test: NewRequest() -> [err:%v] [req:%v]\n", err, req != nil)
 	resp := http.Response{StatusCode: http.StatusOK}
+	time.Sleep(time.Millisecond * 500)
 	logTest(EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, "")
 
 	fmt.Printf("test: LogURI() -> %v\n", "success")
