@@ -37,6 +37,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		var status runtime.Status
 
 		buf, status = runtime.NewBytes(ptr)
+		_ = ptr.Close()
 		if !status.OK() {
 			return nil, "", status
 		}
