@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 )
 
@@ -79,8 +80,15 @@ func Example_WriteBytes() {
 	buf, rc, status = WriteBytes(errors.New(str), "")
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
 
-	str = "this is io.Reader content"
+	str = "this is http.Response.Body content"
 	r := strings.NewReader(str)
+	resp := new(http.Response)
+	resp.Body = io.NopCloser(r)
+	buf, rc, status = WriteBytes(resp, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+
+	str = "this is io.Reader content"
+	r = strings.NewReader(str)
 	buf, rc, status = WriteBytes(r, "")
 	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
 
@@ -93,6 +101,7 @@ func Example_WriteBytes() {
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is string content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is []byte content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is an error message] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is http.Response.Body content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io.Reader content] [rc:text/plain; charset=utf-8]
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is io.ReaderCloser content] [rc:text/plain; charset=utf-8]
 

@@ -26,6 +26,14 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		buf = []byte(ptr)
 	case error:
 		buf = []byte(ptr.Error())
+	case *http.Response:
+		var status runtime.Status
+
+		buf, status = runtime.NewBytes(ptr.Body)
+		_ = ptr.Body.Close()
+		if !status.OK() {
+			return nil, "", status
+		}
 	case io.Reader:
 		var status runtime.Status
 
