@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	"github.com/advanced-go/core/uri"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,6 +15,7 @@ import (
 const (
 	readResponseLocation = ":readResponse"
 	fileExistsError      = "The system cannot find the file specified"
+	fileScheme           = "file"
 )
 
 // readResponse - read a Http response given a URL
@@ -25,10 +25,10 @@ func readResponse(u *url.URL) (*http.Response, runtime.Status) {
 	if u == nil {
 		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New("error: URL is nil"))
 	}
-	if !uri.IsFileScheme(u) {
+	if u.Scheme != fileScheme {
 		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	}
-	buf, err := os.ReadFile(uri.FileName(u))
+	buf, err := os.ReadFile(runtime.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), fileExistsError) {
 			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, err)

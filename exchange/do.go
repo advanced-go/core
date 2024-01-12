@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"github.com/advanced-go/core/runtime"
-	"github.com/advanced-go/core/uri"
 	"net/http"
 	"time"
 )
@@ -12,6 +11,7 @@ import (
 const (
 	doLocation    = PkgPath + ":Do"
 	internalError = "Internal Error"
+	fileScheme    = "file"
 )
 
 var (
@@ -37,7 +37,7 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
 	}
-	if uri.IsFileScheme(req.URL) {
+	if req.URL.Scheme == fileScheme {
 		resp1, status1 := readResponse(req.URL)
 		if !status1.OK() {
 			return resp1, status1.AddLocation(doLocation)

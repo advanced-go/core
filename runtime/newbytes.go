@@ -30,6 +30,8 @@ func NewBytes(v any) ([]byte, Status) {
 		return readAll(ptr)
 	case *http.Response:
 		return readAll(ptr.Body)
+	case *http.Request:
+		return readAll(ptr.Body)
 	default:
 	}
 	return nil, NewStatusError(StatusInvalidArgument, newBytesLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))

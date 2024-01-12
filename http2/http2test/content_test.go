@@ -2,14 +2,14 @@ package http2test
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/uri"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"os"
 )
 
 func Example_ReadContent_Empty() {
 	s := "file://[cwd]/resource/get-request.txt"
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(runtime.FileName(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 
@@ -25,7 +25,7 @@ func Example_ReadContent_Empty() {
 
 func _Example_ReadContent_Available() {
 	s := "file://[cwd]/resource/put-req.txt"
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(runtime.FileName(s))
 	if err != nil {
 		fmt.Printf("test: ReadFile(%v) -> [err:%v]\n", s, err)
 

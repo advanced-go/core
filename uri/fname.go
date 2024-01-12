@@ -30,8 +30,8 @@ func init() {
 	basePath = cwd
 }
 
-// IsFileScheme2 - determine if a string, or URL uses the file scheme
-func IsFileScheme2(u any) bool {
+// IsFileScheme - determine if a string, or URL uses the file scheme
+func IsFileScheme(u any) bool {
 	if u == nil {
 		return false
 	}
@@ -62,7 +62,7 @@ func FileName2(uri any) string {
 }
 
 func fileName2(u *url.URL) string {
-	if !IsFileScheme2(u) {
+	if !IsFileScheme(u) {
 		return fmt.Sprintf("error: scheme is invalid [%v]", u.Scheme)
 	}
 	name := basePath

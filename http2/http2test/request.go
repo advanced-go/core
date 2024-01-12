@@ -5,28 +5,21 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/uri"
+	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 )
 
-const (
-	comment       = "//"
-	mapDelimiter  = ":"
-	hostName      = "host"
-	pairDelimiter = ","
-)
-
 func ReadRequest(u *url.URL) (*http.Request, error) {
 	if u == nil {
 		return nil, errors.New("error: URL is nil")
 	}
-	if !uri.IsFileScheme(u) {
+	if u.Scheme != fileScheme {
 		return nil, errors.New(fmt.Sprintf("error: invalid URL scheme : %v", u.Scheme))
 	}
-	buf, err := os.ReadFile(uri.FileName(u))
+	buf, err := os.ReadFile(runtime.FileName(u))
 	if err != nil {
 		return nil, err
 	}
