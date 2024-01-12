@@ -66,7 +66,7 @@ func validateUri(uri string) Status {
 	if !strings.HasPrefix(uri, fileScheme) {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
 	}
-	if !IsJsonURL(uri) {
+	if !isJsonURL(uri) {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
 	}
 	return StatusOK()

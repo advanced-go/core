@@ -96,19 +96,19 @@ func Example_ReadFile() {
 
 func Example_IsStatusURL() {
 	u := ""
-	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, IsStatusURL(u))
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
 
 	u = "file://[cwd]/io2test/resource/activity.json"
-	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, IsStatusURL(u))
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
 
 	u = "file://[cwd]/io2test/resource/status/activity.json"
-	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, IsStatusURL(u))
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
 
 	u = "file://[cwd]/io2test/resource/status-504.json"
-	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, IsStatusURL(u))
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
 
 	u = "file://[cwd]/io2test/resource/status/status-504.json"
-	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, IsStatusURL(u))
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
 
 	//Output:
 	//test: IsStatusURL("") -> false

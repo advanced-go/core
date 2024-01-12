@@ -32,23 +32,6 @@ func init() {
 	basePath = cwd
 }
 
-// IsJsonURL - does the URI have a .json extension
-func IsJsonURL(uri string) bool {
-	return strings.HasSuffix(uri, jsonExt)
-}
-
-// IsStatusURL - determine if the file name of the URL contains the text 'status'
-func IsStatusURL(url string) bool {
-	if len(url) == 0 {
-		return false
-	}
-	i := strings.LastIndex(url, statusToken)
-	if i == -1 {
-		return false
-	}
-	return strings.LastIndex(url, "/") < i
-}
-
 // FileName - return the OS correct file name from a URI
 func FileName(uri any) string {
 	if uri == nil {
@@ -83,18 +66,19 @@ func fileName(u *url.URL) string {
 	return name
 }
 
-// isFileScheme - determine if a string, or URL uses the file scheme
-/*
-func isFileScheme(u any) bool {
-	if u == nil {
+// isJsonURL - does the URI have a .json extension
+func isJsonURL(uri string) bool {
+	return strings.HasSuffix(uri, jsonExt)
+}
+
+// isStatusURL - determine if the file name of the URL contains the text 'status'
+func isStatusURL(url string) bool {
+	if len(url) == 0 {
 		return false
 	}
-	if s, ok := u.(string); ok {
-		return strings.HasPrefix(s, FileScheme)
+	i := strings.LastIndex(url, statusToken)
+	if i == -1 {
+		return false
 	}
-	if u2, ok := u.(*url.URL); ok {
-		return u2.Scheme == FileScheme
-	}
-	return false
+	return strings.LastIndex(url, "/") < i
 }
-*/
