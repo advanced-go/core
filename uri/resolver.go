@@ -3,6 +3,7 @@ package uri
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"strings"
 	"sync"
 )
@@ -32,8 +33,8 @@ func SetLocalAuthority(authority string) {
 // Resolver - resolver interface
 type Resolver interface {
 	SetLocalHostOverride(v bool)
-	SetAuthorities(values []KV)
-	SetOverrides(values []KV)
+	SetAuthorities(values []runtime.Pair)
+	SetOverrides(values []runtime.Pair)
 	Build(authority, path string, values ...any) string
 	Authority(authority string) (string, error)
 	OverrideUrl(authority string) (string, bool)
@@ -47,7 +48,7 @@ func NewResolver() Resolver {
 }
 
 // NewResolverWithAuthorities - create a resolver with authorities
-func NewResolverWithAuthorities(values []KV) Resolver {
+func NewResolverWithAuthorities(values []runtime.Pair) Resolver {
 	r := new(resolver)
 	r.authority = new(sync.Map)
 	r.SetAuthorities(values)
@@ -65,7 +66,7 @@ func (r *resolver) SetLocalHostOverride(v bool) {
 }
 
 // SetAuthorities - configure authorities
-func (r *resolver) SetAuthorities(values []KV) {
+func (r *resolver) SetAuthorities(values []runtime.Pair) {
 	if len(values) == 0 {
 		return
 	}
@@ -77,7 +78,7 @@ func (r *resolver) SetAuthorities(values []KV) {
 }
 
 // SetOverrides - configure overrides
-func (r *resolver) SetOverrides(values []KV) {
+func (r *resolver) SetOverrides(values []runtime.Pair) {
 	if len(values) == 0 {
 		r.override = nil
 		return

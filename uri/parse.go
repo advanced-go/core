@@ -12,6 +12,20 @@ const (
 	FileScheme   = "file"
 )
 
+// IsFileScheme - determine if a string, or URL uses the file scheme
+func IsFileScheme(u any) bool {
+	if u == nil {
+		return false
+	}
+	if s, ok := u.(string); ok {
+		return strings.HasPrefix(s, FileScheme)
+	}
+	if u2, ok := u.(*url.URL); ok {
+		return u2.Scheme == FileScheme
+	}
+	return false
+}
+
 // ParseRaw - parse a raw Uri without error
 func ParseRaw(rawUri string) *url.URL {
 	u, _ := url.Parse(rawUri)

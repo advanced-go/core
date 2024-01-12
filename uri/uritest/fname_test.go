@@ -26,7 +26,7 @@ func Example_FileNameError() {
 	fmt.Printf("test: FileName2(%v) -> [type:%v] [url:%v]\n", s, reflect.TypeOf(s), name)
 
 	s = "https://www.google.com/search?q=golang"
-	u := ParseRaw(s)
+	u := parseRaw(s)
 	name = FileName2(u)
 	fmt.Printf("test: FileName2(%v) -> [type:%v] [url:%v]\n", s, reflect.TypeOf(u), name)
 

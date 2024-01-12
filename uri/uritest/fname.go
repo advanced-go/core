@@ -11,6 +11,7 @@ import (
 const (
 	CwdVariable = "[cwd]"
 	JsonExt     = ".json"
+	fileScheme  = "file"
 )
 
 var (
@@ -36,10 +37,10 @@ func IsFileScheme(u any) bool {
 		return false
 	}
 	if s, ok := u.(string); ok {
-		return strings.HasPrefix(s, FileScheme)
+		return strings.HasPrefix(s, fileScheme)
 	}
 	if u2, ok := u.(*url.URL); ok {
-		return u2.Scheme == FileScheme
+		return u2.Scheme == fileScheme
 	}
 	return false
 }
@@ -53,7 +54,7 @@ func FileName2(uri any) string {
 		if len(s) == 0 {
 			return "error: URL is empty"
 		}
-		return fileName2(ParseRaw(s))
+		return fileName2(parseRaw(s))
 	}
 	if u, ok := uri.(*url.URL); ok {
 		return fileName2(u)
@@ -75,4 +76,10 @@ func fileName2(u *url.URL) string {
 		name = strings.ReplaceAll(name, "/", "\\")
 	}
 	return name
+}
+
+// ParseRaw - parse a raw Uri without error
+func parseRaw(rawUri string) *url.URL {
+	u, _ := url.Parse(rawUri)
+	return u
 }
