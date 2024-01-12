@@ -114,6 +114,9 @@ func (r *resolver) Build(authority, path string, values ...any) string {
 	if len(values) > 0 {
 		path = fmt.Sprintf(path, values...)
 	}
+	if !strings.HasPrefix(path, "/") {
+		path += "/"
+	}
 	url2 := scheme + "://" + authority + path
 	return url2
 }
