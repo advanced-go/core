@@ -82,6 +82,21 @@ func New[T any](v any) (t T, status Status) {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
 		}
 		return t, StatusOK()
+	case *http.Request:
+		if ptr1, ok := any(&t).(*[]byte); ok {
+			buf, status = NewBytes(ptr)
+			if !status.OK() {
+				return
+			}
+			*ptr1 = buf
+			return t, StatusOK()
+		}
+		err := json.NewDecoder(ptr.Body).Decode(&t)
+		_ = ptr.Body.Close()
+		if err != nil {
+			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+		}
+		return t, StatusOK()
 	case io.Reader:
 		if ptr1, ok := any(&t).(*[]byte); ok {
 			buf, status = NewBytes(ptr)
