@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"os"
@@ -20,12 +19,12 @@ func ExampleNewBytes_Uri() {
 	fmt.Printf("test: NewBytes(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(s), len(buf), status)
 
 	s = status504
-	u := uri.ParseRaw(s)
+	u := parseRaw(s)
 	buf, status = NewBytes(u)
 	fmt.Printf("test: NewBytes(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
 
 	s = address1Url
-	u = uri.ParseRaw(s)
+	u = parseRaw(s)
 	buf, status = NewBytes(u)
 	fmt.Printf("test: NewBytes(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
 
@@ -39,7 +38,7 @@ func ExampleNewBytes_Uri() {
 
 func ExampleNewBytes_Bytes() {
 	s := address2Url
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
@@ -53,7 +52,7 @@ func ExampleNewBytes_Bytes() {
 
 func ExampleNewBytes_Reader() {
 	s := address3Url
-	buf0, err := os.ReadFile(uri.FileName(s))
+	buf0, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
@@ -74,7 +73,7 @@ func ExampleNewBytes_Reader() {
 
 func ExampleNewBytes_Response() {
 	s := address3Url
-	buf0, err := os.ReadFile(uri.FileName(s))
+	buf0, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}

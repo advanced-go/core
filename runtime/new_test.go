@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/url"
@@ -90,11 +89,11 @@ func ExampleNew_URL_Error() {
 	fmt.Printf("test: New(\"\") -> [status:%v]\n", status)
 
 	s := "https://www.google.com/search"
-	_, status = New[newAddress](uri.ParseRaw(s))
+	_, status = New[newAddress](parseRaw(s))
 	fmt.Printf("test: New(%v) -> [status:%v]\n", s, status)
 
 	s = "file://[cwd]/runtimetest/address.txt"
-	_, status = New[newAddress](uri.ParseRaw(s))
+	_, status = New[newAddress](parseRaw(s))
 	fmt.Printf("test: New(%v) -> [status:%v]\n", s, status)
 
 	//Output:
@@ -135,7 +134,7 @@ func ExampleNew_URL() {
 
 func ExampleNew_Bytes() {
 	s := address2Url
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
@@ -154,7 +153,7 @@ func ExampleNew_Bytes() {
 
 func ExampleNew_Response() {
 	s := address3Url
-	buf0, err := os.ReadFile(uri.FileName(s))
+	buf0, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
@@ -187,12 +186,12 @@ func ExampleNew_Uri() {
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(s), addr, status)
 
 	s = status504
-	u := uri.ParseRaw(s)
+	u := parseRaw(s)
 	addr, status = New[newAddress](u)
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(u), addr, status)
 
 	s = address1Url
-	u = uri.ParseRaw(s)
+	u = parseRaw(s)
 	addr, status = New[newAddress](u)
 	fmt.Printf("test: New(%v) -> [type:%v] [addr:%v] [status:%v]\n", s, reflect.TypeOf(u), addr, status)
 
@@ -209,7 +208,7 @@ func ExampleNew_Uri() {
 
 func ExampleNew_Reader() {
 	s := address2Url
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
@@ -229,7 +228,7 @@ func ExampleNew_Reader() {
 
 func ExampleNew_ReadCloser() {
 	s := address3Url
-	buf, err := os.ReadFile(uri.FileName(s))
+	buf, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}

@@ -91,34 +91,3 @@ func UprootUrn(uri string) (nid, nss string, ok bool) {
 	}
 	return nid, nss, true
 }
-
-// Parse - urn safe URI parser
-/*
-func Parse(urn string) (scheme, ndis, nss string, err error) {
-	if urn == "" {
-		return
-	}
-	str := strings.Split(urn, ":")
-	if len(str) < 3 {
-		return "", "", "", errors.New(fmt.Sprintf("invalid urn format : %v", urn))
-	}
-	return str[0], str[1], str[2], nil
-}
-
-func Build(nid, nss string) string {
-	return fmt.Sprintf("urn:%v:%v", nid, nss)
-}
-
-func ToUri(scheme, host, urn string) string {
-	i := len("urn:")
-	return fmt.Sprintf("%v://%v/%v", scheme, host, urn[i:])
-}
-
-func FromUri(uri string) string {
-	u, _ := url.Parse(uri)
-	return fmt.Sprintf("urn:%v", u.Path[1:])
-
-}
-
-
-*/

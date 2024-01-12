@@ -10,7 +10,6 @@ import (
 
 const (
 	CwdVariable = "[cwd]"
-	statusToken = "status"
 	JsonExt     = ".json"
 )
 
@@ -31,13 +30,8 @@ func init() {
 	basePath = cwd
 }
 
-// IsJson - does the URI have a .json extension
-func IsJson(uri string) bool {
-	return strings.HasSuffix(uri, JsonExt)
-}
-
-// IsFileScheme - determine if a string, or URL uses the file scheme
-func IsFileScheme(u any) bool {
+// IsFileScheme2 - determine if a string, or URL uses the file scheme
+func IsFileScheme2(u any) bool {
 	if u == nil {
 		return false
 	}
@@ -50,8 +44,8 @@ func IsFileScheme(u any) bool {
 	return false
 }
 
-// FileName - return the OS correct file name from a URI
-func FileName(uri any) string {
+// FileName2 - return the OS correct file name from a URI
+func FileName2(uri any) string {
 	if uri == nil {
 		return "error: URL is nil"
 	}
@@ -59,16 +53,16 @@ func FileName(uri any) string {
 		if len(s) == 0 {
 			return "error: URL is empty"
 		}
-		return fileName(ParseRaw(s))
+		return fileName2(ParseRaw(s))
 	}
 	if u, ok := uri.(*url.URL); ok {
-		return fileName(u)
+		return fileName2(u)
 	}
 	return fmt.Sprintf("error: invalid URL type: %v", reflect.TypeOf(uri))
 }
 
-func fileName(u *url.URL) string {
-	if !IsFileScheme(u) {
+func fileName2(u *url.URL) string {
+	if !IsFileScheme2(u) {
 		return fmt.Sprintf("error: scheme is invalid [%v]", u.Scheme)
 	}
 	name := basePath
@@ -81,16 +75,4 @@ func fileName(u *url.URL) string {
 		name = strings.ReplaceAll(name, "/", "\\")
 	}
 	return name
-}
-
-// IsStatusURL - determine if the file name of the URL contains the text 'status'
-func IsStatusURL(url string) bool {
-	if len(url) == 0 {
-		return false
-	}
-	i := strings.LastIndex(url, statusToken)
-	if i == -1 {
-		return false
-	}
-	return strings.LastIndex(url, "/") < i
 }

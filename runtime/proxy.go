@@ -3,7 +3,6 @@ package runtime
 import (
 	"errors"
 	"fmt"
-	uri2 "github.com/advanced-go/core/uri"
 	"net/http"
 	"sync"
 )
@@ -31,7 +30,7 @@ func (h *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New("invalid argument: path is empty"))
 	}
-	nid, _, ok := uri2.UprootUrn(uri)
+	nid, _, ok := uprootUrn(uri)
 	if !ok {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
@@ -48,7 +47,7 @@ func (h *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
 func (h *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
-	nid, _, ok := uri2.UprootUrn(uri)
+	nid, _, ok := uprootUrn(uri)
 	if !ok {
 		return nil, NewStatusError(StatusInvalidArgument, handlerLookupLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}

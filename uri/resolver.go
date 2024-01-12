@@ -7,7 +7,6 @@ import (
 	"sync"
 )
 
-// TO DO : Need to configure a way to set default authority
 const (
 	SchemeHttps = "https"
 	SchemeHttp  = "http"
@@ -18,7 +17,11 @@ var (
 	localAuthority = "localhost:8080"
 )
 
-type Attr struct {
+//type Attr struct {
+//	Key, Value string
+//}
+
+type KV struct {
 	Key, Value string
 }
 
@@ -29,8 +32,8 @@ func SetLocalAuthority(authority string) {
 // Resolver - resolver interface
 type Resolver interface {
 	SetLocalHostOverride(v bool)
-	SetAuthorities(values []Attr)
-	SetOverrides(values []Attr)
+	SetAuthorities(values []KV)
+	SetOverrides(values []KV)
 	Build(authority, path string, values ...any) string
 	Authority(authority string) (string, error)
 	OverrideUrl(authority string) (string, bool)
@@ -44,13 +47,10 @@ func NewResolver() Resolver {
 }
 
 // NewResolverWithAuthorities - create a resolver with authorities
-func NewResolverWithAuthorities(values []Attr) Resolver {
+func NewResolverWithAuthorities(values []KV) Resolver {
 	r := new(resolver)
 	r.authority = new(sync.Map)
 	r.SetAuthorities(values)
-	//for _, attr := range authorities {
-	//	r.authority.Store(attr.Key, attr.Value)
-	//}
 	return r
 }
 
@@ -65,19 +65,19 @@ func (r *resolver) SetLocalHostOverride(v bool) {
 }
 
 // SetAuthorities - configure authorities
-func (r *resolver) SetAuthorities(values []Attr) {
+func (r *resolver) SetAuthorities(values []KV) {
 	if len(values) == 0 {
 		return
 	}
 	r.authority = new(sync.Map)
-	for _, attr := range values {
-		key, _ := TemplateToken(attr.Key)
-		r.authority.Store(key, attr.Value)
+	for _, pair := range values {
+		key, _ := TemplateToken(pair.Key)
+		r.authority.Store(key, pair.Value)
 	}
 }
 
 // SetOverrides - configure overrides
-func (r *resolver) SetOverrides(values []Attr) {
+func (r *resolver) SetOverrides(values []KV) {
 	if len(values) == 0 {
 		r.override = nil
 		return

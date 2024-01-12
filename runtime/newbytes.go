@@ -3,7 +3,6 @@ package runtime
 import (
 	"errors"
 	"fmt"
-	uri2 "github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/url"
@@ -41,7 +40,7 @@ func readBytes(uri string) ([]byte, Status) {
 	if !status.OK() {
 		return nil, status
 	}
-	buf, err := os.ReadFile(uri2.FileName(uri))
+	buf, err := os.ReadFile(FileName(uri))
 	if err != nil {
 		return nil, NewStatusError(StatusIOError, newBytesLoc, err)
 	}

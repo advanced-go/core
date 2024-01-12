@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	uri2 "github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/url"
@@ -24,7 +23,7 @@ func New[T any](v any) (t T, status Status) {
 
 	switch ptr := v.(type) {
 	case string:
-		if uri2.IsStatusURL(ptr) {
+		if IsStatusURL(ptr) {
 			return t, NewStatusFrom(ptr)
 		}
 		buf, status = NewBytes(ptr)
@@ -41,7 +40,7 @@ func New[T any](v any) (t T, status Status) {
 		}
 		return
 	case *url.URL:
-		if uri2.IsStatusURL(ptr.String()) {
+		if IsStatusURL(ptr.String()) {
 			return t, NewStatusFrom(ptr.String())
 		}
 		buf, status = NewBytes(ptr.String())

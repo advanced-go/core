@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	uri2 "github.com/advanced-go/core/uri"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const (
@@ -29,7 +29,7 @@ func NewStatusFrom(uri string) Status {
 	if !status.OK() {
 		return status
 	}
-	buf, err1 := os.ReadFile(uri2.FileName(uri))
+	buf, err1 := os.ReadFile(FileName(uri))
 	if err1 != nil {
 		return NewStatusError(StatusIOError, newStatusLoc, err1)
 	}
@@ -63,10 +63,10 @@ func validateUri(uri string) Status {
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is empty"))
 	}
-	if !uri2.IsFileScheme(uri) {
+	if !strings.HasPrefix(uri, fileScheme) {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New(fmt.Sprintf("error: URI is not of scheme file: %v", uri)))
 	}
-	if !uri2.IsJson(uri) {
+	if !IsJsonURL(uri) {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is not a JSON file"))
 	}
 	return StatusOK()
