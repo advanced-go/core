@@ -9,12 +9,16 @@ const (
 	getLocation = PkgPath + ":Get"
 )
 
-func Get(uri string, h http.Header) (*http.Response, runtime.Status) {
+func Get(uri string, h http.Header) (resp *http.Response, status runtime.Status) {
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, runtime.NewStatusError(http.StatusBadRequest, getLocation, err)
 	}
 	req.Header = h
 	// exchange.Do() will always return a non nil *http.Response
-	return Do(req)
+	resp, status = Do(req)
+	if !status.OK() {
+		status.AddLocation(getLocation)
+	}
+	return
 }
