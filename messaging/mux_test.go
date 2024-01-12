@@ -3,7 +3,6 @@ package messaging
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	"github.com/advanced-go/core/uri"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -38,7 +37,7 @@ func Example_ProcessPing() {
 	if !status.OK() {
 		fmt.Printf("test: processPing() -> [status:%v]\n", status)
 	}
-	nid, rsc, ok := uri.UprootUrn(r.URL.Path)
+	nid, rsc, ok := uprootUrn(r.URL.Path)
 	ProcessPing[runtime.Bypass](w, nid)
 	buf, status1 := runtime.NewBytes(w.Result())
 	if !status1.OK() {

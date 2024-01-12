@@ -1,4 +1,4 @@
-package runtime
+package messaging
 
 import (
 	"net/url"

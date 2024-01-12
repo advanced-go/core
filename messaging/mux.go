@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	"github.com/advanced-go/core/uri"
 	"net/http"
 	"reflect"
 )
@@ -34,7 +33,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	nid, rsc, ok := uri.UprootUrn(r.URL.Path)
+	nid, rsc, ok := uprootUrn(r.URL.Path)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return

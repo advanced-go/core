@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+// parseRaw - parse a raw Uri without error
+func parseRaw(rawUri string) *url.URL {
+	u, _ := url.Parse(rawUri)
+	return u
+}
+
 const (
 	address1Url = "file://[cwd]/runtimetest/address1.json"
 	address2Url = "file://[cwd]/runtimetest/address2.json"

@@ -58,7 +58,8 @@ func FileName(uri any) string {
 		if len(s) == 0 {
 			return "error: URL is empty"
 		}
-		return fileName(parseRaw(s))
+		u, _ := url.Parse(s)
+		return fileName(u)
 	}
 	if u, ok := uri.(*url.URL); ok {
 		return fileName(u)
