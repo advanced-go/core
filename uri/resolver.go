@@ -18,14 +18,7 @@ var (
 	localAuthority = "localhost:8080"
 )
 
-//type Attr struct {
-//	Key, Value string
-//}
-
-type KV struct {
-	Key, Value string
-}
-
+// SetLocalAuthority - set the local authority
 func SetLocalAuthority(authority string) {
 	localAuthority = authority
 }
@@ -61,6 +54,7 @@ type resolver struct {
 	localHost bool
 }
 
+// SetLocalHostOverride - override authority to localhost
 func (r *resolver) SetLocalHostOverride(v bool) {
 	r.localHost = v
 }
@@ -124,6 +118,7 @@ func (r *resolver) Build(authority, path string, values ...any) string {
 	return url2
 }
 
+// Authority - return the authority using an expansion if needed
 func (r *resolver) Authority(authority string) (string, error) {
 	t, ok := TemplateToken(authority)
 	if !ok {
@@ -137,6 +132,7 @@ func (r *resolver) Authority(authority string) (string, error) {
 	return "", errors.New(fmt.Sprintf("resolver error: authority not found for variable: %v", authority))
 }
 
+// OverrideUrl - return the overridden URL
 func (r *resolver) OverrideUrl(authority string) (string, bool) {
 	t, ok := TemplateToken(authority)
 	if !ok || r.override == nil {
