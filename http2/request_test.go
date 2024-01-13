@@ -96,5 +96,5 @@ func ExampleValidateRequest() {
 	//test: ValidateRequest(req,test) -> [status:Bad Request] [error invalid URI, path is not valid: ""]
 	//test: ValidateRequest(req,github.com/advanced-go/http2) -> [status:Bad Request] [error invalid URI, NID does not match: "/search" "github.com/advanced-go/http2"]
 	//test: ValidateRequest(req,github.com/advanced-go/http2) -> [status:OK] [<nil>]
-	
+
 }

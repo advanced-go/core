@@ -107,12 +107,12 @@ func ValidateRequest(req *http.Request, path string) (string, runtime.Status) {
 	if req == nil {
 		return "", runtime.NewStatusWithContent(runtime.StatusInvalidArgument, errors.New("error Request is nil"), false)
 	}
-	reqNid, reqRsc, ok := uri.UprootUrn(req.URL.Path)
+	reqNid, reqPath, ok := uri.UprootUrn(req.URL.Path)
 	if !ok {
 		return "", runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, path is not valid: \"%v\"", req.URL.Path)), false)
 	}
 	if reqNid != path {
 		return "", runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)), false)
 	}
-	return reqRsc, runtime.StatusOK()
+	return reqPath, runtime.StatusOK()
 }
