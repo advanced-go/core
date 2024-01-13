@@ -79,9 +79,14 @@ func ExampleBuild_Values() {
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
 
+	r.SetOverrides([]runtime.Pair{{path, fileAttrs}})
+	uri = r.Build(path, values.Encode())
+	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+
 	//Output:
 	//test: Build("/search?%v") -> [uri:http://localhost:8080/search?q=golang]
 	//test: Build("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
+	//test: Build("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
 
 }
 

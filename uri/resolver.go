@@ -53,7 +53,7 @@ func (r *resolver) Build(path string, values ...any) string {
 	}
 	if r.override != nil {
 		if uri, ok := r.OverrideUrl(path); ok {
-			if len(values) > 0 {
+			if len(values) > 0 && strings.Index(uri, "%v") != -1 {
 				uri = fmt.Sprintf(uri, values...)
 			}
 			return uri
