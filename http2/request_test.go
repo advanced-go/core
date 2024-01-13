@@ -63,45 +63,38 @@ func Example_Clone() {
 }
 
 func ExampleValidateRequest() {
-	status := ValidateRequest(nil, "", "")
+	_, status := ValidateRequest(nil, "")
 	fmt.Printf("test: ValidateRequest(nil,\"\",\"\") -> [status:%v] [%v]\n", status, status.Content())
 
 	path := "test"
-	rsc := "entry"
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
-	status = ValidateRequest(req, path, rsc)
-	fmt.Printf("test: ValidateRequest(req,%v,%v) -> [status:%v] [%v]\n", path, rsc, status, status.Content())
+	_, status = ValidateRequest(req, path)
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Content())
 
 	path = "github.com/advanced-go/http2"
-	rsc = "entry"
 	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	status = ValidateRequest(req, path, rsc)
-	fmt.Printf("test: ValidateRequest(req,%v,%v) -> [status:%v] [%v]\n", path, rsc, status, status.Content())
+	_, status = ValidateRequest(req, path)
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Content())
 
 	path = "github.com/advanced-go/http2"
-	rsc = "entry"
 	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2", nil)
-	status = ValidateRequest(req, path, rsc)
-	fmt.Printf("test: ValidateRequest(req,%v,%v) -> [status:%v] [%v]\n", path, rsc, status, status.Content())
+	_, status = ValidateRequest(req, path)
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Content())
 
-	path = "github.com/advanced-go/http2"
-	rsc = ""
-	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2:entry", nil)
-	status = ValidateRequest(req, path, rsc)
-	fmt.Printf("test: ValidateRequest(req,%v,%v) -> [status:%v] [%v]\n", path, rsc, status, status.Content())
+	//path = "github.com/advanced-go/http2"
+	//req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2:entry", nil)
+	//_, status = ValidateRequest(req, path)
+	//fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Content())
 
-	path = "github.com/advanced-go/http2"
-	rsc = "entry"
-	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2:entry", nil)
-	status = ValidateRequest(req, path, rsc)
-	fmt.Printf("test: ValidateRequest(req,%v,%v) -> [status:%v] [%v]\n", path, rsc, status, status.Content())
+	//path = "github.com/advanced-go/http2"
+	//req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2:entry", nil)
+	//_, status = ValidateRequest(req, path)
+	//fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Content())
 
 	//Output:
 	//test: ValidateRequest(nil,"","") -> [status:Invalid Argument] [error Request is nil]
-	//test: ValidateRequest(req,test,entry) -> [status:Bad Request] [error invalid URI, path is not valid: ""]
-	//test: ValidateRequest(req,github.com/advanced-go/http2,entry) -> [status:Bad Request] [error invalid URI, NID does not match: "/search" "github.com/advanced-go/http2"]
-	//test: ValidateRequest(req,github.com/advanced-go/http2,entry) -> [status:Not Found] [error invalid URI, resource not found: [got:""] [want:"entry"]]
-	//test: ValidateRequest(req,github.com/advanced-go/http2,) -> [status:Not Found] [error invalid URI, resource not found: [got:"entry"] [want:""]]
-	//test: ValidateRequest(req,github.com/advanced-go/http2,entry) -> [status:OK] [<nil>]
+	//test: ValidateRequest(req,test) -> [status:Bad Request] [error invalid URI, path is not valid: ""]
+	//test: ValidateRequest(req,github.com/advanced-go/http2) -> [status:Bad Request] [error invalid URI, NID does not match: "/search" "github.com/advanced-go/http2"]
+	//test: ValidateRequest(req,github.com/advanced-go/http2) -> [status:OK] [<nil>]
 	
 }
