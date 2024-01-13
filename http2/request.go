@@ -2,7 +2,10 @@ package http2
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/uri"
 	"github.com/google/uuid"
 	"io"
 	"net/http"
@@ -98,4 +101,21 @@ func newId(ctx any) string {
 		}
 	}
 	return id
+}
+
+func ValidateRequest(req *http.Request, path, rsc string) runtime.Status {
+	if req == nil {
+		return runtime.NewStatusWithContent(runtime.StatusInvalidArgument, errors.New("error Request is nil"), false)
+	}
+	reqNid, reqRsc, ok := uri.UprootUrn(req.URL.Path)
+	if !ok {
+		return runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, path is not valid: \"%v\"", req.URL.Path)), false)
+	}
+	if reqNid != path {
+		return runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)), false)
+	}
+	if reqRsc != rsc {
+		return runtime.NewStatusWithContent(http.StatusNotFound, errors.New(fmt.Sprintf("error invalid URI, resource not found: [got:\"%v\"] [want:\"%v\"]", reqRsc, rsc)), false)
+	}
+	return runtime.StatusOK()
 }

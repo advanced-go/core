@@ -6,32 +6,40 @@ import (
 	"net/http"
 )
 
-type responseWriter struct {
+type ResponseWriter struct {
 	statusCode int
 	header     http.Header
-	bytes      *bytes.Buffer
+	body       *bytes.Buffer
 }
 
-func newResponseWriter() *responseWriter {
-	w := new(responseWriter)
+func NewResponseWriter() *ResponseWriter {
+	w := new(ResponseWriter)
 	w.header = make(http.Header)
-	w.bytes = new(bytes.Buffer)
+	w.body = new(bytes.Buffer)
 	return w
 }
 
-func (w *responseWriter) Header() http.Header {
+func (w *ResponseWriter) StatusCode() int {
+	return w.statusCode
+}
+
+func (w *ResponseWriter) Header() http.Header {
 	return w.header
 }
 
-func (w *responseWriter) Write(p []byte) (int, error) {
-	return w.bytes.Write(p)
+func (w *ResponseWriter) Body() []byte {
+	return w.body.Bytes()
 }
 
-func (w *responseWriter) WriteHeader(statusCode int) {
+func (w *ResponseWriter) Write(p []byte) (int, error) {
+	return w.body.Write(p)
+}
+
+func (w *ResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 }
 
-func (w *responseWriter) Result() *http.Response {
+func (w *ResponseWriter) Response() *http.Response {
 	r := new(http.Response)
 	if w.statusCode == 0 {
 		r.StatusCode = http.StatusOK
@@ -39,6 +47,6 @@ func (w *responseWriter) Result() *http.Response {
 		r.StatusCode = w.statusCode
 	}
 	r.Header = w.header
-	r.Body = io.NopCloser(bytes.NewReader(w.bytes.Bytes()))
+	r.Body = io.NopCloser(bytes.NewReader(w.body.Bytes()))
 	return r
 }

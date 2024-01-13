@@ -7,18 +7,18 @@ import (
 )
 
 func Example_ResponseWriter() {
-	requestId := "123-request-id"
-	relatesTo := "test-relates-to"
+	requestId2 := "123-request-id"
+	relatesTo2 := "test-relates-to"
 	content := "this is response write content"
-	w := newResponseWriter()
+	w := NewResponseWriter()
 
-	w.Header().Add(runtime.XRequestId, requestId)
-	w.Header().Add(runtime.XRelatesTo, relatesTo)
+	w.Header().Add(runtime.XRequestId, requestId2)
+	w.Header().Add(runtime.XRelatesTo, relatesTo2)
 	w.WriteHeader(http.StatusAccepted)
 	cnt, err := w.Write([]byte(content))
 	fmt.Printf("test: responseWriter() -> [cnt:%v] [error:%v]\n", cnt, err)
 
-	resp := w.Result()
+	resp := w.Response()
 
 	fmt.Printf("test: responseWriter() -> [write-requestId:%v] [response-requestId:%v]\n", requestId, resp.Header.Get(runtime.XRequestId))
 	fmt.Printf("test: responseWriter() -> [write-relatesTo:%v] [response-relatesTo:%v]\n", relatesTo, resp.Header.Get(runtime.XRelatesTo))
