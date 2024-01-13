@@ -15,69 +15,90 @@ const (
 
 	fileUrl   = "file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt"
 	fileAttrs = "file://[cwd]/uritest/attrs.json"
-
-	yahooSearch = "https://search.yahoo.com/search?p=golang"
 )
 
-func Example_OverrideUrl() {
-	r := NewResolver()
-	path := ""
+func Example_Authority() {
+	key := ""
+	r := NewResolver() //WithAuthorities([]runtime.Pair{{"test", "www.bing.com"}})
 
-	uri, ok := r.OverrideUrl(path)
+	s, err := r.Authority(key)
+	fmt.Printf("test: Authority-Empty(\"\") ->  [auth:%v] [err:%v]\n", s, err)
+
+	key = "GOOGL"
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-No-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
+
+	key = "{GOOGL"
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Invalid-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
+
+	key = "GOOGL}"
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Invalid-Variable-Markup(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
+
+	key = GOOGLVariable
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority-Valid-Variable(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
+
+	r.SetAuthorities([]runtime.Pair{{GOOGLVariable, GOOGLAuthority}, {MSFTVariable, MSFTAuthority}})
+	key = GOOGLVariable
+	s, err = r.Authority(key)
+	fmt.Printf("test: Authority(%v) ->  [auth:%v] [err:%v]\n", key, s, err)
+
+	//Output:
+	//test: Authority-Empty("") ->  [auth:] [err:<nil>]
+	//test: Authority-No-Variable-Markup(GOOGL) ->  [auth:GOOGL] [err:<nil>]
+	//test: Authority-Invalid-Variable-Markup({GOOGL) ->  [auth:{GOOGL] [err:<nil>]
+	//test: Authority-Invalid-Variable-Markup(GOOGL}) ->  [auth:GOOGL}] [err:<nil>]
+	//test: Authority-Valid-Variable({GOOGL}) ->  [auth:] [err:resolver error: authority not found for variable: {GOOGL}]
+	//test: Authority({GOOGL}) ->  [auth:www.google.com] [err:<nil>]
+
+}
+
+func Example_OverrideUrl() {
+	r := NewResolverWithAuthorities([]runtime.Pair{{MSFTVariable, MSFTAuthority}})
+	key := ""
+
+	uri, ok := r.OverrideUrl(key)
 	fmt.Printf("test: OverrideUrl-Empty(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
 
-	path = "/search"
-	uri, ok = r.OverrideUrl(path)
-	fmt.Printf("test: OverrideUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
+	key = "www.google.com"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
-	path = "/search"
-	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
-	uri, ok = r.OverrideUrl(path)
-	fmt.Printf("test: OverrideUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
+	key = "{www.google.com"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
+
+	key = "www.google.com}"
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Invalid-Variable(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
+
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Empty-Overrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
+
+	r.SetOverrides([]runtime.Pair{{MSFTVariable, "https://www.bing.com/office"}})
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Configured-Overrrides(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
+
+	r.SetLocalHostOverride(true)
+	key = MSFTVariable
+	uri, ok = r.OverrideUrl(key)
+	fmt.Printf("test: OverrideUrl-Configured-Overrides-LocalHost-Override(%v) ->  [uri:%v] [ok:%v]\n", key, uri, ok)
 
 	//Output:
 	//test: OverrideUrl-Empty("") ->  [uri:] [ok:false]
-	//test: OverrideUrl-Invalid-Path("/search") ->  [uri:] [ok:false]
-	//test: OverrideUrl-Valid("/search") ->  [uri:https://search.yahoo.com/search?p=golang] [ok:true]
+	//test: OverrideUrl-Invalid-Variable(www.google.com) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Invalid-Variable({www.google.com) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Invalid-Variable(www.google.com}) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Empty-Overrides({MSFT}) ->  [uri:] [ok:false]
+	//test: OverrideUrl-Configured-Overrrides({MSFT}) ->  [uri:https://www.bing.com/office] [ok:true]
+	//test: OverrideUrl-Configured-Overrides-LocalHost-Override({MSFT}) ->  [uri:https://www.bing.com/office] [ok:true]
 
 }
 
-func Example_Build() {
-	path := ""
-	r := NewResolver()
-
-	uri := r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
-
-	path = "/search?q=golang"
-	uri = r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
-
-	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
-	uri = r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
-
-	r.SetOverrides(nil)
-	values := make(url.Values)
-	values.Add("q", "golang")
-	path = "/search?%v"
-	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
-
-	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
-	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
-
-	//Output:
-	//test: Build("") -> [uri:resolver error: invalid argument, path is empty]
-	//test: Build("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
-	//test: Build("/search?%v") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build("/search?%v") -> [uri:https://search.yahoo.com/search?p=golang]
-
-}
-
-/*
 func Example_Build_Error() {
 	path := "/google/search"
 	GOOGL := ""
@@ -167,9 +188,6 @@ func Example_Build() {
 	//test: Build-RemoveOverride("{MSFT}","/some/resource/%v") -> [uri:https://www.bing.com/some/resource/12345]
 
 }
-
-
-*/
 
 func Example_Values() {
 	v := make(url.Values)
