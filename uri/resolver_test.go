@@ -48,20 +48,20 @@ func ExampleBuild() {
 	r := NewResolver()
 
 	uri := r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Error(\"%v\") -> [uri:%v]\n", path, uri)
 
 	path = "/search?q=golang"
 	uri = r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
 
 	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
 	uri = r.Build(path)
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Override(\"%v\") -> [uri:%v]\n", path, uri)
 
 	//Output:
-	//test: Build("") -> [uri:resolver error: invalid argument, path is empty]
-	//test: Build("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
+	//test: Build-Error("") -> [uri:resolver error: invalid argument, path is empty]
+	//test: Build-Default("/search?q=golang") -> [uri:http//localhost:8080/search?q=golang]
+	//test: Build-Override("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
 
 }
 
@@ -73,21 +73,21 @@ func ExampleBuild_Values() {
 	values.Add("q", "golang")
 	path = "/search?%v"
 	uri := r.Build(path, values.Encode())
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
 	r.SetOverrides([]runtime.Pair{{path, yahooSearchTemplate}})
 	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Override-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
 	r.SetOverrides([]runtime.Pair{{path, fileAttrs}})
 	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
 
 	//Output:
-	//test: Build("/search?%v") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
-	//test: Build("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
-
+	//test: Build-Values("/search?%v") -> [uri:http//localhost:8080/search?q=golang]
+	//test: Build-Override-Values("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
+	//test: Build-Override-File-Scheme("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
+	
 }
 
 func Example_Values() {

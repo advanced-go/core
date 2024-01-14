@@ -11,6 +11,12 @@ var (
 	localAuthority = "localhost:8080"
 )
 
+const (
+	httpScheme  = "http"
+	httpsScheme = "https"
+	localHost   = "localhost"
+)
+
 // SetLocalAuthority - set the local authority
 func SetLocalAuthority(authority string) {
 	localAuthority = authority
@@ -20,6 +26,7 @@ func SetLocalAuthority(authority string) {
 type Resolver interface {
 	SetOverrides(values []runtime.Pair)
 	Build(path string, values ...any) string
+	BuildWithAuthority(authority, path string, values ...any) string
 	OverrideUrl(key string) (string, bool)
 }
 
@@ -51,6 +58,33 @@ func (r *resolver) Build(path string, values ...any) string {
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
+	return r.BuildWithAuthority(localAuthority, path, values...)
+	/*
+		if r.override != nil {
+			if uri, ok := r.OverrideUrl(path); ok {
+				if len(values) > 0 && strings.Index(uri, "%v") != -1 {
+					uri = fmt.Sprintf(uri, values...)
+				}
+				return uri
+			}
+		}
+		if !strings.HasPrefix(path, "/") {
+			path += "/"
+		}
+		if len(values) > 0 {
+			path = fmt.Sprintf(path, values...)
+		}
+		url2 := "http://" + localAuthority + path
+		return url2
+
+	*/
+}
+
+// BuildWithAuthority - perform resolution
+func (r *resolver) BuildWithAuthority(authority, path string, values ...any) string {
+	if len(path) == 0 {
+		return "resolver error: invalid argument, path is empty"
+	}
 	if r.override != nil {
 		if uri, ok := r.OverrideUrl(path); ok {
 			if len(values) > 0 && strings.Index(uri, "%v") != -1 {
@@ -65,7 +99,12 @@ func (r *resolver) Build(path string, values ...any) string {
 	if len(values) > 0 {
 		path = fmt.Sprintf(path, values...)
 	}
-	url2 := "http://" + localAuthority + path
+	scheme := httpsScheme
+	if len(authority) == 0 || strings.HasPrefix(authority, localHost) {
+		authority = localAuthority
+		scheme = httpScheme
+	}
+	url2 := scheme + "//" + authority + path
 	return url2
 }
 
