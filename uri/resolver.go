@@ -104,7 +104,7 @@ func (r *resolver) BuildWithAuthority(authority, path string, values ...any) str
 		authority = localAuthority
 		scheme = httpScheme
 	}
-	url2 := scheme + "//" + authority + path
+	url2 := scheme + "://" + authority + path
 	return url2
 }
 

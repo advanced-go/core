@@ -60,7 +60,7 @@ func ExampleBuild() {
 
 	//Output:
 	//test: Build-Error("") -> [uri:resolver error: invalid argument, path is empty]
-	//test: Build-Default("/search?q=golang") -> [uri:http//localhost:8080/search?q=golang]
+	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
 	//test: Build-Override("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
 
 }
@@ -84,7 +84,7 @@ func ExampleBuild_Values() {
 	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
 
 	//Output:
-	//test: Build-Values("/search?%v") -> [uri:http//localhost:8080/search?q=golang]
+	//test: Build-Values("/search?%v") -> [uri:http://localhost:8080/search?q=golang]
 	//test: Build-Override-Values("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
 	//test: Build-Override-File-Scheme("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
 
