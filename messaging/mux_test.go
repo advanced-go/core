@@ -16,7 +16,7 @@ func Example_HttpHandler() {
 	pattern := "github.com/advanced-go/example-domain/activity"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github.com/advanced-go/example-domain/activity:entry", nil)
 
-	Handle(pattern, appHttpHandler)
+	RegisterHandler(pattern, appHttpHandler)
 
 	rec := httptest.NewRecorder()
 
