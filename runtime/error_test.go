@@ -7,16 +7,16 @@ import (
 )
 
 func Example_FormatUri() {
-	s := "github.com/advanced-go/core/runtime:testFunc"
+	s := "github/advanced-go/core/runtime:testFunc"
 
 	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
 
-	s = "gitlab.com/advanced-go/core/runtime:testFunc"
+	s = "gitlab/advanced-go/core/runtime:testFunc"
 	fmt.Printf("test: formatUri(%v) -> %v\n", s, formatUri(s))
 
 	//Output:
-	//test: formatUri(github.com/advanced-go/core/runtime:testFunc) -> github.com/advanced-go/core/tree/main/runtime:testFunc
-	//test: formatUri(gitlab.com/advanced-go/core/runtime:testFunc) -> gitlab.com/advanced-go/core/runtime:testFunc
+	//test: formatUri(github/advanced-go/core/runtime:testFunc) -> https://github.com/advanced-go/core/tree/main/runtime#testFunc
+	//test: formatUri(gitlab/advanced-go/core/runtime:testFunc) -> gitlab/advanced-go/core/runtime:testFunc
 
 }
 
@@ -44,8 +44,8 @@ func Example_DefaultFormat() {
 	s := NewStatus(http.StatusNotFound)
 	s.SetRequestId("1234-5678")
 	// Adding in reverse to mirror call stack
-	s.AddLocation("github.com/advanced-go/location-2")
-	s.AddLocation("github.com/advanced-go/location-1")
+	s.AddLocation("github/advanced-go/location-2")
+	s.AddLocation("github/advanced-go/location-1")
 	if st, ok := any(s).(*statusState); ok {
 		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
@@ -54,7 +54,7 @@ func Example_DefaultFormat() {
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:
-	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "github.com/advanced-go/tree/main/location-1","github.com/advanced-go/tree/main/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
+	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "trace" : [ "https://github.com/advanced-go/tree/main/location-1","https://github.com/advanced-go/tree/main/location-2" ], "errors" : [ "test error message 1","testing error msg 2" ] }
 
 }
 

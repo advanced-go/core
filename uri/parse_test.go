@@ -135,7 +135,7 @@ func Example_Uproot() {
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	// valid embedded path only
-	uri = "/github.com/valid-leading-slash/example-domain/activity:entry"
+	uri = "/github/valid-leading-slash/example-domain/activity:entry"
 	nid, nss, ok = UprootUrn(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
@@ -159,7 +159,7 @@ func Example_Uproot() {
 	//Output:
 	//test: Uproot() -> [nid:] [nss:] [ok:false]
 	//test: Uproot(/valid-empty-nss?q=golang) -> [nid:valid-empty-nss] [nss:] [ok:true]
-	//test: Uproot(/github.com/valid-leading-slash/example-domain/activity:entry) -> [nid:github.com/valid-leading-slash/example-domain/activity] [nss:entry] [ok:true]
+	//test: Uproot(/github/valid-leading-slash/example-domain/activity:entry) -> [nid:github/valid-leading-slash/example-domain/activity] [nss:entry] [ok:true]
 	//test: Uproot(github.com/valid-no-leading-slash/example-domain/activity:entry) -> [nid:github.com/valid-no-leading-slash/example-domain/activity] [nss:entry] [ok:true]
 	//test: Uproot(https://www.google.com/valid-uri?q=golang) -> [nid:valid-uri] [nss:] [ok:true]
 	//test: Uproot(https://www.google.com/github.com/valid-uri-nss/search?q=golang) -> [nid:github.com/valid-uri-nss/search] [nss:] [ok:true]

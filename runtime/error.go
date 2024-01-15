@@ -15,8 +15,11 @@ const (
 	TraceName      = "trace"
 	RequestIdName  = "request-id"
 	ErrorsName     = "errors"
-	GithubHost     = "github.com"
-	GithubTemplate = "%s/tree/main%s"
+	githubHost     = "github"
+	githubDotCom   = "github.com"
+	githubTemplate = "https://%v/tree/main%v"
+	urnSeperator   = ":"
+	fragmentId     = "#"
 )
 
 // Formatter - output formatting type
@@ -181,11 +184,17 @@ func outputFormatTrace(name string, trace []string) string {
 }
 
 func formatUri(uri string) string {
-	if strings.HasPrefix(uri, GithubHost) {
-		i := strings.LastIndex(uri, "/")
-		if i != -1 {
-			return fmt.Sprintf(GithubTemplate, uri[:i], uri[i:])
-		}
+	i := strings.Index(uri, githubHost)
+	if i == -1 {
+		return uri
+	}
+	uri = strings.Replace(uri, githubHost, githubDotCom, len(githubDotCom))
+	i = strings.LastIndex(uri, "/")
+	if i != -1 {
+		first := uri[:i]
+		last := uri[i:]
+		last = strings.Replace(last, urnSeparator, fragmentId, len(fragmentId))
+		return fmt.Sprintf(githubTemplate, first, last)
 	}
 	return uri
 }

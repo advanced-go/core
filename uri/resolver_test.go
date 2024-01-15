@@ -87,7 +87,7 @@ func ExampleBuild_Values() {
 	//test: Build-Values("/search?%v") -> [uri:http//localhost:8080/search?q=golang]
 	//test: Build-Override-Values("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
 	//test: Build-Override-File-Scheme("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
-	
+
 }
 
 func Example_Values() {

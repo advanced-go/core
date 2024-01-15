@@ -25,11 +25,16 @@ func Example_Proxy_Add() {
 	status = proxy.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
+	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
+	status = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
+
 	//Output:
 	//test: Register("") -> [status:Invalid Argument [invalid argument: path is empty]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: HTTP handler is nil: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:OK]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: HTTP handler already exists: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]]
+	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [status:OK]
 
 }
 
@@ -49,10 +54,18 @@ func Example_Proxy_Get() {
 	handler, status1 := proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
 
+	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
+	status = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
+	handler, status1 = proxy.Lookup(path)
+	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
+
 	//Output:
 	//test: Lookup("") -> [status:Invalid Argument [invalid argument: path is invalid: []]]
 	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: HTTP handler does not exist: [github.com/advanced-go/example-domain/activity]]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:OK]
 	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:OK] [handler:true]
+	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [status:OK]
+	//test: Lookup(http://localhost:8080/github/advanced-go/example-domain/activity) -> [status:OK] [handler:true]
 
 }
