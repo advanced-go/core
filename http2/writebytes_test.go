@@ -37,65 +37,65 @@ func NewReaderCloser(reader io.Reader, err error) *ReaderCloser {
 	return rc
 }
 
-func Example_WriteBytes_Error() {
+func ExampleWriteBytes_Error() {
 	var cnt = 100
 	var pstr *string
 	var pr *io.Reader
 
-	buf, rc, status := WriteBytes(nil, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
+	buf, status := WriteBytes(nil, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, rc, status = WriteBytes(pstr, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
+	buf, status = WriteBytes(pstr, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, rc, status = WriteBytes(pr, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
+	buf, status = WriteBytes(pr, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, rc, status = WriteBytes(cnt, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
+	buf, status = WriteBytes(cnt, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
 	str := "this error should not be seen"
-	buf, rc, status = WriteBytes(NewReaderCloser(strings.NewReader(str), errors.New("error on internal read")), "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, rc)
+	buf, status = WriteBytes(NewReaderCloser(strings.NewReader(str), errors.New("error on internal read")), "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
 	//Output:
-	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: <nil>]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *string]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *io.Reader]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: int]] [rc:]
-	//test: WriteBytes() -> [buf:false] [status:I/O Failure [error on internal read]] [rc:]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: <nil>]] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *string]] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: *io.Reader]] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:false] [status:Internal Error [error: content type is invalid: int]] [rc:text/plain; charset=utf-8]
+	//test: WriteBytes() -> [buf:false] [status:I/O Failure [error on internal read]] [rc:text/plain; charset=utf-8]
 
 }
 
-func Example_WriteBytes() {
+func ExampleWriteBytes() {
 	str := "this is string content"
-	buf, rc, status := WriteBytes(str, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status := WriteBytes(str, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is []byte content"
-	buf, rc, status = WriteBytes([]byte(str), "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status = WriteBytes([]byte(str), "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is an error message"
-	buf, rc, status = WriteBytes(errors.New(str), "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status = WriteBytes(errors.New(str), "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is http.Response.Body content"
 	r := strings.NewReader(str)
 	resp := new(http.Response)
 	resp.Body = io.NopCloser(r)
-	buf, rc, status = WriteBytes(resp, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status = WriteBytes(resp, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is io.Reader content"
 	r = strings.NewReader(str)
-	buf, rc, status = WriteBytes(r, "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status = WriteBytes(r, "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is io.ReaderCloser content"
 	r = strings.NewReader(str)
-	buf, rc, status = WriteBytes(io.NopCloser(r), "")
-	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status = WriteBytes(io.NopCloser(r), "")
+	fmt.Printf("test: WriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	//Output:
 	//test: WriteBytes() -> [buf:true] [status:OK] [content:this is string content] [rc:text/plain; charset=utf-8]
@@ -107,10 +107,10 @@ func Example_WriteBytes() {
 
 }
 
-func Example_WriteBytes_Json() {
+func ExampleWriteBytes_Json() {
 	c := data{"123456", 101}
-	buf, rc, status := WriteBytes(c, ContentTypeJson)
-	fmt.Printf("test: WriteWriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), rc)
+	buf, status := WriteBytes(c, "application/json")
+	fmt.Printf("test: WriteWriteBytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), "application/json")
 
 	//Output:
 	//test: WriteWriteBytes() -> [buf:true] [status:OK] [content:{"Item":"123456","Count":101}] [rc:application/json]

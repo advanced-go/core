@@ -29,7 +29,8 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		SetHeaders(w, headers)
 		return
 	}
-	buf, rc, status0 := WriteBytes(content, GetContentType(headers))
+	ct := GetContentType(headers)
+	buf, status0 := WriteBytes(content, ct)
 	if !status0.OK() {
 		e.Handle(status0, status.RequestId(), writeLoc)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -37,10 +38,9 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	w.WriteHeader(status.Http())
 	SetHeaders(w, headers)
-	if len(w.Header().Get(ContentType)) == 0 {
-		w.Header().Set(ContentType, rc)
+	if len(ct) == 0 {
+		w.Header().Set(ContentType, http.DetectContentType(buf))
 	}
-	//w.Header().Set(ContentType, rc)
 	//w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
 	_, err := w.Write(buf)
 	if err != nil {

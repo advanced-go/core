@@ -19,9 +19,9 @@ const (
 func NewBytes(v any) ([]byte, Status) {
 	switch ptr := v.(type) {
 	case string:
-		return readBytes(ptr)
+		return ReadFile(ptr)
 	case *url.URL:
-		return readBytes(ptr.String())
+		return ReadFile(ptr.String())
 	case []byte:
 		return ptr, StatusOK()
 	case io.Reader:
@@ -37,7 +37,8 @@ func NewBytes(v any) ([]byte, Status) {
 	return nil, NewStatusError(StatusInvalidArgument, newBytesLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 }
 
-func readBytes(uri string) ([]byte, Status) {
+// ReadFile - read a file
+func ReadFile(uri string) ([]byte, Status) {
 	status := validateUri(uri)
 	if !status.OK() {
 		return nil, status

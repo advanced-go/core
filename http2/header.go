@@ -58,15 +58,16 @@ func GetContentType(headers any) string {
 		return ""
 	}
 	if h, ok := headers.(http.Header); ok {
-		for k, v := range h {
-			if k == ContentType {
-				if len(v) > 0 {
-					return v[0]
-				} else {
-					return ""
-				}
-			}
-		}
+		return h.Get(ContentType)
+		//for k, v := range h {
+		//	if k == ContentType {
+		//		if len(v) > 0 {
+		//			return v[0]
+		//		} else {
+		//			return ""
+		//		}
+		//	}
+		//}
 	}
 	return ""
 }

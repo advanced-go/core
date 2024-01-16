@@ -16,7 +16,7 @@ const (
 )
 
 // WriteBytes - convert content to []byte, checking for JSON content
-func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
+func WriteBytes(content any, contentType string) ([]byte, runtime.Status) {
 	var buf []byte
 
 	switch ptr := (content).(type) {
@@ -32,14 +32,14 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		buf, status = runtime.NewBytes(ptr.Body)
 		_ = ptr.Body.Close()
 		if !status.OK() {
-			return nil, "", status
+			return nil, status
 		}
 	case io.Reader:
 		var status runtime.Status
 
 		buf, status = runtime.NewBytes(ptr)
 		if !status.OK() {
-			return nil, "", status
+			return nil, status
 		}
 	case io.ReadCloser:
 		var status runtime.Status
@@ -47,7 +47,7 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 		buf, status = runtime.NewBytes(ptr)
 		_ = ptr.Close()
 		if !status.OK() {
-			return nil, "", status
+			return nil, status
 		}
 	default:
 		if strings.Contains(contentType, "json") {
@@ -57,16 +57,16 @@ func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status
 			if err != nil {
 				status := runtime.NewStatusError(runtime.StatusJsonEncodeError, bytesLoc, err)
 				if !status.OK() {
-					return nil, "", status
+					return nil, status
 				}
 			}
-			return buf, contentType, runtime.StatusOK()
+			return buf, runtime.StatusOK()
 		} else {
-			return nil, "", runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return nil, runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
 	}
-	if strings.Contains(contentType, "json") {
-		return buf, ContentTypeJson, runtime.StatusOK()
-	}
-	return buf, http.DetectContentType(buf), runtime.StatusOK()
+	//if strings.Contains(contentType, "json") {
+	//	return buf, ContentTypeJson, runtime.StatusOK()
+	//}
+	return buf, runtime.StatusOK() //http.DetectContentType(buf), runtime.StatusOK()
 }
