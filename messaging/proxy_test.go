@@ -36,7 +36,7 @@ func Example_ProcessPing() {
 	}
 	nid, rsc, ok := uprootUrn(r.URL.Path)
 	ProcessPing[runtime.Bypass](w, nid)
-	buf, status1 := runtime.NewBytes(w.Result())
+	buf, status1 := runtime.ReadAll(w.Result().Body)
 	if !status1.OK() {
 		fmt.Printf("test: ReadAll() -> [status:%v]\n", status1)
 	}

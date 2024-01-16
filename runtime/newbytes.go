@@ -1,20 +1,17 @@
 package runtime
 
 import (
-	"errors"
 	"fmt"
 	"io"
-	"net/http"
-	"net/url"
 	"os"
-	"reflect"
 )
 
 const (
-	newBytesLoc = PkgPath + ":NewBytes"
-	readAllLoc  = PkgPath + ":readAll"
+	readFileLoc = PkgPath + ":ReadFile"
+	readAllLoc  = PkgPath + ":ReadAll"
 )
 
+/*
 // NewBytes - create a []byte from a type
 func NewBytes(v any) ([]byte, Status) {
 	switch ptr := v.(type) {
@@ -37,7 +34,9 @@ func NewBytes(v any) ([]byte, Status) {
 	return nil, NewStatusError(StatusInvalidArgument, newBytesLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 }
 
-// ReadFile - read a file
+*/
+
+// ReadFile - read a file with a Status
 func ReadFile(uri string) ([]byte, Status) {
 	status := validateUri(uri)
 	if !status.OK() {
@@ -45,7 +44,7 @@ func ReadFile(uri string) ([]byte, Status) {
 	}
 	buf, err := os.ReadFile(FileName(uri))
 	if err != nil {
-		return nil, NewStatusError(StatusIOError, newBytesLoc, err)
+		return nil, NewStatusError(StatusIOError, readFileLoc, err)
 	}
 	return buf, StatusOK()
 }

@@ -26,7 +26,7 @@ func New[T any](v any) (t T, status Status) {
 		if isStatusURL(ptr) {
 			return t, NewStatusFrom(ptr)
 		}
-		buf, status = NewBytes(ptr)
+		buf, status = ReadFile(ptr)
 		if !status.OK() {
 			return
 		}
@@ -43,7 +43,7 @@ func New[T any](v any) (t T, status Status) {
 		if isStatusURL(ptr.String()) {
 			return t, NewStatusFrom(ptr.String())
 		}
-		buf, status = NewBytes(ptr.String())
+		buf, status = ReadFile(ptr.String())
 		if !status.OK() {
 			return
 		}
@@ -69,7 +69,7 @@ func New[T any](v any) (t T, status Status) {
 		return
 	case *http.Response:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = NewBytes(ptr)
+			buf, status = ReadAll(ptr.Body)
 			if !status.OK() {
 				return
 			}
@@ -84,7 +84,7 @@ func New[T any](v any) (t T, status Status) {
 		return t, StatusOK()
 	case *http.Request:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = NewBytes(ptr)
+			buf, status = ReadAll(ptr.Body)
 			if !status.OK() {
 				return
 			}
@@ -99,7 +99,7 @@ func New[T any](v any) (t T, status Status) {
 		return t, StatusOK()
 	case io.Reader:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = NewBytes(ptr)
+			buf, status = ReadAll(io.NopCloser(ptr))
 			if !status.OK() {
 				return
 			}
@@ -113,7 +113,7 @@ func New[T any](v any) (t T, status Status) {
 		return t, StatusOK()
 	case io.ReadCloser:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = NewBytes(ptr)
+			buf, status = ReadAll(ptr)
 			if !status.OK() {
 				return
 			}
