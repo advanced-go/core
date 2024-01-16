@@ -1,6 +1,7 @@
 package http2
 
 import (
+	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
@@ -42,9 +43,12 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		w.Header().Set(ContentType, http.DetectContentType(buf))
 	}
 	//w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
-	_, err := w.Write(buf)
+	bytes, err := w.Write(buf)
 	if err != nil {
 		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
+	}
+	if bytes != len(buf) {
+		fmt.Printf(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))
 	}
 	return
 }

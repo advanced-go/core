@@ -99,9 +99,9 @@ func ExampleWriteResponse_StatusNotOK() {
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
-	//test: WriteResponse(w,nil,status) -> [status:503] [body:server unavailable] [header:map[Content-Length:[18] Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Length:[9] Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Length:[19] Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,nil,status) -> [status:503] [body:server unavailable] [header:map[Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:500] [body:] [header:map[]]
 
 }
