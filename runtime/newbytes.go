@@ -25,13 +25,13 @@ func NewBytes(v any) ([]byte, Status) {
 	case []byte:
 		return ptr, StatusOK()
 	case io.Reader:
-		return readAll(io.NopCloser(ptr))
+		return ReadAll(io.NopCloser(ptr))
 	case io.ReadCloser:
-		return readAll(ptr)
+		return ReadAll(ptr)
 	case *http.Response:
-		return readAll(ptr.Body)
+		return ReadAll(ptr.Body)
 	case *http.Request:
-		return readAll(ptr.Body)
+		return ReadAll(ptr.Body)
 	default:
 	}
 	return nil, NewStatusError(StatusInvalidArgument, newBytesLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
@@ -49,14 +49,15 @@ func readBytes(uri string) ([]byte, Status) {
 	return buf, StatusOK()
 }
 
-// readAll - read the body with a Status
-func readAll(body io.ReadCloser) ([]byte, Status) {
+// ReadAll - read the body with a Status
+func ReadAll(body io.ReadCloser) ([]byte, Status) {
 	if body == nil {
 		return nil, StatusOK()
 	}
 	defer func(body io.ReadCloser) {
 		err := body.Close()
 		if err != nil {
+			fmt.Printf("%v", err)
 		}
 	}(body)
 	buf, err := io.ReadAll(body)
