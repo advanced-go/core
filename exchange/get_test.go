@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	testLocation = "github.com/advanced-go/core/exchange:ExampleGet"
+	testLocation = "github/advanced-go/core/exchange:ExampleGet"
 )
 
 func ExampleGet() {
@@ -14,10 +14,10 @@ func ExampleGet() {
 	var e runtime.Output
 	r, status := Get("", nil)
 
-	fmt.Printf("test: Get(\"\") -> [resp:%v] [status:%v]\n", r.Status, status)
 	e.Handle(status, "123-456", testLocation)
+	fmt.Printf("test: Get(\"\") -> [resp:%v] [status:%v]\n", r.Status, status)
 
 	//Output:
-	//test: Get("") -> [resp:Internal Error] [status:Internal Error [Get "": unsupported protocol scheme ""]]
+	//test: Get("") -> [resp:Internal Error] [status:Bad Request [error: URI is empty]]
 
 }

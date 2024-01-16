@@ -25,6 +25,7 @@ func forwardDefaults(dest http.Header, src http.Header) http.Header {
 	return dest
 }
 
+// Forward - forward headers
 func Forward(dest http.Header, src http.Header, names ...string) http.Header {
 	dest = forwardDefaults(dest, src)
 	if src == nil {
@@ -46,6 +47,7 @@ func HeaderValue_OLD(name string, r *http.Request) string {
 
 */
 
+// GetContentType - return the content type header value
 func GetContentType(headers any) string {
 	if pairs, ok := headers.([]Attr); ok {
 		for _, pair := range pairs {
@@ -92,6 +94,7 @@ func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 
 */
 
+// SetHeaders - set the headers into an HTTP response writer
 func SetHeaders(w http.ResponseWriter, headers any) {
 	if pairs, ok := headers.([]Attr); ok {
 		for _, pair := range pairs {
@@ -107,29 +110,3 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 		}
 	}
 }
-
-/*
-func AddHeaders(req *http.Request, header http.Header) {
-	if req == nil || header == nil {
-		return
-	}
-	for key, element := range header {
-		req.Header.Add(key, createValue(element))
-	}
-}
-
-func createValue(v []string) string {
-	if v == nil {
-		return ""
-	}
-	var value string
-	for i, item := range v {
-		if i > 0 {
-			value += ","
-		}
-		value += item
-	}
-	return value
-}
-
-*/

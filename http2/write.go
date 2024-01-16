@@ -6,8 +6,7 @@ import (
 )
 
 var (
-	writeLoc    = PkgPath + ":WriteResponse"
-	minWriteLoc = PkgPath + ":WriteMinResponse"
+	writeLoc = PkgPath + ":WriteResponse"
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers

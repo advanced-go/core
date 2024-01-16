@@ -59,25 +59,6 @@ func (r *resolver) Build(path string, values ...any) string {
 		return "resolver error: invalid argument, path is empty"
 	}
 	return r.BuildWithAuthority(localAuthority, path, values...)
-	/*
-		if r.override != nil {
-			if uri, ok := r.OverrideUrl(path); ok {
-				if len(values) > 0 && strings.Index(uri, "%v") != -1 {
-					uri = fmt.Sprintf(uri, values...)
-				}
-				return uri
-			}
-		}
-		if !strings.HasPrefix(path, "/") {
-			path += "/"
-		}
-		if len(values) > 0 {
-			path = fmt.Sprintf(path, values...)
-		}
-		url2 := "http://" + localAuthority + path
-		return url2
-
-	*/
 }
 
 // BuildWithAuthority - perform resolution

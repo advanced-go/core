@@ -44,6 +44,7 @@ func Expand(t string, fn func(string) (string, error)) (string, error) {
 	return buf.String(), nil
 }
 
+// TemplateToken - a template variable
 func TemplateToken(s string) (string, bool) {
 	if !strings.HasPrefix(s, BeginDelimiter) {
 		return s, false

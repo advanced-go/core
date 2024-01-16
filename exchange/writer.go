@@ -6,12 +6,14 @@ import (
 	"net/http"
 )
 
+// ResponseWriter - write a response
 type ResponseWriter struct {
 	statusCode int
 	header     http.Header
 	body       *bytes.Buffer
 }
 
+// NewResponseWriter - create a new response writer
 func NewResponseWriter() *ResponseWriter {
 	w := new(ResponseWriter)
 	w.header = make(http.Header)
@@ -19,26 +21,32 @@ func NewResponseWriter() *ResponseWriter {
 	return w
 }
 
+// StatusCode - return the response status code
 func (w *ResponseWriter) StatusCode() int {
 	return w.statusCode
 }
 
+// Header - return the response http.Header
 func (w *ResponseWriter) Header() http.Header {
 	return w.header
 }
 
+// Body - return the response body
 func (w *ResponseWriter) Body() []byte {
 	return w.body.Bytes()
 }
 
+// Write - write the response body
 func (w *ResponseWriter) Write(p []byte) (int, error) {
 	return w.body.Write(p)
 }
 
+// WriteHeader - write the response status code
 func (w *ResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 }
 
+// Response - return the response
 func (w *ResponseWriter) Response() *http.Response {
 	r := new(http.Response)
 	if w.statusCode == 0 {

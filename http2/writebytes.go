@@ -15,7 +15,7 @@ const (
 	bytesLoc = PkgPath + ":WriteBytes"
 )
 
-// WriteBytes -
+// WriteBytes - convert content to []byte, checking for JSON content
 func WriteBytes(content any, contentType string) ([]byte, string, runtime.Status) {
 	var buf []byte
 

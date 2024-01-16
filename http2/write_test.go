@@ -120,7 +120,7 @@ func Example_RequestBody() {
 	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	//Output:
-	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Length:[13] Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Content-Length:[3] Content-Type:[text/plain; charset=utf-8] Key:[value] Key1:[value1] Key2:[value2]]]
+	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Type:[text/plain; charset=utf-8]]]
+	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Content-Type:[text/plain; charset=utf-8] Key:[value] Key1:[value1] Key2:[value2]]]
 
 }

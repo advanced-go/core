@@ -110,9 +110,9 @@ func Example_TemplateToken() {
 
 	//Output:
 	//test: TemplateToken("") -> [var:] [ok:false]
-	//test: TemplateToken("variable-name") -> [var:] [ok:false]
-	//test: TemplateToken("{variable-name") -> [var:] [ok:false]
-	//test: TemplateToken("variable-name}") -> [var:] [ok:false]
-	//test: TemplateToken("{variable-name}") -> [var:variable-nam] [ok:true]
-
+	//test: TemplateToken("variable-name") -> [var:variable-name] [ok:false]
+	//test: TemplateToken("{variable-name") -> [var:{variable-name] [ok:false]
+	//test: TemplateToken("variable-name}") -> [var:variable-name}] [ok:false]
+	//test: TemplateToken("{variable-name}") -> [var:variable-name] [ok:true]
+	
 }

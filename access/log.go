@@ -55,22 +55,26 @@ var (
 	logger    = defaultLogger
 )
 
+// DisableTestLogger - disable test loging
 func DisableTestLogger() {
 	if runtime.IsDebugEnvironment() {
 		logger = nil
 	}
 }
 
+// EnableTestLogger - enable test logging
 func EnableTestLogger() {
 	if runtime.IsDebugEnvironment() {
 		SetLogger(defaultLogger)
 	}
 }
 
+// DisableInternalLogging - disable internal logging
 func DisableInternalLogging() {
 	internalLogging = false
 }
 
+// EnableInternalLogging - enable internal logging
 func EnableInternalLogging() {
 	internalLogging = true
 }

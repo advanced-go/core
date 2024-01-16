@@ -54,7 +54,7 @@ func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
 	return DoHttp(req)
 }
 
-// DoHttp - process and HTTP call
+// DoHttp - process an HTTP call
 func DoHttp(req *http.Request) (resp *http.Response, status runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))

@@ -18,6 +18,7 @@ const (
 	newRequestLoc = PkgPath + ":NewRequest"
 )
 
+// ReadCookies - read the cookies from a request
 func ReadCookies(req *http.Request) map[string]*http.Cookie {
 	if req == nil {
 		return nil
@@ -103,6 +104,7 @@ func newId(ctx any) string {
 	return id
 }
 
+// ValidateRequest - validate the request given an embedded URN path
 func ValidateRequest(req *http.Request, path string) (string, runtime.Status) {
 	if req == nil {
 		return "", runtime.NewStatusWithContent(runtime.StatusInvalidArgument, errors.New("error Request is nil"), false)
