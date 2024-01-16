@@ -29,7 +29,7 @@ func WriteBytes(content any, contentType string) ([]byte, runtime.Status) {
 	case *http.Response:
 		var status runtime.Status
 
-		buf, status = runtime.NewBytes(ptr.Body)
+		buf, status = runtime.ReadAll(ptr.Body)
 		_ = ptr.Body.Close()
 		if !status.OK() {
 			return nil, status
@@ -37,14 +37,14 @@ func WriteBytes(content any, contentType string) ([]byte, runtime.Status) {
 	case io.Reader:
 		var status runtime.Status
 
-		buf, status = runtime.NewBytes(ptr)
+		buf, status = runtime.ReadAll(io.NopCloser(ptr))
 		if !status.OK() {
 			return nil, status
 		}
 	case io.ReadCloser:
 		var status runtime.Status
 
-		buf, status = runtime.NewBytes(ptr)
+		buf, status = runtime.ReadAll(ptr)
 		_ = ptr.Close()
 		if !status.OK() {
 			return nil, status
