@@ -17,10 +17,10 @@ func ExampleMessageCache_Add() {
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
 	m, err := resp.Get("invalid")
-	fmt.Printf("test: Get(%v) -> : [error:%v] [msg:%v]\n", "invalid", err, m)
+	fmt.Printf("test: Get(%v) -> : [error:%v] [msg-to:%v]\n", "invalid", err, len(m.To) > 0)
 
 	m, err = resp.Get("from-uri-3")
-	fmt.Printf("test: Get(%v) -> : [error:%v] [msg:%v]\n", "from-uri-3", err, m)
+	fmt.Printf("test: Get(%v) -> : [error:%v] [msg-to:%v]\n", "from-uri-3", err, len(m.To) > 0)
 
 	fmt.Printf("test: include(%v,%v) -> : %v\n", ShutdownEvent, runtime.StatusNotProvided, resp.Include(ShutdownEvent, runtime.StatusNotProvided))
 	fmt.Printf("test: exclude(%v,%v) -> : %v\n", ShutdownEvent, runtime.StatusNotProvided, resp.Exclude(ShutdownEvent, runtime.StatusNotProvided))
@@ -33,8 +33,8 @@ func ExampleMessageCache_Add() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{   <nil> [] <nil>}]
-	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{to-uri from-uri-3 event:ping Not provided [] <nil>}]
+	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg-to:false]
+	//test: Get(from-uri-3) -> : [error:<nil>] [msg-to:true]
 	//test: include(event:shutdown,94) -> : []
 	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
 	//test: include(event:startup,94) -> : [from-uri-0]
@@ -56,10 +56,10 @@ func ExampleMessageCache_Uri() {
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
 	m, err := resp.Get("invalid")
-	fmt.Printf("test: Get(%v) -> : [error:%v] [msg:%v]\n", "invalid", err, m)
+	fmt.Printf("test: Get(%v) -> : [error:%v] [msg-to:%v]\n", "invalid", err, len(m.To) > 0)
 
 	m, err = resp.Get("from-uri-3")
-	fmt.Printf("test: Get(%v) -> : [error:%v] [msg:%v]\n", "from-uri-3", err, m)
+	fmt.Printf("test: Get(%v) -> : [error:%v] [msg-to:%v]\n", "from-uri-3", err, m.To)
 
 	fmt.Printf("test: include(%v,%v) -> : %v\n", ShutdownEvent, runtime.StatusNotProvided, resp.Include(ShutdownEvent, runtime.StatusNotProvided))
 	fmt.Printf("test: exclude(%v,%v) -> : %v\n", ShutdownEvent, runtime.StatusNotProvided, resp.Exclude(ShutdownEvent, runtime.StatusNotProvided))
@@ -72,8 +72,8 @@ func ExampleMessageCache_Uri() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg:{   <nil> [] <nil>}]
-	//test: Get(from-uri-3) -> : [error:<nil>] [msg:{to-uri from-uri-3 event:ping Not provided [] <nil>}]
+	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg-to:false]
+	//test: Get(from-uri-3) -> : [error:<nil>] [msg-to:to-uri]
 	//test: include(event:shutdown,94) -> : []
 	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
 	//test: include(event:startup,94) -> : [from-uri-0]

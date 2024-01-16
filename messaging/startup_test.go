@@ -75,15 +75,15 @@ func ExampleCreateToSend() {
 	fmt.Printf("test: createToSend(map,nil) -> [to:%v] [from:%v] [credentials:%v]\n", msg.To, msg.From, accessCredentials(&msg) != nil)
 
 	//Output:
-	//test: createToSend(nil,nil) -> [to:startup/none] [from:github.com/advanced-go/core/messaging:Startup]
-	//test: createToSend(map,nil) -> [to:startup/one] [from:github.com/advanced-go/core/messaging:Startup] [credentials:true]
+	//test: createToSend(nil,nil) -> [to:startup/none] [from:github/advanced-go/core/messaging:Startup]
+	//test: createToSend(map,nil) -> [to:startup/one] [from:github/advanced-go/core/messaging:Startup] [credentials:true]
 
 }
 
 func ExampleStartup_Success() {
-	uri1 := "github.com/startup/good"
-	uri2 := "github.com/startup/bad"
-	uri3 := "github.com/startup/depends"
+	uri1 := "github/startup/good"
+	uri2 := "github/startup/bad"
+	uri3 := "github/startup/depends"
 
 	startupDir := any(NewExchange()).(*exchange)
 	start = time.Now()
@@ -105,17 +105,17 @@ func ExampleStartup_Success() {
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//startup successful: [github.com/startup/bad] : 0s
-	//startup successful: [github.com/startup/depends] : 0s
-	//startup successful: [github.com/startup/good] : 0s
+	//startup successful: [github/startup/bad] : 0s
+	//startup successful: [github/startup/depends] : 0s
+	//startup successful: [github/startup/good] : 0s
 	//test: Startup() -> [OK]
 
 }
 
 func ExampleStartup_Failure() {
-	uri1 := "github.com/startup/good"
-	uri2 := "github.com/startup/bad"
-	uri3 := "github.com/startup/depends"
+	uri1 := "github/startup/good"
+	uri2 := "github/startup/bad"
+	uri3 := "github/startup/depends"
 	startupDir := any(NewExchange()).(*exchange)
 
 	start = time.Now()
@@ -137,6 +137,7 @@ func ExampleStartup_Failure() {
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
+	//{ "code":500, "status":"Internal Error", "request-id":null, "trace" : [ "https://github.com/advanced-go/core/tree/main/messaging#Startup" ], "errors" : [ "startup failure error message" ] }
 	//test: Startup() -> [Internal Error]
 
 }

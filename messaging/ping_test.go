@@ -43,6 +43,7 @@ func ExamplePing() {
 
 	//Output:
 	//test: Ping(good) -> [OK] [duration:0s]
+	//{ "code":4, "status":"Deadline Exceeded", "request-id":null, "trace" : [ "https://github.com/advanced-go/core/tree/main/messaging#Ping" ], "errors" : [ "ping response time out: [urn:ping:bad]" ] }
 	//test: Ping(bad) -> [Deadline Exceeded [ping response time out: [urn:ping:bad]]] [duration:0s]
 	//test: Ping(error) -> [Internal Error [ping depends error message]] [duration:0s]
 	//test: Ping(delay) -> [OK] [duration:0s]

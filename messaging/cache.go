@@ -30,6 +30,7 @@ func NewMessageCache() MessageCache {
 	return c
 }
 
+// Count - return the count of items
 func (r *messageCache) Count() int {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -40,6 +41,7 @@ func (r *messageCache) Count() int {
 	return count
 }
 
+// Filter - apply a filter against a traversal of all items
 func (r *messageCache) Filter(event string, code int, include bool) []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -59,14 +61,17 @@ func (r *messageCache) Filter(event string, code int, include bool) []string {
 	return uri
 }
 
+// Include - filter for items that include a specific event
 func (r *messageCache) Include(event string, status int) []string {
 	return r.Filter(event, status, true)
 }
 
+// Exclude - filter for items that do not include a specific event
 func (r *messageCache) Exclude(event string, status int) []string {
 	return r.Filter(event, status, false)
 }
 
+// Add - add a message
 func (r *messageCache) Add(msg Message) error {
 	if msg.From == "" {
 		return errors.New("invalid argument: message from is empty")
@@ -80,6 +85,7 @@ func (r *messageCache) Add(msg Message) error {
 	return errors.New(fmt.Sprintf("invalid argument: message found [%v]", msg.From))
 }
 
+// Get - get a message based on a URI
 func (r *messageCache) Get(uri string) (Message, error) {
 	if uri == "" {
 		return Message{}, errors.New("invalid argument: uri is empty")
@@ -92,6 +98,7 @@ func (r *messageCache) Get(uri string) (Message, error) {
 	return Message{}, errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
 }
 
+// Uri - list the URI's in the cache
 func (r *messageCache) Uri() []string {
 	var uri []string
 	r.mu.RLock()

@@ -1,5 +1,6 @@
 package messaging
 
+// Mailbox - mailbox struct
 type Mailbox struct {
 	public     bool
 	uri        string

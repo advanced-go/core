@@ -7,17 +7,17 @@ import (
 )
 
 const (
-	MSFTVariable  = "{MSFT}"
+	MSFTVariable  = "MSFT"
 	MSFTAuthority = "www.bing.com"
 
-	GOOGLVariable  = "{GOOGL}"
+	GOOGLVariable  = "GOOGL"
 	GOOGLAuthority = "www.google.com"
 
 	fileAttrs = "file://[cwd]/runtimetest/attrs.json"
 )
 
 func Example_KV() {
-	values := []KV{{"MSFT", MSFTAuthority}, {"GOOGL", GOOGLAuthority}}
+	values := []KV{{MSFTVariable, MSFTAuthority}, {GOOGLVariable, GOOGLAuthority}}
 
 	buf, err := json.Marshal(values)
 	fmt.Printf("test: Attr() -> [buf:%v] [err:%v]\n", string(buf), err)

@@ -3,7 +3,6 @@ package messaging
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
-	"io"
 	"net/http"
 	"net/http/httptest"
 )
@@ -13,13 +12,11 @@ func appHttpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Example_HttpHandler() {
-	pattern := "github.com/advanced-go/example-domain/activity"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github.com/advanced-go/example-domain/activity:entry", nil)
-
+	pattern := "github/advanced-go/example-domain/activity"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/activity:entry", nil)
 	RegisterHandler(pattern, appHttpHandler)
 
 	rec := httptest.NewRecorder()
-
 	HttpHandler(rec, r)
 
 	fmt.Printf("test: HttpHandler() -> %v\n", rec.Result().StatusCode)
@@ -30,9 +27,9 @@ func Example_HttpHandler() {
 }
 
 func Example_ProcessPing() {
-	uri1 := "github.com/advanced-go/example-domain/activity"
+	uri1 := "github/advanced-go/example-domain/activity"
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("", "github.com/advanced-go/example-domain/activity:ping", nil)
+	r, _ := http.NewRequest("", "github/advanced-go/example-domain/activity:ping", nil)
 	status := HostExchange.Add(NewMailbox(uri1, nil))
 	if !status.OK() {
 		fmt.Printf("test: processPing() -> [status:%v]\n", status)
@@ -46,18 +43,6 @@ func Example_ProcessPing() {
 	fmt.Printf("test: processPing() -> [nid:%v] [nss:%v] [ok:%v] [status:%v] [content:%v]\n", nid, rsc, ok, w.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: processPing() -> [nid:github.com/advanced-go/example-domain/activity] [nss:ping] [ok:true] [status:504] [content:]
+	//test: processPing() -> [nid:github/advanced-go/example-domain/activity] [nss:ping] [ok:true] [status:504] [content:]
 
-}
-
-func readAll(body io.ReadCloser) ([]byte, runtime.Status) {
-	if body == nil {
-		return nil, runtime.StatusOK()
-	}
-	defer body.Close()
-	buf, err := io.ReadAll(body)
-	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusIOError, PkgPath+":ReadAll", err)
-	}
-	return buf, runtime.StatusOK()
 }

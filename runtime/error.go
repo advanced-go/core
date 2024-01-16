@@ -18,7 +18,6 @@ const (
 	githubHost     = "github"
 	githubDotCom   = "github.com"
 	githubTemplate = "https://%v/tree/main%v"
-	urnSeperator   = ":"
 	fragmentId     = "#"
 )
 
