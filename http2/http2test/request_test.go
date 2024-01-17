@@ -32,7 +32,7 @@ func Example_ReadRequest_GET() {
 
 	//Output:
 	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [content-location:github/advanced-go/example-domain/activity/EntryV1]
-	
+
 }
 
 func Example_ReadRequest_Baseline() {
