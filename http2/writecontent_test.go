@@ -13,14 +13,14 @@ func Example_writeStatusContent() {
 	// No content
 	writeStatusContent[runtime.Output](r, runtime.StatusOK(), "test location")
 	r.Result().Header = r.Header()
-	buf, status := runtime.ReadAll(r.Result().Body)
+	buf, status := runtime.ReadAll(r.Result().Body, nil)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Error message
 	r = httptest.NewRecorder()
 	writeStatusContent[runtime.Output](r, runtime.NewStatus(http.StatusInternalServerError).SetContent("error message", false), "test location")
 	r.Result().Header = r.Header()
-	buf, status = runtime.ReadAll(r.Result().Body)
+	buf, status = runtime.ReadAll(r.Result().Body, nil)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	// Json
@@ -31,7 +31,7 @@ func Example_writeStatusContent() {
 
 	writeStatusContent[runtime.Output](r, status, "test location") //runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true), "test location")
 	r.Result().Header = r.Header()
-	buf, status = runtime.ReadAll(r.Result().Body)
+	buf, status = runtime.ReadAll(r.Result().Body, nil)
 	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
 
 	//Output:
