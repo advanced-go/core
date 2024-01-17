@@ -19,7 +19,9 @@ func Get(uri string, h http.Header) (resp *http.Response, status runtime.Status)
 	if err != nil {
 		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, getLocation, err)
 	}
-	req.Header = h
+	if h != nil {
+		req.Header = h
+	}
 	// exchange.Do() will always return a non nil *http.Response
 	resp, status = Do(req)
 	if !status.OK() {
