@@ -62,7 +62,7 @@ func ExampleReadAll_Reader() {
 
 }
 
-func ExampleEncodingReaderError() {
+func ExampleEncodingReader_Error() {
 	s := address3Url
 	buf0, err := os.ReadFile(FileName(s))
 	if err != nil {
@@ -124,5 +124,23 @@ func ExampleReadAll_GzipReader() {
 
 	//Output:
 	//test: ReadAll() -> [buf:107600] [status:OK]
+
+}
+
+func ExampleReadAll_GzipReadCloser() {
+	uri := "https://www.google.com/search?q=golang"
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	req.Header.Add(AcceptEncoding, "gzip, deflate, br")
+
+	resp, err := http.DefaultClient.Do(req)
+	fmt.Printf("test: Do() -> [content-type:%v] [content-encoding:%v] [err:%v]\n", resp.Header.Get(contentType), resp.Header.Get(ContentEncoding), err)
+
+	buf, status := ReadAll(resp.Body, resp.Header)
+	ct := http.DetectContentType(buf)
+	fmt.Printf("test: ReadAll() -> [content-type:%v] [status:%v]\n", ct, status)
+
+	//Output:
+	//test: Do() -> [content-type:text/html; charset=ISO-8859-1] [content-encoding:gzip] [err:<nil>]
+	//test: ReadAll() -> [content-type:text/html; charset=utf-8] [status:OK]
 
 }
