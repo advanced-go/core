@@ -1,6 +1,6 @@
 GET /advanced-go/example-domain/activity/entry?v=v2 HTTP/1.1
 Host: localhost:8080
-Content-Location: github.com/advanced-go/example-domain/activity/EntryV1
+Content-Location: github/advanced-go/example-domain/activity/EntryV1
 Connection: close
 User-Agent: Fake
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8

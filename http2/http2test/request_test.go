@@ -26,12 +26,13 @@ func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
 	req, err := ReadRequest(ParseRaw(s))
 
-	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
+	//buf,status :=
+
+	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [content-location:%v]\n", s, err, req.Header.Get("Content-Location"))
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [&{GET /advanced-go/example-domain/activity/entry?v=v2 HTTP/1.1 1 1 map[Accept:[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8] Accept-Charset:[ISO-8859-1,utf-8;q=0.7,*;q=0.7] Accept-Encoding:[gzip,deflate\r\n] Accept-Language:[en-us,en;q=0.5] Connection:[close] Content-Length:[7] Content-Location:[github.com/advanced-go/example-domain/activity/EntryV1] Keep-Alive:[300] Proxy-Connection:[keep-alive] User-Agent:[Fake]] {
-	//} <nil> 7 [] true localhost:8080 map[] map[] <nil> map[]  /advanced-go/example-domain/activity/entry?v=v2 <nil> <nil> <nil> <nil>}]
-
+	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	
 }
 
 func Example_ReadRequest_Baseline() {
@@ -56,7 +57,7 @@ func Example_ReadRequest_PUT() {
 	if err != nil {
 		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
 	} else {
-		buf, err1 := runtime.ReadAll(req.Body)
+		buf, err1 := runtime.ReadAll(req.Body, nil)
 		if err1 != nil {
 		}
 		var entry []entryTest

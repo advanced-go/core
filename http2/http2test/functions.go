@@ -55,12 +55,12 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 
 func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
-	wantBytes, status := runtime.ReadAll(want.Body)
+	wantBytes, status := runtime.ReadAll(want.Body, nil)
 	if status.IsErrors() {
 		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Errors()[0]}}
 		return
 	}
-	gotBytes, status1 := runtime.ReadAll(got.Body)
+	gotBytes, status1 := runtime.ReadAll(got.Body, nil)
 	if status1.IsErrors() {
 		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Errors()[0]}}
 		return
