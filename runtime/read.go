@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	AcceptEncoding   = "Accept-Encoding"
 	ContentEncoding  = "Content-Encoding"
 	GzipEncoding     = "gzip"
 	BrotliEncoding   = "br"
