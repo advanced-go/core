@@ -1,11 +1,17 @@
 package runtime
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"reflect"
 	"strings"
+)
+
+const (
+	searchResultsGzip = "file://[cwd]/runtimetest/search-results.gz"
 )
 
 func ExampleReadFile() {
@@ -35,24 +41,6 @@ func ExampleReadFile() {
 
 }
 
-/*
-func ExampleNewBytes_Bytes() {
-	s := address2Url
-	buf, err := os.ReadFile(FileName(s))
-	if err != nil {
-		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
-	}
-	buf1, status := NewBytes(buf)
-	fmt.Printf("test: NewBytes(%v) -> [in:%v] [out:%v] [status:%v]\n", s, len(buf), len(buf1), status)
-
-	//Output:
-	//test: NewBytes(file://[cwd]/runtimetest/address2.json) -> [in:67] [out:67] [status:OK]
-
-}
-
-
-*/
-
 func ExampleReadAll_Reader() {
 	s := address3Url
 	buf0, err := os.ReadFile(FileName(s))
@@ -61,11 +49,11 @@ func ExampleReadAll_Reader() {
 	}
 
 	r := strings.NewReader(string(buf0))
-	buf, status := ReadAll(io.NopCloser(r))
+	buf, status := ReadAll(r, nil)
 	fmt.Printf("test: ReadAll(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(r), len(buf), status)
 
 	body := io.NopCloser(strings.NewReader(string(buf0)))
-	buf, status = ReadAll(body)
+	buf, status = ReadAll(body, nil)
 	fmt.Printf("test: ReadAll(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(body), len(buf), status)
 
 	//Output:
@@ -74,23 +62,67 @@ func ExampleReadAll_Reader() {
 
 }
 
-/*
-func ExampleNewBytes_Response() {
+func ExampleEncodingReaderError() {
 	s := address3Url
 	buf0, err := os.ReadFile(FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
-	r := new(http.Response)
-	r.Body = io.NopCloser(strings.NewReader(string(buf0)))
+	r := strings.NewReader(string(buf0))
 
-	buf, status := NewBytes(r)
-	fmt.Printf("test: NewBytes(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(r), len(buf), status)
+	h := make(http.Header)
+	h.Set(ContentEncoding, BrotliEncoding)
+	reader, status := EncodingReader(r, h)
+	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
+
+	h.Set(ContentEncoding, DeflateEncoding)
+	reader, status = EncodingReader(r, h)
+	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
+
+	h.Set(ContentEncoding, CompressEncoding)
+	reader, status = EncodingReader(r, h)
+	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
 
 	//Output:
-	//test: NewBytes(file://[cwd]/runtimetest/address3.json) -> [type:*http.Response] [buf:72] [status:OK]
+	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [br]]]
+	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [deflate]]]
+	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [compress]]]
 
 }
 
+func ExampleReadAll_GzipReader() {
+	s := searchResultsGzip
+	buf0, err := os.ReadFile(FileName(s))
+	if err != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
+	}
+	var buf []byte
+	status := StatusOK()
 
-*/
+	direct := true
+	h := make(http.Header)
+	h.Set(ContentEncoding, GzipEncoding)
+	r := bytes.NewReader(buf0)
+	if direct {
+		zr, err1 := EncodingReader(r, h)
+		if !err1.OK() {
+			fmt.Printf("gzip error: %v\n", err1)
+			return
+		}
+		buf, err = io.ReadAll(zr)
+		if err != nil {
+			fmt.Printf("gzip error: %v\n", err)
+			return
+		}
+		fmt.Printf("test: ReadAll() -> [buf:%v] [status:%v]\n", len(buf), status)
+	} else {
+		buf, status = ReadAll(r, h)
+		fmt.Printf("test: ReadAll() -> [buf:%v] [status:%v]\n", len(buf), status)
+		//buf, status = ReadAll(io.NopCloser(r), h)
+		//fmt.Printf("test: ReadAll-NopCloser() -> [buf:%v] [status:%v]\n", len(buf), status) //s = string(buf)
+	}
+
+	//Output:
+	//test: ReadAll() -> [buf:107600] [status:OK]
+
+}

@@ -17,8 +17,9 @@ const (
 	newLoc            = PkgPath + ":New"
 )
 
-// New - create a new type from any JSON content
-func New[T any](v any) (t T, status Status) {
+// New - create a new type from JSON content, supporting: string, *url.URL, []byte, io.Reader, io.ReadCloser
+// Note: content encoded []byte is not supported
+func New[T any](v any, h http.Header) (t T, status Status) {
 	var buf []byte
 
 	switch ptr := v.(type) {
@@ -29,10 +30,6 @@ func New[T any](v any) (t T, status Status) {
 		buf, status = ReadFile(ptr)
 		if !status.OK() {
 			return
-		}
-		if ptr1, ok := any(&t).(*[]byte); ok {
-			*ptr1 = buf
-			return t, StatusOK()
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
@@ -47,10 +44,6 @@ func New[T any](v any) (t T, status Status) {
 		if !status.OK() {
 			return
 		}
-		if ptr1, ok := any(&t).(*[]byte); ok {
-			*ptr1 = buf
-			return t, StatusOK()
-		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
@@ -58,18 +51,41 @@ func New[T any](v any) (t T, status Status) {
 		return
 	case []byte:
 		buf = ptr
-		if ptr1, ok := any(&t).(*[]byte); ok {
-			*ptr1 = buf
-			return t, StatusOK()
-		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
 		}
 		return
+	case io.Reader:
+		reader, status1 := EncodingReader(ptr, h)
+		if !status1.OK() {
+			return t, status1.AddLocation(newLoc)
+		}
+		err := json.NewDecoder(reader).Decode(&t)
+		if err != nil {
+			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+		}
+		return t, StatusOK()
+	case io.ReadCloser:
+		reader, status1 := EncodingReader(ptr, h)
+		if !status1.OK() {
+			return t, status1.AddLocation(newLoc)
+		}
+		err := json.NewDecoder(reader).Decode(&t)
+		_ = ptr.Close()
+		if err != nil {
+			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+		}
+		return t, StatusOK()
+	default:
+		return t, NewStatusError(StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
+	}
+}
+
+/*
 	case *http.Response:
 		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = ReadAll(ptr.Body)
+			buf, status = ReadAll(ptr.Body,h)
 			if !status.OK() {
 				return
 			}
@@ -97,36 +113,5 @@ func New[T any](v any) (t T, status Status) {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
 		}
 		return t, StatusOK()
-	case io.Reader:
-		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = ReadAll(io.NopCloser(ptr))
-			if !status.OK() {
-				return
-			}
-			*ptr1 = buf
-			return t, StatusOK()
-		}
-		err := json.NewDecoder(ptr).Decode(&t)
-		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
-		}
-		return t, StatusOK()
-	case io.ReadCloser:
-		if ptr1, ok := any(&t).(*[]byte); ok {
-			buf, status = ReadAll(ptr)
-			if !status.OK() {
-				return
-			}
-			*ptr1 = buf
-			return t, StatusOK()
-		}
-		err := json.NewDecoder(ptr).Decode(&t)
-		_ = ptr.Close()
-		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
-		}
-		return t, StatusOK()
-	default:
-		return t, NewStatusError(StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
-	}
-}
+
+*/

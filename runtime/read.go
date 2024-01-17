@@ -1,40 +1,29 @@
 package runtime
 
 import (
+	"compress/gzip"
+	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"strings"
 )
 
 const (
-	readFileLoc = PkgPath + ":ReadFile"
-	readAllLoc  = PkgPath + ":ReadAll"
+	ContentEncoding  = "Content-Encoding"
+	GzipEncoding     = "gzip"
+	BrotliEncoding   = "br"
+	DeflateEncoding  = "deflate"
+	CompressEncoding = "compress"
+	NoneEncoding     = "none"
+
+	readFileLoc       = PkgPath + ":ReadFile"
+	readAllLoc        = PkgPath + ":ReadAll"
+	encodingReaderLoc = PkgPath + ":EncodingReader"
+
+	decodingErrorFmt = "error: content encoding not supported [%v]"
 )
-
-/*
-// NewBytes - create a []byte from a type
-func NewBytes(v any) ([]byte, Status) {
-	switch ptr := v.(type) {
-	case string:
-		return ReadFile(ptr)
-	case *url.URL:
-		return ReadFile(ptr.String())
-	case []byte:
-		return ptr, StatusOK()
-	case io.Reader:
-		return ReadAll(io.NopCloser(ptr))
-	case io.ReadCloser:
-		return ReadAll(ptr)
-	case *http.Response:
-		return ReadAll(ptr.Body)
-	case *http.Request:
-		return ReadAll(ptr.Body)
-	default:
-	}
-	return nil, NewStatusError(StatusInvalidArgument, newBytesLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
-}
-
-*/
 
 // ReadFile - read a file with a Status
 func ReadFile(uri string) ([]byte, Status) {
@@ -50,19 +39,68 @@ func ReadFile(uri string) ([]byte, Status) {
 }
 
 // ReadAll - read the body with a Status
-func ReadAll(body io.ReadCloser) ([]byte, Status) {
+func ReadAll(body io.Reader, h http.Header) ([]byte, Status) {
 	if body == nil {
 		return nil, StatusOK()
 	}
-	defer func(body io.ReadCloser) {
-		err := body.Close()
-		if err != nil {
-			fmt.Printf("%v", err)
-		}
-	}(body)
-	buf, err := io.ReadAll(body)
-	if err != nil {
-		return nil, NewStatusError(StatusIOError, readAllLoc, err)
+	if rc, ok := any(body).(io.ReadCloser); ok {
+		defer func() {
+			err := rc.Close()
+			if err != nil {
+				fmt.Printf("error: io.ReadCloser.Close() [%v]", err)
+			}
+		}()
+	}
+	reader, status := EncodingReader(body, h)
+	if !status.OK() {
+		return nil, status.AddLocation(readAllLoc)
+	}
+	buf, err1 := io.ReadAll(reader)
+	if err1 != nil {
+		return nil, NewStatusError(StatusIOError, readAllLoc, err1)
 	}
 	return buf, StatusOK()
+}
+
+func encodingError(encoding string) error {
+	return errors.New(fmt.Sprintf(decodingErrorFmt, encoding))
+}
+
+func encodingHeader(h http.Header) string {
+	if h == nil {
+		return NoneEncoding
+	}
+	enc := h.Get(ContentEncoding)
+	if len(enc) > 0 {
+		return strings.ToLower(enc)
+	}
+	return NoneEncoding
+}
+
+func EncodingReader(r io.Reader, h http.Header) (io.Reader, Status) {
+	var reader io.Reader
+	var err error
+
+	encoding := encodingHeader(h)
+	switch encoding {
+	case GzipEncoding:
+		reader, err = gzip.NewReader(r)
+	case BrotliEncoding:
+		err = encodingError(encoding)
+	case DeflateEncoding:
+		err = encodingError(encoding)
+	case CompressEncoding:
+		err = encodingError(encoding)
+	case NoneEncoding:
+		//if rc, ok := any(r).(io.ReadCloser); ok {
+		//	return rc, StatusOK()
+		//}
+		return r, StatusOK()
+	default:
+		err = encodingError(encoding)
+	}
+	if err != nil || reader == nil {
+		return nil, NewStatusError(StatusContentDecodingError, encodingReaderLoc, err)
+	}
+	return reader, StatusOK()
 }

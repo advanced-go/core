@@ -15,14 +15,15 @@ const (
 )
 
 const (
-	StatusInvalidContent  = int(90) // Content is not available, is nil, or is of the wrong type, usually found via unmarshalling
-	StatusIOError         = int(91) // I/O operation failed
-	StatusJsonDecodeError = int(92) // Json decoding failed
-	StatusJsonEncodeError = int(93) // Json decoding failed
-	StatusNotProvided     = int(94) // No status is available
-	StatusRateLimited     = int(95) // Rate limited
-	StatusNotStarted      = int(96) // Not started
-	StatusHaveContent     = int(97) // Content is available
+	StatusInvalidContent       = int(90) // Content is not available, is nil, or is of the wrong type, usually found via unmarshalling
+	StatusIOError              = int(91) // I/O operation failed
+	StatusJsonDecodeError      = int(92) // Json decoding failed
+	StatusJsonEncodeError      = int(93) // Json encoding failed
+	StatusContentDecodingError = int(94) // Content encoding error
+	StatusNotProvided          = int(95) // No status is available
+	StatusRateLimited          = int(96) // Rate limited
+	StatusNotStarted           = int(97) // Not started
+	StatusHaveContent          = int(98) // Content is available
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
@@ -265,6 +266,8 @@ func (s *statusState) Description() string {
 		return "Json Encode Failure"
 	case StatusJsonDecodeError:
 		return "Json Decode Failure"
+	case StatusContentDecodingError:
+		return "Content Decoding Failure"
 	case StatusNotProvided:
 		return "Not Provided"
 	case StatusRateLimited:
