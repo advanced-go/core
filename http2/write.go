@@ -20,14 +20,14 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	// if status.Content is available, then that takes precedence
 	if status.Content() != nil {
-		w.WriteHeader(status.Http())
 		SetHeaders(w, headers)
+		w.WriteHeader(status.Http())
 		writeStatusContent[E](w, status, writeLoc)
 		return
 	}
 	if content == nil {
-		w.WriteHeader(status.Http())
 		SetHeaders(w, headers)
+		w.WriteHeader(status.Http())
 		return
 	}
 	ct := GetContentType(headers)
@@ -37,12 +37,11 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(status.Http())
 	SetHeaders(w, headers)
 	if len(ct) == 0 {
 		w.Header().Set(ContentType, http.DetectContentType(buf))
 	}
-	//w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
+	w.WriteHeader(status.Http())
 	bytes, err := w.Write(buf)
 	if err != nil {
 		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")

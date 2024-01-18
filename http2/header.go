@@ -97,6 +97,9 @@ func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
 
 // SetHeaders - set the headers into an HTTP response writer
 func SetHeaders(w http.ResponseWriter, headers any) {
+	if headers == nil {
+		return
+	}
 	if pairs, ok := headers.([]Attr); ok {
 		for _, pair := range pairs {
 			w.Header().Set(strings.ToLower(pair.Key), pair.Val)

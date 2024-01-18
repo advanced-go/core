@@ -45,7 +45,7 @@ func ExampleWriteResponse_StatusOK() {
 	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [body:%v] [header:%v]\n", str, status, w.Body.String(), resp.Header)
 
 	//Output:
-	//test: WriteResponse(w,text response,status) -> [status:OK] [body:text response] [header:map[]]
+	//test: WriteResponse(w,text response,status) -> [status:OK] [body:text response] [header:map[Content-Type:[text/plain; charset=utf-8]]]
 
 }
 
@@ -111,13 +111,13 @@ func Example_RequestBody() {
 
 	body := io.NopCloser(bytes.NewReader([]byte("error content")))
 	WriteResponse[runtime.Output](w, body, runtime.NewStatus(http.StatusGatewayTimeout), nil)
-	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
+	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	body = io.NopCloser(bytes.NewReader([]byte("foo")))
 	w = httptest.NewRecorder()
 	WriteResponse[runtime.Output](w, body, nil,
 		[]Attr{{"key", "value"}, {"key1", "value1"}, {"key2", "value2"}})
-	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
+	fmt.Printf("test: WriteResponse(w,resp,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Result().Header)
 
 	//Output:
 	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Type:[text/plain; charset=utf-8]]]
