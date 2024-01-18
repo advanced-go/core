@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-
 	"io"
 	"net/http"
 	"reflect"
@@ -27,17 +26,6 @@ func Bytes(content any, contentType string) ([]byte, Status) {
 		buf = []byte(ptr)
 	case error:
 		buf = []byte(ptr.Error())
-		/*
-			case *http.Response:
-				var status Status
-
-				buf, status = ReadAll(ptr.Body, nil)
-				_ = ptr.Body.Close()
-				if !status.OK() {
-					return nil, status
-				}
-
-		*/
 	case io.Reader:
 		var status Status
 
@@ -71,3 +59,15 @@ func Bytes(content any, contentType string) ([]byte, Status) {
 	}
 	return buf, StatusOK()
 }
+
+/*
+	case *http.Response:
+		var status Status
+
+		buf, status = ReadAll(ptr.Body, nil)
+		_ = ptr.Body.Close()
+		if !status.OK() {
+			return nil, status
+		}
+
+*/
