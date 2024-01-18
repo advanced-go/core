@@ -37,16 +37,6 @@ func Forward(dest http.Header, src http.Header, names ...string) http.Header {
 	return dest
 }
 
-/*
-func HeaderValue_OLD(name string, r *http.Request) string {
-	if r == nil {
-		return "invalid-request"
-	}
-	return r.Header.Get(name)
-}
-
-*/
-
 // GetContentType - return the content type header value
 func GetContentType(headers any) string {
 	if pairs, ok := headers.([]Attr); ok {
@@ -59,41 +49,9 @@ func GetContentType(headers any) string {
 	}
 	if h, ok := headers.(http.Header); ok {
 		return h.Get(ContentType)
-		//for k, v := range h {
-		//	if k == ContentType {
-		//		if len(v) > 0 {
-		//			return v[0]
-		//		} else {
-		//			return ""
-		//		}
-		//	}
-		//}
 	}
 	return ""
 }
-
-/*
-func CreateHeaders(h http.Header, resp *http.Response, keys ...string) {
-	if resp == nil || len(keys) == 0 {
-		return
-	}
-	if keys[0] == "*" {
-		keys = []string{}
-		for k := range resp.Header {
-			keys = append(keys, k)
-		}
-	}
-	if len(keys) > 0 {
-		for _, k := range keys {
-			if k != "" {
-				h.Add(k, resp.Header.Get(k))
-			}
-		}
-	}
-}
-
-
-*/
 
 // SetHeaders - set the headers into an HTTP response writer
 func SetHeaders(w http.ResponseWriter, headers any) {

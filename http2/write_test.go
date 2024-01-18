@@ -10,6 +10,11 @@ import (
 	"net/http/httptest"
 )
 
+type data struct {
+	Item  string
+	Count int
+}
+
 type commandTag struct {
 	Sql          string
 	RowsAffected int64
@@ -49,25 +54,6 @@ func ExampleWriteResponse_StatusOK() {
 
 }
 
-/*
-func ExampleWriteResponse_StatusOK_InvalidKV() {
-	str := "text response"
-
-	w := httptest.NewRecorder()
-	status := runtime.NewStatus(runtime.StatusOK).SetRequestId("123456-id")
-	status1 := WriteResponse[runtime.Output, string](w, str, status, []Attr{{ContentType,"")
-	resp := w.Result()
-	fmt.Printf("test: WriteResponse(w,%v,status) -> [status:%v] [status1:%v] [body:%v] [header:%v]\n", str, status1, w.Code, w.Body.String(), resp.Header)
-
-	//Output:
-	//{ "id":"123456-id", "l":"github.com/advanced-go/core/httpx/WriteResponse", "o":null "err" : [ "invalid number of kv items: number is odd, missing a value" ] }
-	//test: WriteResponse(w,text response,status) -> [status:Internal [invalid number of kv items: number is odd, missing a value]] [status1:500] [body:] [header:map[]]
-
-}
-
-
-*/
-
 func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
@@ -106,7 +92,7 @@ func ExampleWriteResponse_StatusNotOK() {
 
 }
 
-func Example_RequestBody() {
+func ExampleWriteResponse_Body() {
 	w := httptest.NewRecorder()
 
 	body := io.NopCloser(bytes.NewReader([]byte("error content")))
@@ -122,5 +108,39 @@ func Example_RequestBody() {
 	//Output:
 	//test: WriteResponse(w,resp,status) -> [status:504] [body:error content] [header:map[Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,resp,status) -> [status:200] [body:foo] [header:map[Content-Type:[text/plain; charset=utf-8] Key:[value] Key1:[value1] Key2:[value2]]]
+
+}
+
+func ExampleWriteStatusContent() {
+	r := httptest.NewRecorder()
+
+	// No content
+	writeStatusContent[runtime.Output](r, runtime.StatusOK(), "test location")
+	r.Result().Header = r.Header()
+	buf, status := runtime.ReadAll(r.Result().Body, nil)
+	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
+
+	// Error message
+	r = httptest.NewRecorder()
+	writeStatusContent[runtime.Output](r, runtime.NewStatus(http.StatusInternalServerError).SetContent("error message", false), "test location")
+	r.Result().Header = r.Header()
+	buf, status = runtime.ReadAll(r.Result().Body, nil)
+	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
+
+	// Json
+	d := data{Item: "test item", Count: 500}
+	r = httptest.NewRecorder()
+	status = runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true)
+	//status.SetContent(d, true)
+
+	writeStatusContent[runtime.Output](r, status, "test location") //runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true), "test location")
+	r.Result().Header = r.Header()
+	buf, status = runtime.ReadAll(r.Result().Body, nil)
+	fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [ReadAll:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
+
+	//Output:
+	//test: writeStatusContent() -> 200 [header:map[]] [body:] [ReadAll:OK]
+	//test: writeStatusContent() -> 200 [header:map[Content-Type:[text/plain; charset=utf-8]]] [body:error message] [ReadAll:OK]
+	//test: writeStatusContent() -> 200 [header:map[Content-Type:[application/json]]] [body:{"Item":"test item","Count":500}] [ReadAll:OK]
 
 }
