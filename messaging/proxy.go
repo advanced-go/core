@@ -54,7 +54,7 @@ func ProcessPing[E runtime.ErrorHandler](w http.ResponseWriter, nid string) {
 	if status.OK() {
 		buf = []byte(fmt.Sprintf("Ping status: %v, resource: %v", status, nid))
 	} else {
-		buf = []byte(status.FirstError().Error())
+		buf = []byte(status.Error().Error())
 	}
 	w.Header().Set(ContentType, http.DetectContentType(buf))
 	w.WriteHeader(status.Http())

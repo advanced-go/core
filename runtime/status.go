@@ -63,8 +63,8 @@ type Status interface {
 	Http() int
 
 	IsErrors() bool
-	Errors() []error
-	FirstError() error
+	Error() error
+	ErrorList() []error
 
 	Duration() time.Duration
 	SetDuration(duration time.Duration) Status
@@ -139,9 +139,9 @@ func (s *statusState) OK() bool       { return s.SCode == http.StatusOK }
 func (s *statusState) NotFound() bool { return s.SCode == http.StatusNotFound }
 
 // IsErrors - determine errors status
-func (s *statusState) IsErrors() bool  { return s.Errs != nil && len(s.Errs) > 0 }
-func (s *statusState) Errors() []error { return s.Errs }
-func (s *statusState) FirstError() error {
+func (s *statusState) IsErrors() bool     { return s.Errs != nil && len(s.Errs) > 0 }
+func (s *statusState) ErrorList() []error { return s.Errs }
+func (s *statusState) Error() error {
 	if s.IsErrors() {
 		return s.Errs[0]
 	}

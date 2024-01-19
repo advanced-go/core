@@ -85,7 +85,7 @@ func handleErrors[E runtime.ErrorHandler](failures []string, cache MessageCache)
 			if msg.Status.Location() != nil && len(msg.Status.Location()) > 0 {
 				loc = msg.Status.Location()[0]
 			}
-			e.Handle(runtime.NewStatusError(http.StatusInternalServerError, loc, msg.Status.Errors()...), "", "")
+			e.Handle(runtime.NewStatusError(http.StatusInternalServerError, loc, msg.Status.ErrorList()...), "", "")
 		}
 	}
 }

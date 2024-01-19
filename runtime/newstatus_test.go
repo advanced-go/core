@@ -45,7 +45,7 @@ func ExampleNewStatusFrom() {
 	uri := "file://[cwd]/runtimetest/status-504.json"
 
 	status := NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.Errors())
+	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Location(), status.ErrorList())
 
 	//Output:
 	//test: NewStatusFrom() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]

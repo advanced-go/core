@@ -112,7 +112,7 @@ func defaultFormatter(s Status) string {
 		jsonMarkup(StatusName, s.Description(), true),
 		jsonMarkup(RequestIdName, s.RequestId(), true),
 		formatTrace(TraceName, s.Location()),
-		formatErrors(ErrorsName, s.Errors()))
+		formatErrors(ErrorsName, s.ErrorList()))
 }
 
 func formatTrace(name string, trace []string) string {
@@ -151,7 +151,7 @@ func OutputFormatter(s Status) string {
 		jsonMarkup(StatusName, s.Description(), true),
 		jsonMarkup(RequestIdName, s.RequestId(), true),
 		outputFormatTrace(TraceName, s.Location()),
-		outputFormatErrors(ErrorsName, s.Errors()))
+		outputFormatErrors(ErrorsName, s.ErrorList()))
 }
 
 func outputFormatErrors(name string, errs []error) string {
