@@ -13,7 +13,8 @@ var (
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
-// Content types supported: []byte, string, error, io.Reader, io.ReadCloser, and JSON serialization for types
+// Content types supported: []byte, string, error, io.Reader, io.ReadCloser. Other types will be treated as JSON and serialized, if
+// the headers content type is JSON.
 func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
 	var e E
 
