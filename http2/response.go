@@ -39,10 +39,10 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	w.WriteHeader(status.Http())
 	bytes, err := w.Write(buf)
 	if err != nil {
-		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), status.RequestId(), "")
 	}
 	if bytes != len(buf) {
-		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), "", "")
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), status.RequestId(), "")
 	}
 	return
 }
