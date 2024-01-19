@@ -8,7 +8,7 @@ import (
 )
 
 func appHttpHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusGatewayTimeout)
+	w.WriteHeader(http.StatusTeapot)
 }
 
 func Example_HttpHandler() {
@@ -22,7 +22,7 @@ func Example_HttpHandler() {
 	fmt.Printf("test: HttpHandler() -> %v\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: HttpHandler() -> 504
+	//test: HttpHandler() -> 418
 
 }
 
@@ -36,13 +36,13 @@ func Example_ProcessPing() {
 	}
 	nid, rsc, ok := uprootUrn(r.URL.Path)
 	ProcessPing[runtime.Bypass](w, nid)
-	buf, status1 := runtime.ReadAll(w.Result().Body)
+	buf, status1 := runtime.ReadAll(w.Result().Body, nil)
 	if !status1.OK() {
 		fmt.Printf("test: ReadAll() -> [status:%v]\n", status1)
 	}
 	fmt.Printf("test: processPing() -> [nid:%v] [nss:%v] [ok:%v] [status:%v] [content:%v]\n", nid, rsc, ok, w.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: processPing() -> [nid:github/advanced-go/example-domain/activity] [nss:ping] [ok:true] [status:504] [content:]
+	//test: processPing() -> [nid:github/advanced-go/example-domain/activity] [nss:ping] [ok:true] [status:504] [content:ping response time out: [github/advanced-go/example-domain/activity]]
 
 }

@@ -58,37 +58,40 @@ func ExampleWriteResponse_StatusNotOK() {
 	str := "server unavailable"
 
 	w := httptest.NewRecorder()
-	status := runtime.NewStatus(http.StatusServiceUnavailable).SetContent(str, false)
-	WriteResponse[runtime.Output](w, nil, status, nil)
+	status := runtime.NewStatus(http.StatusServiceUnavailable)
+	WriteResponse[runtime.Output](w, str, status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(http.StatusNotFound).SetContent([]byte("not found"), false)
-	WriteResponse[runtime.Output](w, nil, status, nil)
+	status = runtime.NewStatus(http.StatusNotFound)
+	WriteResponse[runtime.Output](w, []byte("not found"), status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
 	str = "operation timed out"
 	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusDeadlineExceeded).SetContent(errors.New(str), false)
-	WriteResponse[runtime.Output](w, nil, status, nil)
+	status = runtime.NewStatus(runtime.StatusDeadlineExceeded)
+	WriteResponse[runtime.Output](w, errors.New(str), status, nil)
 	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
 
-	w = httptest.NewRecorder()
-	status = runtime.NewStatus(runtime.StatusInvalidArgument).SetContent(commandTag{
-		Sql:          "insert 1",
-		RowsAffected: 1,
-		Insert:       true,
-		Update:       false,
-		Delete:       false,
-	}, false)
-	WriteResponse[runtime.Output](w, nil, status, nil)
-	fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
+	// Write JSON
+	/*
+		w = httptest.NewRecorder()
+		status = runtime.NewStatus(runtime.StatusInvalidArgument)
+		WriteResponse[runtime.Output](w, commandTag{
+			Sql:          "insert 1",
+			RowsAffected: 1,
+			Insert:       true,
+			Update:       false,
+			Delete:       false}, status, nil)
+		fmt.Printf("test: WriteResponse(w,nil,status) -> [status:%v] [body:%v] [header:%v]\n", w.Code, w.Body.String(), w.Header())
+
+
+	*/
 
 	//Output:
 	//test: WriteResponse(w,nil,status) -> [status:503] [body:server unavailable] [header:map[Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:404] [body:not found] [header:map[Content-Type:[text/plain; charset=utf-8]]]
 	//test: WriteResponse(w,nil,status) -> [status:504] [body:operation timed out] [header:map[Content-Type:[text/plain; charset=utf-8]]]
-	//test: WriteResponse(w,nil,status) -> [status:500] [body:] [header:map[]]
 
 }
 
@@ -111,6 +114,7 @@ func ExampleWriteResponse_Body() {
 
 }
 
+/*
 func ExampleWriteStatusContent() {
 	r := httptest.NewRecorder()
 
@@ -144,3 +148,6 @@ func ExampleWriteStatusContent() {
 	//test: writeStatusContent() -> 200 [header:map[Content-Type:[application/json]]] [body:{"Item":"test item","Count":500}] [ReadAll:OK]
 
 }
+
+
+*/

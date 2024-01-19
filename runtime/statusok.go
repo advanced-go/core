@@ -6,47 +6,47 @@ import (
 	"time"
 )
 
-var statusOK = new(statusEmpty)
+var okStatus = new(statusOK)
 
-// StatusOK - return the single statusOK
+// StatusOK - return the single status OK
 func StatusOK() Status {
-	return statusOK
+	return okStatus
 }
 
-type statusEmpty struct{}
+type statusOK struct{}
 
-func (s *statusEmpty) Code() int      { return http.StatusOK }
-func (s *statusEmpty) OK() bool       { return true }
-func (s *statusEmpty) NotFound() bool { return false }
-func (s *statusEmpty) Http() int      { return http.StatusOK }
+func (s *statusOK) Code() int      { return http.StatusOK }
+func (s *statusOK) OK() bool       { return true }
+func (s *statusOK) NotFound() bool { return false }
+func (s *statusOK) Http() int      { return http.StatusOK }
 
-func (s *statusEmpty) IsErrors() bool    { return false }
-func (s *statusEmpty) Errors() []error   { return nil }
-func (s *statusEmpty) FirstError() error { return nil }
+func (s *statusOK) IsErrors() bool    { return false }
+func (s *statusOK) Errors() []error   { return nil }
+func (s *statusOK) FirstError() error { return nil }
 
-func (s *statusEmpty) Duration() time.Duration { return 0 }
-func (s *statusEmpty) SetDuration(_ time.Duration) Status {
+func (s *statusOK) Duration() time.Duration { return 0 }
+func (s *statusOK) SetDuration(_ time.Duration) Status {
 	return notImplementedSet("SetDuration()", s)
 }
 
-func (s *statusEmpty) RequestId() string         { return "" }
-func (s *statusEmpty) SetRequestId(_ any) Status { return notImplementedSet("SetRequestId()", s) }
+func (s *statusOK) RequestId() string         { return "" }
+func (s *statusOK) SetRequestId(_ any) Status { return notImplementedSet("SetRequestId()", s) }
 
-func (s *statusEmpty) Location() []string { return nil }
+func (s *statusOK) Location() []string { return nil }
 
 // AddLocation - allowed
-func (s *statusEmpty) AddLocation(_ string) Status {
+func (s *statusOK) AddLocation(_ string) Status {
 	return s //notImplementedSet("AddLocation()", s)
 }
 
-func (s *statusEmpty) IsContent() bool                 { return false }
-func (s *statusEmpty) Content() any                    { return nil }
-func (s *statusEmpty) ContentHeader() http.Header      { return nil }
-func (s *statusEmpty) ContentString() string           { return "" }
-func (s *statusEmpty) SetContent(_ any, _ bool) Status { return notImplementedSet("SetContent()", s) }
+func (s *statusOK) IsContent() bool                 { return false }
+func (s *statusOK) Content() any                    { return nil }
+func (s *statusOK) ContentHeader() http.Header      { return nil }
+func (s *statusOK) ContentString() string           { return "" }
+func (s *statusOK) SetContent(_ any, _ bool) Status { return notImplementedSet("SetContent()", s) }
 
-func (s *statusEmpty) Description() string { return "OK" }
-func (s *statusEmpty) String() string      { return s.Description() }
+func (s *statusOK) Description() string { return "OK" }
+func (s *statusOK) String() string      { return s.Description() }
 
 func notImplementedSet(fn string, s Status) Status {
 	fmt.Printf("function StatusOK.%v is not implemented\n", fn)

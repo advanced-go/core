@@ -75,11 +75,11 @@ type Status interface {
 	Location() []string
 	AddLocation(location string) Status
 
-	IsContent() bool
-	Content() any
-	ContentHeader() http.Header
-	ContentString() string
-	SetContent(content any, jsonContent bool) Status
+	//IsContent() bool
+	//Content() any
+	//ContentHeader() http.Header
+	//ContentString() string
+	//SetContent(content any, jsonContent bool) Status
 
 	Description() string
 	String() string
@@ -107,9 +107,9 @@ func NewStatusOK() Status {
 }
 
 // NewStatusWithContent - new Status with content
-func NewStatusWithContent(code int, content any, jsonContent bool) Status {
-	return newStatus(code).SetContent(content, jsonContent)
-}
+//func NewStatusWithContent(code int, content any, jsonContent bool) Status {
+//	return newStatus(code).SetContent(content, jsonContent)
+//}
 
 func newStatus(code int) *statusState {
 	s := new(statusState)

@@ -1,19 +1,15 @@
 package messaging
 
 import (
-	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"reflect"
 )
 
 const (
-	PingResource          = "ping"
-	ContentLength         = "Content-Length"
-	ContentType           = "Content-Type"
-	writeStatusContentLoc = PkgPath + ":Mux/writeStatusContent"
-	bytesLoc              = PkgPath + ":Mux/writeBytes"
+	PingResource   = "ping"
+	ContentType    = "Content-Type"
+	processPingLoc = PkgPath + ":ProcessPing"
 )
 
 var proxy = runtime.NewProxy()
@@ -51,45 +47,19 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProcessPing[E runtime.ErrorHandler](w http.ResponseWriter, nid string) {
-	status := Ping[E](nil, nid)
-	if status.OK() {
-		status.SetContent(fmt.Sprintf("Ping status: %v, resource: %v", status, nid), false)
-	}
-	w.WriteHeader(status.Http())
-	writeStatusContent[E](w, status)
-}
-
-func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status runtime.Status) {
 	var e E
-
-	if status.Content() == nil {
-		return
-	}
-	buf, rc, status1 := writeBytes(status.Content())
-	if !status1.OK() {
-		e.Handle(status, status.RequestId(), writeStatusContentLoc)
-		return
-	}
-	w.Header().Set(ContentType, rc)
-	w.Header().Set(ContentLength, fmt.Sprintf("%v", len(buf)))
-	_, err := w.Write(buf)
-	if err != nil {
-		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeStatusContentLoc, err), "", "")
-	}
-}
-
-func writeBytes(content any) ([]byte, string, runtime.Status) {
 	var buf []byte
 
-	switch ptr := (content).(type) {
-	case []byte:
-		buf = ptr
-	case string:
-		buf = []byte(ptr)
-	case error:
-		buf = []byte(ptr.Error())
-	default:
-		return nil, "", runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+	status := Ping[E](nil, nid)
+	if status.OK() {
+		buf = []byte(fmt.Sprintf("Ping status: %v, resource: %v", status, nid))
+	} else {
+		buf = []byte(status.FirstError().Error())
 	}
-	return buf, http.DetectContentType(buf), runtime.StatusOK()
+	w.Header().Set(ContentType, http.DetectContentType(buf))
+	w.WriteHeader(status.Http())
+	_, err := w.Write(buf)
+	if err != nil {
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, processPingLoc, err), "", "")
+	}
 }

@@ -15,7 +15,8 @@ import (
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
 
 const (
-	newRequestLoc = PkgPath + ":NewRequest"
+	newRequestLoc      = PkgPath + ":NewRequest"
+	validateRequestLoc = PkgPath + ":ValidateRequest"
 )
 
 // ReadCookies - read the cookies from a request
@@ -107,14 +108,14 @@ func newId(ctx any) string {
 // ValidateRequest - validate the request given an embedded URN path
 func ValidateRequest(req *http.Request, path string) (string, runtime.Status) {
 	if req == nil {
-		return "", runtime.NewStatusWithContent(runtime.StatusInvalidArgument, errors.New("error Request is nil"), false)
+		return "", runtime.NewStatusError(runtime.StatusInvalidArgument, validateRequestLoc, errors.New("error: Request is nil"))
 	}
 	reqNid, reqPath, ok := uri.UprootUrn(req.URL.Path)
 	if !ok {
-		return "", runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, path is not valid: \"%v\"", req.URL.Path)), false)
+		return "", runtime.NewStatusError(http.StatusBadRequest, validateRequestLoc, errors.New(fmt.Sprintf("error: invalid URI, path is not valid: \"%v\"", req.URL.Path)))
 	}
 	if reqNid != path {
-		return "", runtime.NewStatusWithContent(http.StatusBadRequest, errors.New(fmt.Sprintf("error invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)), false)
+		return "", runtime.NewStatusError(http.StatusBadRequest, validateRequestLoc, errors.New(fmt.Sprintf("error: invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)))
 	}
 	return reqPath, runtime.StatusOK()
 }
