@@ -1,6 +1,7 @@
 package http2
 
 import (
+	"errors"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
@@ -12,23 +13,13 @@ var (
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
-// Only supports []byte, string, error, io.Reader, io.ReadCloser, and JSON serialization for types
+// Content types supported: []byte, string, error, io.Reader, io.ReadCloser, and JSON serialization for types
 func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
 	var e E
 
 	if status == nil {
 		status = runtime.StatusOK()
 	}
-	// if status.Content is available, then that takes precedence
-	/*
-		if status.Content() != nil {
-			SetHeaders(w, headers)
-			w.WriteHeader(status.Http())
-			writeStatusContent[E](w, status, writeLoc)
-			return
-		}
-
-	*/
 	if content == nil {
 		SetHeaders(w, headers)
 		w.WriteHeader(status.Http())
@@ -51,7 +42,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), "", "")
 	}
 	if bytes != len(buf) {
-		fmt.Printf(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), "", "")
 	}
 	return
 }

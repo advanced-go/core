@@ -39,12 +39,6 @@ func (s *statusOK) AddLocation(_ string) Status {
 	return s //notImplementedSet("AddLocation()", s)
 }
 
-func (s *statusOK) IsContent() bool                 { return false }
-func (s *statusOK) Content() any                    { return nil }
-func (s *statusOK) ContentHeader() http.Header      { return nil }
-func (s *statusOK) ContentString() string           { return "" }
-func (s *statusOK) SetContent(_ any, _ bool) Status { return notImplementedSet("SetContent()", s) }
-
 func (s *statusOK) Description() string { return "OK" }
 func (s *statusOK) String() string      { return s.Description() }
 
