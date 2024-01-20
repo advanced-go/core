@@ -8,14 +8,13 @@ import (
 )
 
 var (
-	writeLoc              = PkgPath + ":WriteResponse"
-	writeStatusContentLoc = ":writeStatusContent"
+	writeLoc = PkgPath + ":WriteResponse"
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
 // Content types supported: []byte, string, error, io.Reader, io.ReadCloser. Other types will be treated as JSON and serialized, if
 // the headers content type is JSON. If not JSON, then an error will be raised.
-func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
+func WriteResponse[E runtime.ErrorHandler, W ContentWriter](w http.ResponseWriter, content any, status runtime.Status, headers any) {
 	var e E
 
 	if status == nil {

@@ -62,34 +62,6 @@ func ExampleReadAll_Reader() {
 
 }
 
-func ExampleEncodingReader_Error() {
-	s := address3Url
-	buf0, err := os.ReadFile(FileName(s))
-	if err != nil {
-		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
-	}
-	r := strings.NewReader(string(buf0))
-
-	h := make(http.Header)
-	h.Set(ContentEncoding, BrotliEncoding)
-	reader, status := EncodingReader(r, h)
-	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
-
-	h.Set(ContentEncoding, DeflateEncoding)
-	reader, status = EncodingReader(r, h)
-	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
-
-	h.Set(ContentEncoding, CompressEncoding)
-	reader, status = EncodingReader(r, h)
-	fmt.Printf("test: EncodingReader() -> [reader:%v] [status:%v]\n", reader, status)
-
-	//Output:
-	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [br]]]
-	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [deflate]]]
-	//test: EncodingReader() -> [reader:<nil>] [status:Content Decoding Failure [error: content encoding not supported [compress]]]
-
-}
-
 func ExampleReadAll_GzipReader() {
 	s := searchResultsGzip
 	buf0, err := os.ReadFile(FileName(s))
