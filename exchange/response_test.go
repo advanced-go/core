@@ -20,7 +20,7 @@ func readAll(body io.ReadCloser) ([]byte, runtime.Status) {
 }
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/exchangetest/html-response.txt"
+	s := "file://[cwd]/exchangetest/test-response.html"
 	u, _ := url.Parse(s)
 
 	resp, status0 := readResponse(u)
@@ -30,7 +30,7 @@ func Example_ReadResponse() {
 	fmt.Printf("test: readAll() -> [status:%v] [content-length:%v]\n", status, len(buf)) //string(buf))
 
 	//Output:
-	//test: readResponse(file://[cwd]/exchangetest/html-response.txt) -> [status:OK] [statusCode:200]
+	//test: readResponse(file://[cwd]/exchangetest/test-response.html) -> [status:OK] [statusCode:200]
 	//test: readAll() -> [status:OK] [content-length:58]
 
 }

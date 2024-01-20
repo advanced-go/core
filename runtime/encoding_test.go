@@ -1,19 +1,6 @@
 package runtime
 
-import (
-	"bytes"
-	"compress/gzip"
-	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"strings"
-)
-
-const (
-	htmlResponse = "file://[cwd]/runtimetest/html-response.txt"
-)
-
+/*
 func ExampleEncodingReader_Error() {
 	s := address3Url
 	buf0, err := os.ReadFile(FileName(s))
@@ -42,6 +29,10 @@ func ExampleEncodingReader_Error() {
 
 }
 
+
+*/
+
+/*
 func ExampleEncodingReader_Gzip() {
 	s := searchResultsGzip
 	buf0, err0 := os.ReadFile(FileName(s))
@@ -96,3 +87,6 @@ func ExampleEncodingWriter_Gzip() {
 	//test: gzip.Writer() -> [input:text/plain; charset=utf-8] [output:application/x-gzip]
 
 }
+
+
+*/

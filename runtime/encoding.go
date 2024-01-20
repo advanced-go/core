@@ -2,41 +2,16 @@ package runtime
 
 import (
 	"compress/gzip"
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
 )
 
 const (
-	AcceptEncoding   = "Accept-Encoding"
-	ContentEncoding  = "Content-Encoding"
-	GzipEncoding     = "gzip"
-	BrotliEncoding   = "br"
-	DeflateEncoding  = "deflate"
-	CompressEncoding = "compress"
-	NoneEncoding     = "none"
-
+	AcceptEncoding    = "Accept-Encoding"
 	encodingReaderLoc = PkgPath + ":EncodingReader"
 	encodingWriterLoc = PkgPath + ":EncodingWriter"
-	encodingErrorFmt  = "error: content encoding not supported [%v]"
 )
-
-func encodingError(encoding string) error {
-	return errors.New(fmt.Sprintf(encodingErrorFmt, encoding))
-}
-
-func contentEncoding(h http.Header) string {
-	if h == nil {
-		return NoneEncoding
-	}
-	enc := h.Get(ContentEncoding)
-	if len(enc) > 0 {
-		return strings.ToLower(enc)
-	}
-	return NoneEncoding
-}
 
 func acceptEncoding(h http.Header) string {
 	if h == nil {
@@ -48,6 +23,8 @@ func acceptEncoding(h http.Header) string {
 	}
 	return NoneEncoding
 }
+
+/*
 
 func EncodingReader(r io.Reader, h http.Header) (io.Reader, Status) {
 	var reader io.Reader
@@ -64,18 +41,21 @@ func EncodingReader(r io.Reader, h http.Header) (io.Reader, Status) {
 	case CompressEncoding:
 		err = encodingError(encoding)
 	case NoneEncoding:
-		return r, StatusOK()
+		return nil, StatusOK()
 	default:
 		err = encodingError(encoding)
 	}
-	if err != nil || reader == nil {
-		return nil, NewStatusError(StatusContentDecodingError, encodingReaderLoc, err)
+	if err != nil {
+		return nil, NewStatusError(StatusContentEncodingError, encodingReaderLoc, err)
 	}
 	return reader, StatusOK()
 }
 
+
+*/
+
 func EncodingWriter(w io.Writer, h http.Header) (*gzip.Writer, Status) {
-	var writer io.Writer
+	//var writer io.Writer
 	var err error
 
 	encoding := acceptEncoding(h)
@@ -93,8 +73,8 @@ func EncodingWriter(w io.Writer, h http.Header) (*gzip.Writer, Status) {
 	default:
 		err = encodingError(encoding)
 	}
-	if err != nil || writer == nil {
-		return nil, NewStatusError(StatusContentDecodingError, encodingWriterLoc, err)
+	if err != nil {
+		return nil, NewStatusError(StatusContentEncodingError, encodingWriterLoc, err)
 	}
 	return nil, StatusOK()
 }

@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -57,21 +58,42 @@ func New[T any](v any, h http.Header) (t T, status Status) {
 		}
 		return
 	case io.Reader:
-		reader, status1 := EncodingReader(ptr, h)
-		if !status1.OK() {
-			return t, status1.AddLocation(newLoc)
+		var err error
+
+		encoding := contentEncoding(h)
+		switch encoding {
+		case GzipEncoding:
+			zr, err1 := gzip.NewReader(ptr)
+			if err1 != nil {
+				return t, NewStatusError(StatusGzipDecodingError, readAllLoc, err1)
+			}
+			err = json.NewDecoder(zr).Decode(&t)
+			_ = zr.Close()
+		case NoneEncoding:
+			err = json.NewDecoder(ptr).Decode(&t)
+		default:
+			return t, NewStatusError(StatusContentEncodingError, readAllLoc, encodingError(encoding))
 		}
-		err := json.NewDecoder(reader).Decode(&t)
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
 		}
 		return t, StatusOK()
 	case io.ReadCloser:
-		reader, status1 := EncodingReader(ptr, h)
-		if !status1.OK() {
-			return t, status1.AddLocation(newLoc)
+		var err error
+		encoding := contentEncoding(h)
+		switch encoding {
+		case GzipEncoding:
+			zr, err1 := gzip.NewReader(ptr)
+			if err1 != nil {
+				return t, NewStatusError(StatusGzipDecodingError, readAllLoc, err1)
+			}
+			err = json.NewDecoder(zr).Decode(&t)
+			_ = zr.Close()
+		case NoneEncoding:
+			err = json.NewDecoder(ptr).Decode(&t)
+		default:
+			return t, NewStatusError(StatusContentEncodingError, readAllLoc, encodingError(encoding))
 		}
-		err := json.NewDecoder(reader).Decode(&t)
 		_ = ptr.Close()
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)

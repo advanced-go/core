@@ -13,7 +13,7 @@ const (
 	GOOGLVariable  = "{GOOGL}"
 	GOOGLAuthority = "www.google.com"
 
-	fileUrl   = "file:///c:/Users/markb/GitHub/core/uri/uritest/html-response.txt"
+	fileUrl   = "file:///c:/Users/markb/GitHub/core/uri/uritest/test-response.html"
 	fileAttrs = "file://[cwd]/uritest/attrs.json"
 
 	yahooSearch         = "https://search.yahoo.com/search?p=golang"
