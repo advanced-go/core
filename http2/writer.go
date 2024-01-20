@@ -15,12 +15,6 @@ func (std) Write(w http.ResponseWriter, content any) {
 
 }
 
-type gzip struct{}
-
-func (gzip) Write(w http.ResponseWriter, content any) {
-
-}
-
 // ContentWriterFn - function type for error handling
 // type ErrorHandleFn func(requestId, location string, errs ...error) *Status
 // NewErrorHandler - templated function providing an error handle function via a closure
