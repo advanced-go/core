@@ -33,7 +33,7 @@ func WriteResponse[E runtime.ErrorHandler, W ContentWriter](w http.ResponseWrite
 	accept := w.Header().Get(AcceptEncoding)
 	w.Header().Del(AcceptEncoding)
 	w.WriteHeader(status.Http())
-	status0 := writeContent(w, content, accept)
+	_, status0 := writeContent(w, content, accept)
 	if !status0.OK() {
 		e.Handle(status0, status0.RequestId(), writeLoc)
 	}
@@ -65,55 +65,50 @@ func WriteResponse[E runtime.ErrorHandler, W ContentWriter](w http.ResponseWrite
 	return
 }
 
-func writeContent(w io.Writer, content any, accept string) runtime.Status {
-	var buf []byte
-	gzip := false
-	if strings.Contains(accept, gzipEncoding) {
-		gzip = true
-	}
+func writeContent(w io.Writer, content any, accept string) (cnt int, status runtime.Status) {
+	var err error
+
 	switch ptr := (content).(type) {
 	case []byte:
-		buf = ptr
+		cnt, err = w.Write(ptr)
 	case string:
-		buf = []byte(ptr)
+		cnt, err = w.Write([]byte(ptr))
 	case error:
-		buf = []byte(ptr.Error())
+		cnt, err = w.Write([]byte(ptr.Error()))
 	case io.Reader:
-		var status runtime.Status
+		//var status runtime.Status
+		var buf []byte
 
 		buf, status = runtime.ReadAll(ptr, nil)
 		if !status.OK() {
-			return status
+			return
 		}
 	case io.ReadCloser:
-		var status runtime.Status
+		//var status runtime.Status
+		var buf []byte
 
 		buf, status = runtime.ReadAll(ptr, nil)
 		_ = ptr.Close()
 		if !status.OK() {
-			return status
+			return
 		}
 	default:
 		if strings.Contains(contentType, jsonToken) {
-			var err error
+			var buf []byte
 
 			buf, err = json.Marshal(content)
 			if err != nil {
-				status := runtime.NewStatusError(runtime.StatusJsonEncodeError, bytesLoc, err)
+				status = runtime.NewStatusError(runtime.StatusJsonEncodeError, bytesLoc, err)
 				if !status.OK() {
-					return status
+					return
 				}
 			}
-			return runtime.StatusOK()
+			return
 		} else {
-			return runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return 0, runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
 	}
-	if buf != nil {
-	}
-	if gzip {
-	}
-	return runtime.StatusOK()
+	return
 }
 
 /*
