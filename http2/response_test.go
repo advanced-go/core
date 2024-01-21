@@ -104,7 +104,7 @@ func ExampleWriteResponse_StatusHeaders() {
 	//Output:
 	//test: WriteResponse(w,nil,nil,nil) -> [status-code:200] [header:map[]]
 	//test: WriteResponse(w,nil,StatusTeapot,nil) -> [status-code:418] [header:map[]]
-	//test: WriteResponse(w,nil,StatusOK,list) -> [status-code:200] [header:map[Accept-Encoding:[gzip, br] Content-Type:[text/html]]]
+	//test: WriteResponse(w,nil,StatusOK,list) -> [status-code:200] [header:map[Accept-Encoding:[gzip, deflate, br] Content-Type:[text/html]]]
 	//test: WriteResponse(w,nil,StatusGatewayTimeout,http.Header) -> [status-code:504] [header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
 
 }

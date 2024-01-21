@@ -3,7 +3,6 @@ package http2
 import (
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"strings"
 )
 
 const (
@@ -21,29 +20,32 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		status = runtime.StatusOK()
 	}
 	SetHeaders(w, headers)
-	//ct := w.Header().Get(ContentType)
-	//accept := w.Header().Get(AcceptEncoding)
-	//w.Header().Del(AcceptEncoding)
+	if content == nil {
+		w.WriteHeader(status.Http())
+		return
+	}
+	h := createAcceptEncoding(w.Header())
 	w.WriteHeader(status.Http())
-	writer, status0 := runtime.NewEncodingWriter(w, w.Header())
-
+	writer, status0 := runtime.NewEncodingWriter(w, h)
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	writer.Close()
 	if !status0.OK() {
 		e.Handle(status0, status0.RequestId(), writeLoc)
 	}
-	return
 }
 
-func acceptEncoding(h http.Header) (string, bool) {
+func createAcceptEncoding(h http.Header) http.Header {
+	out := make(http.Header)
 	if h == nil {
-		return noneEncoding, true
+		return out
 	}
-	enc := h.Get(AcceptEncoding)
-	if len(enc) > 0 {
-		return strings.ToLower(enc), true
+	accept := h.Get(AcceptEncoding)
+	h.Del(AcceptEncoding)
+	if len(accept) == 0 {
+		return out
 	}
-	return noneEncoding, true
+	out.Add(AcceptEncoding, accept)
+	return h
 }
 
 /*
