@@ -7,9 +7,14 @@ import (
 )
 
 const (
-	ContentTypeJson = "application/json"
-	ContentType     = "Content-Type"
-	ContentLength   = "Content-Length"
+	ContentTypeJson     = "application/json"
+	ContentType         = "Content-Type"
+	ContentEncoding     = "Content-Encoding"
+	AcceptEncoding      = "Accept-Encoding"
+	AcceptEncodingValue = "gzip, br"
+	ContentLength       = "Content-Length"
+	ContentEncodingGzip = "gzip"
+	ContentTypeTextHtml = "text/html"
 )
 
 func forwardDefaults(dest http.Header, src http.Header) http.Header {

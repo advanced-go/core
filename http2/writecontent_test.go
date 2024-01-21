@@ -10,22 +10,6 @@ import (
 	"os"
 )
 
-type testActivity struct {
-	ActivityID   string `json:"ActivityID"`
-	ActivityType string `json:"ActivityType"`
-	Agent        string `json:"Agent"`
-	AgentUri     string `json:"AgentUri"`
-	Assignment   string `json:"Assignment"`
-	Controller   string `json:"Controller"`
-	Behavior     string `json:"Behavior"`
-	Description  string `json:"Description"`
-}
-
-const (
-	testResponseHtml = "file://[cwd]/http2test/resource/test-response.html"
-	jsonContentType  = "application/json"
-)
-
 func ExampleWriteContent_Buffer() {
 	content := "<h1>Hello, World!</h1>"
 	ct := ""
@@ -59,17 +43,6 @@ func ExampleWriteContent_Buffer() {
 	cnt, status = writeContent(rec, errors.New("This is example error message text"), ct)
 	buf, status0 = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: writeContent(error) -> [cnt:%v] [write-status:%v] [body:%v] [read-status:%v]\n", cnt, status, string(buf), status0)
-
-	/*
-
-		// Json
-		d := data{Item: "test item", Count: 500}
-		r = httptest.NewRecorder()
-		writeStatusContent[runtime.Output](r, runtime.NewStatus(http.StatusInternalServerError).SetContent(d, true), "test location")
-		r.Result().Header = r.Header()
-		buf, status = runtime.NewBytes(r.Result())
-		fmt.Printf("test: writeStatusContent() -> %v [header:%v] [body:%v] [NewBytes:%v]\n", r.Result().StatusCode, r.Result().Header, string(buf), status)
-	*/
 
 	//Output:
 	//test: writeContent(nil) -> [cnt:0] [write-status:OK] [body:] [read-status:OK]
@@ -110,7 +83,7 @@ func ExampleWriteContent_Reader() {
 
 func ExampleWriteContent_Json() {
 	ct := ""
-	activity := testActivity{
+	content := activity{
 		ActivityID:   "123456",
 		ActivityType: "action",
 		Agent:        "Controller",
@@ -123,18 +96,18 @@ func ExampleWriteContent_Json() {
 
 	// error - invalid type, no content type
 	rec := httptest.NewRecorder()
-	cnt, status := writeContent(rec, activity, ct)
+	cnt, status := writeContent(rec, content, ct)
 	buf, status0 := runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: writeContent(http2.testActivity) -> [cnt:%v] [write-status:%v] [body:%v] [read-status:%v]\n", cnt, status, string(buf), status0)
 
 	// JSON
 	rec = httptest.NewRecorder()
-	cnt, status = writeContent(rec, activity, jsonContentType)
+	cnt, status = writeContent(rec, content, jsonContentType)
 	buf, status0 = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: writeContent(http2.testActivity) -> [cnt:%v] [write-status:%v] [body:%v] [read-status:%v]\n", cnt, status, string(buf), status0)
 
 	//Output:
 	//test: writeContent(http2.testActivity) -> [cnt:0] [write-status:Invalid Content [error: content type is invalid: http2.testActivity]] [body:] [read-status:OK]
 	//test: writeContent(http2.testActivity) -> [cnt:204] [write-status:OK] [body:{"ActivityID":"123456","ActivityType":"action","Agent":"Controller","AgentUri":"https://somehost.com/id","Assignment":"case #","Controller":"egress","Behavior":"timeout","Description":"decreased timeout"}] [read-status:OK]
-	
+
 }

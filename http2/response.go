@@ -6,9 +6,7 @@ import (
 )
 
 const (
-	AcceptEncoding = "Accept-Encoding"
-	writeLoc       = PkgPath + ":WriteResponse"
-	gzipEncoding   = "gzip"
+	writeLoc = PkgPath + ":WriteResponse"
 )
 
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
@@ -29,33 +27,34 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	if !status0.OK() {
 		e.Handle(status0, status0.RequestId(), writeLoc)
 	}
-	/*
-		ct := GetContentType(headers)
-		buf, status0 := runtime.Bytes(content, ct)
-		if !status0.OK() {
-			e.Handle(status0, status.RequestId(), writeLoc)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		SetHeaders(w, headers)
-		if len(ct) == 0 {
-			w.Header().Set(ContentType, http.DetectContentType(buf))
-		}
-		w.WriteHeader(status.Http())
-
-	*/
-	/*
-		bytes, err := w.Write(buf)
-		if err != nil {
-			e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), status.RequestId(), "")
-		}
-		if bytes != len(buf) {
-			e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), status.RequestId(), "")
-		}
-
-	*/
 	return
 }
+
+/*
+	ct := GetContentType(headers)
+	buf, status0 := runtime.Bytes(content, ct)
+	if !status0.OK() {
+		e.Handle(status0, status.RequestId(), writeLoc)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	SetHeaders(w, headers)
+	if len(ct) == 0 {
+		w.Header().Set(ContentType, http.DetectContentType(buf))
+	}
+	w.WriteHeader(status.Http())
+
+*/
+/*
+	bytes, err := w.Write(buf)
+	if err != nil {
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, err), status.RequestId(), "")
+	}
+	if bytes != len(buf) {
+		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), status.RequestId(), "")
+	}
+
+*/
 
 /*
 func writeStatusContent[E runtime.ErrorHandler](w http.ResponseWriter, status runtime.Status, location string) {
