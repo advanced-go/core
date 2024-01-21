@@ -1,5 +1,50 @@
 package runtime
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"reflect"
+)
+
+func ExampleIdentityReader() {
+	s := "identity encoding"
+
+	br := bytes.NewReader([]byte(s))
+
+	er, status := NewEncodingReader(br, nil)
+	fmt.Printf("test: NewEncodingReader(none) -> [er:%v] [status:%v]\n", reflect.TypeOf(er).String(), status)
+
+	buf, err := io.ReadAll(er)
+	fmt.Printf("test: Read() -> [err:%v] [content:\"%v\"]\n", err, string(buf))
+
+	//h := make(http.Header)
+	//h.Add(ContentEncoding, GzipEncoding)
+	//er, status = NewEncodingReader(br, h)
+	//fmt.Printf("test: NewEncodingReader(gzip) -> [er:%v] [status:%v]\n", reflect.TypeOf(er).String(), status)
+
+	//Output:
+	//test: NewEncodingReader(none) -> [er:*runtime.identityReader] [status:OK]
+	//test: Read() -> [err:<nil>] [content:"identity encoding"]
+
+}
+
+func ExampleIdentityWriter() {
+	s := "identity encoding"
+	buf := new(bytes.Buffer)
+
+	ew, status := NewEncodingWriter(buf, nil)
+	fmt.Printf("test: NewEncodingWriter(none) -> [ew:%v] [status:%v]\n", reflect.TypeOf(ew).String(), status)
+
+	cnt, err := ew.Write([]byte(s))
+	fmt.Printf("test: Write() -> [cnt:%v] [err:%v] [content:\"%v\"]\n", cnt, err, string(buf.Bytes()))
+
+	//Output:
+	//test: NewEncodingWriter(none) -> [ew:*runtime.identityWriter] [status:OK]
+	//test: Write() -> [cnt:17] [err:<nil>] [content:"identity encoding"]
+	
+}
+
 /*
 func ExampleEncodingReader_Error() {
 	s := address3Url

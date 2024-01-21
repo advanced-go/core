@@ -50,6 +50,7 @@ func New[T any](v any, h http.Header) (t T, status Status) {
 		}
 		return
 	case []byte:
+		// TO DO : determine if encoding is supported for []byte
 		buf = ptr
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
@@ -57,42 +58,23 @@ func New[T any](v any, h http.Header) (t T, status Status) {
 		}
 		return
 	case io.Reader:
-		var err error
-
-		encoding := contentEncoding(h)
-		switch encoding {
-		case GzipEncoding:
-			zr, status0 := NewGzipReader(ptr)
-			if !status0.OK() {
-				return t, status0.AddLocation(newLoc)
-			}
-			err = json.NewDecoder(zr).Decode(&t)
-			_ = zr.Close()
-		case NoneEncoding:
-			err = json.NewDecoder(ptr).Decode(&t)
-		default:
-			return t, NewStatusError(StatusContentEncodingError, newLoc, encodingError(encoding))
+		reader, status0 := NewEncodingReader(ptr, h)
+		if !status0.OK() {
+			return t, status0.AddLocation(newLoc)
 		}
+		err := json.NewDecoder(reader).Decode(&t)
+		_ = reader.Close()
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
 		}
 		return t, StatusOK()
 	case io.ReadCloser:
-		var err error
-		encoding := contentEncoding(h)
-		switch encoding {
-		case GzipEncoding:
-			zr, status0 := NewGzipReader(ptr)
-			if !status0.OK() {
-				return t, status0.AddLocation(newLoc)
-			}
-			err = json.NewDecoder(zr).Decode(&t)
-			_ = zr.Close()
-		case NoneEncoding:
-			err = json.NewDecoder(ptr).Decode(&t)
-		default:
-			return t, NewStatusError(StatusContentEncodingError, newLoc, encodingError(encoding))
+		reader, status0 := NewEncodingReader(ptr, h)
+		if !status0.OK() {
+			return t, status0.AddLocation(newLoc)
 		}
+		err := json.NewDecoder(reader).Decode(&t)
+		_ = reader.Close()
 		_ = ptr.Close()
 		if err != nil {
 			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)

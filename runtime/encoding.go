@@ -38,7 +38,7 @@ func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, Status) {
 	case GzipEncoding:
 		return NewGzipReader(r)
 	case BrotliEncoding, DeflateEncoding, CompressEncoding:
-		return nil, NewStatusError(StatusContentEncodingError, encodingReaderLoc, encodingError(encoding))
+		return nil, NewStatusError(StatusContentEncodingError, encodingReaderLoc, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)))
 	default:
 		return NewIdentityReader(r), StatusOK()
 	}
@@ -50,10 +50,6 @@ func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, Status) {
 		return NewGzipWriter(w), StatusOK()
 	}
 	return NewIdentityWriter(w), StatusOK()
-}
-
-func encodingError(encoding string) error {
-	return errors.New(fmt.Sprintf(encodingErrorFmt, encoding))
 }
 
 func contentEncoding(h http.Header) string {
