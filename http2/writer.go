@@ -20,6 +20,7 @@ func (std) Write(w http.ResponseWriter, content any) {
 // NewErrorHandler - templated function providing an error handle function via a closure
 type ContentWriterFunc func(http.ResponseWriter, any, runtime.Status, any)
 
+/*
 func NewContentWriter[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
 	//var e E
 	//return func(w http.ResponseWriter, content any, status runtime.Status, headers any) {
@@ -28,6 +29,8 @@ func NewContentWriter[E runtime.ErrorHandler](w http.ResponseWriter, content any
 	//}
 }
 
+
+*/
 /*
 func NewContentWriter2(content any, r *http.Request) (w ContentWriter, contentEncoding string) {
 	accept := r.Header.Get(contentEncoding)
