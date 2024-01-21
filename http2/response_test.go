@@ -132,7 +132,7 @@ func ExampleWriteResponse_JSON() {
 
 }
 
-func ExampleWriteResponse_Encoded() {
+func ExampleWriteResponse_Encoding() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
 

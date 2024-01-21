@@ -11,7 +11,7 @@ const (
 	ContentType         = "Content-Type"
 	ContentEncoding     = "Content-Encoding"
 	AcceptEncoding      = "Accept-Encoding"
-	AcceptEncodingValue = "gzip, br"
+	AcceptEncodingValue = "gzip, deflate, br"
 	ContentLength       = "Content-Length"
 	ContentEncodingGzip = "gzip"
 	ContentTypeTextHtml = "text/html"

@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
@@ -55,12 +54,15 @@ func ReadAll(body io.Reader, h http.Header) ([]byte, Status) {
 	encoding := contentEncoding(h)
 	switch encoding {
 	case GzipEncoding:
-		zr, err1 := gzip.NewReader(body)
-		if err1 != nil {
-			return nil, NewStatusError(StatusGzipDecodingError, readAllLoc, err1)
+		zr, status := NewGzipReader(body)
+		if !status.OK() {
+			return nil, status.AddLocation(readAllLoc)
 		}
 		buf, err = io.ReadAll(zr)
-		_ = zr.Close()
+		status = zr.Close()
+		if !status.OK() {
+			return nil, status.AddLocation(readAllLoc)
+		}
 	case NoneEncoding:
 		buf, err = io.ReadAll(body)
 	default:

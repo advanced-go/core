@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-type ContentWriter interface {
-	Write(w http.ResponseWriter, content any)
-}
+//type ContentWriter interface {
+//	Write(w http.ResponseWriter, content any)
+//}
 
 type std struct{}
 
