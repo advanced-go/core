@@ -10,11 +10,6 @@ const (
 	gzipReaderLoc = PkgPath + ":GzipReader.Init()"
 )
 
-type EncodingWriter interface {
-	io.Writer
-	Close() Status
-}
-
 type gzipWriter struct {
 	writer *gzip.Writer
 }
@@ -44,11 +39,6 @@ func (g *gzipWriter) Close() Status {
 		return NewStatusError(StatusGzipEncodingError, gzipWriterLoc, errs...)
 	}
 	return StatusOK()
-}
-
-type EncodingReader interface {
-	io.Reader
-	Close() Status
 }
 
 type gzipReader struct {

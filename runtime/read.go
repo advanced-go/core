@@ -1,25 +1,15 @@
 package runtime
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 )
 
 const (
-	ContentEncoding  = "Content-Encoding"
-	GzipEncoding     = "gzip"
-	BrotliEncoding   = "br"
-	DeflateEncoding  = "deflate"
-	CompressEncoding = "compress"
-	NoneEncoding     = "none"
-
-	encodingErrorFmt = "error: content encoding not supported [%v]"
-	readFileLoc      = PkgPath + ":ReadFile"
-	readAllLoc       = PkgPath + ":ReadAll"
+	readFileLoc = PkgPath + ":ReadFile"
+	readAllLoc  = PkgPath + ":ReadAll"
 )
 
 // ReadFile - read a file with a Status
@@ -48,43 +38,14 @@ func ReadAll(body io.Reader, h http.Header) ([]byte, Status) {
 			}
 		}()
 	}
-	var buf []byte
-	var err error
-
-	encoding := contentEncoding(h)
-	switch encoding {
-	case GzipEncoding:
-		zr, status := NewGzipReader(body)
-		if !status.OK() {
-			return nil, status.AddLocation(readAllLoc)
-		}
-		buf, err = io.ReadAll(zr)
-		status = zr.Close()
-		if !status.OK() {
-			return nil, status.AddLocation(readAllLoc)
-		}
-	case NoneEncoding:
-		buf, err = io.ReadAll(body)
-	default:
-		return nil, NewStatusError(StatusContentEncodingError, readAllLoc, encodingError(encoding))
+	reader, status := NewEncodingReader(body, h)
+	if !status.OK() {
+		return nil, status.AddLocation(readAllLoc)
 	}
+	buf, err := io.ReadAll(reader)
+	reader.Close()
 	if err != nil {
 		return nil, NewStatusError(StatusIOError, readAllLoc, err)
 	}
 	return buf, StatusOK()
-}
-
-func encodingError(encoding string) error {
-	return errors.New(fmt.Sprintf(encodingErrorFmt, encoding))
-}
-
-func contentEncoding(h http.Header) string {
-	if h == nil {
-		return NoneEncoding
-	}
-	enc := h.Get(ContentEncoding)
-	if len(enc) > 0 {
-		return strings.ToLower(enc)
-	}
-	return NoneEncoding
 }

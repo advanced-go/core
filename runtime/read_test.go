@@ -9,10 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	AcceptEncoding = "Accept-Encoding"
-)
-
 func ExampleReadFile() {
 	s := status504
 	buf, status := ReadFile(s)
