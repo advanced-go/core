@@ -51,7 +51,7 @@ func createAcceptEncoding(h http.Header) http.Header {
 	if len(accept) == 0 {
 		return out
 	}
-	if len(h.Get(ContentEncoding)) > 0 {
+	if len(h.Get(ContentEncoding)) != 0 {
 		return out
 	}
 	out.Add(AcceptEncoding, accept)

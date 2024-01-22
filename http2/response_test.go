@@ -137,13 +137,24 @@ func ExampleWriteResponse_Encoding() {
 	h.Add(ContentType, ContentTypeJson)
 	h.Add(AcceptEncoding, AcceptEncodingValue)
 
-	// JSON activity list
+	// Should encode
 	rec := httptest.NewRecorder()
 	WriteResponse[runtime.Output](rec, activityList, runtime.StatusOK(), h)
 	buf, status0 := runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
 
+	// Should not encode as a ContentEncoding header exists
+	h = make(http.Header)
+	h.Add(ContentType, ContentTypeJson)
+	h.Add(AcceptEncoding, AcceptEncodingValue)
+	h.Add(ContentEncoding, runtime.NoneEncoding)
+	rec = httptest.NewRecorder()
+	WriteResponse[runtime.Output](rec, activityList, runtime.StatusOK(), h)
+	buf, status0 = runtime.ReadAll(rec.Result().Body, nil)
+	fmt.Printf("test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
+
 	//Output:
 	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:application/x-gzip][header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
-
+	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:text/plain; charset=utf-8][header:map[Content-Encoding:[none] Content-Type:[application/json]]]
+	
 }
