@@ -24,6 +24,10 @@ func (g *gzipWriter) Write(p []byte) (n int, err error) {
 	return g.writer.Write(p)
 }
 
+func (g *gzipWriter) ContentEncoding() string {
+	return GzipEncoding
+}
+
 func (g *gzipWriter) Close() Status {
 	var errs []error
 

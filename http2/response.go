@@ -25,12 +25,15 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		return
 	}
 	h := createAcceptEncoding(w.Header())
-	w.WriteHeader(status.Http())
 	writer, status0 := runtime.NewEncodingWriter(w, h)
 	if !status0.OK() {
 		e.Handle(status0, status0.RequestId(), writeLoc)
 		return
 	}
+	if writer.ContentEncoding() != runtime.NoneEncoding {
+		w.Header().Add(ContentEncoding, writer.ContentEncoding())
+	}
+	w.WriteHeader(status.Http())
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	writer.Close()
 	if !status0.OK() {
@@ -52,7 +55,7 @@ func createAcceptEncoding(h http.Header) http.Header {
 		return out
 	}
 	out.Add(AcceptEncoding, accept)
-	return h
+	return out
 }
 
 /*

@@ -29,6 +29,7 @@ type EncodingReader interface {
 
 type EncodingWriter interface {
 	io.Writer
+	ContentEncoding() string
 	Close() Status
 }
 
@@ -106,6 +107,10 @@ func NewIdentityWriter(w io.Writer) EncodingWriter {
 
 func (i *identityWriter) Write(p []byte) (n int, err error) {
 	return i.writer.Write(p)
+}
+
+func (i *identityWriter) ContentEncoding() string {
+	return NoneEncoding
 }
 
 func (i *identityWriter) Close() Status {
