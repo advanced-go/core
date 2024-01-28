@@ -52,7 +52,7 @@ func Example_SendError() {
 
 	fmt.Printf("test: SendCtrl(%v) -> : %v\n", uri, testDir.SendCtrl(Message{To: uri}))
 
-	m := newMailbox(uri, false, nil, nil)
+	m := NewMailboxWithCtrl(uri, false, nil, nil)
 	status := testDir.Add(m)
 	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri, status)
 
@@ -69,9 +69,9 @@ func Example_Send() {
 	c := make(chan Message, 16)
 	testDir := any(NewExchange()).(*exchange)
 
-	testDir.Add(newMailbox(uri1, false, c, nil))
-	testDir.Add(newMailbox(uri2, false, c, nil))
-	testDir.Add(newMailbox(uri3, false, c, nil))
+	testDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
+	testDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
+	testDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 
 	testDir.SendCtrl(Message{To: uri1, From: PkgPath, Event: StartupEvent})
 	testDir.SendCtrl(Message{To: uri2, From: PkgPath, Event: StartupEvent})

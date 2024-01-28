@@ -13,15 +13,6 @@ func Example_NewMailbox() {
 
 }
 
-func newMailbox(uri string, public bool, ctrl, data chan Message) *Mailbox {
-	m := new(Mailbox)
-	m.public = public
-	m.uri = uri
-	m.ctrl = ctrl
-	m.data = data
-	return m
-}
-
 func newDefaultMailbox(uri string) *Mailbox {
 	m := new(Mailbox)
 	m.uri = uri

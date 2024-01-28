@@ -9,7 +9,7 @@ func appHttpHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusGatewayTimeout)
 }
 
-func Example_Proxy_Add() {
+func ExampleProxy_Add() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
@@ -38,7 +38,7 @@ func Example_Proxy_Add() {
 
 }
 
-func Example_Proxy_Get() {
+func ExampleProxy_Get() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 

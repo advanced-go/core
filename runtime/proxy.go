@@ -20,13 +20,13 @@ type Proxy struct {
 
 // NewProxy - create a new Proxy
 func NewProxy() *Proxy {
-	h := new(Proxy)
-	h.m = new(sync.Map)
-	return h
+	p := new(Proxy)
+	p.m = new(sync.Map)
+	return p
 }
 
 // Register - add an HttpHandler to the proxy
-func (h *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) Status {
+func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) Status {
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New("invalid argument: path is empty"))
 	}
@@ -37,26 +37,26 @@ func (h *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 	if handler == nil {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler is nil: [%v]", uri)))
 	}
-	_, ok1 := h.m.Load(nid)
+	_, ok1 := p.m.Load(nid)
 	if ok1 {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler already exists: [%v]", uri)))
 	}
-	h.m.Store(nid, handler)
+	p.m.Store(nid, handler)
 	return StatusOK()
 }
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
-func (h *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
+func (p *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
 	nid, _, ok := uprootUrn(uri)
 	if !ok {
 		return nil, NewStatusError(StatusInvalidArgument, handlerLookupLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
-	return h.LookupByNID(nid)
+	return p.LookupByNID(nid)
 }
 
 // LookupByNID - get an HttpHandler from the proxy, using an NID as a key
-func (h *Proxy) LookupByNID(nid string) (func(w http.ResponseWriter, r *http.Request), Status) {
-	v, ok := h.m.Load(nid)
+func (p *Proxy) LookupByNID(nid string) (func(w http.ResponseWriter, r *http.Request), Status) {
+	v, ok := p.m.Load(nid)
 	if !ok {
 		return nil, NewStatusError(StatusInvalidArgument, handlerLookupNIDLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler does not exist: [%v]", nid)))
 	}

@@ -9,6 +9,16 @@ type Mailbox struct {
 	unregister func()
 }
 
+// NewMailboxWithCtrl - create a mailbox
+func NewMailboxWithCtrl(uri string, public bool, ctrl, data chan Message) *Mailbox {
+	m := new(Mailbox)
+	m.public = public
+	m.uri = uri
+	m.ctrl = ctrl
+	m.data = data
+	return m
+}
+
 // NewMailbox - create a mailbox
 func NewMailbox(uri string, data chan Message) *Mailbox {
 	m := new(Mailbox)
