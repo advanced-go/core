@@ -19,11 +19,6 @@ const (
 // HostExchange - main exchange
 var HostExchange = NewExchange()
 
-func shutdownHost(msg Message) runtime.Status {
-	//TO DO: authentication and implementation
-	return runtime.StatusOK()
-}
-
 // Exchange - exchange directory
 type Exchange interface {
 	Count() int

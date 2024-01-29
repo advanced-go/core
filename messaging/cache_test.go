@@ -35,12 +35,12 @@ func ExampleMessageCache_Add() {
 	//test: count() -> : 5
 	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg-to:false]
 	//test: Get(from-uri-3) -> : [error:<nil>] [msg-to:true]
-	//test: include(event:shutdown,94) -> : []
-	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
-	//test: include(event:startup,94) -> : [from-uri-0]
-	//test: exclude(event:startup,94) -> : [from-uri-1 from-uri-2 from-uri-3 from-uri-4]
-	//test: include(event:ping,94) -> : [from-uri-2 from-uri-3]
-	//test: exclude(event:ping,94) -> : [from-uri-0 from-uri-1 from-uri-4]
+	//test: include(event:shutdown,95) -> : []
+	//test: exclude(event:shutdown,95) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
+	//test: include(event:startup,95) -> : [from-uri-0]
+	//test: exclude(event:startup,95) -> : [from-uri-1 from-uri-2 from-uri-3 from-uri-4]
+	//test: include(event:ping,95) -> : [from-uri-2 from-uri-3]
+	//test: exclude(event:ping,95) -> : [from-uri-0 from-uri-1 from-uri-4]
 
 }
 
@@ -74,11 +74,11 @@ func ExampleMessageCache_Uri() {
 	//test: count() -> : 5
 	//test: Get(invalid) -> : [error:invalid argument: uri not found [invalid]] [msg-to:false]
 	//test: Get(from-uri-3) -> : [error:<nil>] [msg-to:to-uri]
-	//test: include(event:shutdown,94) -> : []
-	//test: exclude(event:shutdown,94) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
-	//test: include(event:startup,94) -> : [from-uri-0]
-	//test: exclude(event:startup,94) -> : [from-uri-1 from-uri-2 from-uri-3 from-uri-4]
-	//test: include(event:ping,94) -> : [from-uri-2 from-uri-3]
-	//test: exclude(event:ping,94) -> : [from-uri-0 from-uri-1 from-uri-4]
+	//test: include(event:shutdown,95) -> : []
+	//test: exclude(event:shutdown,95) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
+	//test: include(event:startup,95) -> : [from-uri-0]
+	//test: exclude(event:startup,95) -> : [from-uri-1 from-uri-2 from-uri-3 from-uri-4]
+	//test: include(event:ping,95) -> : [from-uri-2 from-uri-3]
+	//test: exclude(event:ping,95) -> : [from-uri-0 from-uri-1 from-uri-4]
 
 }
