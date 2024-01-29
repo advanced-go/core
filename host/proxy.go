@@ -16,7 +16,7 @@ var proxy = runtime.NewProxy()
 
 // RegisterHandler - add a path and Http handler to the proxy
 // TO DO : panic on duplicate handler and pattern combination
-func RegisterHandler(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+func RegisterHandler(path string, handler http.HandlerFunc) {
 	status := proxy.Register(path, handler)
 	if !status.OK() {
 		panic(status)

@@ -7,10 +7,7 @@ import (
 	"net/http/httptest"
 )
 
-type authComponent struct {
-}
-
-func (ac *authComponent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func authServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r != nil {
 		tokenString := r.Header.Get(Authorization)
 		if tokenString == "" {
@@ -20,18 +17,12 @@ func (ac *authComponent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type serviceComponent struct {
-}
-
-func (ac *serviceComponent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func serviceServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "Service OK")
 }
 
 func ExampleIntermediary_Nil() {
-	auth := new(authComponent)
-	serv := new(serviceComponent)
-
 	ic := NewIntermediary(nil, nil)
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
@@ -39,14 +30,14 @@ func ExampleIntermediary_Nil() {
 	buf, _ := runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-nil-components -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
-	ic = NewIntermediary(nil, serv)
+	ic = NewIntermediary(nil, serviceServeHTTP)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	ic.ServeHTTP(rec, r)
 	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-service-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
-	ic = NewIntermediary(auth, serv)
+	ic = NewIntermediary(authServeHTTP, serviceServeHTTP)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
@@ -58,13 +49,11 @@ func ExampleIntermediary_Nil() {
 	//test: ServeHTTP()-nil-components -> [status-code:200] [content:]
 	//test: ServeHTTP()-service-only -> [status-code:200] [content:Service OK]
 	//test: ServeHTTP()-auth-only -> [status-code:200] [content:Service OK]
-	
+
 }
 
 func ExampleIntermediary_ServeHTTP() {
-	auth := new(authComponent)
-	serv := new(serviceComponent)
-	ic := NewIntermediary(auth, serv)
+	ic := NewIntermediary(authServeHTTP, serviceServeHTTP)
 
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)

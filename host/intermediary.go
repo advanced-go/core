@@ -6,18 +6,24 @@ const (
 	Authorization = "Authorization"
 )
 
-type intermediary struct {
-	c1, c2 http.Handler
+//type intermediary struct {
+//	c1, c2 http.HandlerFunc
+//}
+
+func NewIntermediary(c1 http.HandlerFunc, c2 http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		wrap := newWrapper(w)
+		if c1 != nil {
+			c1.ServeHTTP(wrap, r)
+		}
+		if wrap.statusCode == http.StatusOK && c2 != nil {
+			c2.ServeHTTP(w, r)
+		}
+	}
 }
 
-func NewIntermediary(c1 http.Handler, c2 http.Handler) http.Handler {
-	i := new(intermediary)
-	i.c1 = c1
-	i.c2 = c2
-	return i
-}
-
-func (i *intermediary) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+/*
+func (i *intermediary) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	wrap := newWrapper(w)
 	if i.c1 != nil {
 		i.c1.ServeHTTP(wrap, r)
@@ -26,6 +32,9 @@ func (i *intermediary) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		i.c2.ServeHTTP(w, r)
 	}
 }
+
+
+*/
 
 type wrapper struct {
 	writer     http.ResponseWriter
