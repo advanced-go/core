@@ -26,14 +26,14 @@ func ExampleIntermediary_Nil() {
 	ic := NewIntermediary(nil, nil)
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
-	ic.ServeHTTP(rec, r)
+	ic(rec, r)
 	buf, _ := runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-nil-components -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	ic = NewIntermediary(nil, serviceServeHTTP)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
-	ic.ServeHTTP(rec, r)
+	ic(rec, r)
 	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-service-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -41,7 +41,7 @@ func ExampleIntermediary_Nil() {
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
-	ic.ServeHTTP(rec, r)
+	ic(rec, r)
 	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-auth-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -58,7 +58,7 @@ func ExampleIntermediary_ServeHTTP() {
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 
-	ic.ServeHTTP(rec, r)
+	ic(rec, r)
 	buf, _ := runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-auth-failure -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -66,7 +66,7 @@ func ExampleIntermediary_ServeHTTP() {
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
 
-	ic.ServeHTTP(rec, r)
+	ic(rec, r)
 	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: ServeHTTP()-auth-success -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 

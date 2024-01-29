@@ -10,14 +10,16 @@ const (
 //	c1, c2 http.HandlerFunc
 //}
 
-func NewIntermediary(c1 http.HandlerFunc, c2 http.HandlerFunc) http.HandlerFunc {
+type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
+
+func NewIntermediary(c1 ServeHTTPFunc, c2 ServeHTTPFunc) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		wrap := newWrapper(w)
 		if c1 != nil {
-			c1.ServeHTTP(wrap, r)
+			c1(wrap, r)
 		}
 		if wrap.statusCode == http.StatusOK && c2 != nil {
-			c2.ServeHTTP(w, r)
+			c2(w, r)
 		}
 	}
 }
