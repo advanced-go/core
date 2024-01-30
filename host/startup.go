@@ -14,7 +14,7 @@ const (
 )
 
 // ContentMap - slice of any content to be included in a message
-type ContentMap map[string][]any
+type ContentMap map[string]runtime.StringsMap
 
 // Startup - templated function to start all registered resources.
 func Startup[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (status runtime.Status) {
@@ -60,7 +60,7 @@ func createToSend(ex messaging.Exchange, cm ContentMap, fn messaging.MessageHand
 		msg := messaging.Message{To: k, From: startupLocation, Event: messaging.StartupEvent, Status: nil, ReplyTo: fn}
 		if cm != nil {
 			if content, ok := cm[k]; ok {
-				msg.Content = append(msg.Content, content...)
+				msg.Content = append(msg.Content, content)
 			}
 		}
 		m[k] = msg

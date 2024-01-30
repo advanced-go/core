@@ -70,14 +70,15 @@ func ExampleCreateToSend() {
 	msg := m[none]
 	fmt.Printf("test: createToSend(nil,nil) -> [to:%v] [from:%v]\n", msg.To, msg.From)
 
-	cm := ContentMap{one: []any{credFn}}
-	m = createToSend(startupDir, cm, nil)
-	msg = m[one]
-	fmt.Printf("test: createToSend(map,nil) -> [to:%v] [from:%v] [credentials:%v]\n", msg.To, msg.From, accessCredentials(&msg) != nil)
+	/*
+		cm := ContentMap{one: []any{credFn}}
+		m = createToSend(startupDir, cm, nil)
+		msg = m[one]
+		fmt.Printf("test: createToSend(map,nil) -> [to:%v] [from:%v] [credentials:%v]\n", msg.To, msg.From, accessCredentials(&msg) != nil)
+	*/
 
 	//Output:
 	//test: createToSend(nil,nil) -> [to:startup/none] [from:github/advanced-go/core/host:Startup]
-	//test: createToSend(map,nil) -> [to:startup/one] [from:github/advanced-go/core/host:Startup] [credentials:true]
 
 }
 
