@@ -60,7 +60,8 @@ func createToSend(ex messaging.Exchange, cm ContentMap, fn messaging.MessageHand
 		msg := messaging.Message{To: k, From: startupLocation, Event: messaging.StartupEvent, Status: nil, ReplyTo: fn}
 		if cm != nil {
 			if content, ok := cm[k]; ok {
-				msg.Content = append(msg.Content, content)
+				//msg.Content = append(msg.Content, content)
+				msg.Config = content
 			}
 		}
 		m[k] = msg
