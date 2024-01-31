@@ -124,7 +124,7 @@ func ParseStringsMap(buf []byte) *StringsMap {
 	for {
 		line, err = reader.ReadString('\n')
 		count++
-		k, v, err0 := parseLine(line)
+		k, v, err0 := ParseMapEntry(line)
 		if err0 != nil {
 			m.Add(errorKey, fmt.Sprintf("%v : line -> %v number -> %v", err0.Error(), line, count))
 			return m
@@ -143,7 +143,7 @@ func ParseStringsMap(buf []byte) *StringsMap {
 	return m
 }
 
-func parseLine(line string) (string, string, error) {
+func ParseMapEntry(line string) (string, string, error) {
 	if len(line) == 0 {
 		return "", "", nil
 	}

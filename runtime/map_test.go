@@ -101,10 +101,10 @@ func ExampleValidateMap() {
 }
 
 func ExampleParseLine() {
-	key, val, err := parseLine("key : value\r\n")
+	key, val, err := ParseMapEntry("key : value\r\n")
 	fmt.Printf("test: parseLine(cr,lf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
 
-	key, val, err = parseLine("key : value\n")
+	key, val, err = ParseMapEntry("key : value\n")
 	fmt.Printf("test: parseLine(lf) -> [key:%v] [val:%v] [error:%v]\n", key, val, err)
 
 	//Output:
@@ -143,7 +143,7 @@ func TestParseLine(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := parseLine(tt.args.line)
+			got, got1, err := ParseMapEntry(tt.args.line)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseLine() error = %v, wantErr %v", err, tt.wantErr)
 				return
