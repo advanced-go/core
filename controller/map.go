@@ -38,6 +38,7 @@ func NewMap(buf []byte) (*Map, runtime.Status) {
 		c := new(Controller)
 		c.Uri = cfg.Uri
 		c.Name = cfg.Name
+		c.Route = cfg.Route
 		c.Method = cfg.Method
 		c.Duration, err = ParseDuration(cfg.Duration)
 		if err != nil {
