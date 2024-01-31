@@ -31,7 +31,7 @@ type Message struct {
 	Status    runtime.Status
 	Content   []any
 	ReplyTo   MessageHandler
-	Config    runtime.StringsMap
+	Config    *runtime.StringsMap
 }
 
 // SendReply - function used by message recipient to reply with a runtime.Status
