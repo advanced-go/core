@@ -14,7 +14,7 @@ const (
 )
 
 // ContentMap - slice of any content to be included in a message
-type ContentMap map[string]runtime.StringsMap
+type ContentMap map[string]*runtime.StringsMap
 
 // Startup - templated function to start all registered resources.
 func Startup[E runtime.ErrorHandler](duration time.Duration, content ContentMap) (status runtime.Status) {
