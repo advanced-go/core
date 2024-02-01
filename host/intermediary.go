@@ -1,14 +1,18 @@
 package host
 
-import "net/http"
-
-const (
-	Authorization = "Authorization"
+import (
+	"context"
+	"fmt"
+	"github.com/advanced-go/core/access"
+	"github.com/advanced-go/core/controller"
+	"net/http"
+	"time"
 )
 
-//type intermediary struct {
-//	c1, c2 http.HandlerFunc
-//}
+const (
+	Authorization   = "Authorization"
+	upstreamTimeout = "UT"
+)
 
 type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
 
@@ -24,23 +28,50 @@ func NewIntermediary(c1 ServeHTTPFunc, c2 ServeHTTPFunc) ServeHTTPFunc {
 	}
 }
 
-/*
-func (i *intermediary) serveHTTP(w http.ResponseWriter, r *http.Request) {
-	wrap := newWrapper(w)
-	if i.c1 != nil {
-		i.c1.ServeHTTP(wrap, r)
-	}
-	if wrap.statusCode == http.StatusOK && i.c2 != nil {
-		i.c2.ServeHTTP(w, r)
+func NewControllerIntermediary(duration, routeName string, c2 ServeHTTPFunc) ServeHTTPFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if c2 == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "error: componet 2 is nil")
+			return
+		}
+		if len(duration) == 0 {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "error: duration is empty")
+			return
+		}
+		threshold, err := controller.ParseDuration(duration)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%v", err)
+			return
+		}
+		thresholdFlags := ""
+		start := time.Now().UTC()
+		wrap := newWrapper(w)
+		ch := make(chan struct{}, 1)
+		ctx, cancelFunc := context.WithTimeout(context.Background(), threshold)
+		defer cancelFunc()
+		statusCode := http.StatusGatewayTimeout
+
+		go func() {
+			c2(wrap, r)
+			ch <- struct{}{}
+		}()
+		select {
+		case <-ctx.Done():
+			thresholdFlags = upstreamTimeout
+		case <-ch:
+			statusCode = wrap.statusCode
+		}
+		access.Log(access.EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: statusCode, ContentLength: wrap.written}, routeName, "", controller.Milliseconds(threshold), thresholdFlags)
 	}
 }
-
-
-*/
 
 type wrapper struct {
 	writer     http.ResponseWriter
 	statusCode int
+	written    int64
 }
 
 func newWrapper(writer http.ResponseWriter) *wrapper {
@@ -55,6 +86,7 @@ func (w *wrapper) Header() http.Header {
 }
 
 func (w *wrapper) Write(p []byte) (int, error) {
+	w.written += int64(len(p))
 	return w.writer.Write(p)
 }
 

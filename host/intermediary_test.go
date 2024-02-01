@@ -2,6 +2,7 @@ package host
 
 import (
 	"fmt"
+	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"net/http/httptest"
@@ -73,5 +74,41 @@ func ExampleIntermediary_ServeHTTP() {
 	//Output:
 	//test: ServeHTTP()-auth-failure -> [status-code:401] [content:Missing authorization header]
 	//test: ServeHTTP()-auth-success -> [status-code:200] [content:Service OK]
+
+}
+
+func googleSearch(w http.ResponseWriter, r *http.Request) {
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	resp, _ := exchange.Do(req)
+	buf, status := runtime.ReadAll(resp.Body, nil)
+	w.WriteHeader(status.Http())
+	cnt, err := w.Write(buf)
+	fmt.Printf("test: googleSearch() -> [cnt:%v] [err:%v] [status:%v]\n", cnt, err, status)
+}
+
+func ExampleNewControllerIntermediary_5s() {
+	im := NewControllerIntermediary("5s", "google-search", googleSearch)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	im(rec, req)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
+
+	//Output:
+	//test: googleSearch() -> [cnt:110540] [err:<nil>] [status:OK]
+	//test: NewControllerIntermediary() -> [status-code:200]
+
+}
+
+func ExampleNewControllerIntermediary_100ms() {
+	im := NewControllerIntermediary("100ms", "google-search", googleSearch)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	im(rec, req)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
+
+	//Output:
+	//test: NewControllerIntermediary() -> [status-code:200]
 
 }

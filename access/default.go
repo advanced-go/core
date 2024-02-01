@@ -37,6 +37,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"status\":%v, "+
+		"\"content-length\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
@@ -61,6 +62,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 
 		resp.StatusCode,
 		FmtJsonString(resp.Status),
+		fmt.Sprintf("%v", resp.ContentLength),
 
 		FmtJsonString(routeName),
 		FmtJsonString(routeTo),
