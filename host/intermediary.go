@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/controller"
+	"github.com/advanced-go/core/exchange"
 	"net/http"
 	"time"
 )
@@ -46,6 +47,10 @@ func NewControllerIntermediary(duration, routeName string, c2 ServeHTTPFunc) Ser
 			fmt.Fprintf(w, "%v", err)
 			return
 		}
+		var writer *exchange.ResponseWriter
+		if w2, ok := any(w).(*exchange.ResponseWriter); ok {
+			writer = w2
+		}
 		thresholdFlags := ""
 		start := time.Now().UTC()
 		wrap := newWrapper(w)
@@ -60,6 +65,9 @@ func NewControllerIntermediary(duration, routeName string, c2 ServeHTTPFunc) Ser
 		}()
 		select {
 		case <-ctx.Done():
+			if writer != nil {
+				writer.SetStatusCode(statusCode)
+			}
 			thresholdFlags = upstreamTimeout
 		case <-ch:
 			statusCode = wrap.statusCode

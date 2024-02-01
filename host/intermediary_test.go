@@ -79,7 +79,7 @@ func ExampleIntermediary_ServeHTTP() {
 
 func googleSearch(w http.ResponseWriter, r *http.Request) {
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	resp, _ := exchange.Do(req)
+	resp, _ := exchange.DoHttp(req)
 	buf, status := runtime.ReadAll(resp.Body, nil)
 	w.WriteHeader(status.Http())
 	cnt, err := w.Write(buf)
@@ -103,14 +103,14 @@ func ExampleNewControllerIntermediary_5s() {
 func ExampleNewControllerIntermediary_100ms() {
 	im := NewControllerIntermediary("100ms", "google-search", googleSearch)
 
-	rec := httptest.NewRecorder()
+	rec := exchange.NewResponseWriter() //httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
 	req.Header.Add(runtime.XRequestId, "1234-56-7890")
 	req.Header.Add(runtime.XRelatesTo, "urn:business:activity")
 	im(rec, req)
-	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Response().StatusCode)
 
 	//Output:
-	//test: NewControllerIntermediary() -> [status-code:200]
+	//test: NewControllerIntermediary() -> [status-code:504]
 
 }

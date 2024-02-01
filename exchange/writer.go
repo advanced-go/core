@@ -21,6 +21,11 @@ func NewResponseWriter() *ResponseWriter {
 	return w
 }
 
+// SetStatusCode - return the response status code
+func (w *ResponseWriter) SetStatusCode(code int) {
+	w.statusCode = code
+}
+
 // StatusCode - return the response status code
 func (w *ResponseWriter) StatusCode() int {
 	return w.statusCode
@@ -43,7 +48,9 @@ func (w *ResponseWriter) Write(p []byte) (int, error) {
 
 // WriteHeader - write the response status code
 func (w *ResponseWriter) WriteHeader(statusCode int) {
-	w.statusCode = statusCode
+	if w.statusCode == 0 {
+		w.statusCode = statusCode
+	}
 }
 
 // Response - return the response
