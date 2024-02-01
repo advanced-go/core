@@ -2,7 +2,6 @@ package uri
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"net/url"
 )
 
@@ -32,7 +31,7 @@ func Example_OverrideUrl() {
 	fmt.Printf("test: OverrideUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
 	path = "/search"
-	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
+	r.SetOverrides([]Pair{{path, yahooSearch}})
 	uri, ok = r.OverrideUrl(path)
 	fmt.Printf("test: OverrideUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
@@ -54,7 +53,7 @@ func ExampleBuild() {
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]runtime.Pair{{path, yahooSearch}})
+	r.SetOverrides([]Pair{{path, yahooSearch}})
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Override(\"%v\") -> [uri:%v]\n", path, uri)
 
@@ -75,11 +74,11 @@ func ExampleBuild_Values() {
 	uri := r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]runtime.Pair{{path, yahooSearchTemplate}})
+	r.SetOverrides([]Pair{{path, yahooSearchTemplate}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]runtime.Pair{{path, fileAttrs}})
+	r.SetOverrides([]Pair{{path, fileAttrs}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
 

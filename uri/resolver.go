@@ -2,7 +2,6 @@ package uri
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"strings"
 	"sync"
 )
@@ -17,6 +16,11 @@ const (
 	localHost   = "localhost"
 )
 
+// Pair - key, value pair
+type Pair struct {
+	Key, Value string
+}
+
 // SetLocalAuthority - set the local authority
 func SetLocalAuthority(authority string) {
 	localAuthority = authority
@@ -24,7 +28,7 @@ func SetLocalAuthority(authority string) {
 
 // Resolver - resolver interface
 type Resolver interface {
-	SetOverrides(values []runtime.Pair)
+	SetOverrides(values []Pair)
 	Build(path string, values ...any) string
 	BuildWithAuthority(authority, path string, values ...any) string
 	OverrideUrl(key string) (string, bool)
@@ -41,7 +45,7 @@ type resolver struct {
 }
 
 // SetOverrides - configure overrides
-func (r *resolver) SetOverrides(values []runtime.Pair) {
+func (r *resolver) SetOverrides(values []Pair) {
 	if len(values) == 0 {
 		r.override = nil
 		return

@@ -107,7 +107,7 @@ func ExampleWriteContent_Json() {
 	fmt.Printf("test: writeContent(http2.testActivity) -> [cnt:%v] [write-status:%v] [body:%v] [read-status:%v]\n", cnt, status, string(buf), status0)
 
 	//Output:
-	//test: writeContent(http2.testActivity) -> [cnt:0] [write-status:Invalid Content [error: content type is invalid: http2.testActivity]] [body:] [read-status:OK]
+	//test: writeContent(http2.testActivity) -> [cnt:0] [write-status:Invalid Content [error: content type is invalid: http2.activity]] [body:] [read-status:OK]
 	//test: writeContent(http2.testActivity) -> [cnt:204] [write-status:OK] [body:{"ActivityID":"123456","ActivityType":"action","Agent":"Controller","AgentUri":"https://somehost.com/id","Assignment":"case #","Controller":"egress","Behavior":"timeout","Description":"decreased timeout"}] [read-status:OK]
 
 }

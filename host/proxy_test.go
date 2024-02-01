@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/messaging"
 	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 	"net/http/httptest"
 )
@@ -37,8 +38,8 @@ func Example_ProcessPing() {
 	}
 	nid, rsc, ok := uprootUrn(r.URL.Path)
 	ProcessPing[runtime.Bypass](w, nid)
-	buf, status1 := runtime.ReadAll(w.Result().Body, nil)
-	if !status1.OK() {
+	buf, status1 := io.ReadAll(w.Result().Body)
+	if status1 != nil {
 		fmt.Printf("test: ReadAll() -> [status:%v]\n", status1)
 	}
 	fmt.Printf("test: processPing() -> [nid:%v] [nss:%v] [ok:%v] [status:%v] [content:%v]\n", nid, rsc, ok, w.Result().StatusCode, string(buf))

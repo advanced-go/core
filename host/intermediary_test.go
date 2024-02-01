@@ -2,8 +2,7 @@ package host
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/exchange"
-	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 	"net/http/httptest"
 )
@@ -28,14 +27,14 @@ func ExampleIntermediary_Nil() {
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	ic(rec, r)
-	buf, _ := runtime.ReadAll(rec.Result().Body, nil)
+	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-nil-components -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	ic = NewIntermediary(nil, serviceServeHTTP)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	ic(rec, r)
-	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
+	buf, _ = io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-service-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	ic = NewIntermediary(authServeHTTP, serviceServeHTTP)
@@ -43,7 +42,7 @@ func ExampleIntermediary_Nil() {
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
 	ic(rec, r)
-	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
+	buf, _ = io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-auth-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
@@ -60,7 +59,7 @@ func ExampleIntermediary_ServeHTTP() {
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 
 	ic(rec, r)
-	buf, _ := runtime.ReadAll(rec.Result().Body, nil)
+	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-auth-failure -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	rec = httptest.NewRecorder()
@@ -68,7 +67,7 @@ func ExampleIntermediary_ServeHTTP() {
 	r.Header.Add(Authorization, "token")
 
 	ic(rec, r)
-	buf, _ = runtime.ReadAll(rec.Result().Body, nil)
+	buf, _ = io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-auth-success -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
@@ -79,11 +78,15 @@ func ExampleIntermediary_ServeHTTP() {
 
 func googleSearch(w http.ResponseWriter, r *http.Request) {
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	resp, _ := exchange.DoHttp(req)
-	buf, status := runtime.ReadAll(resp.Body, nil)
-	w.WriteHeader(status.Http())
+	resp, _ := http.DefaultClient.Do(req)
+	buf, err0 := io.ReadAll(resp.Body)
+	if err0 != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
 	cnt, err := w.Write(buf)
-	fmt.Printf("test: googleSearch() -> [cnt:%v] [err:%v] [status:%v]\n", cnt, err, status)
+	fmt.Printf("test: googleSearch() -> [cnt:%v] [err:%v] [error0:%v]\n", cnt, err, err0)
 }
 
 func ExampleNewControllerIntermediary() {
@@ -120,8 +123,8 @@ func ExampleNewControllerIntermediary_100ms() {
 
 	rec := exchange.NewResponseWriter() //httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	req.Header.Add(runtime.XRequestId, "1234-56-7890")
-	req.Header.Add(runtime.XRelatesTo, "urn:business:activity")
+	req.Header.Add(XRequestId, "1234-56-7890")
+	req.Header.Add(XRelatesTo, "urn:business:activity")
 	im(rec, req)
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Response().StatusCode)
 
