@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-func defaultFormatter(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
+func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
+	if o == nil {
+		o = &origin
+	}
 	if req == nil {
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
@@ -22,7 +25,7 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		"\"sub-zone\":%v, "+
 		"\"app\":%v, "+
 		"\"instance-id\":%v, "+
-		" \"traffic\":\"%v\", "+
+		"\"traffic\":\"%v\", "+
 		"\"start\":%v, "+
 		"\"duration\":%v, "+
 		"\"request-id\":%v, "+
@@ -68,7 +71,7 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 	return s
 }
 
-var defaultLogger = func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+var defaultLogger = func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
 	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }

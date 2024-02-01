@@ -40,7 +40,7 @@ func StatusCode(statusCode *int) StatusCodeFunc {
 }
 
 // Formatter - log formatting
-type Formatter func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
+type Formatter func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
 
 // SetFormatter - override log formatting
 func SetFormatter(fn Formatter) {
@@ -50,7 +50,7 @@ func SetFormatter(fn Formatter) {
 }
 
 // Logger - log function
-type Logger func(o Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
+type Logger func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
 
 // SetLogger - override logging
 func SetLogger(fn Logger) {
@@ -63,11 +63,11 @@ var (
 	internalLogging = false
 
 	origin    = Origin{}
-	formatter = defaultFormatter
+	formatter = DefaultFormatter
 	logger    = defaultLogger
 )
 
-// DisableTestLogger - disable test loging
+// DisableTestLogger - disable test logging
 func DisableTestLogger() {
 	logger = nil
 }
@@ -95,7 +95,7 @@ func Log(traffic string, start time.Time, duration time.Duration, req *http.Requ
 	if traffic == InternalTraffic && !internalLogging {
 		return
 	}
-	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+	logger(&origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 }
 
 // LogDeferred - deferred accessing logging
