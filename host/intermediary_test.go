@@ -86,6 +86,21 @@ func googleSearch(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("test: googleSearch() -> [cnt:%v] [err:%v] [status:%v]\n", cnt, err, status)
 }
 
+func ExampleNewControllerIntermediary() {
+	im := NewControllerIntermediary("google-search", googleSearch)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	im(rec, req)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
+
+	//Output:
+	//test: googleSearch() -> [cnt:110540] [err:<nil>] [status:OK]
+	//test: NewControllerIntermediary() -> [status-code:200]
+
+}
+
+/*
 func ExampleNewControllerIntermediary_5s() {
 	im := NewControllerIntermediary("5s", "google-search", googleSearch)
 
@@ -114,3 +129,6 @@ func ExampleNewControllerIntermediary_100ms() {
 	//test: NewControllerIntermediary() -> [status-code:504]
 
 }
+
+
+*/
