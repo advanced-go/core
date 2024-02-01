@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"github.com/advanced-go/core/access"
 	"net/http"
 	"time"
 )
@@ -9,24 +10,7 @@ import (
 const (
 	upstreamTimeoutFlag    = "UT"
 	statusDeadlineExceeded = 4
-	egressTraffic          = "egress"
-	xRequestId             = "x-request-id"
-	xRelatesTo             = "x-relates-to"
 )
-
-var (
-	logger = defaultLogger
-)
-
-// Logger - log function
-type Logger func(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
-
-// SetLogger - override logging
-func SetLogger(fn Logger) {
-	if fn != nil {
-		logger = fn
-	}
-}
 
 type StatusCodeFunc func() int
 
@@ -66,6 +50,6 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 		} else {
 			threshold = -1
 		}
-		logger(egressTraffic, start, time.Since(start), req, &http.Response{StatusCode: code, Status: ""}, routeName, "", threshold, thresholdFlags)
+		access.Log(access.EgressTraffic, start, time.Since(start), req, &http.Response{StatusCode: code, Status: ""}, routeName, "", threshold, thresholdFlags)
 	}
 }

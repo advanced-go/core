@@ -1,16 +1,10 @@
 [
   {
     "name":"query",
-    "route":"query-route",
-    "method":"query",
-    "uri":"github/advanced-go/postgresql/pgxsql:query-test-resource.prod",
     "duration":"2s"
   },
   {
     "name":"exec",
-    "route":"exec-route",
-    "method":"insert",
-    "uri":"github/advanced-go/postgresql/pgxsql:insert.exec-test-resource.dev",
     "duration":"800ms"
   }
 ]

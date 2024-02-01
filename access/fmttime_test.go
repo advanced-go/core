@@ -10,8 +10,8 @@ func _ExampleFmtTimestamp() {
 	s := FmtTimestamp(t)
 	fmt.Printf("test: FmtTimestamp() -> [%v]\n", s)
 
-	t2, err := ParseTimestamp(s)
-	fmt.Printf("test: ParseTimestamp() -> [%v] [%v]\n", FmtTimestamp(t2), err)
+	//t2, err := ParseTimestamp(s)
+	//fmt.Printf("test: ParseTimestamp() -> [%v] [%v]\n", FmtTimestamp(t2), err)
 
 	//Output:
 

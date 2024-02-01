@@ -28,7 +28,7 @@ func NewEmptyMap() *Map {
 }
 
 func NewMap(buf []byte) (*Map, runtime.Status) {
-	var ctrl []config
+	var ctrl []Controller
 	err := json.Unmarshal(buf, &ctrl)
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusJsonDecodeError, mapNew, errors.New(fmt.Sprintf("JSON decode error: [%v]", err)))
@@ -36,29 +36,32 @@ func NewMap(buf []byte) (*Map, runtime.Status) {
 	m := NewEmptyMap()
 	for _, cfg := range ctrl {
 		c := new(Controller)
-		c.Uri = cfg.Uri
 		c.Name = cfg.Name
-		c.Route = cfg.Route
-		c.Method = cfg.Method
-		c.Duration, err = ParseDuration(cfg.Duration)
+		//c.Uri = cfg.Uri
+		//c.Route = cfg.Route
+		//c.Method = cfg.Method
+		c.Duration, err = ParseDuration(cfg.DurationS)
 		if err != nil {
 			return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, mapNew, errors.New(fmt.Sprintf("duration configuration error: [%v]", err)))
 		}
-		m.Add(c.Name, c)
+		m.Add(c)
 	}
 	return m, runtime.StatusOK()
 }
 
 // Add - add a controller
-func (m *Map) Add(key string, ctrl *Controller) runtime.Status {
-	if len(key) == 0 {
+func (m *Map) Add(ctrl *Controller) runtime.Status {
+	if ctrl == nil {
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, mapAdd, errors.New("invalid argument: controller is nil"))
+	}
+	if len(ctrl.Name) == 0 {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, mapAdd, errors.New("invalid argument: key is empty"))
 	}
-	_, ok1 := m.m.Load(key)
+	_, ok1 := m.m.Load(ctrl.Name)
 	if ok1 {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, mapAdd, errors.New(fmt.Sprintf("invalid argument: key already exists: [%v]", key)))
+		return runtime.NewStatusError(runtime.StatusInvalidArgument, mapAdd, errors.New(fmt.Sprintf("invalid argument: key already exists: [%v]", ctrl.Name)))
 	}
-	m.m.Store(key, ctrl)
+	m.m.Store(ctrl.Name, ctrl)
 	return runtime.StatusOK()
 }
 
