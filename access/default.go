@@ -2,7 +2,6 @@ package access
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"log"
 	"net/http"
 	"strconv"
@@ -49,8 +48,8 @@ func defaultFormatter(o Origin, traffic string, start time.Time, duration time.D
 		FmtTimestamp(start),
 		strconv.Itoa(Milliseconds(duration)),
 
-		FmtJsonString(req.Header.Get(runtime.XRequestId)),
-		FmtJsonString(req.Header.Get(runtime.XRelatesTo)),
+		FmtJsonString(req.Header.Get(XRequestId)),
+		FmtJsonString(req.Header.Get(XRelatesTo)),
 		FmtJsonString(req.Proto),
 		FmtJsonString(req.Method),
 		FmtJsonString(url),

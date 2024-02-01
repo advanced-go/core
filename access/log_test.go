@@ -2,7 +2,6 @@ package access
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
 )
@@ -23,7 +22,7 @@ func Example_NewRequest() {
 	h := make(http.Header)
 	h.Add("key-1", "value-1")
 	h.Add("key-2", "value-2")
-	h.Add(runtime.XRequestId, "123-456")
+	h.Add(XRequestId, "123-456")
 
 	r := NewRequest(h, http.MethodGet, "https://www.google.com/search?q=golang")
 	fmt.Printf("test: NewRequest() -> [method:%v] [uri:%v] [header:%v]\n", r.Method, r.URL.String(), r.Header)
@@ -44,16 +43,16 @@ func ExampleLogDeferred_Test1() {
 	fmt.Printf("test: LogDeferred() -> %v\n", status)
 
 	//Output:
-	//test: LogDeferred() -> Timeout
+	//test: LogDeferred() -> 504
 }
 
 // default status variable
-func loggingTest1() (status runtime.Status) {
+func loggingTest1() (statusCode int) {
 	h := make(http.Header)
-	h.Add(runtime.XRequestId, runtime.XRequestId)
-	h.Add(runtime.XRelatesTo, runtime.XRelatesTo)
-	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", &status)()
-	status = runtime.NewStatus(http.StatusGatewayTimeout)
+	h.Add(XRequestId, XRequestId)
+	h.Add(XRelatesTo, XRelatesTo)
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", BuildFunc(&statusCode))()
+	statusCode = http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
 	return
 }
@@ -65,18 +64,18 @@ func ExampleLogDeferred_Test2() {
 	fmt.Printf("test: LogDeferred() -> %v\n", status)
 
 	//Output:
-	//test: LogDeferred() -> Service Unavailable
+	//test: LogDeferred() -> 503
 
 }
 
 // non-default status variable
-func loggingTest2() runtime.Status {
-	var status runtime.Status
+func loggingTest2() int {
+	var statusCode int
 	h := make(http.Header)
-	h.Add(runtime.XRequestId, runtime.XRequestId)
-	h.Add(runtime.XRelatesTo, runtime.XRelatesTo)
-	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", &status)()
-	status = runtime.NewStatus(http.StatusServiceUnavailable)
+	h.Add(XRequestId, XRequestId)
+	h.Add(XRelatesTo, XRelatesTo)
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", BuildFunc(&statusCode))()
+	statusCode = http.StatusServiceUnavailable
 	time.Sleep(time.Millisecond * 500)
-	return status
+	return statusCode
 }

@@ -1,7 +1,6 @@
 package access
 
 import (
-	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
 )
@@ -11,6 +10,8 @@ const (
 	EgressTraffic   = "egress"
 	IngressTraffic  = "ingress"
 	failsafeUri     = "https://invalid-uri.com"
+	XRequestId      = "x-request-id"
+	XRelatesTo      = "x-relates-to"
 )
 
 // Origin - log source location
@@ -25,6 +26,17 @@ type Origin struct {
 // SetOrigin - initialize the origin
 func SetOrigin(o Origin) {
 	origin = o
+}
+
+type StatusCodeFunc func() int
+
+func BuildFunc(statusCode *int) StatusCodeFunc {
+	return func() int {
+		if statusCode == nil {
+			return http.StatusOK
+		}
+		return *statusCode
+	}
 }
 
 // Formatter - log formatting
@@ -57,16 +69,12 @@ var (
 
 // DisableTestLogger - disable test loging
 func DisableTestLogger() {
-	if runtime.IsDebugEnvironment() {
-		logger = nil
-	}
+	logger = nil
 }
 
 // EnableTestLogger - enable test logging
 func EnableTestLogger() {
-	if runtime.IsDebugEnvironment() {
-		SetLogger(defaultLogger)
-	}
+	SetLogger(defaultLogger)
 }
 
 // DisableInternalLogging - disable internal logging
@@ -91,10 +99,10 @@ func Log(traffic string, start time.Time, duration time.Duration, req *http.Requ
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, status *runtime.Status) func() {
+func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode StatusCodeFunc) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: (*status).Code(), Status: (*status).Description()}, routeName, routeTo, threshold, thresholdFlags)
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode(), Status: ""}, routeName, routeTo, threshold, thresholdFlags)
 	}
 }
 
