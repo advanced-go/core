@@ -31,18 +31,25 @@ func SetLogger(fn Logger) {
 type StatusCodeFunc func() int
 
 func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode StatusCodeFunc) func() {
-	start := time.Now()
-	//newCtx := ctx
 	var cancelFunc context.CancelFunc
+
+	start := time.Now()
 	req, _ := http.NewRequest(method, uri, nil)
 	if h != nil {
 		req.Header = h
 	}
-
 	// TO DO : determine if the current context already contains a CancelCtx
-	if ctx != nil {
+	if duration > 0 {
+		if ctx != nil {
+		} else {
+			*newCtx, cancelFunc = context.WithTimeout(context.Background(), duration)
+		}
 	} else {
-		*newCtx, cancelFunc = context.WithTimeout(context.Background(), duration)
+		if ctx == nil {
+			*newCtx = context.Background()
+		} else {
+			*newCtx = ctx
+		}
 	}
 	return func() {
 		thresholdFlags := ""
