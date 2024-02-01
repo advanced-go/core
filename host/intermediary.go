@@ -68,6 +68,7 @@ func NewControllerIntermediary(duration, routeName string, c2 ServeHTTPFunc) Ser
 			if writer != nil {
 				writer.SetStatusCode(statusCode)
 			}
+			wrap.written = 0
 			thresholdFlags = upstreamTimeout
 		case <-ch:
 			statusCode = wrap.statusCode

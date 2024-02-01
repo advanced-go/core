@@ -37,7 +37,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		//"\"status\":%v, "+
-		"\"content-length\":%v, "+
+		"\"bytes-written\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+

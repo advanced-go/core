@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"sync/atomic"
 )
 
 // ResponseWriter - write a response
 type ResponseWriter struct {
-	statusCode int // TODO : add set atomic operation
+	statusCode int32
 	header     http.Header
 	body       *bytes.Buffer
 }
@@ -23,12 +24,12 @@ func NewResponseWriter() *ResponseWriter {
 
 // SetStatusCode - return the response status code
 func (w *ResponseWriter) SetStatusCode(code int) {
-	w.statusCode = code
+	atomic.StoreInt32(&w.statusCode, int32(code))
 }
 
 // StatusCode - return the response status code
 func (w *ResponseWriter) StatusCode() int {
-	return w.statusCode
+	return int(atomic.LoadInt32(&w.statusCode))
 }
 
 // Header - return the response http.Header
@@ -48,9 +49,7 @@ func (w *ResponseWriter) Write(p []byte) (int, error) {
 
 // WriteHeader - write the response status code
 func (w *ResponseWriter) WriteHeader(statusCode int) {
-	if w.statusCode == 0 {
-		w.statusCode = statusCode
-	}
+	atomic.CompareAndSwapInt32(&w.statusCode, 0, int32(statusCode))
 }
 
 // Response - return the response
@@ -59,7 +58,7 @@ func (w *ResponseWriter) Response() *http.Response {
 	if w.statusCode == 0 {
 		r.StatusCode = http.StatusOK
 	} else {
-		r.StatusCode = w.statusCode
+		r.StatusCode = int(w.statusCode)
 	}
 	r.Header = w.header
 	r.Body = io.NopCloser(bytes.NewReader(w.body.Bytes()))
