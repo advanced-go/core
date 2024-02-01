@@ -37,9 +37,9 @@ func ExampleNewMap() {
 }
 
 func _ExampleNewMap_WriteJson() {
-	var ctrls []Config
+	var ctrls []config
 
-	var cfg Config
+	var cfg config
 	cfg.Name = "query"
 	cfg.Route = "query-route"
 	cfg.Method = "query"

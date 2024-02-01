@@ -10,7 +10,7 @@ type Controller struct {
 	Duration time.Duration `json:"duration"`
 }
 
-type Config struct {
+type config struct {
 	Name     string `json:"name"`
 	Route    string `json:"route"`
 	Method   string `json:"method"`

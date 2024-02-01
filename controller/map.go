@@ -28,7 +28,7 @@ func NewEmptyMap() *Map {
 }
 
 func NewMap(buf []byte) (*Map, runtime.Status) {
-	var ctrl []Config
+	var ctrl []config
 	err := json.Unmarshal(buf, &ctrl)
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusJsonDecodeError, mapNew, errors.New(fmt.Sprintf("JSON decode error: [%v]", err)))
