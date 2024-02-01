@@ -28,7 +28,9 @@ func SetLogger(fn Logger) {
 	}
 }
 
-func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode *int) func() {
+type StatusCodeFunc func() int
+
+func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode StatusCodeFunc) func() {
 	start := time.Now()
 	//newCtx := ctx
 	var cancelFunc context.CancelFunc
@@ -50,7 +52,7 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 		}
 		threshold := Milliseconds(duration)
 		if statusCode != nil {
-			code = *statusCode
+			code = statusCode()
 		}
 		if code == statusDeadlineExceeded {
 			thresholdFlags = upstreamTimeoutFlag
