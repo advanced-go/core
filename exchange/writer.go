@@ -8,7 +8,7 @@ import (
 
 // ResponseWriter - write a response
 type ResponseWriter struct {
-	statusCode int
+	statusCode int // TODO : add set atomic operation
 	header     http.Header
 	body       *bytes.Buffer
 }
