@@ -105,6 +105,8 @@ func ExampleNewControllerIntermediary_100ms() {
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	req.Header.Add(runtime.XRequestId, "1234-56-7890")
+	req.Header.Add(runtime.XRelatesTo, "urn:business:activity")
 	im(rec, req)
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
