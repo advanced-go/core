@@ -60,7 +60,9 @@ func (w *ResponseWriter) Response() *http.Response {
 	} else {
 		r.StatusCode = int(w.statusCode)
 	}
-	r.Header = w.header
-	r.Body = io.NopCloser(bytes.NewReader(w.body.Bytes()))
+	if r.StatusCode >= http.StatusOK && r.StatusCode <= http.StatusMultipleChoices {
+		r.Header = w.header
+		r.Body = io.NopCloser(bytes.NewReader(w.body.Bytes()))
+	}
 	return r
 }
