@@ -51,7 +51,7 @@ func loggingTest1() (statusCode int) {
 	h := make(http.Header)
 	h.Add(XRequestId, XRequestId)
 	h.Add(XRelatesTo, XRelatesTo)
-	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", BuildFunc(&statusCode))()
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", StatusCode(&statusCode))()
 	statusCode = http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
 	return
@@ -74,7 +74,7 @@ func loggingTest2() int {
 	h := make(http.Header)
 	h.Add(XRequestId, XRequestId)
 	h.Add(XRelatesTo, XRelatesTo)
-	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", BuildFunc(&statusCode))()
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search", "us.west", -1, "flags", StatusCode(&statusCode))()
 	statusCode = http.StatusServiceUnavailable
 	time.Sleep(time.Millisecond * 500)
 	return statusCode

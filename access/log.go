@@ -30,7 +30,7 @@ func SetOrigin(o Origin) {
 
 type StatusCodeFunc func() int
 
-func BuildFunc(statusCode *int) StatusCodeFunc {
+func StatusCode(statusCode *int) StatusCodeFunc {
 	return func() int {
 		if statusCode == nil {
 			return http.StatusOK
