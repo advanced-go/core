@@ -67,7 +67,7 @@ func ExampleOutputHandler_Handle() {
 
 	//status := runtime.NewStatusError(0, location, err)
 	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx), location)
-	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
+	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, errorsHandled(s))
@@ -91,19 +91,19 @@ func ExampleLogHandler_Handle() {
 
 	//s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
 	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId(ctx), location)
-	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.IsErrors())
+	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	//	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
 	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
-	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.IsErrors())
+	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	s = NewStatusError(http.StatusInternalServerError, location)
-	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(s, GetOrCreateRequestId(ctx), ""), s.IsErrors())
+	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(s, GetOrCreateRequestId(ctx), ""), s.Error() != nil)
 
 	s = NewStatusError(http.StatusInternalServerError, location, err)
-	errors := s.IsErrors()
+	errors := s.Error() != nil
 	s1 := h.Handle(s, GetOrCreateRequestId(ctx), "")
-	fmt.Printf("test: Handle(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.IsErrors())
+	fmt.Printf("test: Handle(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.Error() != nil)
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [OK] [errors:false]

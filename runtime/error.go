@@ -78,7 +78,7 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 	}
 	//s.SetRequestId(requestId)
 	s.AddLocation(location)
-	if s.IsErrors() {
+	if s.Error() != nil {
 		fmt.Printf("%v", formatter(s, requestId))
 		setErrorsHandled(s)
 	}
@@ -98,7 +98,7 @@ func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	}
 	//s.SetRequestId(requestId)
 	s.AddLocation(callerLocation)
-	if s.IsErrors() && !errorsHandled(s) {
+	if s.Error() != nil && !errorsHandled(s) {
 		logger(s, requestId) //log.Println(formatter(s))
 		setErrorsHandled(s)
 	}
@@ -112,7 +112,7 @@ func defaultFormatter(s Status, requestId string) string {
 		jsonMarkup(StatusName, s.Description(), true),
 		jsonMarkup(RequestIdName, requestId, true),
 		formatTrace(TraceName, s.Location()),
-		formatErrors(ErrorsName, s.ErrorList()))
+		formatErrors(ErrorsName, []error{s.Error()}))
 }
 
 func formatTrace(name string, trace []string) string {
@@ -151,7 +151,7 @@ func OutputFormatter(s Status, requestId string) string {
 		jsonMarkup(StatusName, s.Description(), true),
 		jsonMarkup(RequestIdName, requestId, true),
 		outputFormatTrace(TraceName, s.Location()),
-		outputFormatErrors(ErrorsName, s.ErrorList()))
+		outputFormatErrors(ErrorsName, []error{s.Error()}))
 }
 
 func outputFormatErrors(name string, errs []error) string {

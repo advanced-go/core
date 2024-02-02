@@ -64,9 +64,9 @@ type Status interface {
 	NotFound() bool
 	Http() int
 
-	IsErrors() bool
+	//IsErrors() bool
 	Error() error
-	ErrorList() []error
+	//ErrorList() []error
 
 	//Duration() time.Duration
 	//SetDuration(duration time.Duration) Status
