@@ -1,10 +1,5 @@
 package messaging
 
-import (
-	"net/http"
-	"time"
-)
-
 const (
 	StartupEvent     = "event:startup"
 	ShutdownEvent    = "event:shutdown"
@@ -14,22 +9,6 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 )
-
-// Status - message status
-type Status struct {
-	Error    error
-	Code     int
-	Location string
-	Duration time.Duration
-}
-
-func NewStatus(code int) Status {
-	return Status{Code: code}
-}
-
-func StatusOK() Status {
-	return Status{Code: http.StatusOK}
-}
 
 // MessageMap - map of messages
 type MessageMap map[string]Message
@@ -43,14 +22,14 @@ type Message struct {
 	From      string
 	Event     string
 	RelatesTo string
-	Status    Status
+	Status    *Status
 	Content   []any
 	ReplyTo   MessageHandler
 	Config    map[string]string
 }
 
 // SendReply - function used by message recipient to reply with a Status
-func SendReply(msg Message, status Status) {
+func SendReply(msg Message, status *Status) {
 	if msg.ReplyTo == nil {
 		return
 	}

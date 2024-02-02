@@ -98,7 +98,7 @@ func ExampleNewControllerIntermediary() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [cnt:110540] [err:<nil>] [status:OK]
+	//test: googleSearch() -> [cnt:110540] [err:<nil>] [error0:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:200]
 
 }

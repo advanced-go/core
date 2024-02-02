@@ -151,7 +151,7 @@ func startupGood(c chan messaging.Message) {
 			if !open {
 				return
 			}
-			messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
+			messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
 		default:
 		}
 	}
@@ -165,7 +165,7 @@ func startupBad(c chan messaging.Message) {
 				return
 			}
 			time.Sleep(time.Second + time.Millisecond*100)
-			messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
+			messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
 		default:
 		}
 	}
@@ -180,10 +180,10 @@ func startupDepends(c chan messaging.Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				messaging.SendReply(msg, messaging.Status{Error: err, Duration: time.Since(start)})
+				messaging.SendReply(msg, messaging.NewStatusDurationError(0, time.Since(start), err))
 			} else {
 				time.Sleep(time.Second + (time.Millisecond * 900))
-				messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
+				messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
 			}
 
 		default:
