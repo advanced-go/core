@@ -2,49 +2,72 @@ package host
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/messaging"
-	"github.com/advanced-go/core/runtime"
-	"io"
-	"net/http"
-	"net/http/httptest"
 )
 
-func appHttpHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusTeapot)
+/*
+func proxyTestHttpHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusGatewayTimeout)
 }
 
-func Example_HttpHandler() {
-	pattern := "github/advanced-go/example-domain/activity"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/activity:entry", nil)
-	RegisterHandler(pattern, appHttpHandler)
+*/
 
-	rec := httptest.NewRecorder()
-	HttpHandler(rec, r)
+func ExampleProxy_Add() {
+	proxy := NewProxy()
+	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
-	fmt.Printf("test: HttpHandler() -> %v\n", rec.Result().StatusCode)
+	err := proxy.Register("", nil)
+	fmt.Printf("test: Register(\"\") -> [err:%v]\n", err)
+
+	err = proxy.Register(path, nil)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+
+	err = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+
+	err = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+
+	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
+	err = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	//Output:
-	//test: HttpHandler() -> 418
+	//test: Register("") -> [err:error: proxy.Register() path is empty]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.Register() HTTP handler is nil: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.Register() HTTP handler already exists: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
 
 }
 
-func Example_ProcessPing() {
-	uri1 := "github/advanced-go/example-domain/activity"
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("", "github/advanced-go/example-domain/activity:ping", nil)
-	status := messaging.HostExchange.Add(messaging.NewMailbox(uri1, nil))
-	if !status.OK() {
-		fmt.Printf("test: processPing() -> [status:%v]\n", status)
-	}
-	nid, rsc, ok := uprootUrn(r.URL.Path)
-	ProcessPing[runtime.Bypass](w, nid)
-	buf, status1 := io.ReadAll(w.Result().Body)
-	if status1 != nil {
-		fmt.Printf("test: ReadAll() -> [status:%v]\n", status1)
-	}
-	fmt.Printf("test: processPing() -> [nid:%v] [nss:%v] [ok:%v] [status:%v] [content:%v]\n", nid, rsc, ok, w.Result().StatusCode, string(buf))
+func ExampleProxy_Get() {
+	proxy := NewProxy()
+	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
+
+	p := proxy.Lookup("")
+	fmt.Printf("test: Lookup(\"\") -> [proxy:%v]\n", p != nil)
+
+	p = proxy.Lookup(path)
+	fmt.Printf("test: Lookup(%v) -> [proxy:%v]\n", path, p != nil)
+
+	err := proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+
+	handler := proxy.Lookup(path)
+	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)
+
+	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
+	err = proxy.Register(path, appHttpHandler)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+	handler = proxy.Lookup(path)
+	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)
 
 	//Output:
-	//test: processPing() -> [nid:github/advanced-go/example-domain/activity] [nss:ping] [ok:true] [status:504] [content:ping response time out: [github/advanced-go/example-domain/activity]]
+	//test: Lookup("") -> [proxy:false]
+	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [proxy:false]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
+	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [handler:true]
+	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
+	//test: Lookup(http://localhost:8080/github/advanced-go/example-domain/activity) -> [handler:true]
 
 }

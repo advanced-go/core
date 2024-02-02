@@ -14,13 +14,15 @@ type MessageCache interface {
 	Include(event string, status int) []string
 	Exclude(event string, status int) []string
 	Add(msg Message) error
-	Get(uri string) (Message, error)
+	Get(uri string) (Message, bool)
 	Uri() []string
+	ErrorList() []error
 }
 
 type messageCache struct {
-	m  map[string]Message
-	mu sync.RWMutex
+	m    map[string]Message
+	errs []error
+	mu   sync.RWMutex
 }
 
 // NewMessageCache - create a message cache
@@ -48,11 +50,11 @@ func (r *messageCache) Filter(event string, code int, include bool) []string {
 	var uri []string
 	for u, resp := range r.m {
 		if include {
-			if resp.Status != nil && resp.Status.Code() == code && resp.Event == event {
+			if resp.Status.Code == code && resp.Event == event {
 				uri = append(uri, u)
 			}
 		} else {
-			if resp.Status != nil && resp.Status.Code() != code || resp.Event != event {
+			if resp.Status.Code != code || resp.Event != event {
 				uri = append(uri, u)
 			}
 		}
@@ -73,29 +75,33 @@ func (r *messageCache) Exclude(event string, status int) []string {
 
 // Add - add a message
 func (r *messageCache) Add(msg Message) error {
-	if msg.From == "" {
-		return errors.New("invalid argument: message from is empty")
-	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if msg.From == "" {
+		err := errors.New("invalid argument: message from is empty")
+		r.errs = append(r.errs, err)
+		return err
+	}
 	if _, ok := r.m[msg.From]; !ok {
 		r.m[msg.From] = msg
 		return nil
 	}
-	return errors.New(fmt.Sprintf("invalid argument: message found [%v]", msg.From))
+	err0 := errors.New(fmt.Sprintf("invalid argument: message found [%v]", msg.From))
+	r.errs = append(r.errs, err0)
+	return err0
 }
 
 // Get - get a message based on a URI
-func (r *messageCache) Get(uri string) (Message, error) {
+func (r *messageCache) Get(uri string) (Message, bool) {
 	if uri == "" {
-		return Message{}, errors.New("invalid argument: uri is empty")
+		return Message{}, false
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.m[uri]; ok {
-		return r.m[uri], nil
+		return r.m[uri], true
 	}
-	return Message{}, errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
+	return Message{}, false //errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
 }
 
 // Uri - list the URI's in the cache
@@ -108,4 +114,18 @@ func (r *messageCache) Uri() []string {
 	}
 	sort.Strings(uri)
 	return uri
+}
+
+// ErrorList - list of errors
+func (r *messageCache) ErrorList() []error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.errs
+}
+
+// NewMessageCacheHandler - handler to receive messages into a cache.
+func NewMessageCacheHandler(cache MessageCache) MessageHandler {
+	return func(msg Message) {
+		cache.Add(msg)
+	}
 }

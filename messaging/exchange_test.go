@@ -12,24 +12,24 @@ func Example_Add() {
 	m1 := newDefaultMailbox(uri1)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0, status := testDir.get(uri1)
-	fmt.Printf("test: get(%v) -> : [mbox:%v] [status:%v]\n", uri1, m0, status)
+	m0 := testDir.get(uri1)
+	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri1, m0)
 
-	status = testDir.Add(m1)
-	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri1, status)
+	err := testDir.Add(m1)
+	fmt.Printf("test: Add(%v) -> : [err:%v]\n", uri1, err)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0, status = testDir.get(uri1)
-	fmt.Printf("test: get(%v) -> : [mbox:%v] [status:%v]\n", uri1, m0, status)
+	m0 = testDir.get(uri1)
+	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri1, m0)
 
 	uri2 := "urn:test:two"
 
 	m2 := newDefaultMailbox(uri2)
-	status = testDir.Add(m2)
-	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri2, status)
+	err = testDir.Add(m2)
+	fmt.Printf("test: Add(%v) -> : [err:%v]\n", uri2, err)
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0, status = testDir.get(uri2)
-	fmt.Printf("test: get(%v) -> : [mbox:%v] [status:%v]\n", uri2, m0, status)
+	m0 = testDir.get(uri2)
+	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri2, m0)
 
 	fmt.Printf("test: List() -> : %v\n", testDir.List())
 

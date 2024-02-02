@@ -2,10 +2,9 @@ package host
 
 import (
 	"github.com/advanced-go/core/messaging"
-	"github.com/advanced-go/core/runtime"
 )
 
-func shutdownHost(msg messaging.Message) runtime.Status {
+func shutdownHost(msg messaging.Message) error {
 	//TO DO: authentication and implementation
-	return runtime.StatusOK()
+	return nil
 }

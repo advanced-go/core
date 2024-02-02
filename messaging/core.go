@@ -1,7 +1,8 @@
 package messaging
 
 import (
-	"github.com/advanced-go/core/runtime"
+	"net/http"
+	"time"
 )
 
 const (
@@ -12,9 +13,23 @@ const (
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
-
-	msgCacheHandlerLoc = PkgPath + ":MessageCacheHandler"
 )
+
+// Status - message status
+type Status struct {
+	Error    error
+	Code     int
+	Location string
+	Duration time.Duration
+}
+
+func NewStatus(code int) Status {
+	return Status{Code: code}
+}
+
+func StatusOK() Status {
+	return Status{Code: http.StatusOK}
+}
 
 // MessageMap - map of messages
 type MessageMap map[string]Message
@@ -28,14 +43,14 @@ type Message struct {
 	From      string
 	Event     string
 	RelatesTo string
-	Status    runtime.Status
+	Status    Status
 	Content   []any
 	ReplyTo   MessageHandler
-	Config    *runtime.StringsMap
+	Config    map[string]string
 }
 
-// SendReply - function used by message recipient to reply with a runtime.Status
-func SendReply(msg Message, status runtime.Status) {
+// SendReply - function used by message recipient to reply with a Status
+func SendReply(msg Message, status Status) {
 	if msg.ReplyTo == nil {
 		return
 	}
@@ -48,16 +63,4 @@ func SendReply(msg Message, status runtime.Status) {
 		Content:   nil,
 		ReplyTo:   nil,
 	})
-}
-
-// NewMessageCacheHandler - handler to receive messages into a cache.
-func NewMessageCacheHandler[E runtime.ErrorHandler](cache MessageCache) MessageHandler {
-	return func(msg Message) {
-		err := cache.Add(msg)
-		if err != nil {
-			var e E
-			status := runtime.NewStatusError(runtime.StatusInvalidArgument, msgCacheHandlerLoc, err)
-			e.Handle(status, "", "")
-		}
-	}
 }

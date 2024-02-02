@@ -3,8 +3,6 @@ package messaging
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/runtime"
-	"net/http"
 	"sort"
 	"sync"
 )
@@ -23,9 +21,9 @@ var HostExchange = NewExchange()
 type Exchange interface {
 	Count() int
 	List() []string
-	Add(m *Mailbox) runtime.Status
-	SendCtrl(msg Message) runtime.Status
-	SendData(msg Message) runtime.Status
+	Add(m *Mailbox) error
+	SendCtrl(msg Message) error
+	SendData(msg Message) error
 }
 
 type exchange struct {
@@ -63,69 +61,69 @@ func (d *exchange) List() []string {
 }
 
 // SendCtrl - send a message to the select item's control channel
-func (d *exchange) SendCtrl(msg Message) runtime.Status {
+func (d *exchange) SendCtrl(msg Message) error {
 	// TO DO : authenticate shutdown control message
 	if msg.Event == ShutdownEvent {
-		return runtime.StatusOK()
+		return nil
 	}
-	mbox, status := d.get(msg.To)
-	if !status.OK() {
-		return status.AddLocation(exSendCtrlLocation)
+	mbox := d.get(msg.To)
+	if mbox == nil {
+		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To))
 	}
 	mbox.SendCtrl(msg)
-	return runtime.StatusOK()
+	return nil
 }
 
 // SendData - send a message to the item's data channel
-func (d *exchange) SendData(msg Message) runtime.Status {
-	mbox, status := d.get(msg.To)
-	if !status.OK() {
-		return status.AddLocation(exSendDataLocation)
+func (d *exchange) SendData(msg Message) error {
+	mbox := d.get(msg.To)
+	if mbox == nil {
+		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To))
 	}
 	mbox.SendData(msg)
-	return runtime.StatusOK()
+	return nil
 }
 
 // Add - add a mailbox
-func (d *exchange) Add(m *Mailbox) runtime.Status {
+func (d *exchange) Add(m *Mailbox) error {
 	if m == nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox is nil"))
+		return errors.New("error: exchange.Add() mailbox is nil")
 	}
 	if len(m.uri) == 0 {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox uri is empty"))
+		return errors.New("error: exchange.Add() mailbox uri is empty")
 	}
 	if m.ctrl == nil {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New("invalid argument: mailbox command channel is nil"))
+		return errors.New("error: exchange.Add() mailbox command channel is nil")
 	}
 	_, ok := d.m.Load(m.uri)
 	if ok {
-		return runtime.NewStatusError(runtime.StatusInvalidArgument, exAddLocation, errors.New(fmt.Sprintf("invalid argument: exchange mailbox already exists: [%v]", m.uri)))
+		return errors.New(fmt.Sprintf("error: exchange.Add() mailbox already exists: [%v]", m.uri))
 	}
 	d.m.Store(m.uri, m)
 	m.unregister = func() {
 		d.m.Delete(m.uri)
 	}
-	return runtime.StatusOK()
+	return nil
 }
 
-func (d *exchange) get(uri string) (*Mailbox, runtime.Status) {
+func (d *exchange) get(uri string) *Mailbox {
 	if len(uri) == 0 {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, exGetLocation, errors.New("invalid argument: uri is empty"))
+		return nil
 	}
 	v, ok1 := d.m.Load(uri)
 	if !ok1 {
-		return nil, runtime.NewStatusError(http.StatusNotFound, exGetLocation, errors.New(fmt.Sprintf("invalid URI: exchange mailbox not found [%v]", uri)))
+		return nil
 	}
 	if mbox, ok2 := v.(*Mailbox); ok2 {
-		return mbox, runtime.StatusOK()
+		return mbox
 	}
-	return nil, runtime.NewStatusError(runtime.StatusInvalidContent, exGetLocation, errors.New("invalid Mailbox type"))
+	return nil
 }
 
 // Shutdown - close an item's mailbox
-func (d *exchange) Shutdown(msg Message) runtime.Status {
+func (d *exchange) Shutdown(msg Message) error {
 	// TO DO: add authentication
-	return runtime.StatusOK() //d.shutdown(msg.To)
+	return nil
 }
 
 /*

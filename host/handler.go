@@ -1,26 +1,35 @@
 package host
 
 import (
-	"github.com/advanced-go/core/access"
-	"github.com/felixge/httpsnoop"
 	"net/http"
-	"time"
 )
 
-const (
-	route = "host"
-)
+var httpHandlerProxy = NewProxy()
 
-// Configure as last handler in chain
-//middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
+// RegisterHandler - add a path and Http handler to the proxy
+// TO DO : panic on duplicate handler and pattern combination
+func RegisterHandler(path string, handler ServeHTTPFunc) {
+	err := httpHandlerProxy.Register(path, handler)
+	if err != nil {
+		panic(err)
+	}
+}
 
-// HttpHostMetricsHandler - handler for Http request metrics and access logging
-func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
-	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now().UTC()
-		m := httpsnoop.CaptureMetrics(appHandler, w, r)
-		// log.Printf("%s %s (code=%d dt=%s written=%d)", r.Method, r.URL, m.Code, m.Duration, m.Written)
-		access.Log(access.IngressTraffic, start, time.Since(start), r, &http.Response{StatusCode: m.Code, ContentLength: m.Written}, route, "", -1, "")
-	})
-	return wrappedH
+// HttpHandler - handler for messaging
+func HttpHandler(w http.ResponseWriter, r *http.Request) {
+	if r == nil || w == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	nid, _, ok := uprootUrn(r.URL.Path)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	handler := httpHandlerProxy.LookupByNID(nid)
+	if handler == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	handler(w, r)
 }

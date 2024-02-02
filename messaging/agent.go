@@ -2,7 +2,6 @@ package messaging
 
 import (
 	"errors"
-	"github.com/advanced-go/core/runtime"
 )
 
 const (
@@ -13,7 +12,7 @@ const (
 type Agent interface {
 	SendCtrl(msg Message)
 	SendData(msg Message)
-	Register(e Exchange) runtime.Status
+	Register(e Exchange) error
 	Run()
 	Shutdown()
 }
@@ -25,16 +24,16 @@ type agentCfg struct {
 
 // NewDefaultAgent - create an agent with only a control channel, registered with the HostDirectory,
 // and using the default run function.
-func NewDefaultAgent(uri string, ctrlHandler MessageHandler, public bool) (Agent, runtime.Status) {
+func NewDefaultAgent(uri string, ctrlHandler MessageHandler, public bool) (Agent, error) {
 	return newDefaultAgent(uri, ctrlHandler, HostExchange, public)
 }
 
-func newDefaultAgent(uri string, ctrlHandler MessageHandler, e Exchange, public bool) (Agent, runtime.Status) {
+func newDefaultAgent(uri string, ctrlHandler MessageHandler, e Exchange, public bool) (Agent, error) {
 	if len(uri) == 0 {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, newAgentLocation, errors.New("URI is empty"))
+		return nil, errors.New("error: agent URI is empty")
 	}
 	if ctrlHandler == nil {
-		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, newAgentLocation, errors.New("controller message handler is nil"))
+		return nil, errors.New("error: agent controller message handler is nil")
 	}
 	a := new(agentCfg)
 	a.m = NewMailbox(uri, nil)
@@ -66,7 +65,7 @@ func (a *agentCfg) SendData(msg Message) {
 }
 
 // Register - register an agent with a directory
-func (a *agentCfg) Register(e Exchange) runtime.Status {
+func (a *agentCfg) Register(e Exchange) error {
 	return e.Add(a.m)
 }
 
@@ -80,7 +79,7 @@ func DefaultRun(m *Mailbox, ctrlHandler MessageHandler) {
 			}
 			switch msg.Event {
 			case ShutdownEvent:
-				ctrlHandler(Message{Event: msg.Event, Status: runtime.StatusOK()})
+				ctrlHandler(Message{Event: msg.Event, Status: StatusOK()})
 				m.Close()
 				return
 			default:

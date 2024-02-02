@@ -1,65 +1,67 @@
 package host
 
 import (
+	"errors"
 	"fmt"
-	"github.com/advanced-go/core/runtime"
 	"net/http"
+	"sync"
 )
 
 const (
-	PingResource   = "ping"
-	ContentType    = "Content-Type"
-	processPingLoc = PkgPath + ":ProcessPing"
+	handlerRegisterLocation  = PkgPath + ":RegisterHandler"
+	handlerLookupLocation    = PkgPath + ":Lookup"
+	handlerLookupNIDLocation = PkgPath + ":LookupFromNID"
 )
 
-var proxy = runtime.NewProxy()
-
-// RegisterHandler - add a path and Http handler to the proxy
-// TO DO : panic on duplicate handler and pattern combination
-func RegisterHandler(path string, handler ServeHTTPFunc) {
-	status := proxy.Register(path, handler)
-	if !status.OK() {
-		panic(status)
-	}
+// Proxy - key value pairs of a URI -> HttpHandler
+type Proxy struct {
+	m *sync.Map
 }
 
-// HttpHandler - handler for messaging
-func HttpHandler(w http.ResponseWriter, r *http.Request) {
-	if r == nil || w == nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
+// NewProxy - create a new Proxy
+func NewProxy() *Proxy {
+	p := new(Proxy)
+	p.m = new(sync.Map)
+	return p
+}
+
+// Register - add an HttpHandler to the proxy
+func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) error {
+	if len(uri) == 0 {
+		return errors.New("error: proxy.Register() path is empty")
 	}
-	nid, rsc, ok := uprootUrn(r.URL.Path)
+	nid, _, ok := uprootUrn(uri)
 	if !ok {
-		w.WriteHeader(http.StatusNotFound)
-		return
+		return errors.New(fmt.Sprintf("error: proxy.Register() path is invalid: [%v]", uri))
 	}
-	handler, status := proxy.LookupByNID(nid)
-	if !status.OK() {
-		w.WriteHeader(http.StatusNotFound)
-		return
+	if handler == nil {
+		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler is nil: [%v]", uri))
 	}
-	if rsc == PingResource {
-		ProcessPing[runtime.Log](w, nid)
-		return
+	_, ok1 := p.m.Load(nid)
+	if ok1 {
+		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler already exists: [%v]", uri))
 	}
-	handler(w, r)
+	p.m.Store(nid, handler)
+	return nil
 }
 
-func ProcessPing[E runtime.ErrorHandler](w http.ResponseWriter, nid string) {
-	var e E
-	var buf []byte
+// Lookup - get an HttpHandler from the proxy, using a URI as the key
+func (p *Proxy) Lookup(uri string) func(w http.ResponseWriter, r *http.Request) {
+	nid, _, ok := uprootUrn(uri)
+	if !ok {
+		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
+	}
+	return p.LookupByNID(nid)
+}
 
-	status := Ping[E](nil, nid)
-	if status.OK() {
-		buf = []byte(fmt.Sprintf("Ping status: %v, resource: %v", status, nid))
-	} else {
-		buf = []byte(status.Error().Error())
+// LookupByNID - get an HttpHandler from the proxy, using an NID as a key
+func (p *Proxy) LookupByNID(nid string) func(w http.ResponseWriter, r *http.Request) {
+	v, ok := p.m.Load(nid)
+	if !ok {
+		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByNID() HTTP handler does not exist: [%v]", nid))
 	}
-	w.Header().Set(ContentType, http.DetectContentType(buf))
-	w.WriteHeader(status.Http())
-	_, err := w.Write(buf)
-	if err != nil {
-		e.Handle(runtime.NewStatusError(http.StatusInternalServerError, processPingLoc, err), "", "")
+	if handler, ok1 := v.(func(w http.ResponseWriter, r *http.Request)); ok1 {
+		return handler //, StatusOK()
 	}
+	return nil //, NewStatus(StatusInvalidContent)
 }

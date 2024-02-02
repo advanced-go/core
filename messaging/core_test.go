@@ -2,7 +2,7 @@ package messaging
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
+	"net/http"
 )
 
 func handler(msg Message) {
@@ -11,10 +11,10 @@ func handler(msg Message) {
 
 func Example_ReplyTo() {
 	msg := Message{To: "test", Event: "startup", ReplyTo: handler}
-	SendReply(msg, runtime.StatusOK())
+	SendReply(msg, Status{Code: http.StatusOK})
 
 	msg = Message{To: "test", Event: "startup", ReplyTo: nil}
-	SendReply(msg, runtime.StatusOK())
+	SendReply(msg, Status{Code: http.StatusOK})
 
 	//Output:
 	//startup

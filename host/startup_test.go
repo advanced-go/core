@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/core/messaging"
-	"github.com/advanced-go/core/runtime"
+	"net/http"
 	"time"
 )
 
@@ -44,7 +44,7 @@ type resource struct {
 	Uri string
 }
 
-func testRegister(ex messaging.Exchange, uri string, cmd, data chan messaging.Message) runtime.Status {
+func testRegister(ex messaging.Exchange, uri string, cmd, data chan messaging.Message) error {
 	if cmd == nil {
 		cmd = make(chan messaging.Message, 16)
 	}
@@ -58,13 +58,13 @@ func ExampleCreateToSend() {
 	one := "startup/one"
 
 	startupDir := messaging.NewExchange() //any(messaging.NewExchange()).(*exchange)
-	status := testRegister(startupDir, none, nil, nil)
-	if !status.OK() {
-		fmt.Printf("test: testRegister() -> [status:%v]\n", status)
+	err := testRegister(startupDir, none, nil, nil)
+	if err != nil {
+		fmt.Printf("test: testRegister() -> [err:%v]\n", err)
 	}
-	status = testRegister(startupDir, one, nil, nil)
-	if !status.OK() {
-		fmt.Printf("test: testRegister() -> [status:%v]\n", status)
+	err = testRegister(startupDir, one, nil, nil)
+	if err != nil {
+		fmt.Printf("test: testRegister() -> [err:%v]\n", err)
 	}
 	m := createToSend(startupDir, nil, nil)
 	msg := m[none]
@@ -102,7 +102,7 @@ func ExampleStartup_Success() {
 	testRegister(startupDir, uri3, c, nil)
 	go startupDepends(c, nil)
 
-	status := startup[runtime.Output](startupDir, time.Second*2, nil)
+	status := startup(startupDir, time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
@@ -110,7 +110,7 @@ func ExampleStartup_Success() {
 	//startup successful: [github/startup/bad] : 0s
 	//startup successful: [github/startup/depends] : 0s
 	//startup successful: [github/startup/good] : 0s
-	//test: Startup() -> [OK]
+	//test: Startup() -> [true]
 
 }
 
@@ -134,13 +134,13 @@ func ExampleStartup_Failure() {
 	testRegister(startupDir, uri3, c, nil)
 	go startupDepends(c, errors.New("startup failure error message"))
 
-	status := startup[runtime.Output](startupDir, time.Second*2, nil)
+	status := startup(startupDir, time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
 	//Output:
-	//{ "code":500, "status":"Internal Error", "request-id":null, "trace" : [ "https://github.com/advanced-go/core/tree/main/host#Startup" ], "errors" : [ "startup failure error message" ] }
-	//test: Startup() -> [Internal Error]
+	//error: startup failure [startup failure error message]
+	//test: Startup() -> [false]
 
 }
 
@@ -151,7 +151,7 @@ func startupGood(c chan messaging.Message) {
 			if !open {
 				return
 			}
-			messaging.SendReply(msg, runtime.NewStatusOK().SetDuration(time.Since(start)))
+			messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
 		default:
 		}
 	}
@@ -165,7 +165,7 @@ func startupBad(c chan messaging.Message) {
 				return
 			}
 			time.Sleep(time.Second + time.Millisecond*100)
-			messaging.SendReply(msg, runtime.NewStatusOK().SetDuration(time.Since(start)))
+			messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
 		default:
 		}
 	}
@@ -180,10 +180,10 @@ func startupDepends(c chan messaging.Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				messaging.SendReply(msg, runtime.NewStatusError(0, startupLocation, err).SetDuration(time.Since(start)))
+				messaging.SendReply(msg, messaging.Status{Error: err, Duration: time.Since(start)})
 			} else {
 				time.Sleep(time.Second + (time.Millisecond * 900))
-				messaging.SendReply(msg, runtime.NewStatusOK().SetDuration(time.Since(start)))
+				messaging.SendReply(msg, messaging.Status{Code: http.StatusOK, Duration: time.Since(start)})
 			}
 
 		default:
@@ -197,11 +197,8 @@ var msgTest = messaging.Message{To: "to-uri", From: "from-uri", Content: []any{
 	credentials(func() (username, password string, err error) { return "", "", nil }),
 	time.Second,
 	nil,
-	//runtime.Handle[runtime.DebugError](),
 	errors.New("this is a content error message"),
 	func() bool { return false },
-	runtime.NewStatusError(0, "location", errors.New("error message")).SetDuration(time.Second * 2),
-	//runtime.HandleWithContext[runtime.DebugError](),
 	resource{"postgres://username:password@database.cloud.timescale.com/database?sslmode=require"},
 }}
 
