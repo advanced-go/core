@@ -61,13 +61,6 @@ func DoHttp(req *http.Request) (resp *http.Response, status runtime.Status) {
 	}
 	var err error
 
-	//if uri.IsFileScheme(req.URL) {
-	////	resp1, status1 := readResponse(req.URL)
-	//	if !status1.OK() {
-	//		return resp1, status1.AddLocation(doLocation)
-	//	}
-	//	return resp1, runtime.NewStatus(resp1.StatusCode)
-	//}
 	resp, err = client.Do(req)
 	if err != nil {
 		// catch connectivity error, even with a valid URL

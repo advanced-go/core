@@ -48,7 +48,7 @@ func ExampleDo_ConnectivityError() {
 
 */
 
-func Example_Do_Service_Unavailable() {
+func ExampleDo_Service_Unavailable() {
 	s := "file://[cwd]/exchangetest/http-503.txt"
 	req, _ := http.NewRequest("", s, nil)
 	resp, status := Do(req)
@@ -66,7 +66,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(testContent))
 }
 
-func Example_Do_Proxy() {
+func ExampleDo_Proxy() {
 	uri := "http://localhost:8080/github.com/advanced-go/core/exchange:Do"
 	req, _ := http.NewRequest("", uri, nil)
 
@@ -96,3 +96,27 @@ func Example_Do_Proxy() {
 	//test: Do() -> [write-content:this is response write content] [response-content:this is response write content]
 
 }
+
+/*
+func ExampleDoHttp() {
+	req, _ := http.NewRequest(http.MethodGet, "https:/www/google.com/search?q=golang", nil)
+	resp, result := DoHttp(req)
+	if !result.OK() {
+		fmt.Printf("test: DoHttp() -> [loc:%v] [result:%v]\n", result.Location, result)
+	} else {
+		fmt.Printf("test: DoHttp() -> [status-code:%v] [result:%v]\n", resp.StatusCode, result)
+	}
+
+	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	resp, result = DoHttp(req)
+	if !result.OK() {
+		fmt.Printf("test: DoHttp() -> [result:%v]\n", result)
+	} else {
+		fmt.Printf("test: DoHttp() -> [status-code:%v] [result:%v]\n", resp.StatusCode, result)
+	}
+
+	//Output:
+}
+
+
+*/
