@@ -173,6 +173,6 @@ func ExampleStatus_Marshalling() {
 	fmt.Printf("test: Marshal() -> [err:%v] [str:%v]\n", err, s)
 
 	//Output:
-	//test: Marshal() -> [err:<nil>] [str:{"code":200,"duration":-1,"handled":false,"request-id":"","location":["ExampleStatus_Marshaling"],"errs":null,"content":null,"header":null}]
+	//test: Marshal() -> [err:<nil>] [str:{"code":200,"duration":-1,"handled":false,"request-id":"","location":["ExampleStatus_Marshaling"],"errs":null}]
 
 }

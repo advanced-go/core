@@ -88,8 +88,6 @@ type statusState struct {
 	SRequestId string        `json:"request-id"`
 	SLocation  []string      `json:"location"`
 	Errs       []error       `json:"errs"`
-	SContent   any           `json:"content"`
-	Header     http.Header   `json:"header"`
 }
 
 // NewStatus - new Status from a code
@@ -186,41 +184,6 @@ func (s *statusState) AddLocation(location string) Status {
 	}
 	return s
 }
-
-/*
-// IsContent - content status, get/set, and string representation
-func (s *statusState) IsContent() bool { return s.SContent != nil }
-func (s *statusState) Content() any    { return s.SContent }
-func (s *statusState) ContentString() string {
-	switch ptr := s.SContent.(type) {
-	case string:
-		return ptr
-	case []byte:
-		return string(ptr)
-	}
-	return ""
-}
-
-func (s *statusState) SetContent(content any, jsonContent bool) Status {
-	if content == nil {
-		return s
-	}
-	s.SContent = content
-	if jsonContent {
-		s.ContentHeader().Set(contentType, contentTypeJson)
-	}
-	return s
-}
-
-// ContentHeader - header map
-func (s *statusState) ContentHeader() http.Header {
-	if s.Header == nil {
-		s.Header = make(http.Header)
-	}
-	return s.Header
-}
-
-*/
 
 // Http - conversion of code to HTTP status code
 func (s *statusState) Http() int {
