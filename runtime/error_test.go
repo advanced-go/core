@@ -42,7 +42,7 @@ func Example_FormatUri_Test() {
 
 func Example_DefaultFormat() {
 	s := NewStatus(http.StatusNotFound)
-	s.SetRequestId("1234-5678")
+	//s.SetRequestId("1234-5678")
 	// Adding in reverse to mirror call stack
 	s.AddLocation("github/advanced-go/location-2")
 	s.AddLocation("github/advanced-go/location-1")
@@ -50,7 +50,7 @@ func Example_DefaultFormat() {
 		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
 	//SetOutputFormatter()
-	str := formatter(s)
+	str := formatter(s, "1234-5678")
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:

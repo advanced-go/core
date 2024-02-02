@@ -68,11 +68,11 @@ type Status interface {
 	Error() error
 	ErrorList() []error
 
-	Duration() time.Duration
-	SetDuration(duration time.Duration) Status
+	//Duration() time.Duration
+	//SetDuration(duration time.Duration) Status
 
-	RequestId() string
-	SetRequestId(requestId any) Status
+	//RequestId() string
+	//SetRequestId(requestId any) Status
 
 	Location() []string
 	AddLocation(location string) Status

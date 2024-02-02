@@ -64,15 +64,14 @@ func Example_RequestId() {
 	id = RequestId(req)
 	fmt.Printf("test: GetOrCreateRequestId() -> [valid:%v]\n", len(id) != 0)
 
-	status := NewStatusOK().SetRequestId("987-654")
-	id = RequestId(status)
-	fmt.Printf("test: RequestId() -> %v\n", id)
+	//status := NewStatusOK().SetRequestId("987-654")
+	//id = RequestId(status)
+	//fmt.Printf("test: RequestId() -> %v\n", id)
 
 	//Output:
 	//test: RequestId() -> 123-456
 	//test: RequestId() -> 123-456-abc
 	//test: RequestId() -> 123-456-789
 	//test: GetOrCreateRequestId() -> [valid:true]
-	//test: RequestId() -> 987-654
 
 }

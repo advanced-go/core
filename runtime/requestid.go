@@ -72,8 +72,8 @@ func RequestId(t any) string {
 		return ptr.Header.Get(XRequestId)
 	case http.Header:
 		return ptr.Get(XRequestId)
-	case Status:
-		return ptr.RequestId()
+		//case Status:
+		//	return ptr.RequestId()
 	}
 	return ""
 }
