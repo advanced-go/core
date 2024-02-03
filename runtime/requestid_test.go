@@ -120,5 +120,5 @@ func ExampleAddRequestId() {
 	//test: AddRequestId(head) -> 123-45-head
 	//test: RequestId(request) -> [empty:false]
 	//test: RequestId(request) -> 123-456-request
-	
+
 }
