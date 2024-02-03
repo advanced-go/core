@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"reflect"
@@ -31,18 +32,18 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 	case io.Reader:
 		var buf []byte
 
-		buf, err = io.ReadAll(ptr)
-		if err != nil {
-			return 0, runtime.NewStatusError(runtime.StatusIOError, writeContentLoc, err)
+		buf, status = io2.ReadAll(ptr, nil)
+		if !status.OK() {
+			return 0, status.AddLocation(writeContentLoc)
 		}
 		cnt, err = w.Write(buf)
 	case io.ReadCloser:
 		var buf []byte
 
-		buf, err = io.ReadAll(ptr)
+		buf, status = io2.ReadAll(ptr, nil)
 		_ = ptr.Close()
-		if err != nil {
-			return 0, runtime.NewStatusError(runtime.StatusIOError, writeContentLoc, err)
+		if !status.OK() {
+			return 0, status.AddLocation(writeContentLoc)
 		}
 		cnt, err = w.Write(buf)
 	default:

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/io2"
 	"net/http"
 )
 
@@ -55,12 +55,12 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 
 func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
-	wantBytes, status := runtime.ReadAll(want.Body, nil)
+	wantBytes, status := io2.ReadAll(want.Body, nil)
 	if status.Error != nil {
 		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Error}}
 		return
 	}
-	gotBytes, status1 := runtime.ReadAll(got.Body, nil)
+	gotBytes, status1 := io2.ReadAll(got.Body, nil)
 	if status1.Error != nil {
 		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Error}}
 		return

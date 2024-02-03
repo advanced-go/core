@@ -3,7 +3,7 @@ package http2test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/io2"
 	"time"
 )
 
@@ -57,7 +57,7 @@ func Example_ReadRequest_PUT() {
 	if err != nil {
 		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
 	} else {
-		buf, err1 := runtime.ReadAll(req.Body, nil)
+		buf, err1 := io2.ReadAll(req.Body, nil)
 		if err1 != nil {
 		}
 		var entry []entryTest
