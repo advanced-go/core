@@ -44,7 +44,7 @@ type resource struct {
 	Uri string
 }
 
-func testRegister(ex messaging.Exchange, uri string, cmd, data chan messaging.Message) error {
+func testRegister(ex *messaging.Exchange, uri string, cmd, data chan messaging.Message) error {
 	if cmd == nil {
 		cmd = make(chan messaging.Message, 16)
 	}

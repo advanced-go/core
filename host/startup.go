@@ -20,7 +20,7 @@ func Startup(duration time.Duration, content ContentMap) bool {
 	return startup(messaging.HostExchange, duration, content)
 }
 
-func startup(ex messaging.Exchange, duration time.Duration, content ContentMap) bool {
+func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap) bool {
 	var failures []string
 	var count = ex.Count()
 
@@ -53,7 +53,7 @@ func startup(ex messaging.Exchange, duration time.Duration, content ContentMap) 
 	return false
 }
 
-func createToSend(ex messaging.Exchange, cm ContentMap, fn messaging.MessageHandler) messaging.MessageMap {
+func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHandler) messaging.MessageMap {
 	m := make(messaging.MessageMap)
 	for _, k := range ex.List() {
 		msg := messaging.Message{To: k, From: startupLocation, Event: messaging.StartupEvent, ReplyTo: fn}
@@ -68,7 +68,7 @@ func createToSend(ex messaging.Exchange, cm ContentMap, fn messaging.MessageHand
 	return m
 }
 
-func sendMessages(ex messaging.Exchange, msgs messaging.MessageMap) {
+func sendMessages(ex *messaging.Exchange, msgs messaging.MessageMap) {
 	for k := range msgs {
 		ex.SendCtrl(msgs[k])
 	}
