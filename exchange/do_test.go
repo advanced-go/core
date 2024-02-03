@@ -27,7 +27,7 @@ func ExampleDo_ServiceUnavailable_Uri() {
 	req, _ := http.NewRequest(http.MethodGet, "file://[cwd]/exchangetest/http-503.txt", nil)
 	resp, status := Do(req)
 	fmt.Printf("test: Do(req) -> [resp:%v] [statusCode:%v] [errs:%v] [content-type:%v] [body:%v]\n",
-		resp != nil, status.Code, status.Error, resp.Header.Get("content-type"), resp.Body != nil)
+		resp != nil, status.Code, status.Error(), resp.Header.Get("content-type"), resp.Body != nil)
 
 	//Output:
 	//test: Do(req) -> [resp:true] [statusCode:503] [errs:<nil>] [content-type:text/html] [body:true]

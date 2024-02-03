@@ -45,7 +45,7 @@ func ExampleNewStatusFrom() {
 	uri := "file://[cwd]/io2test/status-504.json"
 
 	status := NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:[%v]]\n", status.Code, status.Trace(), status.Error)
+	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:[%v]]\n", status.Code, status.Trace(), status.Error())
 
 	//Output:
 	//test: NewStatusFrom() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]

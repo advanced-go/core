@@ -47,7 +47,7 @@ var okStatus = newStatusOK()
 
 type Status struct {
 	Code    int      `json:"code"`
-	Error   error    `json:"err"`
+	err     error    `json:"err"`
 	handled bool     `json:"handled"`
 	trace   []string `json:"location"`
 }
@@ -71,7 +71,7 @@ func NewStatus(code int) *Status {
 func NewStatusError(code int, location string, err error) *Status {
 	s := new(Status)
 	s.Code = code
-	s.Error = err
+	s.err = err
 	s.AddLocation(location)
 	return s
 }
@@ -84,12 +84,8 @@ func (s *Status) HttpCode() int {
 	return HttpCode(s.Code)
 }
 
-func (s *Status) String() string {
-	if s.Error != nil {
-		return fmt.Sprintf("%v [%v]", HttpStatus(s.Code), s.Error)
-	} else {
-		return fmt.Sprintf("%v", HttpStatus(s.Code))
-	}
+func (s *Status) Error() error {
+	return s.err
 }
 
 func (s *Status) Trace() []string {
@@ -101,6 +97,14 @@ func (s *Status) AddLocation(loc string) *Status {
 		s.trace = append(s.trace, loc)
 	}
 	return s
+}
+
+func (s *Status) String() string {
+	if s.err != nil {
+		return fmt.Sprintf("%v [%v]", HttpStatus(s.Code), s.err)
+	} else {
+		return fmt.Sprintf("%v", HttpStatus(s.Code))
+	}
 }
 
 // HttpCode - conversion of a code to HTTP status code
