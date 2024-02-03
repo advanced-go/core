@@ -12,28 +12,23 @@ const (
 // LookupFunc - lookup function
 type LookupFunc func(string) string
 
-// Lookup - key value lookup interface
-type Lookup interface {
-	SetOverride(value any)
-	Value(key string) (string, bool)
-}
-
-type uriLookup struct {
+// Lookup - type
+type Lookup struct {
 	fn LookupFunc
 }
 
 // NewLookup - new lookup
-func NewLookup() Lookup {
-	return new(uriLookup)
+func NewLookup() *Lookup {
+	return new(Lookup)
 }
 
 // SetOverride - override the default behavior
-func (l *uriLookup) SetOverride(value any) {
+func (l *Lookup) SetOverride(value any) {
 	l.fn = stringFromType(value)
 }
 
 // Value - return the value associated with the key
-func (l *uriLookup) Value(key string) (string, bool) {
+func (l *Lookup) Value(key string) (string, bool) {
 	if l.fn == nil || len(key) == 0 {
 		return "", false
 	}

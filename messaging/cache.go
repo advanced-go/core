@@ -8,32 +8,21 @@ import (
 )
 
 // MessageCache - message cache by uri
-type MessageCache interface {
-	Count() int
-	Filter(event string, code int, include bool) []string
-	Include(event string, status int) []string
-	Exclude(event string, status int) []string
-	Add(msg Message) error
-	Get(uri string) (Message, bool)
-	Uri() []string
-	ErrorList() []error
-}
-
-type messageCache struct {
+type MessageCache struct {
 	m    map[string]Message
 	errs []error
 	mu   sync.RWMutex
 }
 
 // NewMessageCache - create a message cache
-func NewMessageCache() MessageCache {
-	c := new(messageCache)
+func NewMessageCache() *MessageCache {
+	c := new(MessageCache)
 	c.m = make(map[string]Message)
 	return c
 }
 
 // Count - return the count of items
-func (r *messageCache) Count() int {
+func (r *MessageCache) Count() int {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	count := 0
@@ -44,7 +33,7 @@ func (r *messageCache) Count() int {
 }
 
 // Filter - apply a filter against a traversal of all items
-func (r *messageCache) Filter(event string, code int, include bool) []string {
+func (r *MessageCache) Filter(event string, code int, include bool) []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	var uri []string
@@ -64,17 +53,17 @@ func (r *messageCache) Filter(event string, code int, include bool) []string {
 }
 
 // Include - filter for items that include a specific event
-func (r *messageCache) Include(event string, status int) []string {
+func (r *MessageCache) Include(event string, status int) []string {
 	return r.Filter(event, status, true)
 }
 
 // Exclude - filter for items that do not include a specific event
-func (r *messageCache) Exclude(event string, status int) []string {
+func (r *MessageCache) Exclude(event string, status int) []string {
 	return r.Filter(event, status, false)
 }
 
 // Add - add a message
-func (r *messageCache) Add(msg Message) error {
+func (r *MessageCache) Add(msg Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if msg.From == "" {
@@ -92,7 +81,7 @@ func (r *messageCache) Add(msg Message) error {
 }
 
 // Get - get a message based on a URI
-func (r *messageCache) Get(uri string) (Message, bool) {
+func (r *MessageCache) Get(uri string) (Message, bool) {
 	if uri == "" {
 		return Message{}, false
 	}
@@ -105,7 +94,7 @@ func (r *messageCache) Get(uri string) (Message, bool) {
 }
 
 // Uri - list the URI's in the cache
-func (r *messageCache) Uri() []string {
+func (r *MessageCache) Uri() []string {
 	var uri []string
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -117,14 +106,14 @@ func (r *messageCache) Uri() []string {
 }
 
 // ErrorList - list of errors
-func (r *messageCache) ErrorList() []error {
+func (r *MessageCache) ErrorList() []error {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	return r.errs
 }
 
 // NewMessageCacheHandler - handler to receive messages into a cache.
-func NewMessageCacheHandler(cache MessageCache) MessageHandler {
+func NewMessageCacheHandler(cache *MessageCache) MessageHandler {
 	return func(msg Message) {
 		cache.Add(msg)
 	}

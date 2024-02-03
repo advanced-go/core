@@ -26,26 +26,18 @@ func SetLocalAuthority(authority string) {
 	localAuthority = authority
 }
 
-// Resolver - resolver interface
-type Resolver interface {
-	SetOverrides(values []Pair)
-	Build(path string, values ...any) string
-	BuildWithAuthority(authority, path string, values ...any) string
-	OverrideUrl(key string) (string, bool)
-}
-
-// NewResolver - create a resolver
-func NewResolver() Resolver {
-	r := new(resolver)
-	return r
-}
-
-type resolver struct {
+// Resolver - type
+type Resolver struct {
 	override *sync.Map
 }
 
+// NewResolver - create a resolver
+func NewResolver() *Resolver {
+	return new(Resolver)
+}
+
 // SetOverrides - configure overrides
-func (r *resolver) SetOverrides(values []Pair) {
+func (r *Resolver) SetOverrides(values []Pair) {
 	if len(values) == 0 {
 		r.override = nil
 		return
@@ -58,7 +50,7 @@ func (r *resolver) SetOverrides(values []Pair) {
 }
 
 // Build - perform resolution
-func (r *resolver) Build(path string, values ...any) string {
+func (r *Resolver) Build(path string, values ...any) string {
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
@@ -66,7 +58,7 @@ func (r *resolver) Build(path string, values ...any) string {
 }
 
 // BuildWithAuthority - perform resolution
-func (r *resolver) BuildWithAuthority(authority, path string, values ...any) string {
+func (r *Resolver) BuildWithAuthority(authority, path string, values ...any) string {
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
@@ -94,7 +86,7 @@ func (r *resolver) BuildWithAuthority(authority, path string, values ...any) str
 }
 
 // OverrideUrl - return the overridden URL
-func (r *resolver) OverrideUrl(path string) (string, bool) {
+func (r *Resolver) OverrideUrl(path string) (string, bool) {
 	if r.override == nil {
 		return "", false
 	}

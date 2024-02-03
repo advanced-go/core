@@ -74,7 +74,7 @@ func sendMessages(ex messaging.Exchange, msgs messaging.MessageMap) {
 	}
 }
 
-func handleErrors(failures []string, cache messaging.MessageCache) {
+func handleErrors(failures []string, cache *messaging.MessageCache) {
 	for _, uri := range failures {
 		msg, ok := cache.Get(uri)
 		if !ok {
@@ -90,7 +90,7 @@ func handleErrors(failures []string, cache messaging.MessageCache) {
 	}
 }
 
-func handleStatus(cache messaging.MessageCache) {
+func handleStatus(cache *messaging.MessageCache) {
 	for _, uri := range cache.Uri() {
 		msg, ok := cache.Get(uri)
 		if !ok {

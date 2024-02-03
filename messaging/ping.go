@@ -20,7 +20,7 @@ func Ping(ctx context.Context, uri string) *Status {
 	return ping(HostExchange, ctx, uri)
 }
 
-func ping(ex Exchange, ctx context.Context, uri string) *Status {
+func ping(ex *Exchange, ctx context.Context, uri string) *Status {
 	if uri == "" {
 		return NewStatusError(errors.New("error: Ping() uri is empty"), pingLocation)
 	}

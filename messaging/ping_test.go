@@ -16,7 +16,7 @@ func ExamplePing() {
 	uri4 := "urn:ping:delay"
 
 	//	start := time.Now()
-	pingDir := any(NewExchange()).(*exchange)
+	pingDir := NewExchange()
 
 	c := make(chan Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))

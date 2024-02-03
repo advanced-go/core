@@ -16,8 +16,8 @@ const (
 	jsonToken = "json"
 )
 
-// Bytes - convert content to []byte, checking for JSON content
-func Bytes(content any, contentType string) ([]byte, *runtime.Status) {
+// Bytes2 - convert content to []byte, checking for JSON content
+func Bytes2(content any, contentType string) ([]byte, *runtime.Status) {
 	var buf []byte
 
 	switch ptr := (content).(type) {

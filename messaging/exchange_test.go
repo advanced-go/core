@@ -8,7 +8,7 @@ import (
 func Example_Add() {
 	uri1 := "urn:test:one"
 
-	testDir := any(NewExchange()).(*exchange)
+	testDir := NewExchange()
 	m1 := newDefaultMailbox(uri1)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
@@ -48,7 +48,7 @@ func Example_Add() {
 
 func Example_SendError() {
 	uri := "urn:test"
-	testDir := any(NewExchange()).(*exchange)
+	testDir := NewExchange()
 
 	fmt.Printf("test: SendCtrl(%v) -> : %v\n", uri, testDir.SendCtrl(Message{To: uri}))
 
@@ -67,7 +67,7 @@ func Example_Send() {
 	uri2 := "urn:test-2"
 	uri3 := "urn:test-3"
 	c := make(chan Message, 16)
-	testDir := any(NewExchange()).(*exchange)
+	testDir := NewExchange()
 
 	testDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
 	testDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
@@ -90,7 +90,7 @@ func Example_Send() {
 }
 
 func Example_ListCount() {
-	testDir := any(NewExchange()).(*exchange)
+	testDir := NewExchange()
 
 	testDir.Add(newDefaultMailbox("test:uri1"))
 	testDir.Add(newDefaultMailbox("test:uri2"))
@@ -109,7 +109,7 @@ func Example_Remove() {
 	uri := "urn:test/one"
 
 	m := newDefaultMailbox(uri)
-	testDir := any(NewExchange()).(*exchange)
+	testDir := NewExchange()
 
 	status := testDir.Add(m)
 	fmt.Printf("test: Add(%v) -> : [%v]\n", uri, status)

@@ -13,7 +13,7 @@ type data struct {
 	Count int
 }
 
-// ReaderCloser - test type for a body.ReadCloser interface
+// ReaderCloser - test type for a body.ReadCloser
 type ReaderCloser struct {
 	Reader io.Reader
 	Err    error
@@ -42,20 +42,20 @@ func ExampleBytes_Error() {
 	var pstr *string
 	var pr *io.Reader
 
-	buf, status := Bytes(nil, "")
+	buf, status := Bytes2(nil, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, status = Bytes(pstr, "")
+	buf, status = Bytes2(pstr, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, status = Bytes(pr, "")
+	buf, status = Bytes2(pr, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
-	buf, status = Bytes(cnt, "")
+	buf, status = Bytes2(cnt, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
 	str := "this error should not be seen"
-	buf, status = Bytes(NewReaderCloser(strings.NewReader(str), errors.New("error on internal read")), "")
+	buf, status = Bytes2(NewReaderCloser(strings.NewReader(str), errors.New("error on internal read")), "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [rc:%v]\n", buf != nil, status, http.DetectContentType(buf))
 
 	//Output:
@@ -69,15 +69,15 @@ func ExampleBytes_Error() {
 
 func ExampleBytes() {
 	str := "this is string content"
-	buf, status := Bytes(str, "")
+	buf, status := Bytes2(str, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is []byte content"
-	buf, status = Bytes([]byte(str), "")
+	buf, status = Bytes2([]byte(str), "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is an error message"
-	buf, status = Bytes(errors.New(str), "")
+	buf, status = Bytes2(errors.New(str), "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	//str = "this is http.Response.Body content"
@@ -89,12 +89,12 @@ func ExampleBytes() {
 
 	str = "this is io.Reader content"
 	r := strings.NewReader(str)
-	buf, status = Bytes(r, "")
+	buf, status = Bytes2(r, "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	str = "this is io.ReaderCloser content"
 	r = strings.NewReader(str)
-	buf, status = Bytes(io.NopCloser(r), "")
+	buf, status = Bytes2(io.NopCloser(r), "")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), http.DetectContentType(buf))
 
 	//Output:
@@ -108,7 +108,7 @@ func ExampleBytes() {
 
 func ExampleBytes_Json() {
 	c := data{"123456", 101}
-	buf, status := Bytes(c, "application/json")
+	buf, status := Bytes2(c, "application/json")
 	fmt.Printf("test: Bytes() -> [buf:%v] [status:%v] [content:%v] [rc:%v]\n", buf != nil, status, string(buf), "application/json")
 
 	//Output:

@@ -18,27 +18,19 @@ const (
 var HostExchange = NewExchange()
 
 // Exchange - exchange directory
-type Exchange interface {
-	Count() int
-	List() []string
-	Add(m *Mailbox) error
-	SendCtrl(msg Message) error
-	SendData(msg Message) error
-}
-
-type exchange struct {
+type Exchange struct {
 	m *sync.Map
 }
 
 // NewExchange - create a new exchange
-func NewExchange() Exchange {
-	e := new(exchange)
+func NewExchange() *Exchange {
+	e := new(Exchange)
 	e.m = new(sync.Map)
 	return e
 }
 
 // Count - number of items in the sync map
-func (d *exchange) Count() int {
+func (d *Exchange) Count() int {
 	count := 0
 	d.m.Range(func(key, value any) bool {
 		count++
@@ -48,7 +40,7 @@ func (d *exchange) Count() int {
 }
 
 // List - a list of item uri's
-func (d *exchange) List() []string {
+func (d *Exchange) List() []string {
 	var uri []string
 	d.m.Range(func(key, value any) bool {
 		if str, ok := key.(string); ok {
@@ -61,7 +53,7 @@ func (d *exchange) List() []string {
 }
 
 // SendCtrl - send a message to the select item's control channel
-func (d *exchange) SendCtrl(msg Message) error {
+func (d *Exchange) SendCtrl(msg Message) error {
 	// TO DO : authenticate shutdown control message
 	if msg.Event == ShutdownEvent {
 		return nil
@@ -75,7 +67,7 @@ func (d *exchange) SendCtrl(msg Message) error {
 }
 
 // SendData - send a message to the item's data channel
-func (d *exchange) SendData(msg Message) error {
+func (d *Exchange) SendData(msg Message) error {
 	mbox := d.get(msg.To)
 	if mbox == nil {
 		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To))
@@ -85,7 +77,7 @@ func (d *exchange) SendData(msg Message) error {
 }
 
 // Add - add a mailbox
-func (d *exchange) Add(m *Mailbox) error {
+func (d *Exchange) Add(m *Mailbox) error {
 	if m == nil {
 		return errors.New("error: exchange.Add() mailbox is nil")
 	}
@@ -106,7 +98,7 @@ func (d *exchange) Add(m *Mailbox) error {
 	return nil
 }
 
-func (d *exchange) get(uri string) *Mailbox {
+func (d *Exchange) get(uri string) *Mailbox {
 	if len(uri) == 0 {
 		return nil
 	}
@@ -121,7 +113,7 @@ func (d *exchange) get(uri string) *Mailbox {
 }
 
 // Shutdown - close an item's mailbox
-func (d *exchange) Shutdown(msg Message) error {
+func (d *Exchange) shutdown(msg Message) error {
 	// TO DO: add authentication
 	return nil
 }
