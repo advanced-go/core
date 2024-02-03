@@ -2,21 +2,21 @@ package exchange
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/runtimetest"
 	"io"
 	"net/url"
 )
 
-func readAll(body io.ReadCloser) ([]byte, runtime.Status) {
+func readAll(body io.ReadCloser) ([]byte, runtimetest.Status) {
 	if body == nil {
-		return nil, runtime.StatusOK()
+		return nil, runtimetest.StatusOK()
 	}
 	defer body.Close()
 	buf, err := io.ReadAll(body)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusIOError, ":ReadAll", err)
+		return nil, runtimetest.NewStatusError(runtimetest.StatusIOError, ":ReadAll", err)
 	}
-	return buf, runtime.StatusOK()
+	return buf, runtimetest.StatusOK()
 }
 
 func Example_ReadResponse() {

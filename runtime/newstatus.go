@@ -20,7 +20,7 @@ type serializedStatusState struct {
 }
 
 // NewStatusFrom - create a new Status from a URI
-func NewStatusFrom(uri string) Status {
+func NewStatusFrom(uri string) *Status {
 	status := statusFromConst(uri)
 	if status != nil {
 		return status
@@ -44,7 +44,7 @@ func NewStatusFrom(uri string) Status {
 	return NewStatus(status2.Code).AddLocation(status2.Location)
 }
 
-func statusFromConst(url string) Status {
+func statusFromConst(url string) *Status {
 	if len(url) == 0 {
 		return StatusOK()
 	}
@@ -59,7 +59,7 @@ func statusFromConst(url string) Status {
 	return nil
 }
 
-func validateUri(uri string) Status {
+func validateUri(uri string) *Status {
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, newStatusLoc, errors.New("error: URI is empty"))
 	}

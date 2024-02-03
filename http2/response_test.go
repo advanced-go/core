@@ -90,7 +90,7 @@ func ExampleWriteResponse_StatusHeaders() {
 
 	// status code, headers list
 	rec = httptest.NewRecorder()
-	WriteResponse[runtime.Output](rec, nil, runtime.NewStatusOK(), []Attr{{Key: ContentType, Val: ContentTypeTextHtml}, {Key: AcceptEncoding, Val: AcceptEncodingValue}})
+	WriteResponse[runtime.Output](rec, nil, runtime.StatusOK(), []Attr{{Key: ContentType, Val: ContentTypeTextHtml}, {Key: AcceptEncoding, Val: AcceptEncodingValue}})
 	fmt.Printf("test: WriteResponse(w,nil,StatusOK,list) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code, http.Header
@@ -156,5 +156,5 @@ func ExampleWriteResponse_Encoding() {
 	//Output:
 	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:application/x-gzip][header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
 	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:text/plain; charset=utf-8][header:map[Content-Encoding:[none] Content-Type:[application/json]]]
-	
+
 }

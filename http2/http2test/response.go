@@ -19,7 +19,7 @@ const (
 )
 
 // readResponse - read a Http response given a URL
-func readResponse(u *url.URL) (*http.Response, runtime.Status) {
+func readResponse(u *url.URL) (*http.Response, *runtime.Status) {
 	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: "Internal Error"}
 
 	if u == nil {

@@ -19,7 +19,7 @@ const (
 
 // New - create a new type from JSON content, supporting: string, *url.URL, []byte, io.Reader, io.ReadCloser
 // Note: content encoded []byte is not supported
-func New[T any](v any, h http.Header) (t T, status Status) {
+func New[T any](v any, h http.Header) (t T, status *Status) {
 	var buf []byte
 
 	switch ptr := v.(type) {

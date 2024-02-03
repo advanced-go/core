@@ -80,11 +80,11 @@ func ExampleNew_String_URI() {
 
 	// type
 	s = address1Url
-	addr, status1 := New[address](s, nil)
+	addr, status1 := New[newAddress](s, nil)
 	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status1)
 
 	//Output:
-	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{ frisco texas }] [status:OK]
+	//test: New(file://[cwd]/runtimetest/address1.json) -> [addr:{frisco texas 75034}] [status:OK]
 
 }
 

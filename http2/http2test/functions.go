@@ -29,7 +29,7 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 	path = basePath + respName
 	resp, status1 := readResponse(ParseRaw(path))
 	if !status1.OK() {
-		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1.Error()}}, nil, nil
+		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1.Error}}, nil, nil
 	}
 	return nil, req, resp
 }
@@ -56,13 +56,13 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
 	// validate body IO
 	wantBytes, status := runtime.ReadAll(want.Body, nil)
-	if status.Error() != nil {
-		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Error()}}
+	if status.Error != nil {
+		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Error}}
 		return
 	}
 	gotBytes, status1 := runtime.ReadAll(got.Body, nil)
-	if status1.Error() != nil {
-		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Error()}}
+	if status1.Error != nil {
+		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Error}}
 		return
 	}
 

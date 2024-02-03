@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+const (
+	contentType = "Content-Type"
+)
+
 func ExampleReadFile() {
 	s := status504
 	buf, status := ReadFile(s)

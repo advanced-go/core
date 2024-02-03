@@ -26,7 +26,7 @@ func NewProxy() *Proxy {
 }
 
 // Register - add an HttpHandler to the proxy
-func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) Status {
+func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) *Status {
 	if len(uri) == 0 {
 		return NewStatusError(StatusInvalidArgument, handlerRegisterLocation, errors.New("invalid argument: path is empty"))
 	}
@@ -46,7 +46,7 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 }
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
-func (p *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), Status) {
+func (p *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), *Status) {
 	nid, _, ok := uprootUrn(uri)
 	if !ok {
 		return nil, NewStatusError(StatusInvalidArgument, handlerLookupLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
@@ -55,7 +55,7 @@ func (p *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request)
 }
 
 // LookupByNID - get an HttpHandler from the proxy, using an NID as a key
-func (p *Proxy) LookupByNID(nid string) (func(w http.ResponseWriter, r *http.Request), Status) {
+func (p *Proxy) LookupByNID(nid string) (func(w http.ResponseWriter, r *http.Request), *Status) {
 	v, ok := p.m.Load(nid)
 	if !ok {
 		return nil, NewStatusError(StatusInvalidArgument, handlerLookupNIDLocation, errors.New(fmt.Sprintf("invalid argument: HTTP handler does not exist: [%v]", nid)))

@@ -3,7 +3,7 @@ package exchange
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/runtimetest"
 	"net/http"
 	"time"
 )
@@ -33,31 +33,31 @@ func init() {
 }
 
 // Do - process a request, checking for overrides of file://, and a registered endpoint.
-func Do(req *http.Request) (resp *http.Response, status runtime.Status) {
+func Do(req *http.Request) (resp *http.Response, status runtimetest.Status) {
 	if req == nil {
-		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtimetest.NewStatusError(runtimetest.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
 	}
 	if req.URL.Scheme == fileScheme {
 		resp1, status1 := readResponse(req.URL)
 		if !status1.OK() {
 			return resp1, status1.AddLocation(doLocation)
 		}
-		return resp1, runtime.NewStatus(resp1.StatusCode)
+		return resp1, runtimetest.NewStatus(resp1.StatusCode)
 	}
 	handler, status1 := proxyLookup(req.URL)
 	if status1.OK() {
 		w := NewResponseWriter()
 		handler(w, req)
 		resp = w.Response()
-		return resp, runtime.NewStatus(resp.StatusCode)
+		return resp, runtimetest.NewStatus(resp.StatusCode)
 	}
 	return DoHttp(req)
 }
 
 // DoHttp - process an HTTP call
-func DoHttp(req *http.Request) (resp *http.Response, status runtime.Status) {
+func DoHttp(req *http.Request) (resp *http.Response, status runtimetest.Status) {
 	if req == nil {
-		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtimetest.NewStatusError(runtimetest.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
 	}
 	var err error
 
@@ -67,9 +67,9 @@ func DoHttp(req *http.Request) (resp *http.Response, status runtime.Status) {
 		if resp == nil {
 			resp = serverErrorResponse()
 		}
-		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
+		return resp, runtimetest.NewStatusError(resp.StatusCode, doLocation, err)
 	}
-	return resp, runtime.NewStatus(resp.StatusCode)
+	return resp, runtimetest.NewStatus(resp.StatusCode)
 }
 
 func serverErrorResponse() *http.Response {

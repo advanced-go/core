@@ -13,7 +13,7 @@ const (
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
 // Content types supported: []byte, string, error, io.Reader, io.ReadCloser. Other types will be treated as JSON and serialized, if
 // the headers content type is JSON. If not JSON, then an error will be raised.
-func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status runtime.Status, headers any) {
+func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, status *runtime.Status, headers any) {
 	var e E
 
 	if status == nil {
@@ -21,7 +21,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	SetHeaders(w, headers)
 	if content == nil {
-		w.WriteHeader(status.Http())
+		w.WriteHeader(status.HttpCode())
 		return
 	}
 	h := createAcceptEncoding(w.Header())
@@ -33,7 +33,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	if writer.ContentEncoding() != runtime.NoneEncoding {
 		w.Header().Add(ContentEncoding, writer.ContentEncoding())
 	}
-	w.WriteHeader(status.Http())
+	w.WriteHeader(status.HttpCode())
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	writer.Close()
 	if !status0.OK() {

@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func ExampleNewStatus2_OK() {
-	s := Status2OK()
+func ExampleNewStatus_OK() {
+	s := StatusOK()
 
 	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 
@@ -22,8 +22,8 @@ func ExampleNewStatus2_OK() {
 
 }
 
-func ExampleNewStatus2_Teapot() {
-	s := NewStatus2(http.StatusTeapot)
+func ExampleNewStatus_Teapot() {
+	s := NewStatus(http.StatusTeapot)
 
 	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 
@@ -39,9 +39,9 @@ func ExampleNewStatus2_Teapot() {
 }
 
 /*
-func ExampleNewStatus2_TeapotHandled() {
+func ExampleNewStatus_TeapotHandled() {
 	var e Output
-	s := NewStatus2(http.StatusTeapot)
+	s := NewStatus(http.StatusTeapot)
 
 	//fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 

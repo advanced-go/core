@@ -45,7 +45,7 @@ func ExampleNewStatusFrom() {
 	uri := "file://[cwd]/runtimetest/status-504.json"
 
 	status := NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:%v]\n", status.Code(), status.Trace(), status.Error())
+	fmt.Printf("test: NewStatusFrom() -> [code:%v] [location:%v] [errors:%v]\n", status.Code, status.Trace(), status.Error)
 
 	//Output:
 	//test: NewStatusFrom() -> [code:504] [location:[ExampleStatus2_Marshalling]] [errors:[error 1]]
@@ -54,19 +54,19 @@ func ExampleNewStatusFrom() {
 
 func ExampleNewStatusFrom_Const() {
 	status := NewStatusFrom("")
-	fmt.Printf("test: NewStatusFrom(nil) -> [code:%v]\n", status.Code())
+	fmt.Printf("test: NewStatusFrom(nil) -> [code:%v]\n", status.Code)
 
 	uri := StatusOKUri
 	status = NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v]\n", uri, status.Code())
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v]\n", uri, status.Code)
 
 	uri = StatusNotFoundUri
 	status = NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code, status)
 
 	uri = StatusTimeoutUri
 	status = NewStatusFrom(uri)
-	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code(), status)
+	fmt.Printf("test: NewStatusFrom(\"%v\") -> [code:%v] [status:%v]\n", uri, status.Code, status)
 
 	//Output:
 	//test: NewStatusFrom(nil) -> [code:200]

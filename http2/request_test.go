@@ -64,22 +64,22 @@ func Example_Clone() {
 
 func ExampleValidateRequest() {
 	_, status := ValidateRequest(nil, "")
-	fmt.Printf("test: ValidateRequest(nil,\"\",\"\") -> [status:%v] [%v]\n", status, status.Error())
+	fmt.Printf("test: ValidateRequest(nil,\"\",\"\") -> [status:%v] [%v]\n", status, status.Error)
 
 	path := "test"
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
 	_, status = ValidateRequest(req, path)
-	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error())
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error)
 
 	path = "github.com/advanced-go/http2"
 	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
 	_, status = ValidateRequest(req, path)
-	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error())
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error)
 
 	path = "github.com/advanced-go/http2"
 	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2", nil)
 	_, status = ValidateRequest(req, path)
-	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error())
+	fmt.Printf("test: ValidateRequest(req,%v) -> [status:%v] [%v]\n", path, status, status.Error)
 
 	//path = "github.com/advanced-go/http2"
 	//req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github.com/advanced-go/http2:entry", nil)

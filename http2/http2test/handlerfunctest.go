@@ -13,7 +13,7 @@ func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-	var status = runtime.NewStatusOK()
+	var status = runtime.StatusOK()
 	if status.OK() {
 		//http2.WriteResponse[runtime.Output](w, []byte("up"), status, nil)
 	} else {

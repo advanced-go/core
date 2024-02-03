@@ -33,7 +33,7 @@ func ReadCookies(req *http.Request) map[string]*http.Cookie {
 
 // NewRequest - create a new Http request adding the request id
 // TO DO: if the ctx is a http.Header, then need to add to the new request
-func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request, runtime.Status) {
+func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request, *runtime.Status) {
 	newCtx := newContext(ctx)
 
 	// Create request id and add to context
@@ -106,7 +106,7 @@ func newId(ctx any) string {
 }
 
 // ValidateRequest - validate the request given an embedded URN path
-func ValidateRequest(req *http.Request, path string) (string, runtime.Status) {
+func ValidateRequest(req *http.Request, path string) (string, *runtime.Status) {
 	if req == nil {
 		return "", runtime.NewStatusError(runtime.StatusInvalidArgument, validateRequestLoc, errors.New("error: Request is nil"))
 	}

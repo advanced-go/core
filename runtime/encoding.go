@@ -24,16 +24,16 @@ const (
 
 type EncodingReader interface {
 	io.Reader
-	Close() Status
+	Close() *Status
 }
 
 type EncodingWriter interface {
 	io.Writer
 	ContentEncoding() string
-	Close() Status
+	Close() *Status
 }
 
-func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, Status) {
+func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *Status) {
 	encoding := contentEncoding(h)
 	switch encoding {
 	case GzipEncoding:
@@ -45,7 +45,7 @@ func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, Status) {
 	}
 }
 
-func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, Status) {
+func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, *Status) {
 	encoding := acceptEncoding(h)
 	if strings.Contains(encoding, GzipEncoding) {
 		return NewGzipWriter(w), StatusOK()
@@ -90,7 +90,7 @@ func (i *identityReader) Read(p []byte) (n int, err error) {
 	return i.reader.Read(p)
 }
 
-func (i *identityReader) Close() Status {
+func (i *identityReader) Close() *Status {
 	return StatusOK()
 }
 
@@ -113,6 +113,6 @@ func (i *identityWriter) ContentEncoding() string {
 	return NoneEncoding
 }
 
-func (i *identityWriter) Close() Status {
+func (i *identityWriter) Close() *Status {
 	return StatusOK()
 }

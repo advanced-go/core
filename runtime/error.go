@@ -56,14 +56,14 @@ var (
 
 // ErrorHandler - error handler interface
 type ErrorHandler interface {
-	Handle(s Status, requestId string, callerLocation string) Status
+	Handle(s *Status, requestId string, callerLocation string) *Status
 }
 
 // Bypass - bypass error handler
 type Bypass struct{}
 
 // Handle - bypass error handler
-func (h Bypass) Handle(s Status, _ string, _ string) Status {
+func (h Bypass) Handle(s *Status, _ string, _ string) *Status {
 	return s
 }
 
@@ -71,7 +71,7 @@ func (h Bypass) Handle(s Status, _ string, _ string) Status {
 type Output struct{}
 
 // Handle - output error handler
-func (h Output) Handle(s Status, requestId string, location string) Status {
+func (h Output) Handle(s *Status, requestId string, location string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -79,9 +79,9 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 		return s
 	}
 	s.AddLocation(location)
-	if s.Error() != nil {
-		fmt.Printf("%v", formatter(s.Code(), s.ErrorList(), s.Trace(), requestId))
-		s.SetHandled()
+	if s.Error != nil && !s.Handled {
+		fmt.Printf("%v", formatter(s.Code, []error{s.Error}, s.Trace(), requestId))
+		s.Handled = true
 	}
 	return s
 }
@@ -90,7 +90,7 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 type Log struct{}
 
 // Handle - log error handler
-func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
+func (h Log) Handle(s *Status, requestId string, callerLocation string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -98,9 +98,9 @@ func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 		return s
 	}
 	s.AddLocation(callerLocation)
-	if s.Error() != nil && !errorsHandled(s) {
-		logger(s.Code(), s.ErrorList(), s.Trace(), requestId)
-		s.SetHandled()
+	if s.Error != nil && !s.Handled {
+		logger(s.Code, []error{s.Error}, s.Trace(), requestId)
+		s.Handled = true
 	}
 	return s
 }
@@ -148,7 +148,7 @@ func OutputFormatter(code int, errs []error, trace []string, requestId string) s
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, Description(code), true),
+		jsonMarkup(StatusName, HttpStatus(code), true),
 		jsonMarkup(RequestIdName, requestId, true),
 		outputFormatTrace(TraceName, trace),
 		outputFormatErrors(ErrorsName, errs))

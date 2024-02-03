@@ -15,7 +15,7 @@ const (
 	jsonToken       = "json"
 )
 
-func writeContent(w io.Writer, content any, contentType string) (cnt int, status runtime.Status) {
+func writeContent(w io.Writer, content any, contentType string) (cnt int, status *runtime.Status) {
 	var err error
 
 	if content == nil {

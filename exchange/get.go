@@ -2,7 +2,7 @@ package exchange
 
 import (
 	"errors"
-	"github.com/advanced-go/core/runtime"
+	"github.com/advanced-go/core/runtime/runtimetest"
 	"net/http"
 )
 
@@ -11,13 +11,13 @@ const (
 )
 
 // Get - process an HTTP Get request
-func Get(uri string, h http.Header) (resp *http.Response, status runtime.Status) {
+func Get(uri string, h http.Header) (resp *http.Response, status runtimetest.Status) {
 	if len(uri) == 0 {
-		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, getLocation, errors.New("error: URI is empty"))
+		return serverErrorResponse(), runtimetest.NewStatusError(http.StatusBadRequest, getLocation, errors.New("error: URI is empty"))
 	}
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
-		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, getLocation, err)
+		return serverErrorResponse(), runtimetest.NewStatusError(http.StatusBadRequest, getLocation, err)
 	}
 	if h != nil {
 		req.Header = h

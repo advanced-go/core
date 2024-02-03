@@ -16,7 +16,7 @@ const (
 )
 
 // Bytes - convert content to []byte, checking for JSON content
-func Bytes(content any, contentType string) ([]byte, Status) {
+func Bytes(content any, contentType string) ([]byte, *Status) {
 	var buf []byte
 
 	switch ptr := (content).(type) {
@@ -27,14 +27,14 @@ func Bytes(content any, contentType string) ([]byte, Status) {
 	case error:
 		buf = []byte(ptr.Error())
 	case io.Reader:
-		var status Status
+		var status *Status
 
 		buf, status = ReadAll(ptr, nil)
 		if !status.OK() {
 			return nil, status
 		}
 	case io.ReadCloser:
-		var status Status
+		var status *Status
 
 		buf, status = ReadAll(ptr, nil)
 		_ = ptr.Close()

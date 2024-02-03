@@ -13,7 +13,7 @@ const (
 )
 
 // ReadFile - read a file with a Status
-func ReadFile(uri string) ([]byte, Status) {
+func ReadFile(uri string) ([]byte, *Status) {
 	status := validateUri(uri)
 	if !status.OK() {
 		return nil, status
@@ -26,7 +26,7 @@ func ReadFile(uri string) ([]byte, Status) {
 }
 
 // ReadAll - read the body with a Status
-func ReadAll(body io.Reader, h http.Header) ([]byte, Status) {
+func ReadAll(body io.Reader, h http.Header) ([]byte, *Status) {
 	if body == nil {
 		return nil, StatusOK()
 	}
