@@ -1,8 +1,9 @@
-package runtime
+package io2
 
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
 	"strings"
@@ -24,33 +25,33 @@ const (
 
 type EncodingReader interface {
 	io.Reader
-	Close() *Status
+	Close() *runtime.Status
 }
 
 type EncodingWriter interface {
 	io.Writer
 	ContentEncoding() string
-	Close() *Status
+	Close() *runtime.Status
 }
 
-func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *Status) {
+func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *runtime.Status) {
 	encoding := contentEncoding(h)
 	switch encoding {
 	case GzipEncoding:
 		return NewGzipReader(r)
 	case BrotliEncoding, DeflateEncoding, CompressEncoding:
-		return nil, NewStatusError(StatusContentEncodingError, encodingReaderLoc, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)))
+		return nil, runtime.NewStatusError(runtime.StatusContentEncodingError, encodingReaderLoc, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)))
 	default:
-		return NewIdentityReader(r), StatusOK()
+		return NewIdentityReader(r), runtime.StatusOK()
 	}
 }
 
-func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, *Status) {
+func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, *runtime.Status) {
 	encoding := acceptEncoding(h)
 	if strings.Contains(encoding, GzipEncoding) {
-		return NewGzipWriter(w), StatusOK()
+		return NewGzipWriter(w), runtime.StatusOK()
 	}
-	return NewIdentityWriter(w), StatusOK()
+	return NewIdentityWriter(w), runtime.StatusOK()
 }
 
 func contentEncoding(h http.Header) string {
@@ -90,8 +91,8 @@ func (i *identityReader) Read(p []byte) (n int, err error) {
 	return i.reader.Read(p)
 }
 
-func (i *identityReader) Close() *Status {
-	return StatusOK()
+func (i *identityReader) Close() *runtime.Status {
+	return runtime.StatusOK()
 }
 
 type identityWriter struct {
@@ -113,6 +114,6 @@ func (i *identityWriter) ContentEncoding() string {
 	return NoneEncoding
 }
 
-func (i *identityWriter) Close() *Status {
-	return StatusOK()
+func (i *identityWriter) Close() *runtime.Status {
+	return runtime.StatusOK()
 }

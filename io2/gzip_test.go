@@ -1,4 +1,4 @@
-package runtime
+package io2
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	testResponseHtml = "file://[cwd]/runtimetest/test-response.html"
-	testResponseGzip = "file://[cwd]/runtimetest/test-response.gz"
+	testResponseHtml = "file://[cwd]/io2test/test-response.txt"
+	testResponseGzip = "file://[cwd]/io2test/test-response.gz"
 )
 
 func ExampleGzipReader() {

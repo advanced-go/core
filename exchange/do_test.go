@@ -3,6 +3,7 @@ package exchange
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 )
 
@@ -83,7 +84,7 @@ func ExampleDo_Proxy() {
 	fmt.Printf("test: Do() -> [write-relatesTo:%v] [response-relatesTo:%v]\n", relatesTo, resp.Header.Get(runtime.XRelatesTo))
 	fmt.Printf("test: Do() -> [write-statusCode:%v] [response-statusCode:%v]\n", statusCode, resp.StatusCode)
 
-	buf, _ := runtime.ReadAll(resp.Body, nil)
+	buf, _ := io.ReadAll(resp.Body)
 	fmt.Printf("test: Do() -> [write-content:%v] [response-content:%v]\n", testContent, string(buf))
 
 	//Output:

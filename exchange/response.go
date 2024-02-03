@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"net/url"
@@ -27,7 +28,7 @@ func readResponse(u *url.URL) (*http.Response, *runtime.Status) {
 	if u.Scheme != fileScheme {
 		return serverErr, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	}
-	buf, err := os.ReadFile(runtime.FileName(u))
+	buf, err := os.ReadFile(io2.FileName(u))
 	if err != nil {
 		if strings.Contains(err.Error(), fileExistsError) {
 			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, runtime.NewStatusError(runtime.StatusInvalidArgument, readResponseLocation, err)

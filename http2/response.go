@@ -1,6 +1,7 @@
 package http2
 
 import (
+	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 )
@@ -25,12 +26,12 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 		return
 	}
 	h := createAcceptEncoding(w.Header())
-	writer, status0 := runtime.NewEncodingWriter(w, h)
+	writer, status0 := io2.NewEncodingWriter(w, h)
 	if !status0.OK() {
 		e.Handle(status0, runtime.RequestId(w.Header()), writeLoc)
 		return
 	}
-	if writer.ContentEncoding() != runtime.NoneEncoding {
+	if writer.ContentEncoding() != io2.NoneEncoding {
 		w.Header().Add(ContentEncoding, writer.ContentEncoding())
 	}
 	w.WriteHeader(status.HttpCode())

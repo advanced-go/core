@@ -1,9 +1,10 @@
-package runtime
+package io2
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
 	"net/url"
@@ -14,12 +15,12 @@ const (
 	StatusOKUri       = "urn:status:ok"
 	StatusNotFoundUri = "urn:status:notfound"
 	StatusTimeoutUri  = "urn:status:timeout"
-	newLoc            = PkgPath + ":New"
+	newLoc            = runtime.PkgPath + ":New"
 )
 
 // New - create a new type from JSON content, supporting: string, *url.URL, []byte, io.Reader, io.ReadCloser
 // Note: content encoded []byte is not supported
-func New[T any](v any, h http.Header) (t T, status *Status) {
+func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 	var buf []byte
 
 	switch ptr := v.(type) {
@@ -33,7 +34,7 @@ func New[T any](v any, h http.Header) (t T, status *Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
 		}
 		return
 	case *url.URL:
@@ -46,7 +47,7 @@ func New[T any](v any, h http.Header) (t T, status *Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
 		}
 		return
 	case []byte:
@@ -54,7 +55,7 @@ func New[T any](v any, h http.Header) (t T, status *Status) {
 		buf = ptr
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
 		}
 		return
 	case io.Reader:
@@ -65,9 +66,9 @@ func New[T any](v any, h http.Header) (t T, status *Status) {
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
 		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
 		}
-		return t, StatusOK()
+		return t, runtime.StatusOK()
 	case io.ReadCloser:
 		reader, status0 := NewEncodingReader(ptr, h)
 		if !status0.OK() {
@@ -77,11 +78,11 @@ func New[T any](v any, h http.Header) (t T, status *Status) {
 		_ = reader.Close()
 		_ = ptr.Close()
 		if err != nil {
-			return t, NewStatusError(StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
 		}
-		return t, StatusOK()
+		return t, runtime.StatusOK()
 	default:
-		return t, NewStatusError(StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 	}
 }
 

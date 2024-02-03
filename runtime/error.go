@@ -19,6 +19,7 @@ const (
 	githubDotCom   = "github.com"
 	githubTemplate = "https://%v/tree/main%v"
 	fragmentId     = "#"
+	urnSeparator   = ":"
 )
 
 // Formatter - output formatting type

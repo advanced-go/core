@@ -1,9 +1,10 @@
-package runtime
+package io2
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
 	"reflect"
@@ -11,12 +12,12 @@ import (
 )
 
 const (
-	bytesLoc  = PkgPath + ":Bytes"
+	bytesLoc  = runtime.PkgPath + ":Bytes"
 	jsonToken = "json"
 )
 
 // Bytes - convert content to []byte, checking for JSON content
-func Bytes(content any, contentType string) ([]byte, *Status) {
+func Bytes(content any, contentType string) ([]byte, *runtime.Status) {
 	var buf []byte
 
 	switch ptr := (content).(type) {
@@ -27,14 +28,14 @@ func Bytes(content any, contentType string) ([]byte, *Status) {
 	case error:
 		buf = []byte(ptr.Error())
 	case io.Reader:
-		var status *Status
+		var status *runtime.Status
 
 		buf, status = ReadAll(ptr, nil)
 		if !status.OK() {
 			return nil, status
 		}
 	case io.ReadCloser:
-		var status *Status
+		var status *runtime.Status
 
 		buf, status = ReadAll(ptr, nil)
 		_ = ptr.Close()
@@ -47,17 +48,17 @@ func Bytes(content any, contentType string) ([]byte, *Status) {
 
 			buf, err = json.Marshal(content)
 			if err != nil {
-				status := NewStatusError(StatusJsonEncodeError, bytesLoc, err)
+				status := runtime.NewStatusError(runtime.StatusJsonEncodeError, bytesLoc, err)
 				if !status.OK() {
 					return nil, status
 				}
 			}
-			return buf, StatusOK()
+			return buf, runtime.StatusOK()
 		} else {
-			return nil, NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return nil, runtime.NewStatusError(http.StatusInternalServerError, bytesLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
 	}
-	return buf, StatusOK()
+	return buf, runtime.StatusOK()
 }
 
 /*

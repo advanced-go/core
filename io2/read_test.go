@@ -1,4 +1,4 @@
-package runtime
+package io2
 
 import (
 	"fmt"
@@ -33,10 +33,10 @@ func ExampleReadFile() {
 	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
 
 	//Output:
-	//test: ReadFile(file://[cwd]/runtimetest/status-504.json) -> [type:string] [buf:82] [status:OK]
-	//test: ReadFile(file://[cwd]/runtimetest/address1.json) -> [type:string] [buf:68] [status:OK]
-	//test: ReadFile(file://[cwd]/runtimetest/status-504.json) -> [type:*url.URL] [buf:82] [status:OK]
-	//test: ReadFile(file://[cwd]/runtimetest/address1.json) -> [type:*url.URL] [buf:68] [status:OK]
+	//test: ReadFile(file://[cwd]/io2test/status-504.json) -> [type:string] [buf:82] [status:OK]
+	//test: ReadFile(file://[cwd]/io2test/address1.json) -> [type:string] [buf:68] [status:OK]
+	//test: ReadFile(file://[cwd]/io2test/status-504.json) -> [type:*url.URL] [buf:82] [status:OK]
+	//test: ReadFile(file://[cwd]/io2test/address1.json) -> [type:*url.URL] [buf:68] [status:OK]
 
 }
 
@@ -56,8 +56,8 @@ func ExampleReadAll_Reader() {
 	fmt.Printf("test: ReadAll(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(body), len(buf), status)
 
 	//Output:
-	//test: ReadAll(file://[cwd]/runtimetest/address3.json) -> [type:*strings.Reader] [buf:72] [status:OK]
-	//test: ReadAll(file://[cwd]/runtimetest/address3.json) -> [type:io.nopCloserWriterTo] [buf:72] [status:OK]
+	//test: ReadAll(file://[cwd]/io2test/address3.json) -> [type:*strings.Reader] [buf:72] [status:OK]
+	//test: ReadAll(file://[cwd]/io2test/address3.json) -> [type:io.nopCloserWriterTo] [buf:72] [status:OK]
 
 }
 
@@ -76,5 +76,30 @@ func ExampleReadAll_GzipReadCloser() {
 	//Output:
 	//test: Do() -> [content-type:text/html; charset=ISO-8859-1] [content-encoding:gzip] [err:<nil>]
 	//test: ReadAll() -> [content-type:text/html; charset=utf-8] [status:OK]
+
+}
+
+func Example_IsStatusURL() {
+	u := ""
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/activity.json"
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status/activity.json"
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status-504.json"
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	u = "file://[cwd]/io2test/resource/status/status-504.json"
+	fmt.Printf("test: IsStatusURL(\"%v\") -> %v\n", u, isStatusURL(u))
+
+	//Output:
+	//test: IsStatusURL("") -> false
+	//test: IsStatusURL("file://[cwd]/io2test/resource/activity.json") -> false
+	//test: IsStatusURL("file://[cwd]/io2test/resource/status/activity.json") -> false
+	//test: IsStatusURL("file://[cwd]/io2test/resource/status-504.json") -> true
+	//test: IsStatusURL("file://[cwd]/io2test/resource/status/status-504.json") -> true
 
 }

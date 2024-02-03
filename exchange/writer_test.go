@@ -3,6 +3,7 @@ package exchange
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 )
 
@@ -24,7 +25,7 @@ func Example_ResponseWriter() {
 	fmt.Printf("test: responseWriter() -> [write-relatesTo:%v] [response-relatesTo:%v]\n", relatesTo, resp.Header.Get(runtime.XRelatesTo))
 	fmt.Printf("test: responseWriter() -> [write-statusCode:%v] [response-statusCode:%v]\n", http.StatusAccepted, resp.StatusCode)
 
-	buf, _ := runtime.ReadAll(resp.Body, nil)
+	buf, _ := io.ReadAll(resp.Body)
 
 	fmt.Printf("test: responseWriter() -> [write-content:%v] [response-content:%v]\n", content, string(buf))
 
