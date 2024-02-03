@@ -150,8 +150,9 @@ func OutputFormatter(code int, errs []error, trace []string, requestId string) s
 		jsonMarkup(StatusCodeName, str, false),
 		jsonMarkup(StatusName, HttpStatus(code), true),
 		jsonMarkup(RequestIdName, requestId, true),
-		outputFormatTrace(TraceName, trace),
-		outputFormatErrors(ErrorsName, errs))
+		outputFormatErrors(ErrorsName, errs),
+		outputFormatTrace(TraceName, trace))
+
 }
 
 func outputFormatErrors(name string, errs []error) string {
