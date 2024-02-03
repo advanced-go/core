@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-// ReaderCloser - test type for a body.ReadCloser interface
+// ReaderCloser - test type for a body.ReadCloser
 type ReaderCloser struct {
 	Reader io.Reader
 	Err    error
