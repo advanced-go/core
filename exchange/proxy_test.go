@@ -10,23 +10,23 @@ func appHttpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ExampleProxy_Add() {
-	proxy := NewProxy()
+	p := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
-	status := proxy.Register("", nil)
+	status := p.Register("", nil)
 	fmt.Printf("test: Register(\"\") -> [status:%v]\n", status)
 
-	status = proxy.Register(path, nil)
+	status = p.Register(path, nil)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
-	status = proxy.Register(path, appHttpHandler)
+	status = p.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
-	status = proxy.Register(path, appHttpHandler)
+	status = p.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	status = proxy.Register(path, appHttpHandler)
+	status = p.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
 	//Output:
@@ -39,25 +39,25 @@ func ExampleProxy_Add() {
 }
 
 func ExampleProxy_Get() {
-	proxy := NewProxy()
+	p := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
-	_, status := proxy.Lookup("")
+	_, status := p.Lookup("")
 	fmt.Printf("test: Lookup(\"\") -> [status:%v]\n", status)
 
-	_, status = proxy.Lookup(path)
+	_, status = p.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v]\n", path, status)
 
-	status = proxy.Register(path, appHttpHandler)
+	status = p.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
-	handler, status1 := proxy.Lookup(path)
+	handler, status1 := p.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	status = proxy.Register(path, appHttpHandler)
+	status = p.Register(path, appHttpHandler)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
-	handler, status1 = proxy.Lookup(path)
+	handler, status1 = p.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
 
 	//Output:

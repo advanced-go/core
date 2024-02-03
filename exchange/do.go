@@ -44,7 +44,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
-	handler, status1 := proxyLookup(req.URL)
+	handler, status1 := httpProxy.Lookup(req.URL.Path)
 	if status1.OK() {
 		w := NewResponseWriter()
 		handler(w, req)

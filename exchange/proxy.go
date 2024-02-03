@@ -14,6 +14,15 @@ const (
 	handlerLookupNIDLocation = PkgPath + ":LookupFromNID"
 )
 
+var (
+	httpProxy = NewProxy()
+)
+
+// RegisterHandler - add a map entry for a URI and HttpHandler
+func RegisterHandler(uri string, handler func(w http.ResponseWriter, r *http.Request)) *runtime.Status {
+	return httpProxy.Register(uri, handler)
+}
+
 // Proxy - key value pairs of a URI -> HttpHandler
 type Proxy struct {
 	m *sync.Map
