@@ -79,9 +79,9 @@ func (h Output) Handle(s *Status, requestId string, location string) *Status {
 		return s
 	}
 	s.AddLocation(location)
-	if s.Error != nil && !s.Handled {
+	if s.Error != nil && !s.handled {
 		fmt.Printf("%v", formatter(s.Code, []error{s.Error}, s.Trace(), requestId))
-		s.Handled = true
+		s.handled = true
 	}
 	return s
 }
@@ -98,9 +98,9 @@ func (h Log) Handle(s *Status, requestId string, callerLocation string) *Status 
 		return s
 	}
 	s.AddLocation(callerLocation)
-	if s.Error != nil && !s.Handled {
+	if s.Error != nil && !s.handled {
 		logger(s.Code, []error{s.Error}, s.Trace(), requestId)
-		s.Handled = true
+		s.handled = true
 	}
 	return s
 }

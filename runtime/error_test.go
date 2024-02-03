@@ -71,10 +71,10 @@ func ExampleOutputHandler_Handle() {
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error != nil)
 
 	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
-	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.Handled)
+	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.handled)
 
 	s = NewStatusError(http.StatusInternalServerError, location, nil)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId(ctx), origin), s.Handled)
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId(ctx), origin), s.handled)
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]

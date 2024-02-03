@@ -48,7 +48,7 @@ var okStatus = newStatusOK()
 type Status struct {
 	Code    int      `json:"code"`
 	Error   error    `json:"err"`
-	Handled bool     `json:"handled"`
+	handled bool     `json:"handled"`
 	trace   []string `json:"location"`
 }
 
