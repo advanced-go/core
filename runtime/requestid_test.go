@@ -43,34 +43,51 @@ func ExampleContextWithHeader() {
 
 }
 
-func Example_RequestId() {
-	id := RequestId("123-456")
-	fmt.Printf("test: RequestId() -> %v\n", id)
+func ExampleRequestId() {
+	id := RequestId("123-456-string")
+	fmt.Printf("test: RequestId(string) -> %v\n", id)
 
-	ctx := NewRequestIdContext(context.Background(), "123-456-abc")
+	ctx := NewRequestIdContext(context.Background(), "123-456-context")
 	id = RequestId(ctx)
-	fmt.Printf("test: RequestId() -> %v\n", id)
+	fmt.Printf("test: RequestId(ctx) -> %v\n", id)
 
 	req, _ := http.NewRequest("", "https.www.google.com", nil)
-	req.Header.Set(XRequestId, "123-456-789")
+	req.Header.Set(XRequestId, "123-456-request")
 	id = RequestId(req)
-	fmt.Printf("test: RequestId() -> %v\n", id)
+	fmt.Printf("test: RequestId(request) -> %v\n", id)
 
-	/*
-		req, _ = http.NewRequest("", "https.www.google.com", nil)
-		id = GetOrCreateRequestId(req)
-		if req.Header.Get(XRequestId) == "" {
-			req.Header.Set(XRequestId, id)
-		}
-		id = RequestId(req)
-		fmt.Printf("test: GetOrCreateRequestId() -> [valid:%v]\n", len(id) != 0)
-
-
-	*/
+	h := make(http.Header)
+	h.Set(XRequestId, "123-456-header")
+	id = RequestId(h)
+	fmt.Printf("test: RequestId(header) -> %v\n", id)
 
 	//Output:
-	//test: RequestId() -> 123-456
-	//test: RequestId() -> 123-456-abc
-	//test: RequestId() -> 123-456-789
+	//test: RequestId(string) -> 123-456-string
+	//test: RequestId(ctx) -> 123-456-context
+	//test: RequestId(request) -> 123-456-request
+	//test: RequestId(header) -> 123-456-header
 
+}
+
+func ExampleRequestId_New() {
+	id := RequestId(nil)
+	fmt.Printf("test: RequestId(nil) -> [empty:%v]\n", len(id) == 0)
+
+	id = RequestId(context.Background())
+	fmt.Printf("test: RequestId(ctx) -> [empty:%v]\n", len(id) == 0)
+
+	req, _ := http.NewRequest("", "https.www.google.com", nil)
+	id = RequestId(req)
+	fmt.Printf("test: RequestId(request) -> [empty:%v]\n", len(id) == 0)
+
+	h := make(http.Header)
+	id = RequestId(h)
+	fmt.Printf("test: RequestId(header) -> [empty:%v]\n", len(id) == 0)
+
+	//Output:
+	//test: RequestId(nil) -> [empty:false]
+	//test: RequestId(ctx) -> [empty:false]
+	//test: RequestId(request) -> [empty:false]
+	//test: RequestId(header) -> [empty:false]
+	
 }

@@ -58,22 +58,28 @@ func RequestIdFromContext(ctx any) string {
 	return ""
 }
 
-// RequestId - return a request id from any type
+// RequestId - return a request id from any type and will create a new one if not found
 func RequestId(t any) string {
 	if t == nil {
-		return ""
+		s, _ := uuid.NewUUID()
+		return s.String()
 	}
+	requestId := ""
 	switch ptr := t.(type) {
 	case string:
-		return ptr
+		requestId = ptr
 	case context.Context:
-		return RequestIdFromContext(ptr)
+		requestId = RequestIdFromContext(ptr)
 	case *http.Request:
-		return ptr.Header.Get(XRequestId)
+		requestId = ptr.Header.Get(XRequestId)
 	case http.Header:
-		return ptr.Get(XRequestId)
+		requestId = ptr.Get(XRequestId)
 	}
-	return ""
+	if len(requestId) == 0 {
+		s, _ := uuid.NewUUID()
+		requestId = s.String()
+	}
+	return requestId
 }
 
 // GetOrCreateRequestId2 - return a request id from any type, creating a new id if needed
