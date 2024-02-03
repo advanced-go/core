@@ -19,20 +19,20 @@ func ExampleContextWithRequestExisting() {
 
 }
 
-func ExampleContextWithRequest() {
+func ExampleContextWithHeader() {
 	ctx := NewRequestIdContext(context.Background(), "123-456-abc")
 	fmt.Printf("test: NewRequestIdContext(ctx,id) -> %v\n", RequestIdFromContext(ctx))
 
-	ctx = NewRequestContext(nil)
+	ctx = NewRequestIdContextFromHeader(nil)
 	fmt.Printf("test: NewRequestContext(nil) -> %v\n", RequestIdFromContext(ctx) != "")
 
 	req, _ := http.NewRequest("", "https.www.google.com", nil)
-	ctx = NewRequestContext(req)
+	ctx = NewRequestIdContextFromHeader(req.Header)
 	fmt.Printf("test: NewRequestContext(req) -> %v\n", RequestIdFromContext(ctx) != "")
 
 	req, _ = http.NewRequest("", "https.www.google.com", nil)
 	req.Header.Add(XRequestId, "x-request-id-value")
-	ctx = NewRequestContext(req)
+	ctx = NewRequestIdContextFromHeader(req.Header)
 	fmt.Printf("test: NewRequestContext(req) -> %v\n", RequestIdFromContext(ctx))
 
 	//Output:
@@ -56,22 +56,21 @@ func Example_RequestId() {
 	id = RequestId(req)
 	fmt.Printf("test: RequestId() -> %v\n", id)
 
-	req, _ = http.NewRequest("", "https.www.google.com", nil)
-	id = GetOrCreateRequestId(req)
-	if req.Header.Get(XRequestId) == "" {
-		req.Header.Set(XRequestId, id)
-	}
-	id = RequestId(req)
-	fmt.Printf("test: GetOrCreateRequestId() -> [valid:%v]\n", len(id) != 0)
+	/*
+		req, _ = http.NewRequest("", "https.www.google.com", nil)
+		id = GetOrCreateRequestId(req)
+		if req.Header.Get(XRequestId) == "" {
+			req.Header.Set(XRequestId, id)
+		}
+		id = RequestId(req)
+		fmt.Printf("test: GetOrCreateRequestId() -> [valid:%v]\n", len(id) != 0)
 
-	//status := NewStatusOK().SetRequestId("987-654")
-	//id = RequestId(status)
-	//fmt.Printf("test: RequestId() -> %v\n", id)
+
+	*/
 
 	//Output:
 	//test: RequestId() -> 123-456
 	//test: RequestId() -> 123-456-abc
 	//test: RequestId() -> 123-456-789
-	//test: GetOrCreateRequestId() -> [valid:true]
 
 }

@@ -70,11 +70,11 @@ func ExampleOutputHandler_Handle() {
 	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
-	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId2(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.handled)
 
 	s = NewStatusError(http.StatusInternalServerError, location, nil)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId(ctx), origin), s.handled)
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx), origin), s.handled)
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
@@ -91,19 +91,19 @@ func ExampleLogHandler_Handle() {
 	var h Log
 
 	//s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
-	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId(ctx), location)
+	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId2(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	//	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
-	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId(ctx), location)
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId2(ctx), location)
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	s = NewStatusError(http.StatusInternalServerError, location, nil)
-	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(nil, GetOrCreateRequestId(ctx), ""), s.Error() != nil)
+	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx), ""), s.Error() != nil)
 
 	s = NewStatusError(http.StatusInternalServerError, location, err)
 	errors := s.Error() != nil
-	s1 := h.Handle(s, GetOrCreateRequestId(ctx), "")
+	s1 := h.Handle(s, GetOrCreateRequestId2(ctx), "")
 	fmt.Printf("test: Handle(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.Error() != nil)
 
 	//Output:

@@ -33,15 +33,15 @@ func NewRequestIdContext(ctx context.Context, requestId string) context.Context 
 	return context.WithValue(ctx, requestKey, requestId)
 }
 
-// NewRequestContext - creates a new Context with a request id from the request headers
-func NewRequestContext(req *http.Request) context.Context {
-	if req == nil || req.Header == nil {
+// NewRequestIdContextFromHeader - creates a new Context with a request id from the request headers
+func NewRequestIdContextFromHeader(h http.Header) context.Context {
+	if h == nil {
 		return context.Background()
 	}
-	if req.Header.Get(XRequestId) == "" {
-		req.Header.Add(XRequestId, uuid.New().String())
+	if h.Get(XRequestId) == "" {
+		h.Add(XRequestId, uuid.New().String())
 	}
-	return NewRequestIdContext(req.Context(), req.Header.Get(XRequestId))
+	return NewRequestIdContext(context.Background(), h.Get(XRequestId))
 }
 
 // RequestIdFromContext - return the requestId from a context
@@ -72,14 +72,12 @@ func RequestId(t any) string {
 		return ptr.Header.Get(XRequestId)
 	case http.Header:
 		return ptr.Get(XRequestId)
-		//case Status:
-		//	return ptr.RequestId()
 	}
 	return ""
 }
 
-// GetOrCreateRequestId - return a request id from any type, creating a new id if needed
-func GetOrCreateRequestId(t any) string {
+// GetOrCreateRequestId2 - return a request id from any type, creating a new id if needed
+func GetOrCreateRequestId2(t any) string {
 	requestId := RequestId(t)
 	if requestId == "" {
 		s, _ := uuid.NewUUID()
@@ -88,8 +86,8 @@ func GetOrCreateRequestId(t any) string {
 	return requestId
 }
 
-// AddRequestId - add a request to an http.Request or an http.Header
-func AddRequestId(t any) http.Header {
+// AddRequestId2 - add a request to an http.Request or an http.Header
+func AddRequestId2(t any) http.Header {
 	if req, ok := t.(*http.Request); ok {
 		req.Header = addRequestId(req.Header)
 		return req.Header
