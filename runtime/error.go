@@ -109,7 +109,7 @@ func defaultFormatter(s Status, requestId string) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, s.Description(), true),
+		jsonMarkup(StatusName, Description(s.Code()), true),
 		jsonMarkup(RequestIdName, requestId, true),
 		formatTrace(TraceName, s.Location()),
 		formatErrors(ErrorsName, []error{s.Error()}))
@@ -148,7 +148,7 @@ func OutputFormatter(s Status, requestId string) string {
 	str := strconv.Itoa(s.Code())
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, s.Description(), true),
+		jsonMarkup(StatusName, Description(s.Code()), true),
 		jsonMarkup(RequestIdName, requestId, true),
 		outputFormatTrace(TraceName, s.Location()),
 		outputFormatErrors(ErrorsName, []error{s.Error()}))

@@ -61,7 +61,7 @@ func isErrors(errs []error) bool {
 type Status interface {
 	Code() int
 	OK() bool
-	NotFound() bool
+	//NotFound() bool
 	Http() int
 
 	//IsErrors() bool
@@ -77,7 +77,7 @@ type Status interface {
 	Location() []string
 	AddLocation(location string) Status
 
-	Description() string
+	//Description() string
 	String() string
 }
 
@@ -205,15 +205,15 @@ func (s *statusState) Http() int {
 // String - string representation
 func (s *statusState) String() string {
 	if s.IsErrors() {
-		return fmt.Sprintf("%v %v", s.Description(), s.Errs)
+		return fmt.Sprintf("%v %v", Description(s.Code()), s.Errs)
 	} else {
-		return fmt.Sprintf("%v", s.Description())
+		return fmt.Sprintf("%v", Description(s.Code()))
 	}
 }
 
 // Description - string representation of status code
-func (s *statusState) Description() string {
-	switch s.SCode {
+func Description(code int) string {
+	switch code {
 	// Mapped
 	case StatusInvalidContent:
 		return "Invalid Content"
@@ -289,5 +289,5 @@ func (s *statusState) Description() string {
 				return "Unrecoverable data loss or corruption"
 		*/
 	}
-	return fmt.Sprintf("error: code not mapped: %v", s.SCode)
+	return fmt.Sprintf("error: code not mapped: %v", code)
 }

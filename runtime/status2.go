@@ -50,6 +50,13 @@ func (s *Status2) String() string {
 	return HttpStatus(s.Code)
 }
 
+func (s *Status2) Location() []string {
+	if !s.OK() {
+		return s.location
+	}
+	return nil
+}
+
 func (s *Status2) AddLocation(loc string) *Status2 {
 	if !s.OK() {
 		s.location = append(s.location, loc)
