@@ -23,6 +23,7 @@ func (s *statusOK) Http() int      { return http.StatusOK }
 func (s *statusOK) IsErrors() bool     { return false }
 func (s *statusOK) ErrorList() []error { return nil }
 func (s *statusOK) Error() error       { return nil }
+func (s *statusOK) SetHandled()        {}
 
 func (s *statusOK) Duration() time.Duration { return 0 }
 func (s *statusOK) SetDuration(_ time.Duration) Status {
@@ -32,7 +33,7 @@ func (s *statusOK) SetDuration(_ time.Duration) Status {
 func (s *statusOK) RequestId() string         { return "" }
 func (s *statusOK) SetRequestId(_ any) Status { return notImplementedSet("SetRequestId()", s) }
 
-func (s *statusOK) Location() []string { return nil }
+func (s *statusOK) Trace() []string { return nil }
 
 // AddLocation - allowed
 func (s *statusOK) AddLocation(_ string) Status {

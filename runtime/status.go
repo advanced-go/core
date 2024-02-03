@@ -66,7 +66,8 @@ type Status interface {
 
 	//IsErrors() bool
 	Error() error
-	//ErrorList() []error
+	ErrorList() []error
+	SetHandled()
 
 	//Duration() time.Duration
 	//SetDuration(duration time.Duration) Status
@@ -74,7 +75,7 @@ type Status interface {
 	//RequestId() string
 	//SetRequestId(requestId any) Status
 
-	Location() []string
+	Trace() []string
 	AddLocation(location string) Status
 
 	//Description() string
@@ -136,17 +137,28 @@ func (s *statusState) Error() error {
 	}
 	return nil
 }
+
+func (s *statusState) SetHandled() {
+	s.Handled = true
+}
+
 func errorsHandled(s Status) bool {
 	if st, ok := any(s).(*statusState); ok {
 		return st.Handled
 	}
 	return false
 }
+
+/*
 func setErrorsHandled(s Status) {
 	if st, ok := any(s).(*statusState); ok {
 		st.Handled = true
 	}
 }
+
+
+*/
+
 func (s *statusState) addErrors(errs ...error) {
 	for _, e := range errs {
 		if e == nil {
@@ -176,8 +188,8 @@ func (s *statusState) SetRequestId(requestId any) Status {
 	return s
 }
 
-// Location - location add/get
-func (s *statusState) Location() []string { return s.SLocation }
+// Trace - location add/get
+func (s *statusState) Trace() []string { return s.SLocation }
 func (s *statusState) AddLocation(location string) Status {
 	if len(location) > 0 {
 		s.SLocation = append(s.SLocation, location)

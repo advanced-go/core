@@ -8,10 +8,10 @@ import (
 var okStatus2 = newStatus2OK()
 
 type Status2 struct {
-	Code     int      `json:"code"`
-	Error    error    `json:"errs"`
-	Handled  bool     `json:"handled"`
-	location []string `json:"location"`
+	Code    int      `json:"code"`
+	Error   error    `json:"errs"`
+	Handled bool     `json:"handled"`
+	trace   []string `json:"location"`
 }
 
 func newStatus2OK() *Status2 {
@@ -39,7 +39,7 @@ func NewStatus2Error(code int, err error, location string) *Status2 {
 }
 
 func (s *Status2) OK() bool {
-	return s.Code != http.StatusOK
+	return s.Code == http.StatusOK
 }
 
 func (s *Status2) HttpCode() int {
@@ -54,16 +54,13 @@ func (s *Status2) String() string {
 	}
 }
 
-func (s *Status2) Location() []string {
-	if !s.OK() {
-		return s.location
-	}
-	return nil
+func (s *Status2) Trace() []string {
+	return s.trace
 }
 
 func (s *Status2) AddLocation(loc string) *Status2 {
 	if !s.OK() {
-		s.location = append(s.location, loc)
+		s.trace = append(s.trace, loc)
 	}
 	return s
 }
@@ -126,6 +123,8 @@ func HttpStatus(code int) string {
 		return "Accepted"
 	case http.StatusBadRequest:
 		return "Bad Request"
+	case http.StatusTeapot:
+		return "I'm A Teapot"
 	case http.StatusGatewayTimeout:
 		return "Timeout"
 	case http.StatusNotFound:

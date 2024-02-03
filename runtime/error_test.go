@@ -50,7 +50,7 @@ func Example_DefaultFormat() {
 		st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	}
 	//SetOutputFormatter()
-	str := formatter(s, "1234-5678")
+	str := formatter(s.Code(), s.ErrorList(), s.Trace(), "1234-5678")
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:

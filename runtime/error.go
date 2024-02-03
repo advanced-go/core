@@ -22,9 +22,9 @@ const (
 )
 
 // Formatter - output formatting type
-type Formatter func(s Status, requestId string) string
+type Formatter func(code int, errs []error, trace []string, requestId string) string
 
-// SetErrorFormatter - optional override of output formatting
+// SetErrorFormatter - optional override of error formatting
 func SetErrorFormatter(fn Formatter) {
 	if fn != nil {
 		formatter = fn
@@ -37,7 +37,7 @@ func SetOutputFormatter() {
 }
 
 // Logger - log function
-type Logger func(s Status, requestId string)
+type Logger func(code int, errs []error, trace []string, requestId string)
 
 // SetErrorLogger - optional override of logging
 func SetErrorLogger(fn Logger) {
@@ -49,7 +49,9 @@ func SetErrorLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(s Status, requestId string) { log.Default().Println(formatter(s, requestId)) }
+	defaultLogger Logger = func(code int, errs []error, trace []string, requestId string) {
+		log.Default().Println(formatter(code, errs, trace, requestId))
+	}
 )
 
 // ErrorHandler - error handler interface
@@ -76,11 +78,10 @@ func (h Output) Handle(s Status, requestId string, location string) Status {
 	if s.OK() {
 		return s
 	}
-	//s.SetRequestId(requestId)
 	s.AddLocation(location)
 	if s.Error() != nil {
-		fmt.Printf("%v", formatter(s, requestId))
-		setErrorsHandled(s)
+		fmt.Printf("%v", formatter(s.Code(), s.ErrorList(), s.Trace(), requestId))
+		s.SetHandled()
 	}
 	return s
 }
@@ -96,23 +97,22 @@ func (h Log) Handle(s Status, requestId string, callerLocation string) Status {
 	if s.OK() {
 		return s
 	}
-	//s.SetRequestId(requestId)
 	s.AddLocation(callerLocation)
 	if s.Error() != nil && !errorsHandled(s) {
-		logger(s, requestId) //log.Println(formatter(s))
-		setErrorsHandled(s)
+		logger(s.Code(), s.ErrorList(), s.Trace(), requestId)
+		s.SetHandled()
 	}
 	return s
 }
 
-func defaultFormatter(s Status, requestId string) string {
-	str := strconv.Itoa(s.Code())
+func defaultFormatter(code int, errs []error, trace []string, requestId string) string {
+	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, Description(s.Code()), true),
+		jsonMarkup(StatusName, HttpStatus(code), true),
 		jsonMarkup(RequestIdName, requestId, true),
-		formatTrace(TraceName, s.Location()),
-		formatErrors(ErrorsName, []error{s.Error()}))
+		formatErrors(ErrorsName, errs),
+		formatTrace(TraceName, trace))
 }
 
 func formatTrace(name string, trace []string) string {
@@ -130,7 +130,7 @@ func formatTrace(name string, trace []string) string {
 }
 
 func formatErrors(name string, errs []error) string {
-	if len(errs) == 0 {
+	if len(errs) == 0 || errs[0] == nil {
 		return fmt.Sprintf("\"%v\" : null", name)
 	}
 	result := fmt.Sprintf("\"%v\" : [ ", name)
@@ -144,14 +144,14 @@ func formatErrors(name string, errs []error) string {
 }
 
 // OutputFormatter - formatter for special output formatting
-func OutputFormatter(s Status, requestId string) string {
-	str := strconv.Itoa(s.Code())
+func OutputFormatter(code int, errs []error, trace []string, requestId string) string {
+	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, Description(s.Code()), true),
+		jsonMarkup(StatusName, Description(code), true),
 		jsonMarkup(RequestIdName, requestId, true),
-		outputFormatTrace(TraceName, s.Location()),
-		outputFormatErrors(ErrorsName, []error{s.Error()}))
+		outputFormatTrace(TraceName, trace),
+		outputFormatErrors(ErrorsName, errs))
 }
 
 func outputFormatErrors(name string, errs []error) string {
