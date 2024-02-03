@@ -47,7 +47,11 @@ func (s *Status2) HttpCode() int {
 }
 
 func (s *Status2) String() string {
-	return HttpStatus(s.Code)
+	if s.Error != nil {
+		return fmt.Sprintf("%v %v", HttpStatus(s.Code), s.Error)
+	} else {
+		return fmt.Sprintf("%v", HttpStatus(s.Code))
+	}
 }
 
 func (s *Status2) Location() []string {
