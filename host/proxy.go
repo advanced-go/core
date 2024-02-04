@@ -30,7 +30,7 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 	if len(uri) == 0 {
 		return errors.New("error: proxy.Register() path is empty")
 	}
-	nid, _, ok := uprootUrn(uri)
+	nid, _, ok := UprootUrn(uri)
 	if !ok {
 		return errors.New(fmt.Sprintf("error: proxy.Register() path is invalid: [%v]", uri))
 	}
@@ -47,7 +47,7 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
 func (p *Proxy) Lookup(uri string) func(w http.ResponseWriter, r *http.Request) {
-	nid, _, ok := uprootUrn(uri)
+	nid, _, ok := UprootUrn(uri)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
 	}

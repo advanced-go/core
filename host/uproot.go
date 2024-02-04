@@ -1,4 +1,4 @@
-package exchange
+package host
 
 import (
 	"net/url"
@@ -6,13 +6,17 @@ import (
 )
 
 const (
-	urnSeparator = ":"
+	UrnScheme    = "urn"
+	UrnSeparator = ":"
 )
 
-// uprootUrn - uproot an embedded urn in a uri
-func uprootUrn(uri string) (nid, nss string, ok bool) {
+// UprootUrn - uproot an embedded urn in a uri
+func UprootUrn(uri string) (nid, nss string, ok bool) {
 	if uri == "" {
 		return
+	}
+	if strings.HasPrefix(uri, UrnScheme) {
+		return uri, "", true
 	}
 	u, err := url.Parse(uri)
 	if err != nil {
@@ -20,9 +24,9 @@ func uprootUrn(uri string) (nid, nss string, ok bool) {
 	}
 	var str []string
 	if u.Path[0] == '/' {
-		str = strings.Split(u.Path[1:], urnSeparator)
+		str = strings.Split(u.Path[1:], UrnSeparator)
 	} else {
-		str = strings.Split(u.Path, urnSeparator)
+		str = strings.Split(u.Path, UrnSeparator)
 	}
 	switch len(str) {
 	case 0:

@@ -21,7 +21,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	nid, _, ok := uprootUrn(r.URL.Path)
+	nid, _, ok := UprootUrn(r.URL.Path)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return

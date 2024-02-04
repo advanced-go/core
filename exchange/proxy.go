@@ -40,7 +40,7 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 	if len(uri) == 0 {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, handlerRegisterLocation, errors.New("invalid argument: path is empty"))
 	}
-	nid, _, ok := uprootUrn(uri)
+	nid, _, ok := UprootUrn(uri)
 	if !ok {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, handlerRegisterLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
@@ -57,7 +57,7 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
 func (p *Proxy) Lookup(uri string) (func(w http.ResponseWriter, r *http.Request), *runtime.Status) {
-	nid, _, ok := uprootUrn(uri)
+	nid, _, ok := UprootUrn(uri)
 	if !ok {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, handlerLookupLocation, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
