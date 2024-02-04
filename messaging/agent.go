@@ -43,16 +43,16 @@ func (a *Agent) Run() {
 
 // Shutdown - shutdown the agent
 func (a *Agent) Shutdown() {
-	a.m.SendCtrl(Message{Event: ShutdownEvent})
+	a.m.SendCtrl(&Message{Event: ShutdownEvent})
 }
 
 // SendCtrl - send a message to the control channel
-func (a *Agent) SendCtrl(msg Message) {
+func (a *Agent) SendCtrl(msg *Message) {
 	a.m.SendCtrl(msg)
 }
 
 // SendData - send a message to the data channel
-func (a *Agent) SendData(msg Message) {
+func (a *Agent) SendData(msg *Message) {
 	a.m.SendData(msg)
 }
 
@@ -71,7 +71,7 @@ func DefaultRun(m *Mailbox, ctrlHandler MessageHandler) {
 			}
 			switch msg.Event {
 			case ShutdownEvent:
-				ctrlHandler(Message{Event: msg.Event, Status: StatusOK()})
+				ctrlHandler(&Message{Event: msg.Event, Status: StatusOK()})
 				m.Close()
 				return
 			default:

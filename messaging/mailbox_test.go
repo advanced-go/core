@@ -16,6 +16,6 @@ func Example_NewMailbox() {
 func newDefaultMailbox(uri string) *Mailbox {
 	m := new(Mailbox)
 	m.uri = uri
-	m.ctrl = make(chan Message, 16)
+	m.ctrl = make(chan *Message, 16)
 	return m
 }

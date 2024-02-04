@@ -53,10 +53,13 @@ func (d *Exchange) List() []string {
 }
 
 // SendCtrl - send a message to the select item's control channel
-func (d *Exchange) SendCtrl(msg Message) error {
+func (d *Exchange) SendCtrl(msg *Message) error {
 	// TO DO : authenticate shutdown control message
 	if msg.Event == ShutdownEvent {
 		return nil
+	}
+	if msg == nil {
+		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as messag is nil"))
 	}
 	mbox := d.get(msg.To)
 	if mbox == nil {
@@ -67,7 +70,7 @@ func (d *Exchange) SendCtrl(msg Message) error {
 }
 
 // SendData - send a message to the item's data channel
-func (d *Exchange) SendData(msg Message) error {
+func (d *Exchange) SendData(msg *Message) error {
 	mbox := d.get(msg.To)
 	if mbox == nil {
 		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To))

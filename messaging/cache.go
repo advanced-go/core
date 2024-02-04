@@ -9,7 +9,7 @@ import (
 
 // MessageCache - message cache by uri
 type MessageCache struct {
-	m    map[string]Message
+	m    map[string]*Message
 	errs []error
 	mu   sync.RWMutex
 }
@@ -17,7 +17,7 @@ type MessageCache struct {
 // NewMessageCache - create a message cache
 func NewMessageCache() *MessageCache {
 	c := new(MessageCache)
-	c.m = make(map[string]Message)
+	c.m = make(map[string]*Message)
 	return c
 }
 
@@ -63,7 +63,7 @@ func (r *MessageCache) Exclude(event string, status int) []string {
 }
 
 // Add - add a message
-func (r *MessageCache) Add(msg Message) error {
+func (r *MessageCache) Add(msg *Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if msg.From == "" {
@@ -81,16 +81,16 @@ func (r *MessageCache) Add(msg Message) error {
 }
 
 // Get - get a message based on a URI
-func (r *MessageCache) Get(uri string) (Message, bool) {
+func (r *MessageCache) Get(uri string) (*Message, bool) {
 	if uri == "" {
-		return Message{}, false
+		return nil, false
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.m[uri]; ok {
 		return r.m[uri], true
 	}
-	return Message{}, false //errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
+	return nil, false //errors.New(fmt.Sprintf("invalid argument: uri not found [%v]", uri))
 }
 
 // Uri - list the URI's in the cache
@@ -114,7 +114,7 @@ func (r *MessageCache) ErrorList() []error {
 
 // NewMessageCacheHandler - handler to receive messages into a cache.
 func NewMessageCacheHandler(cache *MessageCache) MessageHandler {
-	return func(msg Message) {
+	return func(msg *Message) {
 		cache.Add(msg)
 	}
 }

@@ -18,26 +18,26 @@ func ExamplePing() {
 	//	start := time.Now()
 	pingDir := NewExchange()
 
-	c := make(chan Message, 16)
+	c := make(chan *Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
 	go pingGood(c)
 	status := ping(nil, pingDir, uri1)
 	//duration := status.Duration()
 	fmt.Printf("test: Ping(good) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
 
-	c = make(chan Message, 16)
+	c = make(chan *Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
 	go pingBad(c)
 	status = ping(nil, pingDir, uri2)
 	fmt.Printf("test: Ping(bad) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
 
-	c = make(chan Message, 16)
+	c = make(chan *Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 	go pingError(c, errors.New("ping depends error message"))
 	status = ping(nil, pingDir, uri3)
 	fmt.Printf("test: Ping(error) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
 
-	c = make(chan Message, 16)
+	c = make(chan *Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri4, false, c, nil))
 	go pingDelay(c)
 	status = ping(nil, pingDir, uri4)
@@ -51,7 +51,7 @@ func ExamplePing() {
 
 }
 
-func pingGood(c chan Message) {
+func pingGood(c chan *Message) {
 	for {
 		select {
 		case msg, open := <-c:
@@ -64,7 +64,7 @@ func pingGood(c chan Message) {
 	}
 }
 
-func pingBad(c chan Message) {
+func pingBad(c chan *Message) {
 	for {
 		select {
 		case msg, open := <-c:
@@ -78,7 +78,7 @@ func pingBad(c chan Message) {
 	}
 }
 
-func pingError(c chan Message, err error) {
+func pingError(c chan *Message, err error) {
 	for {
 		select {
 		case msg, open := <-c:
@@ -94,7 +94,7 @@ func pingError(c chan Message, err error) {
 	}
 }
 
-func pingDelay(c chan Message) {
+func pingDelay(c chan *Message) {
 	for {
 		select {
 		case msg, open := <-c:

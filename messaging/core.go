@@ -11,10 +11,10 @@ const (
 )
 
 // MessageMap - map of messages
-type MessageMap map[string]Message
+type MessageMap map[string]*Message
 
 // MessageHandler - function type to process a Message
-type MessageHandler func(msg Message)
+type MessageHandler func(msg *Message)
 
 // Message - message payload
 type Message struct {
@@ -28,12 +28,25 @@ type Message struct {
 	Config    map[string]string
 }
 
+func NewMessage(to, from, event string) *Message {
+	m := new(Message)
+	m.To = to
+	m.From = from
+	m.Event = event
+	return m
+}
+func NewMessageWithStatus(to, from, event string, status *Status) *Message {
+	m := NewMessage(to, from, event)
+	m.Status = status
+	return m
+}
+
 // SendReply - function used by message recipient to reply with a Status
-func SendReply(msg Message, status *Status) {
+func SendReply(msg *Message, status *Status) {
 	if msg.ReplyTo == nil {
 		return
 	}
-	msg.ReplyTo(Message{
+	msg.ReplyTo(&Message{
 		To:        msg.From,
 		From:      msg.To,
 		RelatesTo: msg.RelatesTo,

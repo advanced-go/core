@@ -50,7 +50,7 @@ func Example_SendError() {
 	uri := "urn:test"
 	testDir := NewExchange()
 
-	fmt.Printf("test: SendCtrl(%v) -> : %v\n", uri, testDir.SendCtrl(Message{To: uri}))
+	fmt.Printf("test: SendCtrl(%v) -> : %v\n", uri, testDir.SendCtrl(NewMessage(uri, "", "")))
 
 	m := NewMailboxWithCtrl(uri, false, nil, nil)
 	status := testDir.Add(m)
@@ -66,16 +66,16 @@ func Example_Send() {
 	uri1 := "urn:test-1"
 	uri2 := "urn:test-2"
 	uri3 := "urn:test-3"
-	c := make(chan Message, 16)
+	c := make(chan *Message, 16)
 	testDir := NewExchange()
 
 	testDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
 	testDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
 	testDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 
-	testDir.SendCtrl(Message{To: uri1, From: PkgPath, Event: StartupEvent})
-	testDir.SendCtrl(Message{To: uri2, From: PkgPath, Event: StartupEvent})
-	testDir.SendCtrl(Message{To: uri3, From: PkgPath, Event: StartupEvent})
+	testDir.SendCtrl(NewMessage(uri1, PkgPath, StartupEvent))
+	testDir.SendCtrl(NewMessage(uri2, PkgPath, StartupEvent))
+	testDir.SendCtrl(NewMessage(uri3, PkgPath, StartupEvent))
 
 	time.Sleep(time.Second * 1)
 	resp1 := <-c
@@ -114,17 +114,17 @@ func Example_Remove() {
 	status := testDir.Add(m)
 	fmt.Printf("test: Add(%v) -> : [%v]\n", uri, status)
 
-	status = testDir.SendCtrl(Message{To: uri, Event: PingEvent})
+	status = testDir.SendCtrl(NewMessage(uri, "", PingEvent))
 	fmt.Printf("test: SendCtrl(%v) -> : [%v]\n", uri, status)
 
 	m.Close()
 
-	status = testDir.SendCtrl(Message{To: uri, Event: PingEvent})
+	status = testDir.SendCtrl(NewMessage(uri, "", PingEvent))
 	fmt.Printf("test: SendCtrl(%v) -> : [%v]\n", uri, status)
 
 	//Output:
-	//test: Add(urn:test/one) -> : [OK]
-	//test: SendCtrl(urn:test/one) -> : [OK]
-	//test: SendCtrl(urn:test/one) -> : [Not Found [invalid URI: exchange mailbox not found [urn:test/one]]]
+	//test: Add(urn:test/one) -> : [<nil>]
+	//test: SendCtrl(urn:test/one) -> : [<nil>]
+	//test: SendCtrl(urn:test/one) -> : [error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test/one]]
 
 }

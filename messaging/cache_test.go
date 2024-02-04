@@ -11,16 +11,16 @@ const (
 func ExampleMessageCache_Add() {
 	resp := NewMessageCache()
 
-	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent, Status: StatusOK()})
-	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent, Status: StatusOK()})
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-1", StartupEvent, StatusOK()))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-2", PingEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-3", PingEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-4", PingEvent, StatusOK()))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
 	m, ok := resp.Get("invalid")
-	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "invalid", ok, len(m.To) > 0)
+	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-nil:%v]\n", "invalid", ok, m == nil)
 
 	m, ok = resp.Get("from-uri-3")
 	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, len(m.To) > 0)
@@ -36,7 +36,7 @@ func ExampleMessageCache_Add() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [ok:false] [msg-to:false]
+	//test: Get(invalid) -> : [ok:false] [msg-nil:true]
 	//test: Get(from-uri-3) -> : [ok:true] [msg-to:true]
 	//test: include(event:shutdown,95) -> : []
 	//test: exclude(event:shutdown,95) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]
@@ -50,16 +50,16 @@ func ExampleMessageCache_Add() {
 func ExampleMessageCache_Uri() {
 	resp := NewMessageCache()
 
-	resp.Add(Message{To: "to-uri", From: "from-uri-0", Event: StartupEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-1", Event: StartupEvent, Status: StatusOK()})
-	resp.Add(Message{To: "to-uri", From: "from-uri-2", Event: PingEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-3", Event: PingEvent, Status: NewStatus(StatusNotProvided)})
-	resp.Add(Message{To: "to-uri", From: "from-uri-4", Event: PingEvent, Status: StatusOK()})
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-1", StartupEvent, StatusOK()))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-2", PingEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-3", PingEvent, NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus("to-uri", "from-uri-4", PingEvent, StatusOK()))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
 	m, ok := resp.Get("invalid")
-	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "invalid", ok, len(m.To) > 0)
+	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-nil:%v]\n", "invalid", ok, m == nil)
 
 	m, ok = resp.Get("from-uri-3")
 	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, m.To)
@@ -75,7 +75,7 @@ func ExampleMessageCache_Uri() {
 
 	//Output:
 	//test: count() -> : 5
-	//test: Get(invalid) -> : [ok:false] [msg-to:false]
+	//test: Get(invalid) -> : [ok:false] [msg-nil:true]
 	//test: Get(from-uri-3) -> : [ok:true] [msg-to:to-uri]
 	//test: include(event:shutdown,95) -> : []
 	//test: exclude(event:shutdown,95) -> : [from-uri-0 from-uri-1 from-uri-2 from-uri-3 from-uri-4]

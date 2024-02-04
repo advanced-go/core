@@ -41,7 +41,8 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 		return NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
 	}
 	cache := NewMessageCache()
-	msg := Message{To: nid, From: PkgPath, Event: PingEvent, ReplyTo: NewMessageCacheHandler(cache)}
+	msg := NewMessage(nid, PkgPath, PingEvent)
+	msg.ReplyTo = NewMessageCacheHandler(cache)
 	err := ex.SendCtrl(msg)
 	if err != nil {
 		return NewStatusError(err, pingLocation)

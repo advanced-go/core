@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func newAgentCtrlHandler(msg Message) {
+func newAgentCtrlHandler(msg *Message) {
 	fmt.Printf(fmt.Sprintf("test: NewDefaultAgent_CtrlHandler() -> %v\n", msg.Event))
 }
 
@@ -32,19 +32,19 @@ func Example_NewDefaultAgent() {
 	// Needed time.Nanoseconds * 1 for directory send via sync.Map
 	d := time.Nanosecond * 1
 	a.Run()
-	agentDir.SendCtrl(Message{To: uri, From: "", Event: StartupEvent})
+	agentDir.SendCtrl(NewMessage(uri, "", StartupEvent))
 	//c <- Message{To: "", From: "", Event: core.StartupEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	agentDir.SendCtrl(Message{To: uri, From: "", Event: PauseEvent})
+	agentDir.SendCtrl(NewMessage(uri, "", PauseEvent))
 	//c <- Message{To: "", From: "", Event: core.PauseEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	a.SendCtrl(Message{To: uri, From: "", Event: ResumeEvent})
+	a.SendCtrl(NewMessage(uri, "", ResumeEvent))
 	//c <- Message{To: "", From: "", Event: core.ResumeEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	agentDir.SendCtrl(Message{To: uri, From: "", Event: PingEvent})
+	agentDir.SendCtrl(NewMessage(uri, "", PingEvent))
 	//c <- Message{To: "", From: "", Event: core.PingEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	a.SendCtrl(Message{To: uri, From: "", Event: ReconfigureEvent})
+	a.SendCtrl(NewMessage(uri, "", ReconfigureEvent))
 	//c <- Message{To: "", From: "", Event: core.ReconfigureEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
 	a.Shutdown() //.SendCtrl(Message{To: uri, From: "", Event: core.ShutdownEvent})
