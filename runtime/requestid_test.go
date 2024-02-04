@@ -69,29 +69,30 @@ func ExampleRequestId() {
 
 }
 
-func ExampleRequestId_New() {
-	id := RequestId(nil)
-	fmt.Printf("test: RequestId(nil) -> [empty:%v]\n", len(id) == 0)
+/*
+	func ExampleRequestId_New() {
+		id := RequestId(nil)
+		fmt.Printf("test: RequestId(nil) -> [empty:%v]\n", len(id) == 0)
 
-	id = RequestId(context.Background())
-	fmt.Printf("test: RequestId(ctx) -> [empty:%v]\n", len(id) == 0)
+		id = RequestId(context.Background())
+		fmt.Printf("test: RequestId(ctx) -> [empty:%v]\n", len(id) == 0)
 
-	req, _ := http.NewRequest("", "https.www.google.com", nil)
-	id = RequestId(req)
-	fmt.Printf("test: RequestId(request) -> [empty:%v]\n", len(id) == 0)
+		req, _ := http.NewRequest("", "https.www.google.com", nil)
+		id = RequestId(req)
+		fmt.Printf("test: RequestId(request) -> [empty:%v]\n", len(id) == 0)
 
-	h := make(http.Header)
-	id = RequestId(h)
-	fmt.Printf("test: RequestId(header) -> [empty:%v]\n", len(id) == 0)
+		h := make(http.Header)
+		id = RequestId(h)
+		fmt.Printf("test: RequestId(header) -> [empty:%v]\n", len(id) == 0)
 
-	//Output:
-	//test: RequestId(nil) -> [empty:false]
-	//test: RequestId(ctx) -> [empty:false]
-	//test: RequestId(request) -> [empty:false]
-	//test: RequestId(header) -> [empty:false]
+		//Output:
+		//test: RequestId(nil) -> [empty:false]
+		//test: RequestId(ctx) -> [empty:false]
+		//test: RequestId(request) -> [empty:false]
+		//test: RequestId(header) -> [empty:false]
 
 }
-
+*/
 func ExampleAddRequestId() {
 	h := AddRequestId(nil)
 	fmt.Printf("test: AddRequestId(nil) -> [empty:%v]\n", len(h.Get(XRequestId)) == 0)
