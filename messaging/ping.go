@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	maxWait = time.Second * 3
+	maxWait       = time.Second * 3
+	drainDuration = time.Second * 10
 )
 
 const (
@@ -49,12 +50,13 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 		status.Code = response.Status.Code
 		status.Error = response.Status.Error
 	}
-	// Not closing reply on a timeout as there is still an agent with a pending send on the reply channel.
-	if status.Code != http.StatusGatewayTimeout {
+	// Not closing reply on a timeout as there is still a pending send on the reply channel, so drain and close.
+	if status.Code == http.StatusGatewayTimeout {
+		go DrainAndClose(drainDuration, reply)
+	} else {
 		close(reply)
 	}
 	close(result)
-	//close(reply)
 	return status
 }
 

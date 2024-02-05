@@ -46,3 +46,18 @@ func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *Stat
 		}
 	}
 }
+
+func DrainAndClose(duration time.Duration, c chan *Message) {
+	tick := time.Tick(time.Second * 10)
+	for {
+		select {
+		case <-tick:
+			close(c)
+			return
+		case <-c:
+			close(c)
+			return
+		default:
+		}
+	}
+}
