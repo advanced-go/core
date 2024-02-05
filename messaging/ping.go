@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"reflect"
 	"time"
@@ -23,8 +24,43 @@ func Ping(ctx context.Context, uri any) *Status {
 }
 
 func ping(ctx context.Context, ex *Exchange, uri any) *Status {
+	to, status := createTo(uri)
+	if !status.OK() {
+		return status
+	}
+	var response *Message
+
+	duration := time.Second * 2
+	result := make(chan *Status)
+	reply := make(chan *Message, 16)
+	msg := NewMessage(to, PkgPath, PingEvent)
+	msg.ReplyTo = NewReceiverReplyTo(reply)
+	err := ex.SendCtrl(msg)
+	if err != nil {
+		return NewStatusError(err, pingLocation)
+	}
+	go Receiver(duration, reply, result, func(msg *Message) bool {
+		response = msg
+		return true
+	})
+	status = <-result
+	status.Location = pingLocation
+	if response != nil {
+		status.Code = response.Status.Code
+		status.Error = response.Status.Error
+	}
+	// Not closing reply on a timeout as there is still an agent with a pending send on the reply channel.
+	if status.Code != http.StatusGatewayTimeout {
+		close(reply)
+	}
+	close(result)
+	//close(reply)
+	return status
+}
+
+func createTo(uri any) (string, *Status) {
 	if uri == nil {
-		return NewStatusError(errors.New("error: Ping() uri is nil"), pingLocation)
+		return "", NewStatusError(errors.New("error: Ping() uri is nil"), pingLocation)
 	}
 	path := ""
 	if u, ok := uri.(*url.URL); ok {
@@ -33,31 +69,12 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 		if u2, ok1 := uri.(string); ok1 {
 			path = u2
 		} else {
-			return NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), pingLocation)
+			return "", NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), pingLocation)
 		}
 	}
 	nid, _, ok := UprootUrn(path)
 	if !ok {
-		return NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
+		return "", NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
 	}
-	cache := NewMessageCache()
-	msg := NewMessage(nid, PkgPath, PingEvent)
-	msg.ReplyTo = NewMessageCacheHandler(cache)
-	err := ex.SendCtrl(msg)
-	if err != nil {
-		return NewStatusError(err, pingLocation)
-	}
-	duration := maxWait
-	for wait := time.Duration(float64(duration) * 0.20); duration >= 0; duration -= wait {
-		time.Sleep(wait)
-		result, ok2 := cache.Get(nid)
-		if !ok2 {
-			continue
-		}
-		if result.Status.Error != nil {
-			return NewStatusError(errors.New(fmt.Sprintf("ping response status not available: [%v]", uri)), pingLocation)
-		}
-		return StatusOK()
-	}
-	return NewStatusError(errors.New(fmt.Sprintf("ping response time out: [%v]", uri)), pingLocation)
+	return nid, StatusOK()
 }

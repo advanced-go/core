@@ -9,44 +9,62 @@ import (
 
 var pingStart = time.Now()
 
-func ExamplePing() {
+func ExamplePing_Good() {
 	uri1 := "urn:ping:good"
-	uri2 := "urn:ping:bad"
-	uri3 := "urn:ping:error"
-	uri4 := "urn:ping:delay"
-
-	//	start := time.Now()
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
 	pingDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
 	go pingGood(c)
 	status := ping(nil, pingDir, uri1)
-	//duration := status.Duration()
-	fmt.Printf("test: Ping(good) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
-
-	c = make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
-	go pingBad(c)
-	status = ping(nil, pingDir, uri2)
-	fmt.Printf("test: Ping(bad) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
-
-	c = make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
-	go pingError(c, errors.New("ping depends error message"))
-	status = ping(nil, pingDir, uri3)
-	fmt.Printf("test: Ping(error) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
-
-	c = make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri4, false, c, nil))
-	go pingDelay(c)
-	status = ping(nil, pingDir, uri4)
-	fmt.Printf("test: Ping(delay) -> [%v] [duration:%v]\n", status, time.Since(pingStart))
+	fmt.Printf("test: Ping(good) -> [%v] [duration:%v]\n", status, status.Duration)
 
 	//Output:
 	//test: Ping(good) -> [200] [duration:615.1358ms]
-	//test: Ping(bad) -> [ping response time out: [urn:ping:bad]] [duration:4.2500588s]
-	//test: Ping(error) -> [ping response status not available: [urn:ping:error]] [duration:5.4625108s]
+
+}
+
+func ExamplePing_Bad() {
+	uri2 := "urn:ping:bad"
+	c := make(chan *Message, 16)
+
+	pingDir := NewExchange()
+	pingDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
+	go pingBad(c)
+	status := ping(nil, pingDir, uri2)
+	fmt.Printf("test: Ping(bad) -> [%v] [duration:%v]\n", status, status.Duration)
+
+	//Output:
+	//test: Ping(bad) -> [504] [duration:615.1358ms]
+
+}
+
+func ExamplePing_Error() {
+	uri3 := "urn:ping:error"
+	pingDir := NewExchange()
+
+	c := make(chan *Message, 16)
+	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
+	go pingError(c, errors.New("ping response error"))
+	status := ping(nil, pingDir, uri3)
+	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [duration:%v]\n", status.Code, status, status.Duration)
+
+	//Output:
+	//test: Ping(error) -> [418] [error:ping response error] [duration:5.4625108s]
+
+}
+
+func ExamplePing_Delay() {
+	uri4 := "urn:ping:delay"
+	pingDir := NewExchange()
+
+	c := make(chan *Message, 16)
+	pingDir.Add(NewMailboxWithCtrl(uri4, false, c, nil))
+	go pingDelay(c)
+	status := ping(nil, pingDir, uri4)
+	fmt.Printf("test: Ping(delay) -> [%v] [duration:%v]\n", status, status.Duration)
+
+	//Output:
 	//test: Ping(delay) -> [200] [duration:6.6710815s]
 
 }
@@ -87,7 +105,7 @@ func pingError(c chan *Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				SendReply(msg, NewStatusDurationError(0, time.Since(pingStart), err))
+				SendReply(msg, NewStatusDurationError(http.StatusTeapot, time.Since(pingStart), err))
 			}
 		default:
 		}

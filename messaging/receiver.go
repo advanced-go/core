@@ -1,12 +1,8 @@
 package messaging
 
 import (
+	"net/http"
 	"time"
-)
-
-const (
-	ReceiveTimeout = 1
-	ReceiveDone    = 0
 )
 
 type DoneFunc func(msg *Message) bool
@@ -19,34 +15,31 @@ func NewReceiverReplyTo(reply chan *Message) MessageHandler {
 	}
 }
 
-// Receiver - receives reply messages and forward to a function which will return true if the receiving is complete. The interval and
-// tries bound the time spent receiving, and an optional status channel can be supplied.
-func Receiver(interval time.Duration, tries int, reply <-chan *Message, status chan<- int, done DoneFunc) {
+// Receiver - receives reply messages and forwards to a function which will return true if the receiving is complete. The interval
+// bounds the time spent receiving, and result status is sent on the status channel.
+func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *Status, done DoneFunc) {
 	tick := time.Tick(interval)
-	//var msg Message
-	reason := ReceiveDone
+	var status *Status
+	start := time.Now().UTC()
 
-	if reply == nil || done == nil {
+	if interval <= 0 || reply == nil || result == nil || done == nil {
 		return
 	}
 	defer func() {
-		if status != nil {
-			status <- reason
-		}
+		result <- status
 	}()
 	for {
 		select {
 		case <-tick:
-			tries--
-			if tries <= 0 {
-				reason = ReceiveTimeout
-				return
-			}
+			status = NewStatusDuration(http.StatusGatewayTimeout, time.Since(start))
+			return
 		case msg, open := <-reply:
 			if !open {
+				status = NewStatusDuration(http.StatusInternalServerError, time.Since(start))
 				return
 			}
 			if done(msg) {
+				status = NewStatusDuration(http.StatusOK, time.Since(start))
 				return
 			}
 		default:
