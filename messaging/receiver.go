@@ -1,6 +1,7 @@
 package messaging
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -9,6 +10,12 @@ type DoneFunc func(msg *Message) bool
 
 func NewReceiverReplyTo(reply chan *Message) MessageHandler {
 	return func(msg *Message) {
+		// needed when a timeout is reached, the channel is closed, and there is a pending send
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Printf("recovered in messaging.NewReceiverReplyTo() : %v\n", r)
+			}
+		}()
 		if msg != nil {
 			reply <- msg
 		}

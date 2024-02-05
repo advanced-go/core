@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+const (
+	maxWait = timeout + time.Millisecond*100
+)
+
 var pingStart = time.Now()
 
 func ExamplePing_Good() {
@@ -17,25 +21,25 @@ func ExamplePing_Good() {
 	pingDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
 	go pingGood(c)
 	status := ping(nil, pingDir, uri1)
-	fmt.Printf("test: Ping(good) -> [%v] [duration:%v]\n", status, status.Duration)
+	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(good) -> [200] [duration:615.1358ms]
+	//test: Ping(good) -> [200] [timeout:3s] [duration:0s]
 
 }
 
-func ExamplePing_Bad() {
-	uri2 := "urn:ping:bad"
+func ExamplePing_Timeout() {
+	uri2 := "urn:ping:timeout"
 	c := make(chan *Message, 16)
 
 	pingDir := NewExchange()
 	pingDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
-	go pingBad(c)
+	go pingTimeout(c)
 	status := ping(nil, pingDir, uri2)
-	fmt.Printf("test: Ping(bad) -> [%v] [duration:%v]\n", status, status.Duration)
+	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(bad) -> [504] [duration:615.1358ms]
+	//test: Ping(timeout) -> [504] [timeout:3s]
 
 }
 
@@ -47,10 +51,10 @@ func ExamplePing_Error() {
 	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 	go pingError(c, errors.New("ping response error"))
 	status := ping(nil, pingDir, uri3)
-	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [duration:%v]\n", status.Code, status, status.Duration)
+	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Error, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(error) -> [418] [error:ping response error] [duration:5.4625108s]
+	//test: Ping(error) -> [418] [error:ping response error] [timeout:3s]
 
 }
 
@@ -62,10 +66,10 @@ func ExamplePing_Delay() {
 	pingDir.Add(NewMailboxWithCtrl(uri4, false, c, nil))
 	go pingDelay(c)
 	status := ping(nil, pingDir, uri4)
-	fmt.Printf("test: Ping(delay) -> [%v] [duration:%v]\n", status, status.Duration)
+	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(delay) -> [200] [duration:6.6710815s]
+	//test: Ping(delay) -> [200] [timeout:3s]
 
 }
 
@@ -76,21 +80,21 @@ func pingGood(c chan *Message) {
 			if !open {
 				return
 			}
-			SendReply(msg, NewStatusDuration(http.StatusOK, time.Since(pingStart)))
+			SendReply(msg, StatusOK())
 		default:
 		}
 	}
 }
 
-func pingBad(c chan *Message) {
+func pingTimeout(c chan *Message) {
 	for {
 		select {
 		case msg, open := <-c:
 			if !open {
 				return
 			}
-			time.Sleep(maxWait + time.Second)
-			SendReply(msg, NewStatusDuration(http.StatusOK, time.Since(pingStart)))
+			time.Sleep(maxWait)
+			SendReply(msg, StatusOK())
 		default:
 		}
 	}
@@ -105,7 +109,7 @@ func pingError(c chan *Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				SendReply(msg, NewStatusDurationError(http.StatusTeapot, time.Since(pingStart), err))
+				SendReply(msg, NewStatusError(http.StatusTeapot, errors.New("ping response error"), pingLocation))
 			}
 		default:
 		}
@@ -119,8 +123,8 @@ func pingDelay(c chan *Message) {
 			if !open {
 				return
 			}
-			time.Sleep(time.Second)
-			SendReply(msg, NewStatusDuration(http.StatusOK, time.Since(pingStart)))
+			time.Sleep(timeout / 2)
+			SendReply(msg, StatusOK())
 		default:
 		}
 	}

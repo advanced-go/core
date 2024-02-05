@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	maxWait       = time.Second * 3
-	drainDuration = time.Second * 10
+	timeout = time.Second * 3
 )
 
 const (
@@ -31,16 +30,15 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 	}
 	var response *Message
 
-	duration := time.Second * 2
 	result := make(chan *Status)
 	reply := make(chan *Message, 16)
 	msg := NewMessage(to, PkgPath, PingEvent)
 	msg.ReplyTo = NewReceiverReplyTo(reply)
 	err := ex.SendCtrl(msg)
 	if err != nil {
-		return NewStatusError(err, pingLocation)
+		return NewStatusError(http.StatusInternalServerError, err, pingLocation)
 	}
-	go Receiver(duration, reply, result, func(msg *Message) bool {
+	go Receiver(timeout, reply, result, func(msg *Message) bool {
 		response = msg
 		return true
 	})
@@ -50,19 +48,14 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 		status.Code = response.Status.Code
 		status.Error = response.Status.Error
 	}
-	// Not closing reply on a timeout as there is still a pending send on the reply channel, so drain and close.
-	if status.Code == http.StatusGatewayTimeout {
-		go DrainAndClose(drainDuration, reply)
-	} else {
-		close(reply)
-	}
+	close(reply)
 	close(result)
 	return status
 }
 
 func createTo(uri any) (string, *Status) {
 	if uri == nil {
-		return "", NewStatusError(errors.New("error: Ping() uri is nil"), pingLocation)
+		return "", NewStatusError(http.StatusBadRequest, errors.New("error: Ping() uri is nil"), pingLocation)
 	}
 	path := ""
 	if u, ok := uri.(*url.URL); ok {
@@ -71,12 +64,12 @@ func createTo(uri any) (string, *Status) {
 		if u2, ok1 := uri.(string); ok1 {
 			path = u2
 		} else {
-			return "", NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), pingLocation)
+			return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), pingLocation)
 		}
 	}
 	nid, _, ok := UprootUrn(path)
 	if !ok {
-		return "", NewStatusError(errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
+		return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
 	}
 	return nid, StatusOK()
 }

@@ -24,8 +24,9 @@ func NewStatus(code int) *Status {
 	return s
 }
 
-func NewStatusError(err error, location string) *Status {
+func NewStatusError(code int, err error, location string) *Status {
 	s := new(Status)
+	s.Code = code
 	s.Error = err
 	s.Location = location
 	return s

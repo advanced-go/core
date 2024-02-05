@@ -80,6 +80,10 @@ func (s *Status) OK() bool {
 	return s.Code == http.StatusOK
 }
 
+func (s *Status) Code2() int {
+	return s.Code
+}
+
 func (s *Status) HttpCode() int {
 	return HttpCode(s.Code)
 }
