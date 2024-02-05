@@ -1,7 +1,9 @@
 package access
 
 import (
+	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -28,7 +30,9 @@ func SetOrigin(o Origin) {
 	origin = o
 }
 
-func StatusCode1(statusCode *int) func() int {
+type StatusCodeFun func() int
+
+func StatusCode(statusCode *int) func() int {
 	return func() int {
 		if statusCode == nil {
 			return http.StatusOK
@@ -37,7 +41,7 @@ func StatusCode1(statusCode *int) func() int {
 	}
 }
 
-type StatusCode interface {
+type StatusCode2 interface {
 	StatusCode() int
 }
 
@@ -46,7 +50,9 @@ func NewStatusCode(t any) func() int {
 		if t == nil {
 			return http.StatusOK
 		}
-		if i, ok := t.(*StatusCode); ok {
+		fmt.Printf("reflect.TypeOf() -> %v\n", reflect.TypeOf(t).String())
+		//reflect.Interface
+		if i, ok := t.(*StatusCode2); ok {
 			return (*(i)).StatusCode()
 		}
 		return 0

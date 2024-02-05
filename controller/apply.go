@@ -12,7 +12,7 @@ const (
 	statusDeadlineExceeded = 4
 )
 
-func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode access.StatusCodeFunc) func() {
+func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode access.StatusCodeFun) func() {
 	var cancelFunc context.CancelFunc
 
 	start := time.Now()
