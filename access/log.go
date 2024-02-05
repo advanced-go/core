@@ -28,14 +28,29 @@ func SetOrigin(o Origin) {
 	origin = o
 }
 
-type StatusCodeFunc func() int
-
-func StatusCode(statusCode *int) StatusCodeFunc {
+func StatusCode1(statusCode *int) func() int {
 	return func() int {
 		if statusCode == nil {
 			return http.StatusOK
 		}
 		return *statusCode
+	}
+}
+
+type StatusCode interface {
+	StatusCode() int
+}
+
+func NewStatusCode(t any) func() int {
+	return func() int {
+		if t == nil {
+			return http.StatusOK
+		}
+		if i, ok := t.(*StatusCode); ok {
+			return (*(i)).StatusCode()
+		}
+		return 0
+		//return (*(s)).StatusCode()
 	}
 }
 
@@ -99,7 +114,7 @@ func Log(traffic string, start time.Time, duration time.Duration, req *http.Requ
 }
 
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode StatusCodeFunc) func() {
+func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
 		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode(), Status: ""}, routeName, routeTo, threshold, thresholdFlags)

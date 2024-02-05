@@ -36,6 +36,44 @@ func Example_NewRequest() {
 
 }
 
+type testStatus struct {
+	code int
+}
+
+func (ts *testStatus) StatusCode() int {
+	return ts.code
+}
+
+func (ts *testStatus) String() string {
+	return fmt.Sprintf("%v", ts.code)
+}
+
+func ExampleLogDeferred() {
+	EnableTestLogger()
+	SetOrigin(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
+	status := loggingTest()
+	fmt.Printf("test: LogDeferred() -> %v\n", status)
+
+	//Output:
+	//test: LogDeferred() -> 504
+
+}
+
+func loggingTest() *testStatus {
+	var status *testStatus
+
+	h := make(http.Header)
+	h.Add(XRequestId, XRequestId)
+	h.Add(XRelatesTo, XRelatesTo)
+	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search",
+		"us.west", -1, "flags", NewStatusCode(&status))()
+	status = new(testStatus)
+	status.code = http.StatusGatewayTimeout
+	time.Sleep(time.Millisecond * 500)
+	return status
+}
+
+/*
 func ExampleLogDeferred_Test1() {
 	EnableTestLogger()
 	SetOrigin(Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
@@ -79,3 +117,6 @@ func loggingTest2() int {
 	time.Sleep(time.Millisecond * 500)
 	return statusCode
 }
+
+
+*/
