@@ -30,7 +30,7 @@ func SetOrigin(o Origin) {
 	origin = o
 }
 
-type StatusCodeFun func() int
+type StatusCodeFunc func() int
 
 func StatusCode(statusCode *int) func() int {
 	return func() int {
