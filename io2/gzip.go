@@ -29,21 +29,16 @@ func (g *gzipWriter) ContentEncoding() string {
 	return GzipEncoding
 }
 
-func (g *gzipWriter) Close() *runtime.Status {
-	var errs []error
-
-	err := g.writer.Flush()
-	if err != nil {
-		errs = append(errs, err)
+func (g *gzipWriter) Close() error {
+	err0 := g.writer.Flush()
+	err1 := g.writer.Close()
+	if err0 == nil && err1 == nil {
+		return nil
 	}
-	err = g.writer.Close()
-	if err != nil {
-		errs = append(errs, err)
+	if err1 != nil {
+		return err1
 	}
-	if len(errs) > 0 {
-		return runtime.NewStatusError(runtime.StatusGzipEncodingError, gzipWriterLoc, errs[0])
-	}
-	return runtime.StatusOK()
+	return err0
 }
 
 type gzipReader struct {
@@ -64,10 +59,6 @@ func (g *gzipReader) Read(p []byte) (n int, err error) {
 	return g.reader.Read(p)
 }
 
-func (g *gzipReader) Close() *runtime.Status {
-	err := g.reader.Close()
-	if err != nil {
-		return runtime.NewStatusError(runtime.StatusGzipEncodingError, gzipReaderLoc, err)
-	}
-	return runtime.StatusOK()
+func (g *gzipReader) Close() error {
+	return g.reader.Close()
 }

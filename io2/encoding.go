@@ -24,14 +24,13 @@ const (
 )
 
 type EncodingReader interface {
-	io.Reader
-	Close() *runtime.Status
+	io.ReadCloser
 }
 
 type EncodingWriter interface {
-	io.Writer
+	io.WriteCloser
 	ContentEncoding() string
-	Close() *runtime.Status
+	//Close() *runtime.Status
 }
 
 func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *runtime.Status) {
@@ -91,8 +90,8 @@ func (i *identityReader) Read(p []byte) (n int, err error) {
 	return i.reader.Read(p)
 }
 
-func (i *identityReader) Close() *runtime.Status {
-	return runtime.StatusOK()
+func (i *identityReader) Close() error {
+	return nil
 }
 
 type identityWriter struct {
@@ -114,6 +113,6 @@ func (i *identityWriter) ContentEncoding() string {
 	return NoneEncoding
 }
 
-func (i *identityWriter) Close() *runtime.Status {
-	return runtime.StatusOK()
+func (i *identityWriter) Close() error {
+	return nil
 }

@@ -36,7 +36,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	}
 	w.WriteHeader(status.HttpCode())
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
-	writer.Close()
+	_ = writer.Close()
 	if !status0.OK() {
 		e.Handle(status0, runtime.RequestId(w.Header()), writeLoc)
 	}

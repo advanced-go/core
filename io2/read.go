@@ -46,7 +46,7 @@ func ReadAll(body io.Reader, h http.Header) ([]byte, *runtime.Status) {
 		return nil, status.AddLocation(readAllLoc)
 	}
 	buf, err := io.ReadAll(reader)
-	reader.Close()
+	_ = reader.Close()
 	if err != nil {
 		return nil, runtime.NewStatusError(runtime.StatusIOError, readAllLoc, err)
 	}
