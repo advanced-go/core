@@ -2,6 +2,7 @@ package access
 
 import (
 	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
 )
@@ -55,20 +56,19 @@ func ExampleLogDeferred() {
 	fmt.Printf("test: LogDeferred() -> %v\n", status)
 
 	//Output:
-	//test: LogDeferred() -> 504
+	//test: LogDeferred() -> Timeout
 
 }
 
-func loggingTest() *testStatus {
-	var status *testStatus
+func loggingTest() *runtime.Status {
+	var status *runtime.Status
 
 	h := make(http.Header)
 	h.Add(XRequestId, XRequestId)
 	h.Add(XRelatesTo, XRelatesTo)
 	defer LogDeferred(EgressTraffic, NewRequest(h, http.MethodGet, "https://www.google.com/search?q=test"), "search",
-		"us.west", -1, "flags", NewStatusCode(&status))()
-	status = new(testStatus)
-	status.code = http.StatusGatewayTimeout
+		"us.west", -1, "flags", StatusCode(&status))()
+	status = runtime.NewStatus(http.StatusGatewayTimeout)
 	time.Sleep(time.Millisecond * 500)
 	return status
 }
@@ -118,5 +118,23 @@ func loggingTest2() int {
 	return statusCode
 }
 
+type StatusCode2 interface {
+	StatusCode() int
+}
+
+func NewStatusCode(t any) func() int {
+	return func() int {
+		if t == nil {
+			return http.StatusOK
+		}
+		fmt.Printf("reflect.TypeOf() -> %v\n", reflect.TypeOf(t).String())
+		//reflect.Interface
+		if i, ok := t.(*StatusCode2); ok {
+			return (*(i)).StatusCode()
+		}
+		return 0
+		//return (*(s)).StatusCode()
+	}
+}
 
 */

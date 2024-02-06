@@ -1,9 +1,8 @@
 package access
 
 import (
-	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"reflect"
 	"time"
 )
 
@@ -32,7 +31,7 @@ func SetOrigin(o Origin) {
 
 type StatusCodeFunc func() int
 
-func StatusCode(statusCode *int) func() int {
+func StatusCodeInt(statusCode *int) func() int {
 	return func() int {
 		if statusCode == nil {
 			return http.StatusOK
@@ -41,22 +40,12 @@ func StatusCode(statusCode *int) func() int {
 	}
 }
 
-type StatusCode2 interface {
-	StatusCode() int
-}
-
-func NewStatusCode(t any) func() int {
+func StatusCode(s **runtime.Status) StatusCodeFunc {
 	return func() int {
-		if t == nil {
+		if s == nil || *s == nil {
 			return http.StatusOK
 		}
-		fmt.Printf("reflect.TypeOf() -> %v\n", reflect.TypeOf(t).String())
-		//reflect.Interface
-		if i, ok := t.(*StatusCode2); ok {
-			return (*(i)).StatusCode()
-		}
-		return 0
-		//return (*(s)).StatusCode()
+		return (*(s)).Code
 	}
 }
 
