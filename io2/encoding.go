@@ -30,7 +30,6 @@ type EncodingReader interface {
 type EncodingWriter interface {
 	io.WriteCloser
 	ContentEncoding() string
-	//Close() *runtime.Status
 }
 
 func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *runtime.Status) {
