@@ -12,7 +12,7 @@ const (
 func ExampleGet() {
 	runtime.SetOutputFormatter()
 	var e runtime.Output
-	r, status := Get("", nil)
+	r, status := Get(nil, "", nil)
 
 	e.Handle(status, "123-456", testLocation)
 	fmt.Printf("test: Get(\"\") -> [resp:%v] [status:%v]\n", r.Status, status)
