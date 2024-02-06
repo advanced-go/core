@@ -3,13 +3,14 @@ package controller
 import (
 	"context"
 	"github.com/advanced-go/core/access"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
 )
 
 const (
-	upstreamTimeoutFlag    = "UT"
-	statusDeadlineExceeded = 4
+	upstreamTimeoutFlag = "UT"
+	//statusDeadlineExceeded = 4
 )
 
 func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode access.StatusCodeFunc) func() {
@@ -39,15 +40,12 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 		if cancelFunc != nil {
 			cancelFunc()
 		}
-		threshold := Milliseconds(duration)
 		if statusCode != nil {
 			code = statusCode()
 		}
-		if code == statusDeadlineExceeded {
+		if code == runtime.StatusDeadlineExceeded {
 			thresholdFlags = upstreamTimeoutFlag
-		} else {
-			threshold = -1
 		}
-		access.Log(access.EgressTraffic, start, time.Since(start), req, &http.Response{StatusCode: code, Status: ""}, routeName, "", threshold, thresholdFlags)
+		access.Log(access.EgressTraffic, start, time.Since(start), req, &http.Response{StatusCode: code, Status: ""}, routeName, "", Milliseconds(duration), thresholdFlags)
 	}
 }

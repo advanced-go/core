@@ -5,13 +5,15 @@ import (
 	"errors"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
+	"strings"
 	"time"
 )
 
 const (
-	doLocation    = PkgPath + ":Do"
-	internalError = "Internal Error"
-	fileScheme    = "file"
+	doLocation              = PkgPath + ":Do"
+	internalError           = "Internal Error"
+	fileScheme              = "file"
+	contextDeadlineExceeded = "context deadline exceeded"
 )
 
 var (
@@ -66,6 +68,10 @@ func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		// catch connectivity error, even with a valid URL
 		if resp == nil {
 			resp = serverErrorResponse()
+		}
+		// check for a *URL error of deadline exceeded
+		if strings.Contains(err.Error(), contextDeadlineExceeded) {
+			resp.StatusCode = runtime.StatusDeadlineExceeded
 		}
 		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
 	}
