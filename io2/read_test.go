@@ -64,7 +64,7 @@ func ExampleReadAll_Reader() {
 func ExampleReadAll_GzipReadCloser() {
 	uri := "https://www.google.com/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	req.Header.Add(AcceptEncoding, "gzip, deflate, br")
+	req.Header.Add(AcceptEncoding, AcceptEncodingValue)
 
 	resp, err := http.DefaultClient.Do(req)
 	fmt.Printf("test: Do() -> [content-type:%v] [content-encoding:%v] [err:%v]\n", resp.Header.Get(contentType), resp.Header.Get(ContentEncoding), err)

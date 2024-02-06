@@ -10,17 +10,17 @@ import (
 )
 
 const (
-	AcceptEncoding   = "Accept-Encoding"
-	ContentEncoding  = "Content-Encoding"
-	GzipEncoding     = "gzip"
-	BrotliEncoding   = "br"
-	DeflateEncoding  = "deflate"
-	CompressEncoding = "compress"
-	NoneEncoding     = "none"
+	AcceptEncoding      = "Accept-Encoding"
+	ContentEncoding     = "Content-Encoding"
+	GzipEncoding        = "gzip"
+	BrotliEncoding      = "br"
+	DeflateEncoding     = "deflate"
+	CompressEncoding    = "compress"
+	NoneEncoding        = "none"
+	AcceptEncodingValue = "gzip, deflate, br"
 
 	encodingErrorFmt  = "error: content encoding not supported [%v]"
 	encodingReaderLoc = PkgPath + ":EncodingReader"
-	encodingWriterLoc = PkgPath + ":EncodingWriter"
 )
 
 type EncodingReader interface {
