@@ -10,12 +10,40 @@ import (
 	"time"
 )
 
-func _ExampleCreateRequest() {
-	req, _ := http.NewRequest(http.MethodPut, "https://www.google.com/search?q=golang", nil)
+func ExampleApply_Same_Context() {
+	uri := "https://www.google.com/search?q=golang"
+	h := make(http.Header)
+	ctx := context.Background()
+	status := runtime.StatusOK()
+	var newCtx context.Context
 
-	fmt.Printf("test: CreateRequest() -> [method:%v] [uri:%v]\n", req.Method, req.URL.String())
+	defer Apply(ctx, &newCtx, http.MethodGet, uri, "google-search", h, 0, access.StatusCode(&status))()
+	fmt.Printf("test: Apply(\"0ms\") -> [ctx==newCtx:%v]\n", ctx == newCtx)
+
+	ctx1, cancel := context.WithTimeout(ctx, time.Millisecond*100)
+	defer cancel()
+	defer Apply(ctx1, &newCtx, http.MethodGet, uri, "google-search", h, time.Millisecond*100, access.StatusCode(&status))()
+	fmt.Printf("test: Apply(\"100ms\") -> [ctx==newCtx:%v]\n", ctx1 == newCtx)
 
 	//Output:
+	//test: Apply("0ms") -> [ctx==newCtx:true]
+	//test: Apply("100ms") -> [ctx==newCtx:true]
+
+}
+
+func ExampleApply_New_Context() {
+	uri := "https://www.google.com/search?q=golang"
+	h := make(http.Header)
+	status := runtime.StatusOK()
+	var newCtx context.Context
+
+	ctx := context.Background()
+	defer Apply(ctx, &newCtx, http.MethodGet, uri, "google-search", h, time.Millisecond*100, access.StatusCode(&status))()
+	fmt.Printf("test: Apply(\"0ms\") -> [ctx==newCtx:%v]\n", ctx == newCtx)
+
+	//Output:
+	//test: Apply("0ms") -> [ctx==newCtx:false]
+
 }
 
 func ExampleApply_Timeout_1000ms() {
