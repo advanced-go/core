@@ -21,7 +21,7 @@ func ExampleApply_SameContext() {
 	defer Apply(ctx, &newCtx, access.NewRequest(h, http.MethodGet, uri), nil, "google-search", 0, access.StatusCode(&status))()
 	fmt.Printf("test: Apply(\"0ms\") -> [ctx==newCtx:%v]\n", ctx == newCtx)
 
-	ctx1, cancel := context.WithTimeout(ctx, time.Millisecond*100)
+	ctx1, cancel := context.WithTimeout(ctx, time.Millisecond*333)
 	defer cancel()
 	defer Apply(ctx1, &newCtx, access.NewRequest(h, http.MethodGet, uri), nil, "google-search", time.Millisecond*100, access.StatusCode(&status))()
 	fmt.Printf("test: Apply(\"100ms\") -> [ctx==newCtx:%v]\n", ctx1 == newCtx)

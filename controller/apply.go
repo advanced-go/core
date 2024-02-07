@@ -24,7 +24,7 @@ func Apply(ctx context.Context, newCtx *context.Context, req *http.Request, resp
 	// until the context deadline.
 	if duration > 0 {
 		if ct, ok := ctx.Deadline(); ok {
-			duration = time.Until(ct)
+			duration = time.Until(ct) * -1
 		} else {
 			*newCtx, cancelFunc = context.WithTimeout(context.Background(), duration)
 		}
