@@ -25,12 +25,13 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 	if h != nil {
 		req.Header = h
 	}
-	// if a timeout and there is no deadline in the current ctx, then create a new context
+	// if a timeout and there is no deadline in the current ctx, then create a new context, otherwise update the duration with time
+	// until the context deadline.
 	if duration > 0 {
-		if ct, ok := ctx.Deadline(); !ok {
-			*newCtx, cancelFunc = context.WithTimeout(context.Background(), duration)
-		} else {
+		if ct, ok := ctx.Deadline(); ok {
 			duration = time.Until(ct)
+		} else {
+			*newCtx, cancelFunc = context.WithTimeout(context.Background(), duration)
 		}
 	}
 	return func() {
