@@ -42,13 +42,14 @@ func (r *Resolver) SetOverrides(values []Pair) func() {
 		r.override = nil
 		return func() {}
 	}
+	m := r.override
 	r.override = new(sync.Map)
 	for _, attr := range values {
 		key, _ := TemplateToken(attr.Key)
 		r.override.Store(key, attr.Value)
 	}
 	return func() {
-		r.override = nil
+		r.override = m
 	}
 }
 
