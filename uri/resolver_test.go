@@ -64,6 +64,32 @@ func ExampleBuild() {
 
 }
 
+func override(path string, r *Resolver) {
+	fn := r.SetOverrides([]Pair{{path, yahooSearch}})
+	defer fn()
+	uri := r.Build(path)
+	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
+}
+
+func ExampleBuild_ResetOverrides() {
+	path := "/search?q=golang"
+	r := NewResolver()
+
+	uri := r.Build(path)
+	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
+
+	override(path, r)
+
+	uri = r.Build(path)
+	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
+
+	//Output:
+	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
+	//test: override("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
+	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
+
+}
+
 func ExampleBuild_Values() {
 	path := ""
 	r := NewResolver()

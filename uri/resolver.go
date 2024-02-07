@@ -37,15 +37,18 @@ func NewResolver() *Resolver {
 }
 
 // SetOverrides - configure overrides
-func (r *Resolver) SetOverrides(values []Pair) {
+func (r *Resolver) SetOverrides(values []Pair) func() {
 	if len(values) == 0 {
 		r.override = nil
-		return
+		return func() {}
 	}
 	r.override = new(sync.Map)
 	for _, attr := range values {
 		key, _ := TemplateToken(attr.Key)
 		r.override.Store(key, attr.Value)
+	}
+	return func() {
+		r.override = nil
 	}
 }
 
