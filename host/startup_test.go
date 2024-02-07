@@ -44,9 +44,9 @@ type resource struct {
 	Uri string
 }
 
-func testRegister(ex *messaging.Exchange, uri string, cmd, data chan messaging.Message) error {
+func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.Message) error {
 	if cmd == nil {
-		cmd = make(chan messaging.Message, 16)
+		cmd = make(chan *messaging.Message, 16)
 	}
 	return ex.Add(messaging.NewMailboxWithCtrl(uri, false, cmd, data))
 }
@@ -87,18 +87,18 @@ func ExampleStartup_Success() {
 	uri2 := "github/startup/bad"
 	uri3 := "github/startup/depends"
 
-	startupDir := messaging.NewExchange() //any(NewExchange()).(*exchange)
+	startupDir := messaging.NewExchange()
 	start = time.Now()
 
-	c := make(chan messaging.Message, 16)
+	c := make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri1, c, nil)
 	go startupGood(c)
 
-	c = make(chan messaging.Message, 16)
+	c = make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri2, c, nil)
 	go startupBad(c)
 
-	c = make(chan messaging.Message, 16)
+	c = make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri3, c, nil)
 	go startupDepends(c, nil)
 
@@ -122,15 +122,15 @@ func ExampleStartup_Failure() {
 
 	start = time.Now()
 
-	c := make(chan messaging.Message, 16)
+	c := make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri1, c, nil)
 	go startupGood(c)
 
-	c = make(chan messaging.Message, 16)
+	c = make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri2, c, nil)
 	go startupBad(c)
 
-	c = make(chan messaging.Message, 16)
+	c = make(chan *messaging.Message, 16)
 	testRegister(startupDir, uri3, c, nil)
 	go startupDepends(c, errors.New("startup failure error message"))
 
@@ -144,7 +144,7 @@ func ExampleStartup_Failure() {
 
 }
 
-func startupGood(c chan messaging.Message) {
+func startupGood(c chan *messaging.Message) {
 	for {
 		select {
 		case msg, open := <-c:
@@ -157,7 +157,7 @@ func startupGood(c chan messaging.Message) {
 	}
 }
 
-func startupBad(c chan messaging.Message) {
+func startupBad(c chan *messaging.Message) {
 	for {
 		select {
 		case msg, open := <-c:
@@ -171,7 +171,7 @@ func startupBad(c chan messaging.Message) {
 	}
 }
 
-func startupDepends(c chan messaging.Message, err error) {
+func startupDepends(c chan *messaging.Message, err error) {
 	for {
 		select {
 		case msg, open := <-c:

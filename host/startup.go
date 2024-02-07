@@ -56,7 +56,8 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHandler) messaging.MessageMap {
 	m := make(messaging.MessageMap)
 	for _, k := range ex.List() {
-		msg := messaging.Message{To: k, From: startupLocation, Event: messaging.StartupEvent, ReplyTo: fn}
+		msg := messaging.NewMessage(k, startupLocation, messaging.StartupEvent)
+		msg.ReplyTo = fn
 		if cm != nil {
 			if content, ok := cm[k]; ok {
 				//msg.Content = append(msg.Content, content)
