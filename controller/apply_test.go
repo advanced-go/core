@@ -102,5 +102,5 @@ func ExampleCreateResponse() {
 	//test: createResponse(nil) -> [status-code:200] [status:OK]
 	//test: createResponse(nil) -> [status-code:504] [status:Timeout]
 	//test: createResponse(nil) -> [status-code:418] [status:I'm a Teapot]
-	
+
 }
