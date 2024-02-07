@@ -65,8 +65,7 @@ func ExampleBuild() {
 }
 
 func override(path string, r *Resolver) {
-	fn := r.SetOverrides([]Pair{{path, yahooSearch}})
-	defer fn()
+	defer r.SetOverrides([]Pair{{path, yahooSearch}})()
 	uri := r.Build(path)
 	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
 }
