@@ -10,10 +10,9 @@ import (
 
 const (
 	upstreamTimeoutFlag = "UT"
-	//statusDeadlineExceeded = 4
 )
 
-func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName string, h http.Header, duration time.Duration, statusCode access.StatusCodeFunc) func() {
+func Apply(ctx context.Context, newCtx *context.Context, req *http.Request, resp **http.Response, routeName string, duration time.Duration, statusCode access.StatusCodeFunc) func() {
 	var cancelFunc context.CancelFunc
 
 	if ctx == nil {
@@ -21,10 +20,6 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 	}
 	*newCtx = ctx
 	start := time.Now()
-	req, _ := http.NewRequest(method, uri, nil)
-	if h != nil {
-		req.Header = h
-	}
 	// if a timeout and there is no deadline in the current ctx, then create a new context, otherwise update the duration with time
 	// until the context deadline.
 	if duration > 0 {
@@ -46,6 +41,16 @@ func Apply(ctx context.Context, newCtx *context.Context, method, uri, routeName 
 		if code == runtime.StatusDeadlineExceeded {
 			thresholdFlags = upstreamTimeoutFlag
 		}
-		access.Log(access.EgressTraffic, start, time.Since(start), req, &http.Response{StatusCode: code, Status: ""}, routeName, "", Milliseconds(duration), thresholdFlags)
+		if resp == nil || *resp == nil {
+			r := new(http.Response)
+			r.StatusCode = code
+			r.Status = runtime.HttpStatus(code)
+			if resp == nil {
+				resp = &r
+			} else {
+				*resp = r
+			}
+		}
+		access.Log(access.EgressTraffic, start, time.Since(start), req, *resp, routeName, "", Milliseconds(duration), thresholdFlags)
 	}
 }
