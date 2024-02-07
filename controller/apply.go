@@ -41,16 +41,22 @@ func Apply(ctx context.Context, newCtx *context.Context, req *http.Request, resp
 		if code == runtime.StatusDeadlineExceeded {
 			thresholdFlags = upstreamTimeoutFlag
 		}
-		if resp == nil || *resp == nil {
-			r := new(http.Response)
-			r.StatusCode = code
-			r.Status = runtime.HttpStatus(code)
-			if resp == nil {
-				resp = &r
-			} else {
-				*resp = r
-			}
-		}
-		access.Log(access.EgressTraffic, start, time.Since(start), req, *resp, routeName, "", Milliseconds(duration), thresholdFlags)
+		access.Log(access.EgressTraffic, start, time.Since(start), req, createResponse(resp, code), routeName, "", Milliseconds(duration), thresholdFlags)
 	}
+}
+
+func createResponse(resp **http.Response, statusCode int) *http.Response {
+	if resp == nil {
+		r := new(http.Response)
+		r.StatusCode = statusCode
+		r.Status = runtime.HttpStatus(statusCode)
+		return r
+	}
+	if *resp == nil {
+		r := new(http.Response)
+		r.StatusCode = statusCode
+		r.Status = runtime.HttpStatus(statusCode)
+		return r
+	}
+	return *resp
 }

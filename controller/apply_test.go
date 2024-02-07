@@ -82,3 +82,25 @@ func ExampleApply_Timeout_10ms() {
 	//test: exchange.Get("10ms") -> [status:Deadline Exceeded [Get "https://www.google.com/search?q=golang": context deadline exceeded]] [status-code:4] [content-type:]
 
 }
+
+func ExampleCreateResponse() {
+	var r *http.Response
+
+	resp := createResponse(nil, http.StatusOK)
+	fmt.Printf("test: createResponse(nil) -> [status-code:%v] [status:%v]\n", resp.StatusCode, resp.Status)
+
+	resp = createResponse(&r, http.StatusGatewayTimeout)
+	fmt.Printf("test: createResponse(nil) -> [status-code:%v] [status:%v]\n", resp.StatusCode, resp.Status)
+
+	r = new(http.Response)
+	r.StatusCode = http.StatusTeapot
+	r.Status = "I'm a Teapot"
+	resp = createResponse(&r, http.StatusGatewayTimeout)
+	fmt.Printf("test: createResponse(nil) -> [status-code:%v] [status:%v]\n", resp.StatusCode, resp.Status)
+
+	//Output:
+	//test: createResponse(nil) -> [status-code:200] [status:OK]
+	//test: createResponse(nil) -> [status-code:504] [status:Timeout]
+	//test: createResponse(nil) -> [status-code:418] [status:I'm a Teapot]
+	
+}
