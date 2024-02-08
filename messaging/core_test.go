@@ -45,6 +45,10 @@ func ExampleStatusContent() {
 	s := m.Status()
 	fmt.Printf("test: Status() -> [body:%v]\n", s)
 
+	m = NewMessageWithStatus("to", "from", StartupEvent, status)
+	s = m.Status()
+	fmt.Printf("test: NewMessageWithStatus() -> [body:%v]\n", s)
+
 	//Output:
 	//test: SetContent("",status) -> [error: content type is empty]
 	//test: SetContent("application/status",nil) -> [error: content is nil]
@@ -52,6 +56,7 @@ func ExampleStatusContent() {
 	//test: Content() -> [ct:] [body:<nil>] [ok:false]
 	//test: Content() -> [ct:application/status] [body:418] [ok:true]
 	//test: Status() -> [body:418]
+	//test: NewMessageWithStatus() -> [body:418]
 
 }
 
