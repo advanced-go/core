@@ -38,12 +38,17 @@ func (r *MessageCache) Filter(event string, code int, include bool) []string {
 	defer r.mu.RUnlock()
 	var uri []string
 	for u, resp := range r.m {
+		s := resp.Status()
+		if s == nil {
+			fmt.Printf("no status available : %v\n", u)
+			continue
+		}
 		if include {
-			if resp.Status.Code == code && resp.Event() == event {
+			if s.Code == code && resp.Event() == event {
 				uri = append(uri, u)
 			}
 		} else {
-			if resp.Status.Code != code || resp.Event() != event {
+			if s.Code != code || resp.Event() != event {
 				uri = append(uri, u)
 			}
 		}

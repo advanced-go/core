@@ -45,8 +45,8 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 	status = <-result
 	status.Location = pingLocation
 	if response != nil {
-		status.Code = response.Status.Code
-		status.Error = response.Status.Error
+		status.Code = response.Status().Code
+		status.Error = response.Status().Error
 	}
 	close(reply)
 	close(result)

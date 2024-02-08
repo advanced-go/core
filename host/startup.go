@@ -60,8 +60,7 @@ func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHan
 		msg.ReplyTo = fn
 		if cm != nil {
 			if content, ok := cm[k]; ok {
-				//msg.Content = append(msg.Content, content)
-				msg.Config = content
+				msg.SetConfig(content)
 			}
 		}
 		m[k] = msg
@@ -81,12 +80,8 @@ func handleErrors(failures []string, cache *messaging.MessageCache) {
 		if !ok {
 			continue
 		}
-		if msg.Status.Error != nil {
-			//loc := ""
-			//if msg.Status.Location() != nil && len(msg.Status.Location()) > 0 {
-			//	loc = msg.Status.Location()[0]
-			//}
-			fmt.Printf("error: startup failure [%v]\n", msg.Status.Error)
+		if msg.Status() != nil && msg.Status().Error != nil {
+			fmt.Printf("error: startup failure [%v]\n", msg.Status().Error)
 		}
 	}
 }
@@ -97,8 +92,8 @@ func handleStatus(cache *messaging.MessageCache) {
 		if !ok {
 			continue
 		}
-		//if msg.Status != nil {
-		fmt.Printf("startup successful: [%v] : %s\n", uri, msg.Status.Duration)
-		//}
+		if msg.Status() != nil {
+			fmt.Printf("startup successful: [%v] : %s\n", uri, msg.Status().Duration)
+		}
 	}
 }

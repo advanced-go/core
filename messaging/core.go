@@ -11,11 +11,14 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 
-	XRelatesTo = "x-relates-to"
-	XMessageId = "x-message-id"
-	XTo        = "x-to"
-	XFrom      = "x-from"
-	XEvent     = "x-event"
+	ContentType       = "Content-Type"
+	XRelatesTo        = "x-relates-to"
+	XMessageId        = "x-message-id"
+	XTo               = "x-to"
+	XFrom             = "x-from"
+	XEvent            = "x-event"
+	ContentTypeStatus = "application/status"
+	ContentTypeConfig = "application/config"
 )
 
 // MessageMap - map of messages
@@ -27,25 +30,8 @@ type MessageHandler func(msg *Message)
 // Message - message payload
 type Message struct {
 	Header  http.Header
-	Status  *Status
-	Body    any
+	body    any
 	ReplyTo MessageHandler
-	Config  map[string]string
-}
-
-func (m *Message) To() string {
-	return m.Header.Get(XTo)
-}
-func (m *Message) From() string {
-	return m.Header.Get(XFrom)
-}
-
-func (m *Message) Event() string {
-	return m.Header.Get(XEvent)
-}
-
-func (m *Message) RelatesTo() string {
-	return m.Header.Get(XRelatesTo)
 }
 
 func NewMessage(to, from, event string) *Message {
@@ -65,8 +51,54 @@ func NewMessageWithReply(to, from, event string, replyTo MessageHandler) *Messag
 
 func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 	m := NewMessage(to, from, event)
-	m.Status = status
+	m.Header.Add(ContentType, ContentTypeStatus)
+	m.body = status
 	return m
+}
+
+func (m *Message) To() string {
+	return m.Header.Get(XTo)
+}
+func (m *Message) From() string {
+	return m.Header.Get(XFrom)
+}
+
+func (m *Message) Event() string {
+	return m.Header.Get(XEvent)
+}
+
+func (m *Message) RelatesTo() string {
+	return m.Header.Get(XRelatesTo)
+}
+
+func (m *Message) Status() *Status {
+	ct := m.Header.Get(ContentType)
+	if ct != ContentTypeStatus || m.body == nil {
+		return nil
+	}
+	if s, ok := m.body.(*Status); ok {
+		return s
+	}
+	return nil //StatusOK()
+}
+
+func (m *Message) Config() map[string]string {
+	ct := m.Header.Get(ContentType)
+	if ct != ContentTypeConfig || m.body == nil {
+		return nil
+	}
+	if m, ok := m.body.(map[string]string); ok {
+		return m
+	}
+	return nil
+}
+
+func (m *Message) SetConfig(cfg map[string]string) {
+	if cfg == nil {
+		return
+	}
+	m.body = cfg
+	m.Header.Add(ContentType, ContentTypeConfig)
 }
 
 // SendReply - function used by message recipient to reply with a Status
