@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"net/http"
 )
 
 func handler(msg *Message) {
@@ -17,5 +18,61 @@ func Example_ReplyTo() {
 
 	//Output:
 	//startup
+
+}
+
+func ExampleStatusContent() {
+	status := NewStatus(http.StatusTeapot)
+	m := NewMessage("to", "from", StartupEvent)
+
+	err := m.SetContent("", status)
+	fmt.Printf("test: SetContent(\"\",status) -> [%v]\n", err)
+
+	err = m.SetContent(ContentTypeStatus, nil)
+	fmt.Printf("test: SetContent(\"%v\",nil) -> [%v]\n", ContentTypeStatus, err)
+
+	err = m.SetContent(ContentTypeStatus, status)
+	fmt.Printf("test: SetContent(\"%v\",status) -> [%v]\n", ContentTypeStatus, err)
+
+	m = NewMessage("to", "from", StartupEvent)
+	ct, body, ok := m.Content()
+	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)
+
+	m.SetContent(ContentTypeStatus, status)
+	ct, body, ok = m.Content()
+	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)
+
+	s := m.Status()
+	fmt.Printf("test: Status() -> [body:%v]\n", s)
+
+	//Output:
+	//test: SetContent("",status) -> [error: content type is empty]
+	//test: SetContent("application/status",nil) -> [error: content is nil]
+	//test: SetContent("application/status",status) -> [<nil>]
+	//test: Content() -> [ct:] [body:<nil>] [ok:false]
+	//test: Content() -> [ct:application/status] [body:418] [ok:true]
+	//test: Status() -> [body:418]
+
+}
+
+func ExampleConfigContent() {
+	cfg := make(map[string]string)
+	cfg["uri"] = "http://www.google/com"
+	m := NewMessage("to", "from", StartupEvent)
+
+	ct, body, ok := m.Content()
+	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)
+
+	m.SetContent(ContentTypeConfig, cfg)
+	ct, body, ok = m.Content()
+	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)
+
+	s := m.Config()
+	fmt.Printf("test: Status() -> [body:%v]\n", s)
+
+	//Output:
+	//test: Content() -> [ct:] [body:<nil>] [ok:false]
+	//test: Content() -> [ct:application/config] [body:map[uri:http://www.google/com]] [ok:true]
+	//test: Status() -> [body:map[uri:http://www.google/com]]
 
 }

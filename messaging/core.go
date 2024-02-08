@@ -1,6 +1,9 @@
 package messaging
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
 
 const (
 	StartupEvent     = "event:startup"
@@ -51,7 +54,7 @@ func NewMessageWithReply(to, from, event string, replyTo MessageHandler) *Messag
 
 func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 	m := NewMessage(to, from, event)
-	m.Header.Add(ContentType, ContentTypeStatus)
+	m.SetContent(ContentTypeStatus, status)
 	m.body = status
 	return m
 }
@@ -59,6 +62,7 @@ func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 func (m *Message) To() string {
 	return m.Header.Get(XTo)
 }
+
 func (m *Message) From() string {
 	return m.Header.Get(XFrom)
 }
@@ -93,12 +97,27 @@ func (m *Message) Config() map[string]string {
 	return nil
 }
 
-func (m *Message) SetConfig(cfg map[string]string) {
-	if cfg == nil {
-		return
+func (m *Message) Content() (string, any, bool) {
+	if m.body == nil {
+		return "", nil, false
 	}
-	m.body = cfg
-	m.Header.Add(ContentType, ContentTypeConfig)
+	ct := m.Header.Get(ContentType)
+	if len(ct) == 0 {
+		return "", nil, false
+	}
+	return ct, m.body, true
+}
+
+func (m *Message) SetContent(contentType string, content any) error {
+	if len(contentType) == 0 {
+		return errors.New("error: content type is empty")
+	}
+	if content == nil {
+		return errors.New("error: content is nil")
+	}
+	m.body = content
+	m.Header.Add(ContentType, contentType)
+	return nil
 }
 
 // SendReply - function used by message recipient to reply with a Status

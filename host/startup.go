@@ -60,7 +60,7 @@ func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHan
 		msg.ReplyTo = fn
 		if cm != nil {
 			if content, ok := cm[k]; ok {
-				msg.SetConfig(content)
+				msg.SetContent(messaging.ContentTypeConfig, content)
 			}
 		}
 		m[k] = msg
