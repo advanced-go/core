@@ -44,12 +44,12 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 		}
 		break
 	}
-	shutdownHost(messaging.Message{Event: messaging.ShutdownEvent})
+	shutdownHost(messaging.NewMessage("", "", messaging.ShutdownEvent))
 	if len(failures) > 0 {
 		handleErrors(failures, cache)
 		return false
 	}
-	fmt.Printf("error: startup failuer [%v]", errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), ex.Count())))
+	fmt.Printf("error: startup failure [%v]\n", errors.New(fmt.Sprintf("response counts < directory entries [%v] [%v]", cache.Count(), ex.Count())))
 	return false
 }
 

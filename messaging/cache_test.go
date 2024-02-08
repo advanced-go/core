@@ -23,7 +23,7 @@ func ExampleMessageCache_Add() {
 	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-nil:%v]\n", "invalid", ok, m == nil)
 
 	m, ok = resp.Get("from-uri-3")
-	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, len(m.To) > 0)
+	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, len(m.To()) > 0)
 
 	fmt.Printf("test: include(%v,%v) -> : %v\n", ShutdownEvent, StatusNotProvided, resp.Include(ShutdownEvent, StatusNotProvided))
 	fmt.Printf("test: exclude(%v,%v) -> : %v\n", ShutdownEvent, StatusNotProvided, resp.Exclude(ShutdownEvent, StatusNotProvided))
@@ -62,7 +62,7 @@ func ExampleMessageCache_Uri() {
 	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-nil:%v]\n", "invalid", ok, m == nil)
 
 	m, ok = resp.Get("from-uri-3")
-	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, m.To)
+	fmt.Printf("test: Get(%v) -> : [ok:%v] [msg-to:%v]\n", "from-uri-3", ok, m.To())
 
 	fmt.Printf("test: include(%v,%v) -> : %v\n", ShutdownEvent, StatusNotProvided, resp.Include(ShutdownEvent, StatusNotProvided))
 	fmt.Printf("test: exclude(%v,%v) -> : %v\n", ShutdownEvent, StatusNotProvided, resp.Exclude(ShutdownEvent, StatusNotProvided))

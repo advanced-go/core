@@ -57,8 +57,8 @@ func Example_SendError() {
 	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri, status)
 
 	//Output:
-	//test: SendCtrl(urn:test) -> : Not Found [invalid URI: exchange mailbox not found [urn:test]]
-	//test: Add(urn:test) -> : [status:Invalid Argument [invalid argument: mailbox command channel is nil]]
+	//test: SendCtrl(urn:test) -> : error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test]
+	//test: Add(urn:test) -> : [status:error: exchange.Add() mailbox command channel is nil]
 
 }
 
@@ -81,7 +81,7 @@ func Example_Send() {
 	resp1 := <-c
 	resp2 := <-c
 	resp3 := <-c
-	fmt.Printf("test: <- c -> : [%v] [%v] [%v]\n", resp1.To, resp2.To, resp3.To)
+	fmt.Printf("test: <- c -> : [%v] [%v] [%v]\n", resp1.To(), resp2.To(), resp3.To())
 	close(c)
 
 	//Output:

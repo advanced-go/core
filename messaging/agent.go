@@ -43,7 +43,7 @@ func (a *Agent) Run() {
 
 // Shutdown - shutdown the agent
 func (a *Agent) Shutdown() {
-	a.m.SendCtrl(&Message{Event: ShutdownEvent})
+	a.m.SendCtrl(NewMessage("", "", ShutdownEvent))
 }
 
 // SendCtrl - send a message to the control channel
@@ -69,9 +69,9 @@ func DefaultRun(m *Mailbox, ctrlHandler MessageHandler) {
 			if !open {
 				return
 			}
-			switch msg.Event {
+			switch msg.Event() {
 			case ShutdownEvent:
-				ctrlHandler(&Message{Event: msg.Event, Status: StatusOK()})
+				ctrlHandler(NewMessageWithStatus("", "", msg.Event(), StatusOK()))
 				m.Close()
 				return
 			default:

@@ -1,5 +1,7 @@
 package messaging
 
+import "net/http"
+
 const (
 	StartupEvent     = "event:startup"
 	ShutdownEvent    = "event:shutdown"
@@ -8,6 +10,12 @@ const (
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
+
+	XRelatesTo = "x-relates-to"
+	XMessageId = "x-message-id"
+	XTo        = "x-to"
+	XFrom      = "x-from"
+	XEvent     = "x-event"
 )
 
 // MessageMap - map of messages
@@ -18,23 +26,43 @@ type MessageHandler func(msg *Message)
 
 // Message - message payload
 type Message struct {
-	To        string
-	From      string
-	Event     string
-	RelatesTo string
-	Status    *Status
-	Content   []any
-	ReplyTo   MessageHandler
-	Config    map[string]string
+	Header  http.Header
+	Status  *Status
+	Body    any
+	ReplyTo MessageHandler
+	Config  map[string]string
+}
+
+func (m *Message) To() string {
+	return m.Header.Get(XTo)
+}
+func (m *Message) From() string {
+	return m.Header.Get(XFrom)
+}
+
+func (m *Message) Event() string {
+	return m.Header.Get(XEvent)
+}
+
+func (m *Message) RelatesTo() string {
+	return m.Header.Get(XRelatesTo)
 }
 
 func NewMessage(to, from, event string) *Message {
 	m := new(Message)
-	m.To = to
-	m.From = from
-	m.Event = event
+	m.Header = make(http.Header)
+	m.Header.Add(XTo, to)
+	m.Header.Add(XFrom, from)
+	m.Header.Add(XEvent, event)
 	return m
 }
+
+func NewMessageWithReply(to, from, event string, replyTo MessageHandler) *Message {
+	m := NewMessage(to, from, event)
+	m.ReplyTo = replyTo
+	return m
+}
+
 func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 	m := NewMessage(to, from, event)
 	m.Status = status
@@ -43,16 +71,10 @@ func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 
 // SendReply - function used by message recipient to reply with a Status
 func SendReply(msg *Message, status *Status) {
-	if msg.ReplyTo == nil {
+	if msg == nil || msg.ReplyTo == nil {
 		return
 	}
-	msg.ReplyTo(&Message{
-		To:        msg.From,
-		From:      msg.To,
-		RelatesTo: msg.RelatesTo,
-		Event:     msg.Event,
-		Status:    status,
-		Content:   nil,
-		ReplyTo:   nil,
-	})
+	m := NewMessageWithStatus(msg.From(), msg.To(), msg.Event(), status)
+	m.Header.Add(XRelatesTo, msg.RelatesTo())
+	msg.ReplyTo(m)
 }

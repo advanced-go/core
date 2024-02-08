@@ -39,11 +39,11 @@ func (r *MessageCache) Filter(event string, code int, include bool) []string {
 	var uri []string
 	for u, resp := range r.m {
 		if include {
-			if resp.Status.Code == code && resp.Event == event {
+			if resp.Status.Code == code && resp.Event() == event {
 				uri = append(uri, u)
 			}
 		} else {
-			if resp.Status.Code != code || resp.Event != event {
+			if resp.Status.Code != code || resp.Event() != event {
 				uri = append(uri, u)
 			}
 		}
@@ -66,16 +66,16 @@ func (r *MessageCache) Exclude(event string, status int) []string {
 func (r *MessageCache) Add(msg *Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if msg.From == "" {
+	if msg.From() == "" {
 		err := errors.New("invalid argument: message from is empty")
 		r.errs = append(r.errs, err)
 		return err
 	}
-	if _, ok := r.m[msg.From]; !ok {
-		r.m[msg.From] = msg
+	if _, ok := r.m[msg.From()]; !ok {
+		r.m[msg.From()] = msg
 		return nil
 	}
-	err0 := errors.New(fmt.Sprintf("invalid argument: message found [%v]", msg.From))
+	err0 := errors.New(fmt.Sprintf("invalid argument: message found [%v]", msg.From()))
 	r.errs = append(r.errs, err0)
 	return err0
 }
@@ -115,6 +115,9 @@ func (r *MessageCache) ErrorList() []error {
 // NewMessageCacheHandler - handler to receive messages into a cache.
 func NewMessageCacheHandler(cache *MessageCache) MessageHandler {
 	return func(msg *Message) {
-		cache.Add(msg)
+		err := cache.Add(msg)
+		if err != nil {
+			fmt.Printf("error: messaging cache handler cache.Add() %v\n", err)
+		}
 	}
 }

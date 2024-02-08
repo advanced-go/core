@@ -6,7 +6,7 @@ import (
 )
 
 func newAgentCtrlHandler(msg *Message) {
-	fmt.Printf(fmt.Sprintf("test: NewDefaultAgent_CtrlHandler() -> %v\n", msg.Event))
+	fmt.Printf(fmt.Sprintf("test: NewDefaultAgent_CtrlHandler() -> %v\n", msg.Event()))
 }
 
 func Example_NewDefaultAgent() {
