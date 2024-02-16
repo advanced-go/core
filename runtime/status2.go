@@ -96,6 +96,11 @@ func (s *Status) Trace() []string {
 	return s.trace
 }
 
+func (s *Status) AddError(err error) *Status {
+	s.err = err
+	return s
+}
+
 func (s *Status) AddLocation(loc string) *Status {
 	if !s.OK() {
 		s.trace = append(s.trace, loc)

@@ -51,7 +51,7 @@ func ExamplePing_Error() {
 	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 	go pingError(c, errors.New("ping response error"))
 	status := ping(nil, pingDir, uri3)
-	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Error, timeout, status.Duration)
+	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Error(), timeout, status.Duration)
 
 	//Output:
 	//test: Ping(error) -> [418] [error:ping response error] [timeout:3s]

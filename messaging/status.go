@@ -1,16 +1,15 @@
 package messaging
 
 import (
-	"fmt"
+	"github.com/advanced-go/core/runtime"
 	"net/http"
+	"reflect"
 	"time"
 )
 
 // Status - message status
 type Status struct {
-	Error    error
-	Code     int
-	Location string
+	runtime.Status
 	Duration time.Duration
 }
 
@@ -27,8 +26,8 @@ func NewStatus(code int) *Status {
 func NewStatusError(code int, err error, location string) *Status {
 	s := new(Status)
 	s.Code = code
-	s.Error = err
-	s.Location = location
+	s.AddError(err)
+	s.AddLocation(location)
 	return s
 }
 
@@ -41,18 +40,16 @@ func NewStatusDuration(code int, duration time.Duration) *Status {
 
 func NewStatusDurationError(code int, duration time.Duration, err error) *Status {
 	s := NewStatusDuration(code, duration)
-	s.Error = err
+	s.AddError(err)
 	return s
 }
 
-func (s *Status) OK() bool {
-	return s.Code == http.StatusOK
-}
-
-func (s *Status) String() string {
-	if s.Error != nil {
-		return fmt.Sprintf("%v", s.Error)
-	} else {
-		return fmt.Sprintf("%v", s.Code)
+func (s *Status) Runtime() *runtime.Status {
+	v := reflect.ValueOf(*s)
+	f := v.Field(0)
+	i := f.Interface()
+	if rts, ok := i.(runtime.Status); ok {
+		return &rts
 	}
+	return nil
 }
