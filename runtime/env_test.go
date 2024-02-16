@@ -2,9 +2,35 @@ package runtime
 
 import (
 	"fmt"
+	"os"
 )
 
-func Example_RuntimeEnv() {
+func ExampleSetEnv() {
+	fmt.Printf("test: Environment() -> %v\n", EnvStr())
+
+	os.Setenv(EnvKey, "sTaGE")
+	setEnv()
+	fmt.Printf("test: Environment() -> %v\n", EnvStr())
+
+	os.Setenv(EnvKey, "tesT")
+	setEnv()
+	fmt.Printf("test: Environment() -> %v\n", EnvStr())
+
+	os.Setenv(EnvKey, "prod")
+	setEnv()
+	fmt.Printf("test: Environment() -> %v\n", EnvStr())
+
+	//Output:
+	//test: Environment() -> debug
+	//test: Environment() -> stage
+	//test: Environment() -> test
+	//test: Environment() -> prod
+	
+}
+func ExampleRuntimeEnv() {
+	os.Setenv(EnvKey, "")
+	setEnv()
+
 	fmt.Printf("test: IsProdEnvironment() -> %v\n", IsProdEnvironment())
 	fmt.Printf("test: IsTestEnvironment() -> %v\n", IsTestEnvironment())
 	fmt.Printf("test: IsStageEnvironment() -> %v\n", IsStageEnvironment())

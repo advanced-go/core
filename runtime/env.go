@@ -1,9 +1,15 @@
 package runtime
 
+import (
+	"os"
+	"strings"
+)
+
 type runtimeEnv int
 
 const (
-	debug runtimeEnv = iota
+	EnvKey            = "RUNTIME_ENV"
+	debug  runtimeEnv = iota
 	test
 	stage
 	production
@@ -12,6 +18,27 @@ const (
 var (
 	rte = debug
 )
+
+func init() {
+	setEnv()
+}
+
+func setEnv() {
+	rte = debug
+	s := strings.ToLower(os.Getenv(EnvKey))
+	if strings.Contains(s, "prod") {
+		SetProdEnvironment()
+		return
+	}
+	if strings.Contains(s, "stage") {
+		SetStageEnvironment()
+		return
+	}
+	if strings.Contains(s, "test") {
+		SetTestEnvironment()
+		return
+	}
+}
 
 // IsProdEnvironment - determine if production environment
 func IsProdEnvironment() bool {
