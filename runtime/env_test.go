@@ -25,7 +25,7 @@ func ExampleSetEnv() {
 	//test: Environment() -> stage
 	//test: Environment() -> test
 	//test: Environment() -> prod
-	
+
 }
 func ExampleRuntimeEnv() {
 	os.Setenv(EnvKey, "")
