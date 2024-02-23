@@ -45,19 +45,31 @@ func (m *Mailbox) String() string {
 	return m.uri
 }
 
-// SendCtrl - send a message to the control channel
-func (m *Mailbox) SendCtrl(msg *Message) {
-	if m.ctrl != nil {
-		m.ctrl <- msg
+// Send - send a message
+func (m *Mailbox) Send(msg *Message) {
+	if msg == nil {
+		return
 	}
+	if msg.Channel == ChannelControl && m.ctrl != nil {
+		m.ctrl <- msg
+	} else {
+		if msg.Channel == ChannelData && m.data != nil {
+			m.data <- msg
+		}
+	}
+
 }
 
 // SendData - send a message to the data channel
+/*
 func (m *Mailbox) SendData(msg *Message) {
 	if m.data != nil {
 		m.data <- msg
 	}
 }
+
+
+*/
 
 // Close - close the mailbox channels and unregsiter the mailbox with a Directory
 func (m *Mailbox) Close() {

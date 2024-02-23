@@ -10,10 +10,10 @@ func handler(msg *Message) {
 }
 
 func Example_ReplyTo() {
-	msg := NewMessageWithReply("test", "", "startup", handler)
+	msg := NewMessageWithReply(ChannelNone, "test", "", "startup", handler)
 	SendReply(msg, StatusOK())
 
-	msg = NewMessage("test", "", "startup")
+	msg = NewMessage(ChannelNone, "test", "", "startup")
 	SendReply(msg, StatusOK())
 
 	//Output:
@@ -23,7 +23,7 @@ func Example_ReplyTo() {
 
 func ExampleStatusContent() {
 	status := NewStatus(http.StatusTeapot)
-	m := NewMessage("to", "from", StartupEvent)
+	m := NewMessage(ChannelNone, "to", "from", StartupEvent)
 
 	err := m.SetContent("", status)
 	fmt.Printf("test: SetContent(\"\",status) -> [%v]\n", err)
@@ -34,7 +34,7 @@ func ExampleStatusContent() {
 	err = m.SetContent(ContentTypeStatus, status)
 	fmt.Printf("test: SetContent(\"%v\",status) -> [%v]\n", ContentTypeStatus, err)
 
-	m = NewMessage("to", "from", StartupEvent)
+	m = NewMessage(ChannelNone, "to", "from", StartupEvent)
 	ct, body, ok := m.Content()
 	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)
 
@@ -45,7 +45,7 @@ func ExampleStatusContent() {
 	s := m.Status()
 	fmt.Printf("test: Status() -> [body:%v]\n", s)
 
-	m = NewMessageWithStatus("to", "from", StartupEvent, status)
+	m = NewMessageWithStatus(ChannelNone, "to", "from", StartupEvent, status)
 	s = m.Status()
 	fmt.Printf("test: NewMessageWithStatus() -> [body:%v]\n", s)
 
@@ -54,16 +54,16 @@ func ExampleStatusContent() {
 	//test: SetContent("application/status",nil) -> [error: content is nil]
 	//test: SetContent("application/status",status) -> [<nil>]
 	//test: Content() -> [ct:] [body:<nil>] [ok:false]
-	//test: Content() -> [ct:application/status] [body:418] [ok:true]
-	//test: Status() -> [body:418]
-	//test: NewMessageWithStatus() -> [body:418]
+	//test: Content() -> [ct:application/status] [body:I'm A Teapot] [ok:true]
+	//test: Status() -> [body:I'm A Teapot]
+	//test: NewMessageWithStatus() -> [body:I'm A Teapot]
 
 }
 
 func ExampleConfigContent() {
 	cfg := make(map[string]string)
 	cfg["uri"] = "http://www.google/com"
-	m := NewMessage("to", "from", StartupEvent)
+	m := NewMessage(ChannelNone, "to", "from", StartupEvent)
 
 	ct, body, ok := m.Content()
 	fmt.Printf("test: Content() -> [ct:%v] [body:%v] [ok:%v]\n", ct, body, ok)

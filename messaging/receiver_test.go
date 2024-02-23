@@ -19,7 +19,7 @@ func ExampleReceiver_Timeout() {
 	close(reply)
 
 	//Output:
-	//test: Receiver() -> [status:504] [duration > 2s:true]
+	//test: Receiver() -> [status:Timeout] [duration > 2s:true]
 
 }
 
@@ -33,7 +33,7 @@ func ExampleReceiver_OK() {
 		fmt.Printf("test: Receiver() - in Done()\n")
 		return true
 	})
-	reply <- NewMessage("to", "from", "event")
+	reply <- NewMessage(ChannelNone, "to", "from", "event")
 	result = <-status
 	fmt.Printf("test: Receiver() -> [status:%v] [duration:%v]\n", result, result.Duration)
 
@@ -42,7 +42,7 @@ func ExampleReceiver_OK() {
 
 	//Output:
 	//test: Receiver() - in Done()
-	//test: Receiver() -> [status:200] [duration:0s]
+	//test: Receiver() -> [status:OK] [duration:0s]
 
 }
 
@@ -63,6 +63,6 @@ func ExampleReceiver_Closed() {
 	close(status)
 
 	//Output:
-	//test: Receiver() -> [status:500] [duration:0s]
+	//test: Receiver() -> [status:Internal Error] [duration:0s]
 
 }

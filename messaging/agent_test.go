@@ -32,19 +32,19 @@ func Example_NewDefaultAgent() {
 	// Needed time.Nanoseconds * 1 for directory send via sync.Map
 	d := time.Nanosecond * 1
 	a.Run()
-	agentDir.SendCtrl(NewMessage(uri, "", StartupEvent))
+	agentDir.Send(NewControlMessage(uri, "", StartupEvent))
 	//c <- Message{To: "", From: "", Event: core.StartupEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	agentDir.SendCtrl(NewMessage(uri, "", PauseEvent))
+	agentDir.Send(NewControlMessage(uri, "", PauseEvent))
 	//c <- Message{To: "", From: "", Event: core.PauseEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	a.SendCtrl(NewMessage(uri, "", ResumeEvent))
+	a.Send(NewControlMessage(uri, "", ResumeEvent))
 	//c <- Message{To: "", From: "", Event: core.ResumeEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	agentDir.SendCtrl(NewMessage(uri, "", PingEvent))
+	agentDir.Send(NewControlMessage(uri, "", PingEvent))
 	//c <- Message{To: "", From: "", Event: core.PingEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
-	a.SendCtrl(NewMessage(uri, "", ReconfigureEvent))
+	a.Send(NewControlMessage(uri, "", ReconfigureEvent))
 	//c <- Message{To: "", From: "", Event: core.ReconfigureEvent, RelatesTo: "", Status: nil, Content: nil, ReplyTo: nil}
 	time.Sleep(d)
 	a.Shutdown() //.SendCtrl(Message{To: uri, From: "", Event: core.ShutdownEvent})

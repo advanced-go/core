@@ -35,13 +35,13 @@ func Example_Add() {
 
 	//Output:
 	//test: Count() -> : 0
-	//test: get(urn:test:one) -> : [mbox:<nil>] [status:Not Found [invalid URI: exchange mailbox not found [urn:test:one]]]
-	//test: Add(urn:test:one) -> : [status:OK]
+	//test: get(urn:test:one) -> : [mbox:<nil>]
+	//test: Add(urn:test:one) -> : [err:<nil>]
 	//test: Count() -> : 1
-	//test: get(urn:test:one) -> : [mbox:urn:test:one] [status:OK]
-	//test: Add(urn:test:two) -> : [status:OK]
+	//test: get(urn:test:one) -> : [mbox:urn:test:one]
+	//test: Add(urn:test:two) -> : [err:<nil>]
 	//test: Count() -> : 2
-	//test: get(urn:test:two) -> : [mbox:urn:test:two] [status:OK]
+	//test: get(urn:test:two) -> : [mbox:urn:test:two]
 	//test: List() -> : [urn:test:one urn:test:two]
 
 }
@@ -50,14 +50,14 @@ func Example_SendError() {
 	uri := "urn:test"
 	testDir := NewExchange()
 
-	fmt.Printf("test: SendCtrl(%v) -> : %v\n", uri, testDir.SendCtrl(NewMessage(uri, "", "")))
+	fmt.Printf("test: Send(%v) -> : %v\n", uri, testDir.Send(NewControlMessage(uri, "", "")))
 
 	m := NewMailboxWithCtrl(uri, false, nil, nil)
 	status := testDir.Add(m)
 	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri, status)
 
 	//Output:
-	//test: SendCtrl(urn:test) -> : error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test]
+	//test: Send(urn:test) -> : error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test]
 	//test: Add(urn:test) -> : [status:error: exchange.Add() mailbox command channel is nil]
 
 }
@@ -73,9 +73,9 @@ func Example_Send() {
 	testDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
 	testDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
 
-	testDir.SendCtrl(NewMessage(uri1, PkgPath, StartupEvent))
-	testDir.SendCtrl(NewMessage(uri2, PkgPath, StartupEvent))
-	testDir.SendCtrl(NewMessage(uri3, PkgPath, StartupEvent))
+	testDir.Send(NewControlMessage(uri1, PkgPath, StartupEvent))
+	testDir.Send(NewControlMessage(uri2, PkgPath, StartupEvent))
+	testDir.Send(NewControlMessage(uri3, PkgPath, StartupEvent))
 
 	time.Sleep(time.Second * 1)
 	resp1 := <-c
@@ -114,17 +114,17 @@ func Example_Remove() {
 	status := testDir.Add(m)
 	fmt.Printf("test: Add(%v) -> : [%v]\n", uri, status)
 
-	status = testDir.SendCtrl(NewMessage(uri, "", PingEvent))
-	fmt.Printf("test: SendCtrl(%v) -> : [%v]\n", uri, status)
+	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
+	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)
 
 	m.Close()
 
-	status = testDir.SendCtrl(NewMessage(uri, "", PingEvent))
-	fmt.Printf("test: SendCtrl(%v) -> : [%v]\n", uri, status)
+	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
+	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)
 
 	//Output:
 	//test: Add(urn:test/one) -> : [<nil>]
-	//test: SendCtrl(urn:test/one) -> : [<nil>]
-	//test: SendCtrl(urn:test/one) -> : [error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test/one]]
+	//test: Send(urn:test/one) -> : [<nil>]
+	//test: Send(urn:test/one) -> : [error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test/one]]
 
 }

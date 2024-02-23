@@ -22,26 +22,34 @@ const (
 	XEvent            = "x-event"
 	ContentTypeStatus = "application/status"
 	ContentTypeConfig = "application/config"
+	ChannelData       = "DATA"
+	ChannelControl    = "CTRL"
+	ChannelNone       = "NONE"
 )
 
 // SendFunc - uniform interface for messaging
 type SendFunc func(m *Message)
 
-// Handler - function type to process a Message
+// Handler - uniform interface for message handling
 type Handler func(msg *Message)
 
 // Map - map of messages
 type Map map[string]*Message
 
-// Message - message payload
+// Message - message
 type Message struct {
+	Channel string
 	Header  http.Header
 	Body    any
 	ReplyTo Handler
 }
 
-func NewMessage(to, from, event string) *Message {
+func NewMessage(channel, to, from, event string) *Message {
 	m := new(Message)
+	if len(channel) == 0 {
+		channel = ChannelNone
+	}
+	m.Channel = channel
 	m.Header = make(http.Header)
 	m.Header.Add(XTo, to)
 	m.Header.Add(XFrom, from)
@@ -49,14 +57,18 @@ func NewMessage(to, from, event string) *Message {
 	return m
 }
 
-func NewMessageWithReply(to, from, event string, replyTo Handler) *Message {
-	m := NewMessage(to, from, event)
+func NewControlMessage(to, from, event string) *Message {
+	return NewMessage(ChannelControl, to, from, event)
+}
+
+func NewMessageWithReply(channel, to, from, event string, replyTo Handler) *Message {
+	m := NewMessage(channel, to, from, event)
 	m.ReplyTo = replyTo
 	return m
 }
 
-func NewMessageWithStatus(to, from, event string, status *Status) *Message {
-	m := NewMessage(to, from, event)
+func NewMessageWithStatus(channel, to, from, event string, status *Status) *Message {
+	m := NewMessage(channel, to, from, event)
 	m.SetContent(ContentTypeStatus, status)
 	m.Body = status
 	return m
@@ -128,7 +140,7 @@ func SendReply(msg *Message, status *Status) {
 	if msg == nil || msg.ReplyTo == nil {
 		return
 	}
-	m := NewMessageWithStatus(msg.From(), msg.To(), msg.Event(), status)
+	m := NewMessageWithStatus(ChannelNone, msg.From(), msg.To(), msg.Event(), status)
 	m.Header.Add(XRelatesTo, msg.RelatesTo())
 	msg.ReplyTo(m)
 }

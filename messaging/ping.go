@@ -32,9 +32,9 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 
 	result := make(chan *Status)
 	reply := make(chan *Message, 16)
-	msg := NewMessage(to, PkgPath, PingEvent)
+	msg := NewControlMessage(to, PkgPath, PingEvent)
 	msg.ReplyTo = NewReceiverReplyTo(reply)
-	err := ex.SendCtrl(msg)
+	err := ex.Send(msg)
 	if err != nil {
 		return NewStatusError(http.StatusInternalServerError, err, pingLocation)
 	}

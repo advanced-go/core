@@ -24,7 +24,7 @@ func ExamplePing_Good() {
 	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(good) -> [200] [timeout:3s] [duration:0s]
+	//test: Ping(good) -> [OK] [timeout:3s] [duration:0s]
 
 }
 
@@ -39,7 +39,7 @@ func ExamplePing_Timeout() {
 	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(timeout) -> [504] [timeout:3s]
+	//test: Ping(timeout) -> [Timeout] [timeout:3s]
 
 }
 
@@ -54,7 +54,8 @@ func ExamplePing_Error() {
 	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Error(), timeout, status.Duration)
 
 	//Output:
-	//test: Ping(error) -> [418] [error:ping response error] [timeout:3s]
+	//recovered in messaging.NewReceiverReplyTo() : send on closed channel
+	//test: Ping(error) -> [418] [error:ping response error] [timeout:3s] [duration:1.0151556s]
 
 }
 
@@ -69,7 +70,7 @@ func ExamplePing_Delay() {
 	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
 
 	//Output:
-	//test: Ping(delay) -> [200] [timeout:3s]
+	//test: Ping(delay) -> [OK] [timeout:3s]
 
 }
 
