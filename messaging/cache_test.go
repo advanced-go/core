@@ -8,8 +8,8 @@ const (
 	StatusNotProvided = int(95)
 )
 
-func ExampleMessageCache_Add() {
-	resp := NewMessageCache()
+func ExampleCache_Add() {
+	resp := NewCache()
 
 	resp.Add(NewMessageWithStatus("to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
 	resp.Add(NewMessageWithStatus("to-uri", "from-uri-1", StartupEvent, StatusOK()))
@@ -47,8 +47,8 @@ func ExampleMessageCache_Add() {
 
 }
 
-func ExampleMessageCache_Uri() {
-	resp := NewMessageCache()
+func ExampleCache_Uri() {
+	resp := NewCache()
 
 	resp.Add(NewMessageWithStatus("to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
 	resp.Add(NewMessageWithStatus("to-uri", "from-uri-1", StartupEvent, StatusOK()))

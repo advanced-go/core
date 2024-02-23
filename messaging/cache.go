@@ -7,22 +7,22 @@ import (
 	"sync"
 )
 
-// MessageCache - message cache by uri
-type MessageCache struct {
+// Cache - message cache by uri
+type Cache struct {
 	m    map[string]*Message
 	errs []error
 	mu   sync.RWMutex
 }
 
-// NewMessageCache - create a message cache
-func NewMessageCache() *MessageCache {
-	c := new(MessageCache)
+// NewCache - create a message cache
+func NewCache() *Cache {
+	c := new(Cache)
 	c.m = make(map[string]*Message)
 	return c
 }
 
 // Count - return the count of items
-func (r *MessageCache) Count() int {
+func (r *Cache) Count() int {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	count := 0
@@ -33,7 +33,7 @@ func (r *MessageCache) Count() int {
 }
 
 // Filter - apply a filter against a traversal of all items
-func (r *MessageCache) Filter(event string, code int, include bool) []string {
+func (r *Cache) Filter(event string, code int, include bool) []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	var uri []string
@@ -58,17 +58,17 @@ func (r *MessageCache) Filter(event string, code int, include bool) []string {
 }
 
 // Include - filter for items that include a specific event
-func (r *MessageCache) Include(event string, status int) []string {
+func (r *Cache) Include(event string, status int) []string {
 	return r.Filter(event, status, true)
 }
 
 // Exclude - filter for items that do not include a specific event
-func (r *MessageCache) Exclude(event string, status int) []string {
+func (r *Cache) Exclude(event string, status int) []string {
 	return r.Filter(event, status, false)
 }
 
 // Add - add a message
-func (r *MessageCache) Add(msg *Message) error {
+func (r *Cache) Add(msg *Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if msg.From() == "" {
@@ -86,7 +86,7 @@ func (r *MessageCache) Add(msg *Message) error {
 }
 
 // Get - get a message based on a URI
-func (r *MessageCache) Get(uri string) (*Message, bool) {
+func (r *Cache) Get(uri string) (*Message, bool) {
 	if uri == "" {
 		return nil, false
 	}
@@ -99,7 +99,7 @@ func (r *MessageCache) Get(uri string) (*Message, bool) {
 }
 
 // Uri - list the URI's in the cache
-func (r *MessageCache) Uri() []string {
+func (r *Cache) Uri() []string {
 	var uri []string
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -111,14 +111,14 @@ func (r *MessageCache) Uri() []string {
 }
 
 // ErrorList - list of errors
-func (r *MessageCache) ErrorList() []error {
+func (r *Cache) ErrorList() []error {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	return r.errs
 }
 
-// NewMessageCacheHandler - handler to receive messages into a cache.
-func NewMessageCacheHandler(cache *MessageCache) MessageHandler {
+// NewCacheHandler - handler to receive messages into a cache.
+func NewCacheHandler(cache *Cache) Handler {
 	return func(msg *Message) {
 		err := cache.Add(msg)
 		if err != nil {

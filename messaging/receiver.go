@@ -8,7 +8,7 @@ import (
 
 type DoneFunc func(msg *Message) bool
 
-func NewReceiverReplyTo(reply chan *Message) MessageHandler {
+func NewReceiverReplyTo(reply chan *Message) Handler {
 	return func(msg *Message) {
 		// needed when a timeout is reached, the channel is closed, and there is a pending send
 		defer func() {

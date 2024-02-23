@@ -27,8 +27,8 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 	if count == 0 {
 		return true
 	}
-	cache := messaging.NewMessageCache()
-	toSend := createToSend(ex, content, messaging.NewMessageCacheHandler(cache))
+	cache := messaging.NewCache()
+	toSend := createToSend(ex, content, messaging.NewCacheHandler(cache))
 	sendMessages(ex, toSend)
 	for wait := time.Duration(float64(duration) * 0.25); duration >= 0; duration -= wait {
 		time.Sleep(wait)
@@ -53,8 +53,8 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 	return false
 }
 
-func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHandler) messaging.MessageMap {
-	m := make(messaging.MessageMap)
+func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.Handler) messaging.Map {
+	m := make(messaging.Map)
 	for _, k := range ex.List() {
 		msg := messaging.NewMessage(k, startupLocation, messaging.StartupEvent)
 		msg.ReplyTo = fn
@@ -68,25 +68,25 @@ func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.MessageHan
 	return m
 }
 
-func sendMessages(ex *messaging.Exchange, msgs messaging.MessageMap) {
+func sendMessages(ex *messaging.Exchange, msgs messaging.Map) {
 	for k := range msgs {
 		ex.SendCtrl(msgs[k])
 	}
 }
 
-func handleErrors(failures []string, cache *messaging.MessageCache) {
+func handleErrors(failures []string, cache *messaging.Cache) {
 	for _, uri := range failures {
 		msg, ok := cache.Get(uri)
 		if !ok {
 			continue
 		}
-		if msg.Status() != nil && msg.Status().Error != nil {
-			fmt.Printf("error: startup failure [%v]\n", msg.Status().Error)
+		if msg.Status() != nil && msg.Status().Error() != nil {
+			fmt.Printf("error: startup failure [%v]\n", msg.Status().Error())
 		}
 	}
 }
 
-func handleStatus(cache *messaging.MessageCache) {
+func handleStatus(cache *messaging.Cache) {
 	for _, uri := range cache.Uri() {
 		msg, ok := cache.Get(uri)
 		if !ok {

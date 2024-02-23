@@ -24,17 +24,20 @@ const (
 	ContentTypeConfig = "application/config"
 )
 
-// MessageMap - map of messages
-type MessageMap map[string]*Message
+// SendFunc - uniform interface for messaging
+type SendFunc func(m *Message)
 
-// MessageHandler - function type to process a Message
-type MessageHandler func(msg *Message)
+// Handler - function type to process a Message
+type Handler func(msg *Message)
+
+// Map - map of messages
+type Map map[string]*Message
 
 // Message - message payload
 type Message struct {
 	Header  http.Header
-	body    any
-	ReplyTo MessageHandler
+	Body    any
+	ReplyTo Handler
 }
 
 func NewMessage(to, from, event string) *Message {
@@ -46,7 +49,7 @@ func NewMessage(to, from, event string) *Message {
 	return m
 }
 
-func NewMessageWithReply(to, from, event string, replyTo MessageHandler) *Message {
+func NewMessageWithReply(to, from, event string, replyTo Handler) *Message {
 	m := NewMessage(to, from, event)
 	m.ReplyTo = replyTo
 	return m
@@ -55,7 +58,7 @@ func NewMessageWithReply(to, from, event string, replyTo MessageHandler) *Messag
 func NewMessageWithStatus(to, from, event string, status *Status) *Message {
 	m := NewMessage(to, from, event)
 	m.SetContent(ContentTypeStatus, status)
-	m.body = status
+	m.Body = status
 	return m
 }
 
@@ -77,10 +80,10 @@ func (m *Message) RelatesTo() string {
 
 func (m *Message) Status() *Status {
 	ct := m.Header.Get(ContentType)
-	if ct != ContentTypeStatus || m.body == nil {
+	if ct != ContentTypeStatus || m.Body == nil {
 		return nil
 	}
-	if s, ok := m.body.(*Status); ok {
+	if s, ok := m.Body.(*Status); ok {
 		return s
 	}
 	return nil //StatusOK()
@@ -88,24 +91,24 @@ func (m *Message) Status() *Status {
 
 func (m *Message) Config() map[string]string {
 	ct := m.Header.Get(ContentType)
-	if ct != ContentTypeConfig || m.body == nil {
+	if ct != ContentTypeConfig || m.Body == nil {
 		return nil
 	}
-	if m, ok := m.body.(map[string]string); ok {
+	if m, ok := m.Body.(map[string]string); ok {
 		return m
 	}
 	return nil
 }
 
 func (m *Message) Content() (string, any, bool) {
-	if m.body == nil {
+	if m.Body == nil {
 		return "", nil, false
 	}
 	ct := m.Header.Get(ContentType)
 	if len(ct) == 0 {
 		return "", nil, false
 	}
-	return ct, m.body, true
+	return ct, m.Body, true
 }
 
 func (m *Message) SetContent(contentType string, content any) error {
@@ -115,7 +118,7 @@ func (m *Message) SetContent(contentType string, content any) error {
 	if content == nil {
 		return errors.New("error: content is nil")
 	}
-	m.body = content
+	m.Body = content
 	m.Header.Add(ContentType, contentType)
 	return nil
 }

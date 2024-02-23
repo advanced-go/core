@@ -16,11 +16,11 @@ type Agent struct {
 
 // NewDefaultAgent - create an agent with only a control channel, registered with the HostDirectory,
 // and using the default run function.
-func NewDefaultAgent(uri string, ctrlHandler MessageHandler, public bool) (*Agent, error) {
+func NewDefaultAgent(uri string, ctrlHandler Handler, public bool) (*Agent, error) {
 	return newDefaultAgent(uri, ctrlHandler, HostExchange, public)
 }
 
-func newDefaultAgent(uri string, ctrlHandler MessageHandler, e *Exchange, public bool) (*Agent, error) {
+func newDefaultAgent(uri string, ctrlHandler Handler, e *Exchange, public bool) (*Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
@@ -62,7 +62,7 @@ func (a *Agent) Register(e *Exchange) error {
 }
 
 // DefaultRun - a simple run function that only handles control messages, and dispatches via a message handler
-func DefaultRun(m *Mailbox, ctrlHandler MessageHandler) {
+func DefaultRun(m *Mailbox, ctrlHandler Handler) {
 	for {
 		select {
 		case msg, open := <-m.ctrl:
