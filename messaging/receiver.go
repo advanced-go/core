@@ -26,7 +26,7 @@ func NewReceiverReplyTo(reply chan *Message) Handler {
 // bounds the time spent receiving, and result status is sent on the status channel.
 func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *Status, done DoneFunc) {
 	tick := time.Tick(interval)
-	var status *Status
+	status := StatusOK()
 	start := time.Now().UTC()
 
 	if interval <= 0 || reply == nil || result == nil || done == nil {
