@@ -4,12 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 )
 
 func ExampleNewStatus_OK() {
 	s := StatusOK()
 
-	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
+	path := reflect.TypeOf(Status{}).PkgPath()
+	path += "/" + reflect.TypeOf(Status{}).Name()
+	fmt.Printf("test: NewStatus() -> [status:%v] [type:%v]\n", s, path)
 
 	s = NewStatusError(http.StatusOK, "", errors.New("this is an error message"))
 	s.AddLocation("github/advanced-go/core/runtime:AddLocation")
@@ -17,7 +20,7 @@ func ExampleNewStatus_OK() {
 	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(s.Code, []error{s.Error()}, s.Trace(), "1234-56-789"))
 
 	//Output:
-	//test: NewStatus() -> [status:OK]
+	//test: NewStatus() -> [status:OK] [type:github.com/advanced-go/core/runtime/Status]
 	//test: NewStatus() -> { "code":200, "status":"OK", "request-id":"1234-56-789", "errors" : [ "this is an error message" ], "trace" : null }
 
 }
