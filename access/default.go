@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+const (
+	ContentEncoding = "Content-Encoding"
+)
+
 func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	if o == nil {
 		o = &origin
@@ -15,8 +19,13 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 	if req == nil {
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
+	encoding := ""
 	if resp == nil {
 		resp = &http.Response{StatusCode: http.StatusOK}
+	} else {
+		if resp.Header != nil {
+			encoding = resp.Header.Get(ContentEncoding)
+		}
 	}
 	url, host, path := CreateUrlHostPath(req)
 	s := fmt.Sprintf("{"+
@@ -36,7 +45,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 		"\"host\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
-		//"\"status\":%v, "+
+		"\"encoding\":%v, "+
 		"\"bytes-written\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
@@ -62,6 +71,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 
 		resp.StatusCode,
 		//FmtJsonString(resp.Status),
+		FmtJsonString(encoding),
 		fmt.Sprintf("%v", resp.ContentLength),
 
 		FmtJsonString(routeName),
