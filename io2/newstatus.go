@@ -34,17 +34,17 @@ func NewStatusFrom(uri string) *runtime.Status {
 	}
 	buf, err1 := os.ReadFile(FileName(uri))
 	if err1 != nil {
-		return runtime.NewStatusError(runtime.StatusIOError, newStatusLoc, err1)
+		return runtime.NewStatusError(runtime.StatusIOError, err1, nil)
 	}
 	var status2 serializedStatusState
 	err := json.Unmarshal(buf, &status2)
 	if err != nil {
-		return runtime.NewStatusError(runtime.StatusJsonDecodeError, newStatusLoc, err)
+		return runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 	}
 	if len(status2.Err) > 0 {
-		return runtime.NewStatusError(status2.Code, status2.Location, errors.New(status2.Err))
+		return runtime.NewStatusError(status2.Code, errors.New(status2.Err), nil)
 	}
-	return runtime.NewStatus(status2.Code).AddLocation(status2.Location)
+	return runtime.NewStatus(status2.Code).AddLocation()
 }
 
 func statusFromConst(url string) *runtime.Status {

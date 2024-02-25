@@ -14,11 +14,6 @@ import (
 
 // See https://tools.ietf.org/html/rfc6265 for details of each of the fields of the above cookie.
 
-const (
-	newRequestLoc      = PkgPath + ":NewRequest"
-	validateRequestLoc = PkgPath + ":ValidateRequest"
-)
-
 // ReadCookies - read the cookies from a request
 func ReadCookies(req *http.Request) map[string]*http.Cookie {
 	if req == nil {
@@ -54,7 +49,7 @@ func NewRequest(ctx any, method string, uri any, body io.Reader) (*http.Request,
 	}
 	req, err := http.NewRequestWithContext(newCtx, method, s, body)
 	if err != nil {
-		return nil, runtime.NewStatusError(http.StatusBadRequest, newRequestLoc, err)
+		return nil, runtime.NewStatusError(http.StatusBadRequest, err, nil)
 	}
 	req.Header.Add(runtime.XRequestId, requestId)
 	return req, runtime.StatusOK()
@@ -108,14 +103,14 @@ func newId(ctx any) string {
 // ValidateRequest - validate the request given an embedded URN path
 func ValidateRequest(req *http.Request, path string) (string, *runtime.Status) {
 	if req == nil {
-		return "", runtime.NewStatusError(runtime.StatusInvalidArgument, validateRequestLoc, errors.New("error: Request is nil"))
+		return "", runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("error: Request is nil"), nil)
 	}
 	reqNid, reqPath, ok := uri.UprootUrn(req.URL.Path)
 	if !ok {
-		return "", runtime.NewStatusError(http.StatusBadRequest, validateRequestLoc, errors.New(fmt.Sprintf("error: invalid URI, path is not valid: \"%v\"", req.URL.Path)))
+		return "", runtime.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid URI, path is not valid: \"%v\"", req.URL.Path)), nil)
 	}
 	if reqNid != path {
-		return "", runtime.NewStatusError(http.StatusBadRequest, validateRequestLoc, errors.New(fmt.Sprintf("error: invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)))
+		return "", runtime.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid URI, NID does not match: \"%v\" \"%v\"", req.URL.Path, path)), nil)
 	}
 	return reqPath, runtime.StatusOK()
 }

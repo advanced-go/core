@@ -44,7 +44,7 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 		}
 		break
 	}
-	shutdownHost(messaging.NewMessage("", "", messaging.ShutdownEvent))
+	shutdownHost(messaging.NewMessage(messaging.ChannelControl, "", "", messaging.ShutdownEvent))
 	if len(failures) > 0 {
 		handleErrors(failures, cache)
 		return false
@@ -56,7 +56,7 @@ func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap)
 func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.Handler) messaging.Map {
 	m := make(messaging.Map)
 	for _, k := range ex.List() {
-		msg := messaging.NewMessage(k, startupLocation, messaging.StartupEvent)
+		msg := messaging.NewMessage(messaging.ChannelControl, k, startupLocation, messaging.StartupEvent)
 		msg.ReplyTo = fn
 		if cm != nil {
 			if content, ok := cm[k]; ok {
@@ -70,7 +70,7 @@ func createToSend(ex *messaging.Exchange, cm ContentMap, fn messaging.Handler) m
 
 func sendMessages(ex *messaging.Exchange, msgs messaging.Map) {
 	for k := range msgs {
-		ex.SendCtrl(msgs[k])
+		ex.Send(msgs[k])
 	}
 }
 

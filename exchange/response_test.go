@@ -14,7 +14,7 @@ func readAll(body io.ReadCloser) ([]byte, *runtime.Status) {
 	defer body.Close()
 	buf, err := io.ReadAll(body)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusIOError, ":ReadAll", err)
+		return nil, runtime.NewStatusError(runtime.StatusIOError, err, nil)
 	}
 	return buf, runtime.StatusOK()
 }

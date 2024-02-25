@@ -19,26 +19,26 @@ const (
 	yahooSearchTemplate = "https://search.yahoo.com/search?%v"
 )
 
-func Example_OverrideUrl() {
+func Example_ExpandUrl() {
 	r := NewResolver()
 	path := ""
 
-	uri, ok := r.OverrideUrl(path)
-	fmt.Printf("test: OverrideUrl-Empty(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
+	uri, ok := r.ExpandUrl(path)
+	fmt.Printf("test: ExpandUrl-Empty(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
 
 	path = "/search"
-	uri, ok = r.OverrideUrl(path)
-	fmt.Printf("test: OverrideUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
+	uri, ok = r.ExpandUrl(path)
+	fmt.Printf("test: ExpandUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
 	path = "/search"
-	r.SetOverrides([]Pair{{path, yahooSearch}})
-	uri, ok = r.OverrideUrl(path)
-	fmt.Printf("test: OverrideUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
+	r.SetTemplates([]Pair{{path, yahooSearch}})
+	uri, ok = r.ExpandUrl(path)
+	fmt.Printf("test: ExpandUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
 	//Output:
-	//test: OverrideUrl-Empty("") ->  [uri:] [ok:false]
-	//test: OverrideUrl-Invalid-Path("/search") ->  [uri:] [ok:false]
-	//test: OverrideUrl-Valid("/search") ->  [uri:https://search.yahoo.com/search?p=golang] [ok:true]
+	//test: ExpandUrl-Empty("") ->  [uri:] [ok:false]
+	//test: ExpandUrl-Invalid-Path("/search") ->  [uri:] [ok:false]
+	//test: ExpandUrl-Valid("/search") ->  [uri:https://search.yahoo.com/search?p=golang] [ok:true]
 
 }
 
@@ -53,7 +53,7 @@ func ExampleBuild() {
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]Pair{{path, yahooSearch}})
+	r.SetTemplates([]Pair{{path, yahooSearch}})
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Override(\"%v\") -> [uri:%v]\n", path, uri)
 
@@ -65,12 +65,12 @@ func ExampleBuild() {
 }
 
 func override(path string, r *Resolver) {
-	defer r.SetOverrides([]Pair{{path, yahooSearch}})()
+	defer r.SetTemplates([]Pair{{path, yahooSearch}})()
 	uri := r.Build(path)
 	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
 }
 
-func ExampleBuild_ResetOverrides() {
+func ExampleBuild_ResetTemplates() {
 	path := "/search?q=golang"
 	r := NewResolver()
 
@@ -99,11 +99,11 @@ func ExampleBuild_Values() {
 	uri := r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]Pair{{path, yahooSearchTemplate}})
+	r.SetTemplates([]Pair{{path, yahooSearchTemplate}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetOverrides([]Pair{{path, fileAttrs}})
+	r.SetTemplates([]Pair{{path, fileAttrs}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
 

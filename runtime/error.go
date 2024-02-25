@@ -23,7 +23,7 @@ const (
 )
 
 // Formatter - output formatting type
-type Formatter func(code int, errs []error, trace []string, requestId string) string
+type Formatter func(code int, errs []error, trace []string, content any, requestId string) string
 
 // SetErrorFormatter - optional override of error formatting
 func SetErrorFormatter(fn Formatter) {
@@ -38,7 +38,7 @@ func SetOutputFormatter() {
 }
 
 // Logger - log function
-type Logger func(code int, errs []error, trace []string, requestId string)
+type Logger func(code int, errs []error, trace []string, content any, requestId string)
 
 // SetErrorLogger - optional override of logging
 func SetErrorLogger(fn Logger) {
@@ -50,21 +50,21 @@ func SetErrorLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(code int, errs []error, trace []string, requestId string) {
-		log.Default().Println(formatter(code, errs, trace, requestId))
+	defaultLogger Logger = func(code int, errs []error, trace []string, content any, requestId string) {
+		log.Default().Println(formatter(code, errs, trace, content, requestId))
 	}
 )
 
 // ErrorHandler - error handler interface
 type ErrorHandler interface {
-	Handle(s *Status, requestId string, callerLocation string) *Status
+	Handle(s *Status, requestId string) *Status
 }
 
 // Bypass - bypass error handler
 type Bypass struct{}
 
 // Handle - bypass error handler
-func (h Bypass) Handle(s *Status, _ string, _ string) *Status {
+func (h Bypass) Handle(s *Status, _ string) *Status {
 	return s
 }
 
@@ -72,16 +72,16 @@ func (h Bypass) Handle(s *Status, _ string, _ string) *Status {
 type Output struct{}
 
 // Handle - output error handler
-func (h Output) Handle(s *Status, requestId string, location string) *Status {
+func (h Output) Handle(s *Status, requestId string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
 	if s.OK() {
 		return s
 	}
-	s.AddLocation(location)
 	if s.Error() != nil && !s.handled {
-		fmt.Printf("%v", formatter(s.Code, []error{s.Error()}, s.Trace(), requestId))
+		s.addLocation(3)
+		fmt.Printf("%v", formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId))
 		s.handled = true
 	}
 	return s
@@ -91,22 +91,22 @@ func (h Output) Handle(s *Status, requestId string, location string) *Status {
 type Log struct{}
 
 // Handle - log error handler
-func (h Log) Handle(s *Status, requestId string, callerLocation string) *Status {
+func (h Log) Handle(s *Status, requestId string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
 	if s.OK() {
 		return s
 	}
-	s.AddLocation(callerLocation)
 	if s.Error() != nil && !s.handled {
-		logger(s.Code, []error{s.Error()}, s.Trace(), requestId)
+		s.addLocation(3)
+		logger(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId)
 		s.handled = true
 	}
 	return s
 }
 
-func defaultFormatter(code int, errs []error, trace []string, requestId string) string {
+func defaultFormatter(code int, errs []error, trace []string, _ any, requestId string) string {
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		jsonMarkup(StatusCodeName, str, false),
@@ -145,7 +145,7 @@ func formatErrors(name string, errs []error) string {
 }
 
 // OutputFormatter - formatter for special output formatting
-func OutputFormatter(code int, errs []error, trace []string, requestId string) string {
+func OutputFormatter(code int, errs []error, trace []string, _ any, requestId string) string {
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(StatusCodeName, str, false),

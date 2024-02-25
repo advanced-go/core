@@ -110,7 +110,7 @@ func pingError(c chan *Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				SendReply(msg, NewStatusError(http.StatusTeapot, errors.New("ping response error"), pingLocation))
+				SendReply(msg, NewStatusError(http.StatusTeapot, errors.New("ping response error"), nil))
 			}
 		default:
 		}

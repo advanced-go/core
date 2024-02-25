@@ -34,7 +34,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 		}
 		return
 	case *url.URL:
@@ -47,7 +47,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 		}
 		return
 	case []byte:
@@ -55,34 +55,34 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		buf = ptr
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 		}
 		return
 	case io.Reader:
 		reader, status0 := NewEncodingReader(ptr, h)
 		if !status0.OK() {
-			return t, status0.AddLocation(newLoc)
+			return t, status0.AddLocation()
 		}
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 		}
 		return t, runtime.StatusOK()
 	case io.ReadCloser:
 		reader, status0 := NewEncodingReader(ptr, h)
 		if !status0.OK() {
-			return t, status0.AddLocation(newLoc)
+			return t, status0.AddLocation()
 		}
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
 		_ = ptr.Close()
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, newLoc, err)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
 		}
 		return t, runtime.StatusOK()
 	default:
-		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, newLoc, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))), nil)
 	}
 }
 

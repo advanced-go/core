@@ -50,7 +50,7 @@ func NewGzipReader(r io.Reader) (EncodingReader, *runtime.Status) {
 	var err error
 	zr.reader, err = gzip.NewReader(r)
 	if err != nil {
-		return nil, runtime.NewStatusError(runtime.StatusGzipEncodingError, gzipReaderLoc, err)
+		return nil, runtime.NewStatusError(runtime.StatusGzipEncodingError, err, nil)
 	}
 	return zr, runtime.StatusOK()
 }

@@ -6,11 +6,6 @@ import (
 	"net/http"
 )
 
-const (
-	writeLoc     = PkgPath + ":WriteResponse"
-	noneEncoding = ""
-)
-
 // WriteResponse - write a http.Response, utilizing the content, status, and headers
 // Content types supported: []byte, string, error, io.Reader, io.ReadCloser. Other types will be treated as JSON and serialized, if
 // the headers content type is JSON. If not JSON, then an error will be raised.
@@ -28,7 +23,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	h := createAcceptEncoding(w.Header())
 	writer, status0 := io2.NewEncodingWriter(w, h)
 	if !status0.OK() {
-		e.Handle(status0, runtime.RequestId(w.Header()), writeLoc)
+		e.Handle(status0, runtime.RequestId(w.Header()))
 		return
 	}
 	if writer.ContentEncoding() != io2.NoneEncoding {
@@ -38,7 +33,7 @@ func WriteResponse[E runtime.ErrorHandler](w http.ResponseWriter, content any, s
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	_ = writer.Close()
 	if !status0.OK() {
-		e.Handle(status0, runtime.RequestId(w.Header()), writeLoc)
+		e.Handle(status0, runtime.RequestId(w.Header()))
 	}
 }
 

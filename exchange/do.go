@@ -37,12 +37,12 @@ func init() {
 // Do - process a request, checking for overrides of file://, and a registered endpoint.
 func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
-		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"), nil)
 	}
 	if req.URL.Scheme == fileScheme {
 		resp1, status1 := readResponse(req.URL)
 		if !status1.OK() {
-			return resp1, status1.AddLocation(doLocation)
+			return resp1, status1.AddLocation()
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
@@ -59,7 +59,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 // DoHttp - process an HTTP call
 func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
-		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, doLocation, errors.New("invalid argument : request is nil"))
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"), nil)
 	}
 	var err error
 
@@ -73,7 +73,7 @@ func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		if strings.Contains(err.Error(), contextDeadlineExceeded) {
 			resp.StatusCode = runtime.StatusDeadlineExceeded
 		}
-		return resp, runtime.NewStatusError(resp.StatusCode, doLocation, err)
+		return resp, runtime.NewStatusError(resp.StatusCode, err, nil)
 	}
 	return resp, runtime.NewStatus(resp.StatusCode)
 }

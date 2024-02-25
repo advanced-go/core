@@ -41,69 +41,69 @@ func Example_FormatUri_Test() {
 }
 
 func Example_DefaultFormat() {
-	s := NewStatusError(http.StatusNotFound, "", errors.New("test error message 1"))
+	s := NewStatusError(http.StatusNotFound, errors.New("test error message 1"), nil)
 
 	// Adding in reverse to mirror call stack
-	s.AddLocation("github/advanced-go/location-2")
-	s.AddLocation("github/advanced-go/location-1")
+	//s.AddLocation("github/advanced-go/location-2")
+	//s.AddLocation("github/advanced-go/location-1")
 
 	//if st, ok := any(s).(*statusState); ok {
 	//	st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
 	//}
 	//SetOutputFormatter()
-	str := formatter(s.Code, []error{s.Error()}, s.Trace(), "1234-5678")
+	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:
-	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advanced-go/tree/main/location-1","https://github.com/advanced-go/tree/main/location-2","" ] }
+	//test: formatter() -> { "code":404, "status":"Not Found", "request-id":"1234-5678", "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#Example_DefaultFormat" ] }
 
 }
 
 func ExampleOutputHandler_Handle() {
-	location := "/OutputHandler"
-	origin := "github.com/module/package/calling-fn"
+	//location := "/OutputHandler"
+	//origin := "github.com/module/package/calling-fn"
 	ctx := NewRequestIdContext(nil, "123-request-id")
 	err := errors.New("test error")
 	var h Output
 
 	//status := runtime.NewStatusError(0, location, err)
-	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx), location)
+	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx))
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
-	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId2(ctx), location)
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, err, nil), GetOrCreateRequestId2(ctx))
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.handled)
 
-	s = NewStatusError(http.StatusInternalServerError, location, nil)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx), origin), s.handled)
+	s = NewStatusError(http.StatusInternalServerError, nil, nil)
+	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx)), s.handled)
 
 	//Output:
 	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
-	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "errors" : [ "test error" ], "trace" : [ "/OutputHandler","/OutputHandler" ] }
+	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "errors" : [ "test error" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#ExampleOutputHandler_Handle" ] }
 	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
 	//test: HandleStatus(nil,s) -> [OK] [handled:false]
 
 }
 
 func ExampleLogHandler_Handle() {
-	location := "/LogHandler"
+	//location := "/LogHandler"
 	ctx := NewRequestIdContext(nil, "")
 	err := errors.New("test error")
 	var h Log
 
 	//s := h.Handle(GetOrCreateRequestId(ctx), location, nil)
-	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId2(ctx), location)
+	s := h.Handle(NewStatus(http.StatusOK), GetOrCreateRequestId2(ctx))
 	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	//	s = h.Handle(GetOrCreateRequestId(ctx), location, err)
-	s = h.Handle(NewStatusError(http.StatusInternalServerError, location, err), GetOrCreateRequestId2(ctx), location)
+	s = h.Handle(NewStatusError(http.StatusInternalServerError, err, nil), GetOrCreateRequestId2(ctx))
 	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
-	s = NewStatusError(http.StatusInternalServerError, location, nil)
-	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx), ""), s.Error() != nil)
+	s = NewStatusError(http.StatusInternalServerError, nil, nil)
+	fmt.Printf("test: Handle(nil,s) -> [%v] [errors:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx)), s.Error() != nil)
 
-	s = NewStatusError(http.StatusInternalServerError, location, err)
+	s = NewStatusError(http.StatusInternalServerError, err, nil)
 	errors := s.Error() != nil
-	s1 := h.Handle(s, GetOrCreateRequestId2(ctx), "")
+	s1 := h.Handle(s, GetOrCreateRequestId2(ctx))
 	fmt.Printf("test: Handle(nil,s) -> [prev:%v] [prev-errors:%v] [curr:%v] [curr-errors:%v]\n", s, errors, s1, s1.Error() != nil)
 
 	//Output:

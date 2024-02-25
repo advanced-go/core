@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	writeContentLoc = PkgPath + ":writeContent"
-	jsonToken       = "json"
+	jsonToken = "json"
 )
 
 func writeContent(w io.Writer, content any, contentType string) (cnt int, status *runtime.Status) {
@@ -34,7 +33,7 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 
 		buf, status = io2.ReadAll(ptr, nil)
 		if !status.OK() {
-			return 0, status.AddLocation(writeContentLoc)
+			return 0, status.AddLocation()
 		}
 		cnt, err = w.Write(buf)
 	case io.ReadCloser:
@@ -43,7 +42,7 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 		buf, status = io2.ReadAll(ptr, nil)
 		_ = ptr.Close()
 		if !status.OK() {
-			return 0, status.AddLocation(writeContentLoc)
+			return 0, status.AddLocation()
 		}
 		cnt, err = w.Write(buf)
 	default:
@@ -52,18 +51,18 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 
 			buf, err = json.Marshal(content)
 			if err != nil {
-				status = runtime.NewStatusError(runtime.StatusJsonEncodeError, writeContentLoc, err)
+				status = runtime.NewStatusError(runtime.StatusJsonEncodeError, err, nil)
 				if !status.OK() {
 					return
 				}
 			}
 			cnt, err = w.Write(buf)
 		} else {
-			return 0, runtime.NewStatusError(runtime.StatusInvalidContent, writeContentLoc, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return 0, runtime.NewStatusError(runtime.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))), nil)
 		}
 	}
 	if err != nil {
-		return 0, runtime.NewStatusError(runtime.StatusIOError, writeContentLoc, err)
+		return 0, runtime.NewStatusError(runtime.StatusIOError, err, nil)
 	}
 	return cnt, runtime.StatusOK()
 }

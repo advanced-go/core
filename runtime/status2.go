@@ -3,6 +3,8 @@ package runtime
 import (
 	"fmt"
 	"net/http"
+	"runtime"
+	"strings"
 )
 
 const (
@@ -46,7 +48,8 @@ const (
 var okStatus = newStatusOK()
 
 type Status struct {
-	Code    int      `json:"code"`
+	Code    int `json:"code"`
+	content any
 	err     error    `json:"err"`
 	handled bool     `json:"handled"`
 	trace   []string `json:"location"`
@@ -68,11 +71,12 @@ func NewStatus(code int) *Status {
 	return s
 }
 
-func NewStatusError(code int, location string, err error) *Status {
+func NewStatusError(code int, err error, content any) *Status {
 	s := new(Status)
 	s.Code = code
 	s.err = err
-	s.AddLocation(location)
+	s.content = content
+	s.addLocation(3)
 	return s
 }
 
@@ -92,19 +96,38 @@ func (s *Status) Error() error {
 	return s.err
 }
 
-func (s *Status) Trace() []string {
-	return s.trace
-}
-
 func (s *Status) AddError(err error) *Status {
 	s.err = err
 	return s
 }
 
-func (s *Status) AddLocation(loc string) *Status {
-	if !s.OK() {
-		s.trace = append(s.trace, loc)
+func (s *Status) Trace() []string {
+	return s.trace
+}
+
+func (s *Status) AddLocation() *Status {
+	s.addLocation(3)
+	return s
+}
+
+func (s *Status) addLocation(skip int) *Status {
+	if s.OK() {
+		return s
 	}
+	loc := getLocation(skip)
+	if len(s.trace) > 0 && loc == s.trace[len(s.trace)-1] {
+		return s
+	}
+	s.trace = append(s.trace, loc)
+	return s
+}
+
+func (s *Status) Content() any {
+	return s.content
+}
+
+func (s *Status) AddContent(content any) *Status {
+	s.content = content
 	return s
 }
 
@@ -114,6 +137,26 @@ func (s *Status) String() string {
 	} else {
 		return fmt.Sprintf("%v", HttpStatus(s.Code))
 	}
+}
+
+func getLocation(skip int) string {
+	if pc, _, _, ok := runtime.Caller(skip); ok {
+		if details := runtime.FuncForPC(pc); details != nil {
+			uri := details.Name()
+			i := strings.Index(uri, githubDotCom)
+			if i == -1 {
+				return uri
+			}
+			uri = strings.Replace(uri, githubDotCom, githubHost, len(githubHost))
+			i = strings.LastIndex(uri, ".")
+			if i == -1 {
+				return uri
+			}
+			uri = uri[:i] + ":" + uri[i+1:]
+			return uri
+		}
+	}
+	return ""
 }
 
 // HttpCode - conversion of a code to HTTP status code

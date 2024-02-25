@@ -28,7 +28,7 @@ func SetLocalAuthority(authority string) {
 
 // Resolver - type
 type Resolver struct {
-	override *sync.Map
+	template *sync.Map
 }
 
 // NewResolver - create a resolver
@@ -36,20 +36,20 @@ func NewResolver() *Resolver {
 	return new(Resolver)
 }
 
-// SetOverrides - configure overrides
-func (r *Resolver) SetOverrides(values []Pair) func() {
+// SetTemplates - configure templates
+func (r *Resolver) SetTemplates(values []Pair) func() {
 	if len(values) == 0 {
-		r.override = nil
+		r.template = nil
 		return func() {}
 	}
-	m := r.override
-	r.override = new(sync.Map)
+	m := r.template
+	r.template = new(sync.Map)
 	for _, attr := range values {
 		key, _ := TemplateToken(attr.Key)
-		r.override.Store(key, attr.Value)
+		r.template.Store(key, attr.Value)
 	}
 	return func() {
-		r.override = m
+		r.template = m
 	}
 }
 
@@ -66,8 +66,8 @@ func (r *Resolver) BuildWithAuthority(authority, path string, values ...any) str
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
-	if r.override != nil {
-		if uri, ok := r.OverrideUrl(path); ok {
+	if r.template != nil {
+		if uri, ok := r.ExpandUrl(path); ok {
 			if len(values) > 0 && strings.Index(uri, "%v") != -1 {
 				uri = fmt.Sprintf(uri, values...)
 			}
@@ -89,12 +89,12 @@ func (r *Resolver) BuildWithAuthority(authority, path string, values ...any) str
 	return url2
 }
 
-// OverrideUrl - return the overridden URL
-func (r *Resolver) OverrideUrl(path string) (string, bool) {
-	if r.override == nil {
+// ExpandUrl - return the expanded URL
+func (r *Resolver) ExpandUrl(path string) (string, bool) {
+	if r.template == nil {
 		return "", false
 	}
-	if v, ok := r.override.Load(path); ok {
+	if v, ok := r.template.Load(path); ok {
 		if s, ok2 := v.(string); ok2 {
 			return s, true
 		}

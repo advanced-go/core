@@ -36,14 +36,14 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 	msg.ReplyTo = NewReceiverReplyTo(reply)
 	err := ex.Send(msg)
 	if err != nil {
-		return NewStatusError(http.StatusInternalServerError, err, pingLocation)
+		return NewStatusError(http.StatusInternalServerError, err, nil)
 	}
 	go Receiver(timeout, reply, result, func(msg *Message) bool {
 		response = msg
 		return true
 	})
 	status = <-result
-	status.AddLocation(pingLocation)
+	status.AddLocation()
 	if response != nil {
 		status.Code = response.Status().Code
 		status.AddError(response.Status().Error())
@@ -55,7 +55,7 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 
 func createTo(uri any) (string, *Status) {
 	if uri == nil {
-		return "", NewStatusError(http.StatusBadRequest, errors.New("error: Ping() uri is nil"), pingLocation)
+		return "", NewStatusError(http.StatusBadRequest, errors.New("error: Ping() uri is nil"), nil)
 	}
 	path := ""
 	if u, ok := uri.(*url.URL); ok {
@@ -64,12 +64,12 @@ func createTo(uri any) (string, *Status) {
 		if u2, ok1 := uri.(string); ok1 {
 			path = u2
 		} else {
-			return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), pingLocation)
+			return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())), nil)
 		}
 	}
 	nid, _, ok := UprootUrn(path)
 	if !ok {
-		return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), pingLocation)
+		return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)), nil)
 	}
 	return nid, StatusOK()
 }
