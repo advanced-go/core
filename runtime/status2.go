@@ -76,7 +76,7 @@ func NewStatusError(code int, err error, content any) *Status {
 	s.Code = code
 	s.err = err
 	s.content = content
-	s.addLocation(3)
+	s.addTrace(getLocation(2))
 	return s
 }
 
@@ -106,15 +106,22 @@ func (s *Status) Trace() []string {
 }
 
 func (s *Status) AddLocation() *Status {
-	s.addLocation(3)
-	return s
-}
-
-func (s *Status) addLocation(skip int) *Status {
 	if s.OK() {
 		return s
 	}
-	loc := getLocation(skip)
+	s.addTrace(getLocation(2))
+	return s
+}
+
+func (s *Status) addParentLocation() *Status {
+	if s.OK() {
+		return s
+	}
+	s.addTrace(getLocation(3))
+	return s
+}
+
+func (s *Status) addTrace(loc string) *Status {
 	if len(s.trace) > 0 && loc == s.trace[len(s.trace)-1] {
 		return s
 	}

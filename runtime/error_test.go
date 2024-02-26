@@ -43,14 +43,6 @@ func Example_FormatUri_Test() {
 func Example_DefaultFormat() {
 	s := NewStatusError(http.StatusNotFound, errors.New("test error message 1"), nil)
 
-	// Adding in reverse to mirror call stack
-	//s.AddLocation("github/advanced-go/location-2")
-	//s.AddLocation("github/advanced-go/location-1")
-
-	//if st, ok := any(s).(*statusState); ok {
-	//	st.Errs = append(st.Errs, errors.New("test error message 1"), errors.New("testing error msg 2"))
-	//}
-	//SetOutputFormatter()
 	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
 	fmt.Printf("test: formatter() -> %v", str)
 
@@ -60,28 +52,25 @@ func Example_DefaultFormat() {
 }
 
 func ExampleOutputHandler_Handle() {
-	//location := "/OutputHandler"
-	//origin := "github.com/module/package/calling-fn"
 	ctx := NewRequestIdContext(nil, "123-request-id")
 	err := errors.New("test error")
 	var h Output
 
-	//status := runtime.NewStatusError(0, location, err)
 	s := h.Handle(NewStatus(http.StatusInternalServerError), RequestId(ctx))
-	fmt.Printf("test: Handle(ctx,location,nil) -> [%v] [errors:%v]\n", s, s.Error() != nil)
+	fmt.Printf("test: Handle(status,id) -> [%v] [errors:%v]\n", s, s.Error() != nil)
 
 	s = h.Handle(NewStatusError(http.StatusInternalServerError, err, nil), GetOrCreateRequestId2(ctx))
-	fmt.Printf("test: Handle(ctx,location,err) -> [%v] [handled:%v]\n", s, s.handled)
+	fmt.Printf("test: Handle(status,id) -> [%v] [handled:%v]\n", s, s.handled)
 
 	s = NewStatusError(http.StatusInternalServerError, nil, nil)
-	fmt.Printf("test: HandleStatus(nil,s) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx)), s.handled)
+	fmt.Printf("test: Handle(nil,id) -> [%v] [handled:%v]\n", h.Handle(nil, GetOrCreateRequestId2(ctx)), s.handled)
 
 	//Output:
-	//test: Handle(ctx,location,nil) -> [Internal Error] [errors:false]
+	//test: Handle(status,id) -> [Internal Error] [errors:false]
 	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "errors" : [ "test error" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#ExampleOutputHandler_Handle" ] }
-	//test: Handle(ctx,location,err) -> [Internal Error [test error]] [handled:true]
-	//test: HandleStatus(nil,s) -> [OK] [handled:false]
-
+	//test: Handle(status,id) -> [Internal Error [test error]] [handled:true]
+	//test: Handle(nil,id) -> [OK] [handled:false]
+	
 }
 
 func ExampleLogHandler_Handle() {

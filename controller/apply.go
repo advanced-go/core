@@ -12,6 +12,15 @@ const (
 	upstreamTimeoutFlag = "UT"
 )
 
+// TODO : check for panic
+/*defer func() {
+	e := recover()
+	if e != nil {
+		panic(e)
+	}
+}()
+*/
+
 func Apply(ctx context.Context, newCtx *context.Context, req *http.Request, resp **http.Response, routeName string, duration time.Duration, statusCode access.StatusCodeFunc) func() {
 	var cancelFunc context.CancelFunc
 

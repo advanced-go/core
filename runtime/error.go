@@ -80,7 +80,7 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 		return s
 	}
 	if s.Error() != nil && !s.handled {
-		s.addLocation(3)
+		s.addParentLocation()
 		fmt.Printf("%v", formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId))
 		s.handled = true
 	}
@@ -99,7 +99,7 @@ func (h Log) Handle(s *Status, requestId string) *Status {
 		return s
 	}
 	if s.Error() != nil && !s.handled {
-		s.addLocation(3)
+		s.addParentLocation()
 		logger(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId)
 		s.handled = true
 	}
