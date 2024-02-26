@@ -149,21 +149,31 @@ func (s *Status) String() string {
 func getLocation(skip int) string {
 	if pc, _, _, ok := runtime.Caller(skip); ok {
 		if details := runtime.FuncForPC(pc); details != nil {
-			uri := details.Name()
-			i := strings.Index(uri, githubDotCom)
-			if i == -1 {
-				return uri
-			}
-			uri = strings.Replace(uri, githubDotCom, githubHost, len(githubHost))
-			i = strings.LastIndex(uri, ".")
-			if i == -1 {
-				return uri
-			}
-			uri = uri[:i] + ":" + uri[i+1:]
-			return uri
+			return runtimeNameToUri(details.Name())
 		}
 	}
 	return ""
+}
+
+func runtimeNameToUri(uri string) string {
+	//uri := details.Name()
+	i := strings.Index(uri, githubDotCom)
+	if i == -1 {
+		return uri
+	}
+	uri = strings.Replace(uri, githubDotCom, githubHost, len(githubHost))
+	// Check for generic function
+	i = strings.LastIndex(uri, "[")
+	if i != -1 {
+		i = strings.LastIndex(uri[:i-1], ".")
+	} else {
+		i = strings.LastIndex(uri, ".")
+	}
+	if i == -1 {
+		return uri
+	}
+	uri = uri[:i] + ":" + uri[i+1:]
+	return uri
 }
 
 // HttpCode - conversion of a code to HTTP status code

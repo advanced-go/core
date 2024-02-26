@@ -25,12 +25,9 @@ func ExampleNewStatus_OK() {
 
 func ExampleNewStatus_Teapot() {
 	s := NewStatus(http.StatusTeapot)
-
 	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 
 	s = NewStatusError(http.StatusTeapot, errors.New("this is an error message"), nil)
-	//s.AddLocation()
-	//s.AddLocation("github/advanced-go/core/runtime:TopOfList")
 	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-56-789"))
 
 	//Output:
@@ -54,6 +51,24 @@ func ExampleNewStatus_Location() {
 
 func errorFunc() *Status {
 	return NewStatusError(http.StatusBadRequest, errors.New("test bad request error"), nil)
+}
+
+func ExampleNewStatus_GenericLocation() {
+	s := genericErrorFunc[Output]()
+	s.AddLocation()
+
+	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
+	fmt.Printf("test: GenericLocation() -> [out:%v] [trace:%v]\n", str, s.Trace())
+
+	//Output:
+	//test: GenericLocation() -> [out:{ "code":400, "status":"Bad Request", "request-id":"1234-5678", "errors" : [ "test bad request error" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#ExampleNewStatus_GenericLocation","https://github.com/advanced-go/core/tree/main/runtime#genericErrorFunc[...]" ] }
+	//] [trace:[github/advanced-go/core/runtime:genericErrorFunc[...] github/advanced-go/core/runtime:ExampleNewStatus_GenericLocation]]
+
+}
+
+func genericErrorFunc[E ErrorHandler]() *Status {
+	s := NewStatusError(http.StatusBadRequest, errors.New("test bad request error"), nil)
+	return s
 }
 
 /*
