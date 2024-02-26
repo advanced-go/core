@@ -70,11 +70,10 @@ func ExampleOutputHandler_Handle() {
 	//{ "code":500, "status":"Internal Error", "request-id":"123-request-id", "errors" : [ "test error" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#ExampleOutputHandler_Handle" ] }
 	//test: Handle(status,id) -> [Internal Error [test error]] [handled:true]
 	//test: Handle(nil,id) -> [OK] [handled:false]
-	
+
 }
 
 func ExampleLogHandler_Handle() {
-	//location := "/LogHandler"
 	ctx := NewRequestIdContext(nil, "")
 	err := errors.New("test error")
 	var h Log
