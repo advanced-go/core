@@ -40,3 +40,15 @@ func FmtJsonString(value string) string {
 	}
 	return "\"" + value + "\""
 }
+
+func Encoding(resp *http.Response) (*http.Response, string) {
+	encoding := ""
+	if resp == nil {
+		resp = &http.Response{StatusCode: http.StatusOK}
+	} else {
+		if resp.Header != nil {
+			encoding = resp.Header.Get(ContentEncoding)
+		}
+	}
+	return resp, encoding
+}

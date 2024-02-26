@@ -20,13 +20,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
 	encoding := ""
-	if resp == nil {
-		resp = &http.Response{StatusCode: http.StatusOK}
-	} else {
-		if resp.Header != nil {
-			encoding = resp.Header.Get(ContentEncoding)
-		}
-	}
+	resp, encoding = Encoding(resp)
 	url, host, path := CreateUrlHostPath(req)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
