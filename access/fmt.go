@@ -41,14 +41,28 @@ func FmtJsonString(value string) string {
 	return "\"" + value + "\""
 }
 
-func Encoding(resp *http.Response) (*http.Response, string) {
-	encoding := ""
-	if resp == nil {
-		resp = &http.Response{StatusCode: http.StatusOK}
-	} else {
-		if resp.Header != nil {
-			encoding = resp.Header.Get(ContentEncoding)
-		}
+func SafeRequest(r *http.Request) *http.Request {
+	if r == nil {
+		r, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
 	}
-	return resp, encoding
+	return r
+}
+
+func SafeResponse(r *http.Response) *http.Response {
+	if r == nil {
+		r = new(http.Response)
+	}
+	return r
+}
+
+func Encoding(resp *http.Response) string {
+	encoding := ""
+	if resp != nil && resp.Header != nil {
+		encoding = resp.Header.Get(ContentEncoding)
+	}
+	// normalize encoding
+	if strings.Contains(strings.ToLower(encoding), "none") {
+		encoding = ""
+	}
+	return encoding
 }

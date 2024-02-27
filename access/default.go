@@ -16,11 +16,8 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 	if o == nil {
 		o = &origin
 	}
-	if req == nil {
-		req, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
-	}
-	encoding := ""
-	resp, encoding = Encoding(resp)
+	req = SafeRequest(req)
+	resp = SafeResponse(resp)
 	url, host, path := CreateUrlHostPath(req)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
@@ -65,7 +62,7 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 
 		resp.StatusCode,
 		//FmtJsonString(resp.Status),
-		FmtJsonString(encoding),
+		FmtJsonString(Encoding(resp)),
 		fmt.Sprintf("%v", resp.ContentLength),
 
 		FmtJsonString(routeName),
