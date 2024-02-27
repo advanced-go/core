@@ -15,7 +15,9 @@ func ExampleNewStatus_OK() {
 	fmt.Printf("test: NewStatus() -> [status:%v] [type:%v]\n", s, path)
 
 	s = NewStatusError(http.StatusBadGateway, errors.New("this is an error message"), nil)
-	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-56-789"))
+	str := defaultFormatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.AddAttr("", "1234-56-789").Attrs())
+
+	fmt.Printf("test: NewStatus() -> %v\n", str)
 
 	//Output:
 	//test: NewStatus() -> [status:OK] [type:github.com/advanced-go/core/runtime/Status]
@@ -28,7 +30,7 @@ func ExampleNewStatus_Teapot() {
 	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 
 	s = NewStatusError(http.StatusTeapot, errors.New("this is an error message"), nil)
-	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-56-789"))
+	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.AddAttr("", "1234-56-789").Attrs()))
 
 	//Output:
 	//test: NewStatus() -> [status:I'm A Teapot]
@@ -40,7 +42,7 @@ func ExampleNewStatus_Location() {
 	s := errorFunc()
 	s.AddLocation()
 
-	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
+	str := formatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.AddAttr("", "1234-5678").Attrs())
 	fmt.Printf("test: Location() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:
@@ -57,7 +59,7 @@ func ExampleNewStatus_GenericLocation() {
 	s := genericErrorFunc[Output]()
 	s.AddLocation()
 
-	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
+	str := formatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.AddAttr("", "1234-5678").Attrs())
 	fmt.Printf("test: GenericLocation() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:

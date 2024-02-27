@@ -43,7 +43,7 @@ func Example_FormatUri_Test() {
 func Example_DefaultFormat() {
 	s := NewStatusError(http.StatusNotFound, errors.New("test error message 1"), nil)
 
-	str := formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), "1234-5678")
+	str := formatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.AddAttr("", "1234-5678").Attrs())
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:

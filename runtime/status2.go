@@ -49,7 +49,7 @@ var okStatus = newStatusOK()
 
 type Status struct {
 	Code    int `json:"code"`
-	content any
+	attrs   []any
 	err     error    `json:"err"`
 	handled bool     `json:"handled"`
 	trace   []string `json:"location"`
@@ -71,11 +71,11 @@ func NewStatus(code int) *Status {
 	return s
 }
 
-func NewStatusError(code int, err error, content any) *Status {
+func NewStatusError(code int, err error, attrs ...any) *Status {
 	s := new(Status)
 	s.Code = code
 	s.err = err
-	s.content = content
+	s.AddAttrs(attrs...)
 	s.addTrace(getLocation(2))
 	return s
 }
@@ -129,12 +129,25 @@ func (s *Status) addTrace(loc string) *Status {
 	return s
 }
 
-func (s *Status) Content() any {
-	return s.content
+func (s *Status) Attrs() []any {
+	return s.attrs
 }
 
-func (s *Status) AddContent(content any) *Status {
-	s.content = content
+func (s *Status) AddAttrs(attrs ...any) *Status {
+	if !isAttrs(attrs) {
+		return s
+	}
+	for a, _ := range attrs {
+		s.attrs = append(s.attrs, a)
+	}
+	return s
+}
+
+func (s *Status) AddAttr(name string, val any) *Status {
+	if len(name) > 0 {
+		s.attrs = append(s.attrs, name)
+	}
+	s.attrs = append(s.attrs, val)
 	return s
 }
 
@@ -144,6 +157,10 @@ func (s *Status) String() string {
 	} else {
 		return fmt.Sprintf("%v", HttpStatus(s.Code))
 	}
+}
+
+func isAttrs(attrs []any) bool {
+	return !(len(attrs) == 0 || (len(attrs) == 1 && attrs[0] == nil))
 }
 
 func getLocation(skip int) string {

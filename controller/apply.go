@@ -19,6 +19,12 @@ const (
 		panic(e)
 	}
 }()
+// slog handler.go line 556
+	// Adapted from the code in fmt/print.go.
+			if v := reflect.ValueOf(v.any); v.Kind() == reflect.Pointer && v.IsNil() {
+				s.appendString("<nil>")
+				return
+			}
 */
 
 func Apply(ctx context.Context, newCtx *context.Context, req *http.Request, resp **http.Response, routeName string, duration time.Duration, statusCode access.StatusCodeFunc) func() {

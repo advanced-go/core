@@ -23,7 +23,7 @@ const (
 )
 
 // Formatter - output formatting type
-type Formatter func(code int, errs []error, trace []string, content any, requestId string) string
+type Formatter func(code int, status string, errs []error, trace []string, attrs []any) string
 
 // SetErrorFormatter - optional override of error formatting
 func SetErrorFormatter(fn Formatter) {
@@ -38,7 +38,7 @@ func SetOutputFormatter() {
 }
 
 // Logger - log function
-type Logger func(code int, errs []error, trace []string, content any, requestId string)
+type Logger func(code int, status string, errs []error, trace []string, attrs []any)
 
 // SetErrorLogger - optional override of logging
 func SetErrorLogger(fn Logger) {
@@ -50,21 +50,21 @@ func SetErrorLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(code int, errs []error, trace []string, content any, requestId string) {
-		log.Default().Println(formatter(code, errs, trace, content, requestId))
+	defaultLogger Logger = func(code int, status string, errs []error, trace []string, attrs []any) {
+		log.Default().Println(formatter(code, status, errs, trace, attrs))
 	}
 )
 
 // ErrorHandler - error handler interface
 type ErrorHandler interface {
-	Handle(s *Status, requestId string) *Status
+	Handle(s *Status, requestId ...string) *Status
 }
 
 // Bypass - bypass error handler
 type Bypass struct{}
 
 // Handle - bypass error handler
-func (h Bypass) Handle(s *Status, _ string) *Status {
+func (h Bypass) Handle(s *Status, _ ...string) *Status {
 	return s
 }
 
@@ -72,7 +72,7 @@ func (h Bypass) Handle(s *Status, _ string) *Status {
 type Output struct{}
 
 // Handle - output error handler
-func (h Output) Handle(s *Status, requestId string) *Status {
+func (h Output) Handle(s *Status, requestId ...string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -81,7 +81,8 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Error() != nil && !s.handled {
 		s.addParentLocation()
-		fmt.Printf("%v", formatter(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId))
+		addRequestIdAttr(s, requestId)
+		fmt.Printf("%v", formatter(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.Attrs()))
 		s.handled = true
 	}
 	return s
@@ -91,7 +92,7 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 type Log struct{}
 
 // Handle - log error handler
-func (h Log) Handle(s *Status, requestId string) *Status {
+func (h Log) Handle(s *Status, requestId ...string) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -100,18 +101,27 @@ func (h Log) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Error() != nil && !s.handled {
 		s.addParentLocation()
-		logger(s.Code, []error{s.Error()}, s.Trace(), s.Content(), requestId)
+		addRequestIdAttr(s, requestId)
+		go logger(s.Code, HttpStatus(s.Code), []error{s.Error()}, s.Trace(), s.Attrs())
 		s.handled = true
 	}
 	return s
 }
 
-func defaultFormatter(code int, errs []error, trace []string, _ any, requestId string) string {
+func defaultFormatter(code int, status string, errs []error, trace []string, attrs []any) string {
 	str := strconv.Itoa(code)
+	name := RequestIdName
+	val := ""
+	// TODO: add formatting of attributes
+	if len(attrs) > 0 {
+		if s, ok := attrs[0].(string); ok {
+			val = s
+		}
+	}
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v }\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, HttpStatus(code), true),
-		jsonMarkup(RequestIdName, requestId, true),
+		jsonMarkup(StatusName, status, true),
+		jsonMarkup(name, val, true),
 		formatErrors(ErrorsName, errs),
 		formatTrace(TraceName, trace))
 }
@@ -145,15 +155,22 @@ func formatErrors(name string, errs []error) string {
 }
 
 // OutputFormatter - formatter for special output formatting
-func OutputFormatter(code int, errs []error, trace []string, _ any, requestId string) string {
+func OutputFormatter(code int, status string, errs []error, trace []string, attrs []any) string {
 	str := strconv.Itoa(code)
+	name := RequestIdName
+	val := ""
+	// TODO: add formatting of attributes
+	if len(attrs) > 0 {
+		if s, ok := attrs[0].(string); ok {
+			val = s
+		}
+	}
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(StatusCodeName, str, false),
-		jsonMarkup(StatusName, HttpStatus(code), true),
-		jsonMarkup(RequestIdName, requestId, true),
+		jsonMarkup(StatusName, status, true),
+		jsonMarkup(name, val, true),
 		outputFormatErrors(ErrorsName, errs),
 		outputFormatTrace(TraceName, trace))
-
 }
 
 func outputFormatErrors(name string, errs []error) string {
@@ -221,4 +238,14 @@ func jsonMarkup(name, value string, stringValue bool) string {
 		format = markupValue
 	}
 	return fmt.Sprintf(format, name, value)
+}
+
+// TODO: update when complete attribute handling is finished
+func addRequestIdAttr(s *Status, requestId []string) {
+	switch len(requestId) {
+	case 1:
+		s.AddAttr("", requestId[0])
+	case 2:
+		s.AddAttr("", requestId[1])
+	}
 }

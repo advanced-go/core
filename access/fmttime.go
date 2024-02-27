@@ -9,6 +9,7 @@ import (
 func FmtTimestamp(t time.Time) string {
 	var buf []byte
 	t = t.UTC()
+	t = t.Truncate(time.Millisecond).Add(time.Millisecond / 10)
 	year, month, day := t.Date()
 	itoa(&buf, year, 4)
 	buf = append(buf, '-')
@@ -81,4 +82,18 @@ func ParseTimestamp(s string) (time.Time, error) {
 		return time.Now().UTC(), er6
 	}
 	return time.Date(year, time.Month(month), day, hour, min, sec, ns*1000, time.UTC), nil
+}
+
+func FmtRFC3339Millis(t time.Time) string {
+	// Format according to time.RFC3339Nano since it is highly optimized,
+	// but truncate it to use millisecond resolution.
+	// Unfortunately, that format trims trailing 0s, so add 1/10 millisecond
+	// to guarantee that there are exactly 4 digits after the period.
+	var b []byte
+	const prefixLen = len("2006-01-02T15:04:05.000")
+	n := len(b)
+	t = t.Truncate(time.Millisecond).Add(time.Millisecond / 10)
+	b = t.AppendFormat(b, time.RFC3339Nano)
+	b = append(b[:n+prefixLen], b[n+prefixLen+1:]...) // drop the 4th digit
+	return string(b)
 }
