@@ -84,6 +84,8 @@ func ParseTimestamp(s string) (time.Time, error) {
 	return time.Date(year, time.Month(month), day, hour, min, sec, ns*1000, time.UTC), nil
 }
 
+// FmtRFC3339Millis - format time
+// https://datatracker.ietf.org/doc/html/rfc3339
 func FmtRFC3339Millis(t time.Time) string {
 	// Format according to time.RFC3339Nano since it is highly optimized,
 	// but truncate it to use millisecond resolution.
