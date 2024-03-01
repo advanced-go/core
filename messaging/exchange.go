@@ -7,13 +7,6 @@ import (
 	"sync"
 )
 
-const (
-	exSendCtrlLocation = PkgPath + ":Exchange/SendCtrl"
-	exSendDataLocation = PkgPath + ":Exchange/SendData"
-	exGetLocation      = PkgPath + ":Exchange/get"
-	exAddLocation      = PkgPath + ":Exchange/add"
-)
-
 // HostExchange - main exchange
 var HostExchange = NewExchange()
 

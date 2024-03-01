@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	doLocation              = PkgPath + ":Do"
 	internalError           = "Internal Error"
 	fileScheme              = "file"
 	contextDeadlineExceeded = "context deadline exceeded"

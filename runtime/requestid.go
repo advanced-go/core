@@ -83,6 +83,7 @@ func RequestId(t any) string {
 }
 
 // GetOrCreateRequestId2 - return a request id from any type, creating a new id if needed
+/*
 func GetOrCreateRequestId2(t any) string {
 	requestId := RequestId(t)
 	if requestId == "" {
@@ -91,6 +92,9 @@ func GetOrCreateRequestId2(t any) string {
 	}
 	return requestId
 }
+
+
+*/
 
 // AddRequestId - add a request to an http.Request or an http.Header
 func AddRequestId(t any) http.Header {

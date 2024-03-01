@@ -7,12 +7,6 @@ import (
 	"sync"
 )
 
-const (
-	handlerRegisterLocation  = PkgPath + ":RegisterHandler"
-	handlerLookupLocation    = PkgPath + ":Lookup"
-	handlerLookupNIDLocation = PkgPath + ":LookupFromNID"
-)
-
 // Proxy - key value pairs of a URI -> HttpHandler
 type Proxy struct {
 	m *sync.Map
