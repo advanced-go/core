@@ -41,13 +41,13 @@ func Example_FormatUri_Test() {
 }
 
 func Example_DefaultFormat() {
-	s := NewStatusError(http.StatusNotFound, errors.New("test error message 1"), nil)
+	s := NewStatusError(http.StatusNotFound, errors.New("test error message 1"), "count", 123, "isError", false)
 
 	str := formatter(testTS, s.Code, HttpStatus(s.Code), "1234-5678", s.Attrs(), []error{s.Error()}, s.Trace())
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:
-	//test: formatter() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":404, "status":"Not Found", "request-id":"1234-5678", "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#Example_DefaultFormat" ] }
+	//test: formatter() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":404, "status":"Not Found", "request-id":"1234-5678", "count":123, "isError":false, "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advanced-go/core/tree/main/runtime#Example_DefaultFormat" ] }
 
 }
 
@@ -116,6 +116,41 @@ func Example_InvalidTypeError() {
 	//test: NewInvalidBodyTypeError(int) -> invalid body type: int
 	//test: NewInvalidBodyTypeError(*http.Request) -> invalid body type: *http.Request
 
+}
+
+func ExampleFmtAttrs() {
+	var attrs []any
+
+	s := formatAttrs(attrs)
+	fmt.Printf("test: FmtAttrs() -> [empty:%v]\n", len(s) == 0)
+
+	attrs = append(attrs, StatusName)
+	attrs = append(attrs, "Bad Request")
+
+	attrs = append(attrs, CodeName)
+	attrs = append(attrs, http.StatusBadRequest)
+
+	attrs = append(attrs, "isError")
+	attrs = append(attrs, false)
+
+	attrs = append(attrs, "empty-string")
+	attrs = append(attrs, "")
+
+	attrs = append(attrs, TimestampName)
+	attrs = append(attrs, testTS)
+
+	s = formatAttrs(attrs)
+	fmt.Printf("test: FmtAttrs-Even() -> %v\n", s)
+
+	attrs = append(attrs, "name-only")
+	s = formatAttrs(attrs)
+	fmt.Printf("test: FmtAttrs-Odd() -> %v\n", s)
+
+	//Output:
+	//test: FmtAttrs() -> [empty:true]
+	//test: FmtAttrs-Even() -> "status":"Bad Request", "code":400, "isError":false, "empty-string":null, "timestamp":"2024-03-01T18:23:50.205Z"
+	//test: FmtAttrs-Odd() -> "status":"Bad Request", "code":400, "isError":false, "empty-string":null, "timestamp":"2024-03-01T18:23:50.205Z", "name-only":null
+	
 }
 
 /*

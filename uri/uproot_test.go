@@ -1,6 +1,28 @@
 package uri
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
+
+func ExampleParseRaw() {
+	u := "http://localhost:8080/github/advanced-go/core/uri.Uproot?q=golang"
+	uri, err := url.Parse(u)
+
+	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [host:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Host, uri.Path, uri.Fragment, uri.RawQuery, err)
+
+	u = "http://localhost:8080/github/advanced-go/core/uri:Uproot?q=golang"
+	uri, err = url.Parse(u)
+
+	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Path, uri.Fragment, uri.RawQuery, err)
+
+	u = "http://localhost:8080/github/advanced-go/core/uri?q=golang#Uproot"
+	uri, err = url.Parse(u)
+
+	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Path, uri.Fragment, uri.RawQuery, err)
+
+	//Output:
+}
 
 func Example_Uproot() {
 	uri := ""

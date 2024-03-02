@@ -137,7 +137,7 @@ func (s *Status) AddAttrs(attrs ...any) *Status {
 	if !isAttrs(attrs) {
 		return s
 	}
-	for a, _ := range attrs {
+	for _, a := range attrs {
 		s.attrs = append(s.attrs, a)
 	}
 	return s
