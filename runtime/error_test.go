@@ -150,7 +150,7 @@ func ExampleFmtAttrs() {
 	//test: FmtAttrs() -> [empty:true]
 	//test: FmtAttrs-Even() -> "status":"Bad Request", "code":400, "isError":false, "empty-string":null, "timestamp":"2024-03-01T18:23:50.205Z"
 	//test: FmtAttrs-Odd() -> "status":"Bad Request", "code":400, "isError":false, "empty-string":null, "timestamp":"2024-03-01T18:23:50.205Z", "name-only":null
-	
+
 }
 
 /*
