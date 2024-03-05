@@ -29,7 +29,7 @@ func NewControllerIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "error: componet 2 is nil")
+			fmt.Fprintf(w, "error: component 2 is nil")
 			return
 		}
 		start := time.Now().UTC()
