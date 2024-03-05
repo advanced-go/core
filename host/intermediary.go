@@ -8,8 +8,7 @@ import (
 )
 
 const (
-	Authorization   = "Authorization"
-	upstreamTimeout = "UT"
+	Authorization = "Authorization"
 )
 
 type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
