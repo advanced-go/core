@@ -75,6 +75,7 @@ func (d *Exchange) SendData(msg *Message) error {
 
 
 */
+
 // Add - add a mailbox
 func (d *Exchange) Add(m *Mailbox) error {
 	if m == nil {
