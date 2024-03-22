@@ -23,12 +23,11 @@ func NewStatus(code int) *Status {
 	return s
 }
 
-func NewStatusError(code int, err error, attrs ...any) *Status {
+func NewStatusError(code int, err error) *Status {
 	s := new(Status)
 	s.Code = code
 	s.AddError(err)
 	s.AddLocation()
-	s.AddAttrs(attrs...)
 	return s
 }
 

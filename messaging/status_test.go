@@ -23,7 +23,7 @@ func ExampleNewStatus() {
 }
 
 func ExampleNewStatusError() {
-	s := NewStatusError(http.StatusBadRequest, errors.New("bad request error"), nil)
+	s := NewStatusError(http.StatusBadRequest, errors.New("bad request error"))
 
 	fmt.Printf("test: NewStatusError() -> [status:%v] [ok:%v]\n", s, s.OK())
 	var e runtime.Output
