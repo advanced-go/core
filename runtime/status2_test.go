@@ -14,8 +14,8 @@ func ExampleNewStatus_OK() {
 	path += "/" + reflect.TypeOf(Status{}).Name()
 	fmt.Printf("test: NewStatus() -> [status:%v] [type:%v]\n", s, path)
 
-	s = NewStatusError(http.StatusBadGateway, errors.New("this is an error message"), nil)
-	str := defaultFormatter(testTS, s.Code, HttpStatus(s.Code), "1234-56-789", s.Attrs(), []error{s.Error()}, s.Trace())
+	s = NewStatusError(http.StatusBadGateway, errors.New("this is an error message"))
+	str := defaultFormatter(testTS, s.Code, HttpStatus(s.Code), "1234-56-789", []error{s.Error()}, s.Trace())
 
 	fmt.Printf("test: NewStatus() -> %v\n", str)
 
@@ -29,8 +29,8 @@ func ExampleNewStatus_Teapot() {
 	s := NewStatus(http.StatusTeapot)
 	fmt.Printf("test: NewStatus() -> [status:%v]\n", s)
 
-	s = NewStatusError(http.StatusTeapot, errors.New("this is an error message"), nil)
-	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(testTS, s.Code, HttpStatus(s.Code), "1234-56-789", s.Attrs(), []error{s.Error()}, s.Trace()))
+	s = NewStatusError(http.StatusTeapot, errors.New("this is an error message"))
+	fmt.Printf("test: NewStatus() -> %v\n", defaultFormatter(testTS, s.Code, HttpStatus(s.Code), "1234-56-789", []error{s.Error()}, s.Trace()))
 
 	//Output:
 	//test: NewStatus() -> [status:I'm A Teapot]
@@ -42,7 +42,7 @@ func ExampleNewStatus_Location() {
 	s := errorFunc()
 	s.AddLocation()
 
-	str := formatter(testTS, s.Code, HttpStatus(s.Code), "1234-5678", s.Attrs(), []error{s.Error()}, s.Trace())
+	str := formatter(testTS, s.Code, HttpStatus(s.Code), "1234-5678", []error{s.Error()}, s.Trace())
 	fmt.Printf("test: Location() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:
@@ -52,14 +52,14 @@ func ExampleNewStatus_Location() {
 }
 
 func errorFunc() *Status {
-	return NewStatusError(http.StatusBadRequest, errors.New("test bad request error"), nil)
+	return NewStatusError(http.StatusBadRequest, errors.New("test bad request error"))
 }
 
 func ExampleNewStatus_GenericLocation() {
 	s := genericErrorFunc[Output]()
 	s.AddLocation()
 
-	str := formatter(testTS, s.Code, HttpStatus(s.Code), "1234-5678", s.Attrs(), []error{s.Error()}, s.Trace())
+	str := formatter(testTS, s.Code, HttpStatus(s.Code), "1234-5678", []error{s.Error()}, s.Trace())
 	fmt.Printf("test: GenericLocation() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:
@@ -69,7 +69,7 @@ func ExampleNewStatus_GenericLocation() {
 }
 
 func genericErrorFunc[E ErrorHandler]() *Status {
-	s := NewStatusError(http.StatusBadRequest, errors.New("test bad request error"), nil)
+	s := NewStatusError(http.StatusBadRequest, errors.New("test bad request error"))
 	return s
 }
 

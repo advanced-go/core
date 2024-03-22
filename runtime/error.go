@@ -27,7 +27,7 @@ const (
 )
 
 // Formatter - output formatting type
-type Formatter func(ts time.Time, code int, status, requestId string, attrs []any, errs []error, trace []string) string
+type Formatter func(ts time.Time, code int, status, requestId string, errs []error, trace []string) string
 
 // SetErrorFormatter - optional override of error formatting
 func SetErrorFormatter(fn Formatter) {
@@ -42,7 +42,7 @@ func SetOutputFormatter() {
 }
 
 // Logger - log function
-type Logger func(code int, status, requestId string, attrs []any, errs []error, trace []string)
+type Logger func(code int, status, requestId string, errs []error, trace []string)
 
 // SetErrorLogger - optional override of logging
 func SetErrorLogger(fn Logger) {
@@ -54,8 +54,8 @@ func SetErrorLogger(fn Logger) {
 var (
 	formatter            = defaultFormatter
 	logger               = defaultLogger
-	defaultLogger Logger = func(code int, status, requestId string, attrs []any, errs []error, trace []string) {
-		log.Default().Println(formatter(time.Now().UTC(), code, status, requestId, attrs, errs, trace))
+	defaultLogger Logger = func(code int, status, requestId string, errs []error, trace []string) {
+		log.Default().Println(formatter(time.Now().UTC(), code, status, requestId, errs, trace))
 	}
 )
 
@@ -85,7 +85,7 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Error() != nil && !s.handled {
 		s.addParentLocation()
-		fmt.Printf("%v", formatter(time.Now().UTC(), s.Code, HttpStatus(s.Code), requestId, s.Attrs(), []error{s.Error()}, s.Trace()))
+		fmt.Printf("%v", formatter(time.Now().UTC(), s.Code, HttpStatus(s.Code), requestId, []error{s.Error()}, s.Trace()))
 		s.handled = true
 	}
 	return s
@@ -104,33 +104,21 @@ func (h Log) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Error() != nil && !s.handled {
 		s.addParentLocation()
-		go logger(s.Code, HttpStatus(s.Code), requestId, s.Attrs(), []error{s.Error()}, s.Trace())
+		go logger(s.Code, HttpStatus(s.Code), requestId, []error{s.Error()}, s.Trace())
 		s.handled = true
 	}
 	return s
 }
 
-func defaultFormatter(ts time.Time, code int, status, requestId string, attrs []any, errs []error, trace []string) string {
+func defaultFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
-	s := formatAttrs(attrs)
-	if len(s) > 0 {
-		return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v, %v }\n",
-			jsonMarkup(TimestampName, FmtRFC3339Millis(ts), true),
-			jsonMarkup(CodeName, str, false),
-			jsonMarkup(StatusName, status, true),
-			jsonMarkup(RequestIdName, requestId, true),
-			s,
-			formatErrors(ErrorsName, errs),
-			formatTrace(TraceName, trace))
-	} else {
-		return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v }\n",
-			jsonMarkup(TimestampName, FmtRFC3339Millis(ts), true),
-			jsonMarkup(CodeName, str, false),
-			jsonMarkup(StatusName, status, true),
-			jsonMarkup(RequestIdName, requestId, true),
-			formatErrors(ErrorsName, errs),
-			formatTrace(TraceName, trace))
-	}
+	return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v }\n",
+		jsonMarkup(TimestampName, FmtRFC3339Millis(ts), true),
+		jsonMarkup(CodeName, str, false),
+		jsonMarkup(StatusName, status, true),
+		jsonMarkup(RequestIdName, requestId, true),
+		formatErrors(ErrorsName, errs),
+		formatTrace(TraceName, trace))
 }
 
 func formatTrace(name string, trace []string) string {
@@ -203,7 +191,7 @@ func formatAttrs(attrs []any) string {
 }
 
 // OutputFormatter - formatter for special output formatting
-func OutputFormatter(ts time.Time, code int, status, requestId string, attrs []any, errs []error, trace []string) string {
+func OutputFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v\n}\n",
 		jsonMarkup(TimestampName, FmtRFC3339Millis(ts), true),
