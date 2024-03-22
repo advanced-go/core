@@ -11,6 +11,13 @@ type Attr struct {
 	Val any
 }
 
+func (a Attr) String() string {
+	if s, ok := a.Val.(string); ok {
+		return s
+	}
+	return fmt.Sprintf("%v", a.Val)
+}
+
 type Attributable interface {
 	Attributes() []Attr
 }
