@@ -38,7 +38,7 @@ func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *runtime.Sta
 	case GzipEncoding:
 		return NewGzipReader(r)
 	case BrotliEncoding, DeflateEncoding, CompressEncoding:
-		return nil, runtime.NewStatusError(runtime.StatusContentEncodingError, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)), nil)
+		return nil, runtime.NewStatusError(runtime.StatusContentEncodingError, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)))
 	default:
 		return NewIdentityReader(r), runtime.StatusOK()
 	}

@@ -14,14 +14,14 @@ const (
 // Get - process an HTTP Get request
 func Get(ctx context.Context, uri string, h http.Header) (resp *http.Response, status *runtime.Status) {
 	if len(uri) == 0 {
-		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, errors.New("error: URI is empty"), nil)
+		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, errors.New("error: URI is empty"))
 	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, err, nil)
+		return serverErrorResponse(), runtime.NewStatusError(http.StatusBadRequest, err)
 	}
 	if h != nil {
 		req.Header = h

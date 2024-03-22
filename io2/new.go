@@ -34,7 +34,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err)
 		}
 		return
 	case *url.URL:
@@ -47,7 +47,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err)
 		}
 		return
 	case []byte:
@@ -55,7 +55,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		buf = ptr
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err)
 		}
 		return
 	case io.Reader:
@@ -66,7 +66,7 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err)
 		}
 		return t, runtime.StatusOK()
 	case io.ReadCloser:
@@ -78,11 +78,11 @@ func New[T any](v any, h http.Header) (t T, status *runtime.Status) {
 		_ = reader.Close()
 		_ = ptr.Close()
 		if err != nil {
-			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err, nil)
+			return t, runtime.NewStatusError(runtime.StatusJsonDecodeError, err)
 		}
 		return t, runtime.StatusOK()
 	default:
-		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))), nil)
+		return t, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 	}
 }
 
