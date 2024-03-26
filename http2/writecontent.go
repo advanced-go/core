@@ -51,18 +51,18 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 
 			buf, err = json.Marshal(content)
 			if err != nil {
-				status = runtime.NewStatusError(runtime.StatusJsonEncodeError, err, nil)
+				status = runtime.NewStatusError(runtime.StatusJsonEncodeError, err)
 				if !status.OK() {
 					return
 				}
 			}
 			cnt, err = w.Write(buf)
 		} else {
-			return 0, runtime.NewStatusError(runtime.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))), nil)
+			return 0, runtime.NewStatusError(runtime.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
 		}
 	}
 	if err != nil {
-		return 0, runtime.NewStatusError(runtime.StatusIOError, err, nil)
+		return 0, runtime.NewStatusError(runtime.StatusIOError, err)
 	}
 	return cnt, runtime.StatusOK()
 }
