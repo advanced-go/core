@@ -1,8 +1,10 @@
 package host
 
 import (
+	"context"
 	"fmt"
 	"github.com/advanced-go/core/access"
+	"github.com/advanced-go/core/controller"
 	"net/http"
 	"time"
 )
@@ -13,13 +15,18 @@ const (
 
 type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
 
-func NewIntermediary(c1 ServeHTTPFunc, c2 ServeHTTPFunc) ServeHTTPFunc {
+func NewConditionalIntermediary(c1 ServeHTTPFunc, c2 ServeHTTPFunc, ok func(int) bool) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		wrap := newWrapper(w)
-		if c1 != nil {
-			c1(wrap, r)
+		if c2 == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "error: component 2 is nil")
+			return
 		}
-		if wrap.statusCode == http.StatusOK && c2 != nil {
+		w2 := newWrapper(w)
+		if c1 != nil {
+			c1(w2, r)
+		}
+		if (ok == nil && w2.statusCode == http.StatusOK) || (ok != nil && ok(w2.statusCode)) {
 			c2(w, r)
 		}
 	}
@@ -36,6 +43,40 @@ func NewControllerIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc
 		wrap := newWrapper(w)
 		c2(wrap, r)
 		access.Log(access.EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: wrap.statusCode, ContentLength: wrap.written}, routeName, "", 0, "")
+	}
+}
+
+func NewControllerIntermediary2(ctrl *controller.Control2, c2 ServeHTTPFunc) ServeHTTPFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if c2 == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "error: component 2 is nil")
+			return
+		}
+		routeName := ""
+		flags := ""
+		var start time.Time
+		var duration time.Duration
+		if ct, ok := r.Context().Deadline(); ok {
+			duration = time.Until(ct) * -1
+		}
+		w2 := newWrapper(w)
+		if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
+			routeName = ctrl.RouteName
+			duration = ctrl.Timeout.Duration
+			ctx, cancel := context.WithTimeout(r.Context(), ctrl.Timeout.Duration)
+			defer cancel()
+			r2 := r.Clone(ctx)
+			start = time.Now().UTC()
+			c2(w2, r2)
+		} else {
+			start = time.Now().UTC()
+			c2(w2, r)
+		}
+		if w2.statusCode == http.StatusGatewayTimeout {
+			flags = "UT"
+		}
+		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
 	}
 }
 
@@ -88,6 +129,7 @@ func NewControllerIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc
 		}
 	}
 */
+
 type wrapper struct {
 	writer     http.ResponseWriter
 	statusCode int
@@ -113,4 +155,9 @@ func (w *wrapper) Write(p []byte) (int, error) {
 func (w *wrapper) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 	w.writer.WriteHeader(statusCode)
+}
+
+// Milliseconds - convert time.Duration to milliseconds
+func Milliseconds(duration time.Duration) int {
+	return int(duration / time.Duration(1e6))
 }

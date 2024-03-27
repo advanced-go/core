@@ -1,10 +1,14 @@
 package host
 
 import (
+	"context"
 	"fmt"
+	"github.com/advanced-go/core/access"
+	"github.com/advanced-go/core/controller"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"time"
 )
 
 func authServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -23,21 +27,21 @@ func serviceServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func ExampleIntermediary_Nil() {
-	ic := NewIntermediary(nil, nil)
+	ic := NewConditionalIntermediary(nil, nil, nil)
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	ic(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-nil-components -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
-	ic = NewIntermediary(nil, serviceServeHTTP)
+	ic = NewConditionalIntermediary(nil, serviceServeHTTP, nil)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	ic(rec, r)
 	buf, _ = io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: ServeHTTP()-service-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
-	ic = NewIntermediary(authServeHTTP, serviceServeHTTP)
+	ic = NewConditionalIntermediary(authServeHTTP, serviceServeHTTP, nil)
 	rec = httptest.NewRecorder()
 	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
@@ -46,14 +50,14 @@ func ExampleIntermediary_Nil() {
 	fmt.Printf("test: ServeHTTP()-auth-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: ServeHTTP()-nil-components -> [status-code:200] [content:]
+	//test: ServeHTTP()-nil-components -> [status-code:500] [content:error: component 2 is nil]
 	//test: ServeHTTP()-service-only -> [status-code:200] [content:Service OK]
 	//test: ServeHTTP()-auth-only -> [status-code:200] [content:Service OK]
 
 }
 
 func ExampleIntermediary_ServeHTTP() {
-	ic := NewIntermediary(authServeHTTP, serviceServeHTTP)
+	ic := NewConditionalIntermediary(authServeHTTP, serviceServeHTTP, nil)
 
 	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
@@ -77,20 +81,37 @@ func ExampleIntermediary_ServeHTTP() {
 }
 
 func googleSearch(w http.ResponseWriter, r *http.Request) {
-	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	resp, _ := http.DefaultClient.Do(req)
-	buf, err0 := io.ReadAll(resp.Body)
+	cnt := 0
+	var err2 error
+	var err1 error
+	var buf []byte
+
+	resp, err0 := http.DefaultClient.Do(r)
 	if err0 != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if r.Context().Err() == context.DeadlineExceeded {
+			w.WriteHeader(http.StatusGatewayTimeout)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	} else {
-		w.WriteHeader(http.StatusOK)
+		buf, err1 = io.ReadAll(resp.Body)
+		if err1 != nil {
+			if err1 == context.DeadlineExceeded {
+				w.WriteHeader(http.StatusGatewayTimeout)
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		} else {
+			cnt, err2 = w.Write(buf)
+			w.WriteHeader(http.StatusOK)
+		}
 	}
-	cnt, err := w.Write(buf)
-	fmt.Printf("test: googleSearch() -> [cnt:%v] [err:%v] [error0:%v]\n", cnt, err, err0)
+	fmt.Printf("test: googleSearch() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt > 0, err0, err1, err2)
 }
 
-func ExampleNewControllerIntermediary() {
-	im := NewControllerIntermediary("google-search", googleSearch)
+func ExampleNewControllerIntermediary_Nil() {
+	access.EnableInternalLogging()
+	im := NewControllerIntermediary2(nil, googleSearch)
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -98,14 +119,16 @@ func ExampleNewControllerIntermediary() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [cnt:110540] [err:<nil>] [error0:<nil>]
+	//test: googleSearch() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:200]
 
 }
 
-/*
 func ExampleNewControllerIntermediary_5s() {
-	im := NewControllerIntermediary("5s", "google-search", googleSearch)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "google-search"
+	ctrl.Timeout.Duration = time.Second * 5
+	im := NewControllerIntermediary2(ctrl, googleSearch)
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -113,25 +136,26 @@ func ExampleNewControllerIntermediary_5s() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [cnt:110540] [err:<nil>] [status:OK]
+	//test: googleSearch() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:200]
 
 }
 
 func ExampleNewControllerIntermediary_100ms() {
-	im := NewControllerIntermediary("100ms", "google-search", googleSearch)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "google-search"
+	ctrl.Timeout.Duration = time.Millisecond * 1
+	im := NewControllerIntermediary2(ctrl, googleSearch)
 
-	rec := exchange.NewResponseWriter() //httptest.NewRecorder()
+	rec := httptest.NewRecorder() //exchange.NewResponseWriter() //httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	req.Header.Add(XRequestId, "1234-56-7890")
-	req.Header.Add(XRelatesTo, "urn:business:activity")
+	req.Header.Add("X-Request-Id", "1234-56-7890")
+	req.Header.Add("X-Relates-To", "urn:business:activity")
 	im(rec, req)
-	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Response().StatusCode)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
+	//test: googleSearch() -> [content:false] [do-err:<nil>] [read-err:context deadline exceeded] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:504]
 
 }
-
-
-*/

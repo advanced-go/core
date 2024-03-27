@@ -1,11 +1,11 @@
 package exchange
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -31,6 +31,19 @@ func init() {
 	} else {
 		client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
 	}
+}
+
+func DeadlineExceededError(t any) bool {
+	if t == nil {
+		return false
+	}
+	if r, ok := t.(*http.Request); ok {
+		return r.Context() != nil && r.Context().Err() == context.DeadlineExceeded
+	}
+	if e, ok := t.(error); ok {
+		return e == context.DeadlineExceeded
+	}
+	return false
 }
 
 // Do - process a request, checking for overrides of file://, and a registered endpoint.
@@ -68,9 +81,9 @@ func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		if resp == nil {
 			resp = serverErrorResponse()
 		}
-		// check for a *URL error of deadline exceeded
-		if strings.Contains(err.Error(), contextDeadlineExceeded) {
-			resp.StatusCode = runtime.StatusDeadlineExceeded
+		// check for an error of deadline exceeded
+		if req.Context() != nil && req.Context().Err() == context.DeadlineExceeded {
+			resp.StatusCode = http.StatusGatewayTimeout
 		}
 		return resp, runtime.NewStatusError(resp.StatusCode, err)
 	}

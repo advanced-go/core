@@ -1,10 +1,12 @@
 package exchange
 
 import (
+	"context"
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
+	"time"
 )
 
 const (
@@ -13,6 +15,8 @@ const (
 	relatesTo   = "test-relates-to"
 	statusCode  = http.StatusAccepted
 )
+
+// dial tcp [2607:f8b0:4023:1009::68]:443: i/o timeout]
 
 func ExampleDo_InvalidArgument() {
 	_, s := Do(nil)
@@ -95,6 +99,65 @@ func ExampleDo_Proxy() {
 	//test: Do() -> [write-relatesTo:test-relates-to] [response-relatesTo:test-relates-to]
 	//test: Do() -> [write-statusCode:202] [response-statusCode:202]
 	//test: Do() -> [write-content:this is response write content] [response-content:this is response write content]
+
+}
+
+func httpCall(do func(*http.Request) (*http.Response, error), r *http.Request) (*http.Response, error) {
+	resp, err := do(r)
+	if err != nil {
+		if DeadlineExceededError(r) {
+			return &http.Response{StatusCode: http.StatusGatewayTimeout}, err
+		}
+		return &http.Response{StatusCode: http.StatusInternalServerError}, err
+	}
+	//time.Sleep(time.Second * 2)
+	buf, err1 := io.ReadAll(resp.Body)
+	if err1 != nil {
+		if DeadlineExceededError(err1) {
+			return &http.Response{StatusCode: http.StatusGatewayTimeout}, err1
+		}
+		return &http.Response{StatusCode: http.StatusInternalServerError}, err1
+	}
+	if buf != nil {
+	}
+	return resp, nil
+}
+
+func ExampleDefaultClient_OK() {
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+
+	resp, err := httpCall(http.DefaultClient.Do, req)
+	fmt.Printf("test: DefaultClient()-no-timeout -> [status-code:%v] [err:%v]\n", resp.StatusCode, err)
+
+	ctx, cancel := context.WithTimeout(req.Context(), time.Second*4)
+	defer cancel()
+	r2 := req.Clone(ctx)
+	resp, err = httpCall(http.DefaultClient.Do, r2)
+	fmt.Printf("test: DefaultClient()-5s-timeout -> [status-code:%v] [err:%v]\n", resp.StatusCode, err)
+
+	//Output:
+	//test: DefaultClient()-no-timeout -> [status-code:200] [err:<nil>]
+	//test: DefaultClient()-5s-timeout -> [status-code:200] [err:<nil>]
+
+}
+
+func ExampleDefaultClient_Timeout() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*1)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, "https://www.google.com/search?q=golang", nil)
+
+	resp, err := httpCall(http.DefaultClient.Do, req)
+	fmt.Printf("test: DefaultClient()-Get()-timeout -> [status-code:%v] [err:%v]\n", resp.StatusCode, err)
+
+	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Millisecond*600)
+	defer cancel2()
+	req, _ = http.NewRequestWithContext(ctx2, http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	resp, err = httpCall(http.DefaultClient.Do, req)
+	fmt.Printf("test: DefaultClient()-ReadAll()-timeout -> [status-code:%v] [err:%v]\n", resp.StatusCode, err)
+
+	//Output:
+	//test: DefaultClient()-Get()-timeout -> [status-code:504] [err:Get "https://www.google.com/search?q=golang": context deadline exceeded]
+	//test: DefaultClient()-ReadAll()-timeout -> [status-code:504] [err:context deadline exceeded]
 
 }
 

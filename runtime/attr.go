@@ -7,15 +7,15 @@ import (
 )
 
 type Attr struct {
-	Key string
-	Val any
+	Key   string
+	Value any
 }
 
 func (a Attr) String() string {
-	if s, ok := a.Val.(string); ok {
+	if s, ok := a.Value.(string); ok {
 		return s
 	}
-	return fmt.Sprintf("%v", a.Val)
+	return fmt.Sprintf("%v", a.Value)
 }
 
 type Attributable interface {
