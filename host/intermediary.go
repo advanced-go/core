@@ -32,7 +32,7 @@ func NewConditionalIntermediary(c1 ServeHTTPFunc, c2 ServeHTTPFunc, ok func(int)
 	}
 }
 
-func NewControllerIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc {
+func NewControllerIntermediary2(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -46,7 +46,7 @@ func NewControllerIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc
 	}
 }
 
-func NewControllerIntermediary2(ctrl *controller.Control2, c2 ServeHTTPFunc) ServeHTTPFunc {
+func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)

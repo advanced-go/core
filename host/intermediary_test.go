@@ -80,7 +80,7 @@ func ExampleIntermediary_ServeHTTP() {
 
 }
 
-func googleSearch(w http.ResponseWriter, r *http.Request) {
+func httpCall(w http.ResponseWriter, r *http.Request) {
 	cnt := 0
 	var err2 error
 	var err1 error
@@ -106,12 +106,12 @@ func googleSearch(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}
 	}
-	fmt.Printf("test: googleSearch() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt > 0, err0, err1, err2)
+	fmt.Printf("test: httpCall() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt > 0, err0, err1, err2)
 }
 
 func ExampleNewControllerIntermediary_Nil() {
 	access.EnableInternalLogging()
-	im := NewControllerIntermediary2(nil, googleSearch)
+	im := NewControllerIntermediary(nil, httpCall)
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -119,7 +119,7 @@ func ExampleNewControllerIntermediary_Nil() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
+	//test: httpCall() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:200]
 
 }
@@ -128,7 +128,7 @@ func ExampleNewControllerIntermediary_5s() {
 	ctrl := new(controller.Control2)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Second * 5
-	im := NewControllerIntermediary2(ctrl, googleSearch)
+	im := NewControllerIntermediary(ctrl, httpCall)
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -136,18 +136,18 @@ func ExampleNewControllerIntermediary_5s() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
+	//test: httpCall() -> [content:true] [do-err:<nil>] [read-err:<nil>] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:200]
 
 }
 
-func ExampleNewControllerIntermediary_100ms() {
+func ExampleNewControllerIntermediary_1ms() {
 	ctrl := new(controller.Control2)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Millisecond * 1
-	im := NewControllerIntermediary2(ctrl, googleSearch)
+	im := NewControllerIntermediary(ctrl, httpCall)
 
-	rec := httptest.NewRecorder() //exchange.NewResponseWriter() //httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
 	req.Header.Add("X-Request-Id", "1234-56-7890")
 	req.Header.Add("X-Relates-To", "urn:business:activity")
@@ -155,7 +155,26 @@ func ExampleNewControllerIntermediary_100ms() {
 	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
 
 	//Output:
-	//test: googleSearch() -> [content:false] [do-err:<nil>] [read-err:context deadline exceeded] [write-err:<nil>]
+	//test: httpCall() -> [content:false] [do-err:Get "https://www.google.com/search?q=golang": context deadline exceeded] [read-err:<nil>] [write-err:<nil>]
+	//test: NewControllerIntermediary() -> [status-code:504]
+
+}
+
+func ExampleNewControllerIntermediary_100ms() {
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "google-search"
+	ctrl.Timeout.Duration = time.Millisecond * 900
+	im := NewControllerIntermediary(ctrl, httpCall)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	req.Header.Add("X-Request-Id", "1234-56-7890")
+	req.Header.Add("X-Relates-To", "urn:business:activity")
+	im(rec, req)
+	fmt.Printf("test: NewControllerIntermediary() -> [status-code:%v]\n", rec.Result().StatusCode)
+
+	//Output:
+	//test: httpCall() -> [content:false] [do-err:<nil>] [read-err:context deadline exceeded] [write-err:<nil>]
 	//test: NewControllerIntermediary() -> [status-code:504]
 
 }
