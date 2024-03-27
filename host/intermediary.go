@@ -11,6 +11,7 @@ import (
 
 const (
 	Authorization = "Authorization"
+	Timeout       = "TO"
 )
 
 type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
@@ -74,7 +75,7 @@ func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc) Serv
 			c2(w2, r)
 		}
 		if w2.statusCode == http.StatusGatewayTimeout {
-			flags = "UT"
+			flags = Timeout
 		}
 		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
 	}
