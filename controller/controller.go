@@ -20,3 +20,10 @@ type Control2 struct {
 	Timeout Timeout
 	Router  Router
 }
+
+func NewController(d time.Duration, routeName string) *Control2 {
+	c := new(Control2)
+	c.Timeout.Duration = d
+	c.RouteName = routeName
+	return c
+}

@@ -8,6 +8,10 @@ import (
 	"net/http"
 )
 
+const (
+	RouteName = "host"
+)
+
 var (
 	httpHandlerProxy = NewProxy()
 	hostCtrl         *controller.Control2
@@ -18,6 +22,9 @@ var (
 func SetHostController(ctrl *controller.Control2) {
 	if ctrl != nil {
 		hostCtrl = ctrl
+		if ctrl.RouteName == "" {
+			hostCtrl.RouteName = RouteName
+		}
 	}
 }
 
