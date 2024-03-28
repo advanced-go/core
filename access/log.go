@@ -70,7 +70,7 @@ func SetLogger(fn Logger) {
 }
 
 var (
-	internalLogging = false
+	internalLogging = true
 
 	origin    = Origin{}
 	formatter = DefaultFormatter
