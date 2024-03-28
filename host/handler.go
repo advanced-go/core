@@ -44,7 +44,7 @@ func RegisterHandler(path string, handler ServeHTTPFunc) error {
 		h = NewConditionalIntermediary(authHandler, handler, okFunc)
 	}
 	if hostCtrl != nil {
-		h = NewControllerIntermediary(hostCtrl, h, access.IngressTraffic)
+		h = newControllerIntermediary(hostCtrl, h, access.IngressTraffic)
 	}
 	err := httpHandlerProxy.Register(path, h)
 	return err
