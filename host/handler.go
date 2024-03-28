@@ -3,6 +3,7 @@ package host
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/controller"
 	"net/http"
 )
@@ -43,7 +44,7 @@ func RegisterHandler(path string, handler ServeHTTPFunc) error {
 		h = NewConditionalIntermediary(authHandler, handler, okFunc)
 	}
 	if hostCtrl != nil {
-		h = NewControllerIntermediary(hostCtrl, h)
+		h = NewControllerIntermediary(hostCtrl, h, access.IngressTraffic)
 	}
 	err := httpHandlerProxy.Register(path, h)
 	return err

@@ -111,7 +111,7 @@ func httpCall(w http.ResponseWriter, r *http.Request) {
 
 func ExampleNewControllerIntermediary_Nil() {
 	access.EnableInternalLogging()
-	im := NewControllerIntermediary(nil, httpCall)
+	im := NewControllerIntermediary(nil, httpCall, "")
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -128,7 +128,7 @@ func ExampleNewControllerIntermediary_5s() {
 	ctrl := new(controller.Control2)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Second * 5
-	im := NewControllerIntermediary(ctrl, httpCall)
+	im := NewControllerIntermediary(ctrl, httpCall, "")
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -145,7 +145,7 @@ func ExampleNewControllerIntermediary_1ms() {
 	ctrl := new(controller.Control2)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Millisecond * 1
-	im := NewControllerIntermediary(ctrl, httpCall)
+	im := NewControllerIntermediary(ctrl, httpCall, "")
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
@@ -164,7 +164,7 @@ func ExampleNewControllerIntermediary_100ms() {
 	ctrl := new(controller.Control2)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Millisecond * 900
-	im := NewControllerIntermediary(ctrl, httpCall)
+	im := NewControllerIntermediary(ctrl, httpCall, "")
 
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)

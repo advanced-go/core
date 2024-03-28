@@ -47,7 +47,7 @@ func NewControllerIntermediary2(routeName string, c2 ServeHTTPFunc) ServeHTTPFun
 	}
 }
 
-func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc) ServeHTTPFunc {
+func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc, traffic string) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -77,7 +77,10 @@ func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc) Serv
 		if w2.statusCode == http.StatusGatewayTimeout {
 			flags = Timeout
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
+		if traffic == "" {
+			traffic = access.InternalTraffic
+		}
+		access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
 	}
 }
 
