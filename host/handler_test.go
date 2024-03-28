@@ -2,16 +2,40 @@ package host
 
 import (
 	"fmt"
+	"github.com/advanced-go/core/controller"
+	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/messaging"
+	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"time"
 )
 
 func appHttpHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusTeapot)
+	status := runtime.NewStatus(http.StatusTeapot)
+	w.WriteHeader(status.Code)
+	//w.Write([]byte(status.String()))
 }
 
-func Example_HttpHandler() {
+func testAuthHandlerOK(w http.ResponseWriter, r *http.Request) {
+	//w.WriteHeader(http.StatusOK)
+	//fmt.Fprint(w, "OK")
+}
+
+func testAuthHandlerFail(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusUnauthorized)
+	fmt.Fprint(w, "Missing authorization header")
+}
+
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	req, _ := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	_, status := exchange.Do(req)
+	w.WriteHeader(status.Code)
+	w.Write([]byte(status.String()))
+}
+
+func Example_TestHandler() {
 	pattern := "github/advanced-go/example-domain/activity"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/activity:entry", nil)
 	RegisterHandler(pattern, appHttpHandler)
@@ -23,6 +47,142 @@ func Example_HttpHandler() {
 
 	//Output:
 	//test: HttpHandler() -> 418
+
+}
+
+func Example_Host_TestHandler_OK() {
+	pattern := "github/advanced-go/example-domain/slo"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/slo:entry", nil)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "host"
+	ctrl.Timeout.Duration = time.Second * 2
+	SetHostController(ctrl)
+
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:200] [content:OK]
+
+}
+
+func Example_Host_TestHandler_Timeout() {
+	pattern := "github/advanced-go/example-domain/timeseries"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/timeseries:entry", nil)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "host"
+	ctrl.Timeout.Duration = time.Millisecond * 1
+	SetHostController(ctrl)
+
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:504] [content:Timeout [Get "https://www.google.com/search?q=golang": context deadline exceeded]]
+
+}
+
+func Example_Auth_TestHandler_OK() {
+	pattern := "github/advanced-go/example-domain/auth-ok"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/auth-ok:entry", nil)
+	SetAuthHandler(testAuthHandlerOK, nil)
+	hostCtrl = nil
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:200] [content:OK]
+
+}
+
+func Example_Auth_TestHandler_Fail() {
+	pattern := "github/advanced-go/example-domain/auth-fail"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/auth-fail:entry", nil)
+	SetAuthHandler(testAuthHandlerFail, nil)
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:401] [content:Missing authorization header]
+
+}
+
+func Example_Host_Auth_TestHandler_OK() {
+	pattern := "github/advanced-go/example-domain/host-auth-ok"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-ok:entry", nil)
+	SetAuthHandler(testAuthHandlerOK, nil)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "host"
+	ctrl.Timeout.Duration = time.Second * 2
+	SetHostController(ctrl)
+
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:200] [content:OK]
+
+}
+
+func Example_Host_Auth_TestHandler_Timeout() {
+	pattern := "github/advanced-go/example-domain/host-auth-timeout"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-timeout:entry", nil)
+	SetAuthHandler(testAuthHandlerOK, nil)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "host"
+	ctrl.Timeout.Duration = time.Millisecond * 2
+	SetHostController(ctrl)
+
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:504] [content:Timeout [Get "https://www.google.com/search?q=golang": context deadline exceeded]]
+
+}
+
+func Example_Host_Auth_TestHandler_Unauthorized() {
+	pattern := "github/advanced-go/example-domain/host-auth-unauthorized"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-unauthorized:entry", nil)
+	SetAuthHandler(testAuthHandlerFail, nil)
+	ctrl := new(controller.Control2)
+	ctrl.RouteName = "host"
+	ctrl.Timeout.Duration = time.Second * 2
+	SetHostController(ctrl)
+
+	RegisterHandler(pattern, testHandler)
+
+	rec := httptest.NewRecorder()
+	HttpHandler(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:401] [content:Missing authorization header]
 
 }
 
