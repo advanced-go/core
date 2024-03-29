@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/controller"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
@@ -12,6 +13,7 @@ import (
 const (
 	Authorization = "Authorization"
 	Timeout       = "TO"
+	XRequestId    = "X-Request-Id"
 )
 
 type ServeHTTPFunc func(w http.ResponseWriter, r *http.Request)
@@ -57,6 +59,12 @@ func newControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc, traf
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "error: component 2 is nil")
 			return
+		}
+		if traffic == access.IngressTraffic {
+			if r.Header.Get(XRequestId) == "" {
+				uid, _ := uuid.NewUUID()
+				r.Header.Add(XRequestId, uid.String())
+			}
 		}
 		routeName := ""
 		flags := ""
