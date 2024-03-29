@@ -55,7 +55,7 @@ func Example_Host_TestHandler_OK() {
 	pattern := "github/advanced-go/example-domain/slo"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/slo:entry", nil)
 
-	SetHostController(controller.NewController(time.Second*2, RouteName))
+	SetHostController(controller.NewHostController(time.Second * 2))
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -72,7 +72,7 @@ func Example_Host_TestHandler_Timeout() {
 	pattern := "github/advanced-go/example-domain/timeseries"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/timeseries:entry", nil)
 
-	SetHostController(controller.NewController(time.Millisecond, RouteName))
+	SetHostController(controller.NewHostController(time.Millisecond))
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -125,7 +125,7 @@ func Example_Host_Auth_TestHandler_OK() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-ok:entry", nil)
 
 	SetAuthHandler(testAuthHandlerOK, nil)
-	SetHostController(controller.NewController(time.Second*2, RouteName))
+	SetHostController(controller.NewHostController(time.Second * 2))
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -143,7 +143,7 @@ func Example_Host_Auth_TestHandler_Timeout() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-timeout:entry", nil)
 
 	SetAuthHandler(testAuthHandlerOK, nil)
-	SetHostController(controller.NewController(time.Millisecond*2, RouteName))
+	SetHostController(controller.NewHostController(time.Millisecond * 2))
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -161,7 +161,7 @@ func Example_Host_Auth_TestHandler_Unauthorized() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-unauthorized:entry", nil)
 
 	SetAuthHandler(testAuthHandlerFail, nil)
-	SetHostController(controller.NewController(time.Second*2, RouteName))
+	SetHostController(controller.NewHostController(time.Second * 2))
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()

@@ -8,22 +8,20 @@ import (
 	"net/http"
 )
 
-const (
-	RouteName = "host"
-)
+const ()
 
 var (
 	httpHandlerProxy = NewProxy()
-	hostCtrl         *controller.Control2
+	hostCtrl         *controller.Controller
 	authHandler      ServeHTTPFunc //func(w http.ResponseWriter,r *http.Request)
 	okFunc           = func(code int) bool { return code == http.StatusOK }
 )
 
-func SetHostController(ctrl *controller.Control2) {
+func SetHostController(ctrl *controller.Controller) {
 	if ctrl != nil {
 		hostCtrl = ctrl
 		if ctrl.RouteName == "" {
-			hostCtrl.RouteName = RouteName
+			hostCtrl.RouteName = controller.HostRouteName
 		}
 	}
 }

@@ -2,7 +2,11 @@ package controller
 
 import "time"
 
-type Controller struct {
+const (
+	HostRouteName = "host"
+)
+
+type Controller2 struct {
 	Name string `json:"name"`
 	//Route    string        `json:"route"`
 	//Method   string        `json:"method"`
@@ -11,7 +15,7 @@ type Controller struct {
 	Duration  time.Duration
 }
 
-type Control2 struct {
+type Controller struct {
 	// Identity for access logging route
 	RouteName string
 	// Selection - how to select this controller given information about the request
@@ -21,8 +25,15 @@ type Control2 struct {
 	Router  Router
 }
 
-func NewController(d time.Duration, routeName string) *Control2 {
-	c := new(Control2)
+func NewHostController(d time.Duration) *Controller {
+	c := new(Controller)
+	c.Timeout.Duration = d
+	c.RouteName = HostRouteName
+	return c
+}
+
+func NewController(d time.Duration, routeName string) *Controller {
+	c := new(Controller)
 	c.Timeout.Duration = d
 	c.RouteName = routeName
 	return c

@@ -49,11 +49,11 @@ func NewControllerIntermediary2(routeName string, c2 ServeHTTPFunc) ServeHTTPFun
 	}
 }
 
-func NewControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc) ServeHTTPFunc {
+func NewControllerIntermediary(ctrl *controller.Controller, c2 ServeHTTPFunc) ServeHTTPFunc {
 	return newControllerIntermediary(ctrl, c2, access.InternalTraffic)
 }
 
-func newControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc, traffic string) ServeHTTPFunc {
+func newControllerIntermediary(ctrl *controller.Controller, c2 ServeHTTPFunc, traffic string) ServeHTTPFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)

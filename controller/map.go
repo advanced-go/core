@@ -19,14 +19,14 @@ func NewEmptyMap() *Map {
 }
 
 func NewMap(buf []byte) (*Map, error) {
-	var ctrl []Controller
+	var ctrl []Controller2
 	err := json.Unmarshal(buf, &ctrl)
 	if err != nil {
 		return nil, err
 	}
 	m := NewEmptyMap()
 	for _, cfg := range ctrl {
-		c := new(Controller)
+		c := new(Controller2)
 		c.Name = cfg.Name
 
 		c.Duration, err = ParseDuration(cfg.DurationS)
@@ -39,7 +39,7 @@ func NewMap(buf []byte) (*Map, error) {
 }
 
 // Add - add a controller
-func (m *Map) Add(ctrl *Controller) error {
+func (m *Map) Add(ctrl *Controller2) error {
 	if ctrl == nil {
 		return errors.New("invalid argument: controller is nil")
 	}
@@ -55,12 +55,12 @@ func (m *Map) Add(ctrl *Controller) error {
 }
 
 // Get - get a controller
-func (m *Map) Get(key string) (*Controller, error) {
+func (m *Map) Get(key string) (*Controller2, error) {
 	v, ok := m.m.Load(key)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("invalid argument: key does not exist: [%v]", key))
 	}
-	if val, ok1 := v.(*Controller); ok1 {
+	if val, ok1 := v.(*Controller2); ok1 {
 		return val, nil
 	}
 	return nil, errors.New(fmt.Sprintf("invalid argument: content invalid: [%v]", key))

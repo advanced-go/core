@@ -125,7 +125,7 @@ func ExampleNewControllerIntermediary_Nil() {
 }
 
 func ExampleNewControllerIntermediary_5s() {
-	ctrl := new(controller.Control2)
+	ctrl := new(controller.Controller)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Second * 5
 	im := NewControllerIntermediary(ctrl, httpCall)
@@ -142,7 +142,7 @@ func ExampleNewControllerIntermediary_5s() {
 }
 
 func ExampleNewControllerIntermediary_1ms() {
-	ctrl := new(controller.Control2)
+	ctrl := new(controller.Controller)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Millisecond * 1
 	im := NewControllerIntermediary(ctrl, httpCall)
@@ -161,7 +161,7 @@ func ExampleNewControllerIntermediary_1ms() {
 }
 
 func ExampleNewControllerIntermediary_100ms() {
-	ctrl := new(controller.Control2)
+	ctrl := new(controller.Controller)
 	ctrl.RouteName = "google-search"
 	ctrl.Timeout.Duration = time.Millisecond * 900
 	im := NewControllerIntermediary(ctrl, httpCall)
