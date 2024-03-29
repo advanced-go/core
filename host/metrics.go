@@ -1,12 +1,5 @@
 package host
 
-import (
-	"github.com/advanced-go/core/access"
-	"github.com/felixge/httpsnoop"
-	"net/http"
-	"time"
-)
-
 const (
 	route = "host"
 )
@@ -15,6 +8,7 @@ const (
 //middleware2.ControllerHttpHostMetricsHandler(mux, ""), status
 
 // HttpHostMetricsHandler - handler for Http request metrics and access logging
+/*
 func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	wrappedH := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()
@@ -24,3 +18,6 @@ func HttpHostMetricsHandler(appHandler http.Handler, msg string) http.Handler {
 	})
 	return wrappedH
 }
+
+
+*/
