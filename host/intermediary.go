@@ -96,6 +96,20 @@ func newControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc, traf
 	}
 }
 
+func NewAccessLogIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if c2 == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "error: component 2 is nil")
+			return
+		}
+		w2 := newWrapper(w)
+		start := time.Now().UTC()
+		c2(w2, r)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", 0, "")
+	}
+}
+
 /*
 	func NewControllerIntermediary(duration, routeName string, c2 ServeHTTPFunc) ServeHTTPFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
