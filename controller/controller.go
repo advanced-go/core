@@ -21,20 +21,28 @@ type Controller struct {
 	// Selection - how to select this controller given information about the request
 	//Path string // package path for selection
 
-	Timeout Timeout
-	Router  Router
+	Timeout *Timeout
+	Router  *Router
 }
 
 func NewHostController(d time.Duration) *Controller {
 	c := new(Controller)
-	c.Timeout.Duration = d
 	c.RouteName = HostRouteName
+
+	c.Timeout = new(Timeout)
+	c.Timeout.Duration = d
 	return c
 }
 
-func NewController(d time.Duration, routeName string) *Controller {
+func NewController(routeName string, d time.Duration, primeHost, secondHost, livenessPath string) *Controller {
 	c := new(Controller)
-	c.Timeout.Duration = d
 	c.RouteName = routeName
+	c.Timeout = new(Timeout)
+	c.Timeout.Duration = d
+
+	c.Router = new(Router)
+	c.Router.PrimaryHost = primeHost
+	c.Router.SecondaryHost = secondHost
+	c.Router.HealthLivenessPath = livenessPath
 	return c
 }
