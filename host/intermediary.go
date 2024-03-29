@@ -12,7 +12,7 @@ import (
 
 const (
 	Authorization = "Authorization"
-	Timeout       = "TO"
+	TimeoutFlag   = "TO"
 	XRequestId    = "X-Request-Id"
 )
 
@@ -87,7 +87,7 @@ func newControllerIntermediary(ctrl *controller.Control2, c2 ServeHTTPFunc, traf
 			c2(w2, r)
 		}
 		if w2.statusCode == http.StatusGatewayTimeout {
-			flags = Timeout
+			flags = TimeoutFlag
 		}
 		if traffic == "" {
 			traffic = access.InternalTraffic
@@ -104,9 +104,17 @@ func NewAccessLogIntermediary(routeName string, c2 ServeHTTPFunc) ServeHTTPFunc 
 			return
 		}
 		w2 := newWrapper(w)
+		flags := ""
+		var duration time.Duration
+		if ct, ok := r.Context().Deadline(); ok {
+			duration = time.Until(ct) * -1
+		}
 		start := time.Now().UTC()
 		c2(w2, r)
-		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", 0, "")
+		if w2.statusCode == http.StatusGatewayTimeout {
+			flags = TimeoutFlag
+		}
+		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
 	}
 }
 
