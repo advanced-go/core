@@ -41,8 +41,6 @@ func NewController(routeName string, d time.Duration, primeHost, secondHost, liv
 	c.Timeout.Duration = d
 
 	c.Router = new(Router)
-	c.Router.PrimaryHost = primeHost
-	c.Router.SecondaryHost = secondHost
-	c.Router.HealthLivenessPath = livenessPath
+
 	return c
 }

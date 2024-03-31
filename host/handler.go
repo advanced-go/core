@@ -13,7 +13,7 @@ const ()
 var (
 	httpHandlerProxy = NewProxy()
 	hostCtrl         *controller.Controller
-	authHandler      ServeHTTPFunc //func(w http.ResponseWriter,r *http.Request)
+	authHandler      HttpHandlerFunc //func(w http.ResponseWriter,r *http.Request)
 	okFunc           = func(code int) bool { return code == http.StatusOK }
 )
 
@@ -37,7 +37,7 @@ func SetAuthHandler(h func(w http.ResponseWriter, r *http.Request), ok func(int)
 
 // RegisterHandler - add a path and Http handler to the proxy
 // TO DO : panic on duplicate handler and pattern combination
-func RegisterHandler(path string, handler ServeHTTPFunc) error {
+func RegisterHandler(path string, handler HttpHandlerFunc) error {
 	if len(path) == 0 {
 		return errors.New("error: path is empty")
 	}
@@ -49,7 +49,7 @@ func RegisterHandler(path string, handler ServeHTTPFunc) error {
 		h = NewConditionalIntermediary(authHandler, handler, okFunc)
 	}
 	if hostCtrl != nil {
-		h = newControllerIntermediary(hostCtrl, h, access.IngressTraffic)
+		h = newIngressControllerIntermediary(hostCtrl, h, access.IngressTraffic)
 	}
 	err := httpHandlerProxy.Register(path, h)
 	return err

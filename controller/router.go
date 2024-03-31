@@ -12,40 +12,43 @@ const (
 	secondary     = 1
 )
 
+type Resource struct {
+	Name         string
+	Authority    string `json:"authority"`
+	LivenessPath string `json:"liveness"`
+	handler      func(w *http.ResponseWriter, r *http.Request)
+}
+
+func (r *Resource) IsPrimary() bool {
+	return r != nil && r.Name == PrimaryName
+}
+
+func (r *Resource) Uri(req *http.Request) string {
+	return r.Authority + "/" + req.URL.Path
+}
+
 type Router struct {
-	activeHost         atomic.Int64
-	HealthLivenessPath string `json:"liveness"`
-	PrimaryHost        string `json:"primary"`
-	SecondaryHost      string `json:"secondary"`
+	primary   *Resource
+	secondary *Resource
+	active    atomic.Int64
 }
 
-func (r *Router) Uri(path string) string {
-	if r.activeHost.Load() == primary {
-		return r.PrimaryHost + path
-	} else {
-		return r.SecondaryHost + path
+func NewRouter(primary, secondary *Resource) *Router {
+	r := new(Router)
+	r.primary = primary
+	r.primary.Name = PrimaryName
+	r.secondary = secondary
+	r.secondary.Name = SecondaryName
+	return r
+}
+
+func (r *Router) RouteTo() *Resource {
+	if r.active.Load() == primary {
+		return r.primary
 	}
+	return r.secondary
 }
 
-func (r *Router) swapHost() (swapped bool) {
-	old := r.activeHost.Load()
-	if old == primary {
-		swapped = r.activeHost.CompareAndSwap(old, secondary)
-	} else {
-		swapped = r.activeHost.CompareAndSwap(old, primary)
-	}
-	return
-}
+func (r *Router) UpdateStats(resp *http.Response, rsc *Resource) {
 
-func (r *Router) PingHost() string {
-	if r.activeHost.Load() == primary {
-		return r.SecondaryHost
-	} else {
-		return r.PrimaryHost
-	}
-}
-
-func (r *Router) Liveness() (statusCode int) {
-	//r,_ := http.NewRequest(http.MethodGet,r.PingHost() + r.HealthLivenessPath,nil)
-	return http.StatusOK
 }
