@@ -2,7 +2,6 @@ package host
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/messaging"
 	"github.com/advanced-go/core/runtime"
 	"io"
@@ -29,9 +28,14 @@ func testAuthHandlerFail(w http.ResponseWriter, r *http.Request) {
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
 	req, _ := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	_, status := exchange.Do(req)
-	w.WriteHeader(status.Code)
-	w.Write([]byte(status.String()))
+	resp, _ := http.DefaultClient.Do(req)
+	if resp == nil {
+		w.WriteHeader(http.StatusGatewayTimeout)
+		w.Write([]byte("Timeout [Get \"https://www.google.com/search?q=golang\": context deadline exceeded]"))
+	} else {
+		w.WriteHeader(resp.StatusCode)
+		w.Write([]byte(resp.Status))
+	}
 }
 
 func Example_TestHandler() {
@@ -63,7 +67,7 @@ func Example_Host_TestHandler_OK() {
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: HttpHandler() -> [status-code:200] [content:OK]
+	//test: HttpHandler() -> [status-code:200] [content:200 OK]
 
 }
 
@@ -98,7 +102,7 @@ func Example_Auth_TestHandler_OK() {
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: HttpHandler() -> [status-code:200] [content:OK]
+	//test: HttpHandler() -> [status-code:200] [content:200 OK]
 
 }
 
@@ -133,7 +137,7 @@ func Example_Host_Auth_TestHandler_OK() {
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
 	//Output:
-	//test: HttpHandler() -> [status-code:200] [content:OK]
+	//test: HttpHandler() -> [status-code:200] [content:200 OK]
 
 }
 
