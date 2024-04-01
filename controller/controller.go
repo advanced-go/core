@@ -26,15 +26,18 @@ type Controller struct {
 }
 
 func NewHostController(d time.Duration) *Controller {
-	c := new(Controller)
-	c.RouteName = HostRouteName
+	return NewTimeoutController(HostRouteName, d)
+}
 
+func NewTimeoutController(routeName string, d time.Duration) *Controller {
+	c := new(Controller)
+	c.RouteName = routeName
 	c.Timeout = new(Timeout)
 	c.Timeout.Duration = d
 	return c
 }
 
-func NewController(routeName string, d time.Duration, primeHost, secondHost, livenessPath string) *Controller {
+func NewController(routeName string, d time.Duration) *Controller {
 	c := new(Controller)
 	c.RouteName = routeName
 	c.Timeout = new(Timeout)

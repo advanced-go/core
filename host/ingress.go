@@ -27,34 +27,41 @@ func newIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandle
 				r.Header.Add(XRequestId, uid.String())
 			}
 		}
-		routeName := ""
-		flags := ""
-		var start time.Time
-		var duration time.Duration
-		if ct, ok := r.Context().Deadline(); ok {
-			duration = time.Until(ct) * -1
-		}
-		w2 := newWrapper(w)
-		if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
-			routeName = ctrl.RouteName
-			duration = ctrl.Timeout.Duration
-			ctx, cancel := context.WithTimeout(r.Context(), ctrl.Timeout.Duration)
-			defer cancel()
-			r2 := r.Clone(ctx)
-			start = time.Now().UTC()
-			c2(w2, r2)
-		} else {
-			start = time.Now().UTC()
-			c2(w2, r)
-		}
-		if w2.statusCode == http.StatusGatewayTimeout {
-			flags = TimeoutFlag
-		}
-		if traffic == "" {
-			traffic = access.InternalTraffic
-		}
-		access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
+		apply(w, r, ctrl, c2, traffic, "")
 	}
+}
+
+func apply(w http.ResponseWriter, r *http.Request, ctrl *controller.Controller, handler HttpHandlerFunc, traffic, routeTo string) {
+	if handler == nil {
+		return
+	}
+	routeName := ""
+	flags := ""
+	var start time.Time
+	var duration time.Duration
+	if ct, ok := r.Context().Deadline(); ok {
+		duration = time.Until(ct) * -1
+	}
+	w2 := newWrapper(w)
+	if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
+		routeName = ctrl.RouteName
+		duration = ctrl.Timeout.Duration
+		ctx, cancel := context.WithTimeout(r.Context(), ctrl.Timeout.Duration)
+		defer cancel()
+		r2 := r.Clone(ctx)
+		start = time.Now().UTC()
+		handler(w2, r2)
+	} else {
+		start = time.Now().UTC()
+		handler(w2, r)
+	}
+	if w2.statusCode == http.StatusGatewayTimeout {
+		flags = TimeoutFlag
+	}
+	if traffic == "" {
+		traffic = access.InternalTraffic
+	}
+	access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, routeTo, Milliseconds(duration), flags)
 }
 
 /*
@@ -105,4 +112,34 @@ func newIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandle
 			access.Log(access.EgressTraffic, start, time.Since(start), r, &http.Response{StatusCode: statusCode, ContentLength: wrap.written}, routeName, "", controller.Milliseconds(threshold), thresholdFlags)
 		}
 	}
+*/
+
+/*
+	routeName := ""
+	flags := ""
+	var start time.Time
+	var duration time.Duration
+	if ct, ok := r.Context().Deadline(); ok {
+		duration = time.Until(ct) * -1
+	}
+	w2 := newWrapper(w)
+	if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
+		routeName = ctrl.RouteName
+		duration = ctrl.Timeout.Duration
+		ctx, cancel := context.WithTimeout(r.Context(), ctrl.Timeout.Duration)
+		defer cancel()
+		r2 := r.Clone(ctx)
+		start = time.Now().UTC()
+		c2(w2, r2)
+	} else {
+		start = time.Now().UTC()
+		c2(w2, r)
+	}
+	if w2.statusCode == http.StatusGatewayTimeout {
+		flags = TimeoutFlag
+	}
+	if traffic == "" {
+		traffic = access.InternalTraffic
+	}
+	access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(duration), flags)
 */
