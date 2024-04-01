@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"net/http"
 	"sync/atomic"
 )
 
@@ -11,21 +10,6 @@ const (
 	primary       = 0
 	secondary     = 1
 )
-
-type Resource struct {
-	Name         string
-	Authority    string `json:"authority"`
-	LivenessPath string `json:"liveness"`
-	handler      func(w *http.ResponseWriter, r *http.Request)
-}
-
-func (r *Resource) IsPrimary() bool {
-	return r != nil && r.Name == PrimaryName
-}
-
-func (r *Resource) Uri(req *http.Request) string {
-	return r.Authority + "/" + req.URL.Path
-}
 
 type Router struct {
 	primary   *Resource
@@ -49,6 +33,16 @@ func (r *Router) RouteTo() *Resource {
 	return r.secondary
 }
 
-func (r *Router) UpdateStats(resp *http.Response, rsc *Resource) {
+func (r *Router) UpdateStats(statusCode int, rsc *Resource) {
 
+}
+
+func (r *Router) Swap() (swapped bool) {
+	old := r.active.Load()
+	if old == primary {
+		swapped = r.active.CompareAndSwap(old, secondary)
+	} else {
+		swapped = r.active.CompareAndSwap(old, primary)
+	}
+	return
 }

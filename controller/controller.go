@@ -32,8 +32,7 @@ func NewHostController(d time.Duration) *Controller {
 func NewTimeoutController(routeName string, d time.Duration) *Controller {
 	c := new(Controller)
 	c.RouteName = routeName
-	c.Timeout = new(Timeout)
-	c.Timeout.Duration = d
+	c.Timeout = NewTimeout(d)
 	return c
 }
 

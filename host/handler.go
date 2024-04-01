@@ -8,8 +8,6 @@ import (
 	"net/http"
 )
 
-const ()
-
 var (
 	httpHandlerProxy = NewProxy()
 	hostCtrl         *controller.Controller

@@ -27,11 +27,12 @@ func newIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandle
 				r.Header.Add(XRequestId, uid.String())
 			}
 		}
-		apply(w, r, ctrl, c2, traffic, "")
+		w2 := newWrapper(w)
+		apply(w2, r, ctrl, c2, traffic, "")
 	}
 }
 
-func apply(w http.ResponseWriter, r *http.Request, ctrl *controller.Controller, handler HttpHandlerFunc, traffic, routeTo string) {
+func apply(w *wrapper, r *http.Request, ctrl *controller.Controller, handler HttpHandlerFunc, traffic, routeTo string) {
 	if handler == nil {
 		return
 	}
@@ -42,7 +43,6 @@ func apply(w http.ResponseWriter, r *http.Request, ctrl *controller.Controller, 
 	if ct, ok := r.Context().Deadline(); ok {
 		duration = time.Until(ct) * -1
 	}
-	w2 := newWrapper(w)
 	if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
 		routeName = ctrl.RouteName
 		duration = ctrl.Timeout.Duration
@@ -50,18 +50,18 @@ func apply(w http.ResponseWriter, r *http.Request, ctrl *controller.Controller, 
 		defer cancel()
 		r2 := r.Clone(ctx)
 		start = time.Now().UTC()
-		handler(w2, r2)
+		handler(w, r2)
 	} else {
 		start = time.Now().UTC()
-		handler(w2, r)
+		handler(w, r)
 	}
-	if w2.statusCode == http.StatusGatewayTimeout {
+	if w.statusCode == http.StatusGatewayTimeout {
 		flags = TimeoutFlag
 	}
 	if traffic == "" {
 		traffic = access.InternalTraffic
 	}
-	access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, routeTo, Milliseconds(duration), flags)
+	access.Log(traffic, start, time.Since(start), r, &http.Response{StatusCode: w.statusCode, ContentLength: w.written}, routeName, routeTo, Milliseconds(duration), flags)
 }
 
 /*
