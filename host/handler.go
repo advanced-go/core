@@ -3,25 +3,19 @@ package host
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/access"
-	"github.com/advanced-go/core/controller"
 	"net/http"
+	"time"
 )
 
 var (
 	httpHandlerProxy = NewProxy()
-	hostCtrl         *controller.Controller
+	duration         time.Duration
 	authHandler      HttpHandlerFunc //func(w http.ResponseWriter,r *http.Request)
 	okFunc           = func(code int) bool { return code == http.StatusOK }
 )
 
-func SetHostController(ctrl *controller.Controller) {
-	if ctrl != nil {
-		hostCtrl = ctrl
-		if ctrl.RouteName == "" {
-			hostCtrl.RouteName = controller.HostRouteName
-		}
-	}
+func SetHostTimeout(d time.Duration) {
+	duration = d
 }
 
 func SetAuthHandler(h func(w http.ResponseWriter, r *http.Request), ok func(int) bool) {
@@ -46,8 +40,8 @@ func RegisterHandler(path string, handler HttpHandlerFunc) error {
 	if authHandler != nil {
 		h = NewConditionalIntermediary(authHandler, handler, okFunc)
 	}
-	if hostCtrl != nil {
-		h = newIngressControllerIntermediary(hostCtrl, h, access.IngressTraffic)
+	if duration > 0 {
+		h = NewHostTimeoutIntermediary(duration, h)
 	}
 	err := httpHandlerProxy.Register(path, h)
 	return err

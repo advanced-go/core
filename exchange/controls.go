@@ -14,6 +14,7 @@ var (
 
 // RegisterController - add a controller for a URI
 func RegisterController(uri string, ctrl *controller.Controller) *runtime.Status {
+	ctrl.Router.Do = DoHttp
 	return ctrlMap.Register(uri, ctrl)
 }
 

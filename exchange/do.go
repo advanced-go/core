@@ -58,13 +58,19 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
-	handler, status1 := httpProxy.Lookup(req.URL.Path)
+	ctrl, status1 := ctrlMap.Lookup(req.URL.Path)
+	if status1.OK() {
+		return ctrl.Do(req)
+	}
+	/*handler, status1 := httpProxy.Lookup(req.URL.Path)
 	if status1.OK() {
 		w := NewResponseWriter()
 		handler(w, req)
 		resp = w.Response()
 		return resp, runtime.NewStatus(resp.StatusCode)
 	}
+
+	*/
 	return DoHttp(req)
 }
 

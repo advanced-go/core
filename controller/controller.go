@@ -1,9 +1,10 @@
 package controller
 
-import "time"
-
-const (
-	HostRouteName = "host"
+import (
+	"errors"
+	"github.com/advanced-go/core/runtime"
+	"net/http"
+	"time"
 )
 
 type Controller2 struct {
@@ -25,10 +26,6 @@ type Controller struct {
 	Router  *Router
 }
 
-func NewHostController(d time.Duration) *Controller {
-	return NewTimeoutController(HostRouteName, d)
-}
-
 func NewTimeoutController(routeName string, d time.Duration) *Controller {
 	c := new(Controller)
 	c.RouteName = routeName
@@ -45,4 +42,18 @@ func NewController(routeName string, d time.Duration) *Controller {
 	c.Router = new(Router)
 
 	return c
+}
+
+func (c *Controller) Do(req *http.Request) (*http.Response, *runtime.Status) {
+	if req == nil {
+		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
+	}
+	rsc := c.Router.RouteTo()
+
+	if rsc.internal {
+
+	} else {
+
+	}
+	return nil, nil
 }

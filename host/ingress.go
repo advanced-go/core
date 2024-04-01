@@ -4,17 +4,24 @@ import (
 	"context"
 	"fmt"
 	"github.com/advanced-go/core/access"
-	"github.com/advanced-go/core/controller"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
 
-func NewIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandlerFunc) HttpHandlerFunc {
-	return newIngressControllerIntermediary(ctrl, c2, access.InternalTraffic)
+const (
+	RouteName = "host"
+)
+
+func NewHostTimeoutIntermediary(d time.Duration, c2 HttpHandlerFunc) HttpHandlerFunc {
+	return newIngressTimeoutIntermediary(RouteName, d, c2, access.IngressTraffic)
 }
 
-func newIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandlerFunc, traffic string) HttpHandlerFunc {
+func NewIngressTimeoutIntermediary(routeName string, d time.Duration, c2 HttpHandlerFunc) HttpHandlerFunc {
+	return newIngressTimeoutIntermediary(routeName, d, c2, access.InternalTraffic)
+}
+
+func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 HttpHandlerFunc, traffic string) HttpHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -28,25 +35,23 @@ func newIngressControllerIntermediary(ctrl *controller.Controller, c2 HttpHandle
 			}
 		}
 		w2 := newWrapper(w)
-		apply(w2, r, ctrl, c2, traffic, "")
+		apply(w2, r, routeName, d, c2, traffic, "")
 	}
 }
 
-func apply(w *wrapper, r *http.Request, ctrl *controller.Controller, handler HttpHandlerFunc, traffic, routeTo string) {
+func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration, handler HttpHandlerFunc, traffic, routeTo string) {
 	if handler == nil {
 		return
 	}
-	routeName := ""
+	existing := false
 	flags := ""
 	var start time.Time
-	var duration time.Duration
 	if ct, ok := r.Context().Deadline(); ok {
+		existing = true
 		duration = time.Until(ct) * -1
 	}
-	if ctrl != nil && ctrl.Timeout.Duration > 0 && duration == 0 {
-		routeName = ctrl.RouteName
-		duration = ctrl.Timeout.Duration
-		ctx, cancel := context.WithTimeout(r.Context(), ctrl.Timeout.Duration)
+	if !existing && duration > 0 {
+		ctx, cancel := context.WithTimeout(r.Context(), duration)
 		defer cancel()
 		r2 := r.Clone(ctx)
 		start = time.Now().UTC()
@@ -65,7 +70,7 @@ func apply(w *wrapper, r *http.Request, ctrl *controller.Controller, handler Htt
 }
 
 /*
-	func NewControllerIntermediary(duration, routeName string, c2 HttpHandlerFunc) HttpHandlerFunc {
+	func NewTimeoutIntermediary(duration, routeName string, c2 HttpHandlerFunc) HttpHandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if c2 == nil {
 				w.WriteHeader(http.StatusInternalServerError)

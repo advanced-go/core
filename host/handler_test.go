@@ -2,7 +2,6 @@ package host
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/controller"
 	"github.com/advanced-go/core/exchange"
 	"github.com/advanced-go/core/messaging"
 	"github.com/advanced-go/core/runtime"
@@ -55,7 +54,7 @@ func Example_Host_TestHandler_OK() {
 	pattern := "github/advanced-go/example-domain/slo"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/slo:entry", nil)
 
-	SetHostController(controller.NewHostController(time.Second * 2))
+	SetHostTimeout(time.Second * 2)
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -72,7 +71,7 @@ func Example_Host_TestHandler_Timeout() {
 	pattern := "github/advanced-go/example-domain/timeseries"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/timeseries:entry", nil)
 
-	SetHostController(controller.NewHostController(time.Millisecond))
+	SetHostTimeout(time.Millisecond)
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -89,7 +88,7 @@ func Example_Auth_TestHandler_OK() {
 	pattern := "github/advanced-go/example-domain/auth-ok"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/auth-ok:entry", nil)
 
-	hostCtrl = nil
+	SetHostTimeout(0)
 	SetAuthHandler(testAuthHandlerOK, nil)
 	RegisterHandler(pattern, testHandler)
 
@@ -125,7 +124,7 @@ func Example_Host_Auth_TestHandler_OK() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-ok:entry", nil)
 
 	SetAuthHandler(testAuthHandlerOK, nil)
-	SetHostController(controller.NewHostController(time.Second * 2))
+	SetHostTimeout(time.Second * 2)
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -143,7 +142,7 @@ func Example_Host_Auth_TestHandler_Timeout() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-timeout:entry", nil)
 
 	SetAuthHandler(testAuthHandlerOK, nil)
-	SetHostController(controller.NewHostController(time.Millisecond * 2))
+	SetHostTimeout(time.Millisecond * 2)
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()
@@ -161,7 +160,7 @@ func Example_Host_Auth_TestHandler_Unauthorized() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-unauthorized:entry", nil)
 
 	SetAuthHandler(testAuthHandlerFail, nil)
-	SetHostController(controller.NewHostController(time.Second * 2))
+	SetHostTimeout(time.Second * 2)
 	RegisterHandler(pattern, testHandler)
 
 	rec := httptest.NewRecorder()

@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"github.com/advanced-go/core/runtime"
+	"net/http"
 	"sync/atomic"
 )
 
@@ -12,6 +14,7 @@ const (
 )
 
 type Router struct {
+	Do        func(r *http.Request) (*http.Response, *runtime.Status)
 	primary   *Resource
 	secondary *Resource
 	active    atomic.Int64
