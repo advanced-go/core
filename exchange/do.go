@@ -60,7 +60,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	}
 	ctrl, status1 := ctrlMap.Lookup(req.URL.Path)
 	if status1.OK() {
-		return ctrl.Do(req)
+		return ctrl.Do(DoHttp, req)
 	}
 	/*handler, status1 := httpProxy.Lookup(req.URL.Path)
 	if status1.OK() {

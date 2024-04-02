@@ -43,14 +43,12 @@ func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration
 	if handler == nil {
 		return
 	}
-	existing := false
 	flags := ""
 	var start time.Time
 	if ct, ok := r.Context().Deadline(); ok {
-		existing = true
 		duration = time.Until(ct) * -1
 	}
-	if !existing && duration > 0 {
+	if duration > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), duration)
 		defer cancel()
 		r2 := r.Clone(ctx)

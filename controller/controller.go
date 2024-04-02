@@ -27,7 +27,7 @@ func NewController(routeName string, d time.Duration, primary, secondary *Resour
 	return c
 }
 
-func (c *Controller) Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
+func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Status), req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
@@ -45,9 +45,9 @@ func (c *Controller) Do(req *http.Request) (resp *http.Response, status *runtime
 			req.Host = req.URL.Host
 		}
 		if duration <= 0 {
-			resp, status = c.Do(req)
+			resp, status = do(req)
 		} else {
-			resp, status = doEgress(duration, rsc, req)
+			resp, status = doEgress(duration, do, req)
 		}
 	}
 	if resp.StatusCode == http.StatusGatewayTimeout {
