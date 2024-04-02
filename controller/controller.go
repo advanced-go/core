@@ -29,11 +29,12 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	rsc := c.Router.RouteTo()
-	duration := c.duration(req, rsc)
+	duration := rsc.timeout(req)
 	traffic := access.InternalTraffic
 	flags := ""
 	start := time.Now().UTC()
 	if rsc.internal {
+		// Need to build the resolved Uri??
 		req, resp, status = doInternal(duration, rsc.handler, req)
 	} else {
 		traffic = access.EgressTraffic
@@ -53,15 +54,4 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 	}
 	access.Log(traffic, start, time.Since(start), req, resp, c.RouteName, rsc.Name, Milliseconds(duration), flags)
 	return
-}
-
-func (c *Controller) duration(req *http.Request, rsc *Resource) time.Duration {
-	var duration time.Duration
-	if rsc != nil && rsc.duration > 0 {
-		duration = rsc.duration
-	}
-	if ct, ok := req.Context().Deadline(); ok {
-		duration = time.Until(ct) * -1
-	}
-	return duration
 }

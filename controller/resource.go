@@ -65,3 +65,14 @@ func (r *Resource) BuildUri(uri *url.URL) *url.URL {
 	}
 	return u
 }
+
+func (r *Resource) timeout(req *http.Request) time.Duration {
+	var duration time.Duration
+	if r.duration > 0 {
+		duration = r.duration
+	}
+	if ct, ok := req.Context().Deadline(); ok {
+		duration = time.Until(ct) * -1
+	}
+	return duration
+}
