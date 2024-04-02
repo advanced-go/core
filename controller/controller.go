@@ -49,6 +49,7 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 		} else {
 			resp, status = doEgress(duration, do, req)
 		}
+		c.Router.UpdateStats(resp.StatusCode, rsc)
 	}
 	if resp.StatusCode == http.StatusGatewayTimeout {
 		flags = TimeoutFlag
