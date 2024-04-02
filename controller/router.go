@@ -20,9 +20,13 @@ type Router struct {
 func NewRouter(primary, secondary *Resource) *Router {
 	r := new(Router)
 	r.primary = primary
-	r.primary.Name = PrimaryName
+	if primary != nil {
+		r.primary.Name = PrimaryName
+	}
 	r.secondary = secondary
-	r.secondary.Name = SecondaryName
+	if r.secondary != nil {
+		r.secondary.Name = SecondaryName
+	}
 	return r
 }
 

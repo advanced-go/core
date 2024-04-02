@@ -1,10 +1,15 @@
-package exchange
+package controller
 
 import (
 	"fmt"
 	"github.com/advanced-go/core/runtime"
 	"io"
 	"net/http"
+)
+
+const (
+	requestId = "123-request-id"
+	relatesTo = "test-relates-to"
 )
 
 func Example_ResponseWriter() {

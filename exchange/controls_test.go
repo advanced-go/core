@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var ctrl = controller.NewController("test-route", time.Second)
+var ctrl = controller.NewController("test-route", time.Second, nil, nil)
 
 func ExampleControls_Add() {
 	p := NewControls()
