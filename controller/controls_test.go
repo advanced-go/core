@@ -1,12 +1,12 @@
-package exchange
+package controller
 
 import (
 	"fmt"
-	"github.com/advanced-go/core/controller"
+
 	"time"
 )
 
-var ctrl = controller.NewController("test-route", time.Second, nil, nil)
+var ctrl = NewController("test-route", time.Second, nil, nil)
 
 func ExampleControls_Add() {
 	p := NewControls()

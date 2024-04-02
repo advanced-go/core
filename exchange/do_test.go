@@ -71,6 +71,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(testContent))
 }
 
+/*
 func _ExampleDo_Proxy() {
 	uri := "http://localhost:8080/github.com/advanced-go/core/exchange:Do"
 	req, _ := http.NewRequest("", uri, nil)
@@ -101,6 +102,9 @@ func _ExampleDo_Proxy() {
 	//test: Do() -> [write-content:this is response write content] [response-content:this is response write content]
 
 }
+
+
+*/
 
 func defaultDo(r *http.Request) (*http.Response, error) {
 	resp, err := http.DefaultClient.Do(r)

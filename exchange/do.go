@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"github.com/advanced-go/core/controller"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
@@ -58,7 +59,7 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
-	ctrl, status1 := ctrlMap.Lookup(req.URL.Path)
+	ctrl, status1 := controller.Lookup(req.URL.Path)
 	if status1.OK() {
 		return ctrl.Do(DoHttp, req)
 	}

@@ -1,9 +1,9 @@
-package exchange
+package controller
 
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/core/controller"
+
 	"github.com/advanced-go/core/runtime"
 	"sync"
 )
@@ -13,8 +13,16 @@ var (
 )
 
 // RegisterController - add a controller for a URI
-func RegisterController(uri string, ctrl *controller.Controller) *runtime.Status {
-	return ctrlMap.Register(uri, ctrl)
+func RegisterController(uri string, ctrl *Controller) *runtime.Status {
+	return ctrlMap.register(uri, ctrl)
+}
+
+func Lookup(uri string) (*Controller, *runtime.Status) {
+	nid, _, ok := UprootUrn(uri)
+	if !ok {
+		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+	}
+	return ctrlMap.lookupByNID(nid)
 }
 
 // controls - key value pairs of a URI -> *Controller
@@ -30,7 +38,7 @@ func NewControls() *controls {
 }
 
 // Register - add a controller
-func (p *controls) Register(uri string, ctrl *controller.Controller) *runtime.Status {
+func (p *controls) register(uri string, ctrl *Controller) *runtime.Status {
 	if len(uri) == 0 {
 		return runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument: path is empty"))
 	}
@@ -50,21 +58,21 @@ func (p *controls) Register(uri string, ctrl *controller.Controller) *runtime.St
 }
 
 // Lookup - get a Controller using a URI as the key
-func (p *controls) Lookup(uri string) (*controller.Controller, *runtime.Status) {
+func (p *controls) lookup(uri string) (*Controller, *runtime.Status) {
 	nid, _, ok := UprootUrn(uri)
 	if !ok {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
-	return p.LookupByNID(nid)
+	return p.lookupByNID(nid)
 }
 
 // LookupByNID - get a Controller using an NID as a key
-func (p *controls) LookupByNID(nid string) (*controller.Controller, *runtime.Status) {
+func (p *controls) lookupByNID(nid string) (*Controller, *runtime.Status) {
 	v, ok := p.m.Load(nid)
 	if !ok {
 		return nil, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller does not exist: [%v]", nid)))
 	}
-	if ctrl, ok1 := v.(*controller.Controller); ok1 {
+	if ctrl, ok1 := v.(*Controller); ok1 {
 		return ctrl, runtime.StatusOK()
 	}
 	return nil, runtime.NewStatus(runtime.StatusInvalidContent)
