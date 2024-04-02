@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type Resource struct {
@@ -10,17 +11,19 @@ type Resource struct {
 	Name         string `json:"name"`
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
+	duration     time.Duration
 	handler      func(w http.ResponseWriter, r *http.Request)
 }
 
-func NewResource(name, authority, path string, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
+func NewResource(name, authority, path string, duration time.Duration, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
 	r := new(Resource)
 	r.internal = false
 	r.Name = name
 	r.Authority = authority
 	r.LivenessPath = path
-	r.handler = handler
+	r.duration = duration
 	if handler != nil {
+		r.handler = handler
 		r.internal = true
 	}
 	return r

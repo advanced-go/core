@@ -14,15 +14,12 @@ const (
 
 type Controller struct {
 	RouteName string
-	Timeout   *Timeout
 	Router    *Router
 }
 
-func NewController(routeName string, d time.Duration, primary, secondary *Resource) *Controller {
+func NewController(routeName string, primary, secondary *Resource) *Controller {
 	c := new(Controller)
 	c.RouteName = routeName
-	c.Timeout = new(Timeout)
-	c.Timeout.Duration = d
 	c.Router = NewRouter(primary, secondary)
 	return c
 }
@@ -32,7 +29,7 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	rsc := c.Router.RouteTo()
-	duration := c.duration(req)
+	duration := c.duration(req, rsc)
 	traffic := access.InternalTraffic
 	flags := ""
 	start := time.Now().UTC()
@@ -49,8 +46,8 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 		} else {
 			resp, status = doEgress(duration, do, req)
 		}
-		c.Router.UpdateStats(resp.StatusCode, rsc)
 	}
+	c.Router.UpdateStats(resp.StatusCode, rsc)
 	if resp.StatusCode == http.StatusGatewayTimeout {
 		flags = TimeoutFlag
 	}
@@ -58,10 +55,10 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *runtime.Statu
 	return
 }
 
-func (c *Controller) duration(req *http.Request) time.Duration {
+func (c *Controller) duration(req *http.Request, rsc *Resource) time.Duration {
 	var duration time.Duration
-	if c.Timeout != nil {
-		duration = c.Timeout.Duration
+	if rsc != nil && rsc.duration > 0 {
+		duration = rsc.duration
 	}
 	if ct, ok := req.Context().Deadline(); ok {
 		duration = time.Until(ct) * -1
