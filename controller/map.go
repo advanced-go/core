@@ -5,7 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 )
+
+type Controller2 struct {
+	Name string `json:"name"`
+	//Route    string        `json:"route"`
+	//Method   string        `json:"method"`
+	//Uri      string        `json:"uri"`
+	DurationS string `json:"duration"`
+	Duration  time.Duration
+}
 
 // Map - key value pairs of string -> string
 type Map struct {

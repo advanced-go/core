@@ -2,58 +2,68 @@ package controller
 
 import (
 	"errors"
+	"github.com/advanced-go/core/access"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
 )
 
-type Controller2 struct {
-	Name string `json:"name"`
-	//Route    string        `json:"route"`
-	//Method   string        `json:"method"`
-	//Uri      string        `json:"uri"`
-	DurationS string `json:"duration"`
-	Duration  time.Duration
-}
+const (
+	TimeoutFlag = "TO"
+)
 
 type Controller struct {
-	// Identity for access logging route
 	RouteName string
-	// Selection - how to select this controller given information about the request
-	//Path string // package path for selection
-
-	Timeout *Timeout
-	Router  *Router
+	Timeout   *Timeout
+	Router    *Router
 }
 
-func NewTimeoutController(routeName string, d time.Duration) *Controller {
-	c := new(Controller)
-	c.RouteName = routeName
-	c.Timeout = NewTimeout(d)
-	return c
-}
-
-func NewController(routeName string, d time.Duration) *Controller {
+func NewController(routeName string, d time.Duration, primary, secondary *Resource) *Controller {
 	c := new(Controller)
 	c.RouteName = routeName
 	c.Timeout = new(Timeout)
 	c.Timeout.Duration = d
-
-	c.Router = new(Router)
-
+	c.Router = NewRouter(primary, secondary)
 	return c
 }
 
-func (c *Controller) Do(req *http.Request) (*http.Response, *runtime.Status) {
+func (c *Controller) Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	rsc := c.Router.RouteTo()
-
+	duration := c.duration(req)
+	traffic := access.InternalTraffic
+	flags := ""
+	start := time.Now().UTC()
 	if rsc.internal {
-
+		req, resp, status = doInternal(duration, rsc.handler, req)
 	} else {
-
+		traffic = access.EgressTraffic
+		req.URL = rsc.BuildUri(req.URL)
+		if req.URL != nil {
+			req.Host = req.URL.Host
+		}
+		if duration <= 0 {
+			resp, status = c.Do(req)
+		} else {
+			resp, status = doEgress(duration, rsc, req)
+		}
 	}
-	return nil, nil
+	if resp.StatusCode == http.StatusGatewayTimeout {
+		flags = TimeoutFlag
+	}
+	access.Log(traffic, start, time.Since(start), req, resp, c.RouteName, rsc.Name, Milliseconds(duration), flags)
+	return
+}
+
+func (c *Controller) duration(req *http.Request) time.Duration {
+	var duration time.Duration
+	if c.Timeout != nil {
+		duration = c.Timeout.Duration
+	}
+	if ct, ok := req.Context().Deadline(); ok {
+		duration = time.Until(ct) * -1
+	}
+	return duration
 }

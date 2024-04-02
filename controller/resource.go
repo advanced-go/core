@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"net/url"
 )
 
 type Resource struct {
@@ -10,24 +11,18 @@ type Resource struct {
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
 	handler      func(w http.ResponseWriter, r *http.Request)
-	do           func(*http.Request) (*http.Response, error)
 }
 
-func NewResource(name, authority, path string, handler any) *Resource {
+func NewResource(name, authority, path string, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
 	r := new(Resource)
 	r.internal = false
 	r.Name = name
 	r.Authority = authority
 	r.LivenessPath = path
-	if h, ok := handler.(func(http.ResponseWriter, *http.Request)); ok {
+	r.handler = handler
+	if handler != nil {
 		r.internal = true
-		r.handler = h
 	}
-	// http.DefaultClient.Do
-	if h, ok := handler.(func(*http.Request) (*http.Response, error)); ok {
-		r.do = h
-	}
-	// Leave handler nil and default
 	return r
 }
 
@@ -35,6 +30,35 @@ func (r *Resource) IsPrimary() bool {
 	return r != nil && r.Name == PrimaryName
 }
 
-func (r *Resource) Uri(req *http.Request) string {
-	return r.Authority + "/" + req.URL.Path
+func (r *Resource) BuildUri(uri *url.URL) *url.URL {
+	if uri == nil || len(r.Authority) == 0 {
+		return uri
+	}
+	uri2, err := url.Parse(r.Authority)
+	if err != nil {
+		return uri
+	}
+	var newUri = uri2.Scheme + "://"
+	if len(uri2.Host) > 0 {
+		newUri += uri2.Host
+	} else {
+		newUri += uri.Host
+	}
+	if len(uri2.Path) > 0 {
+		newUri += uri2.Path
+	} else {
+		newUri += uri.Path
+	}
+	if len(uri2.RawQuery) > 0 {
+		newUri += "?" + uri2.RawQuery
+	} else {
+		if len(uri.RawQuery) > 0 {
+			newUri += "?" + uri.RawQuery
+		}
+	}
+	u, err1 := url.Parse(newUri)
+	if err1 != nil {
+		return uri
+	}
+	return u
 }
