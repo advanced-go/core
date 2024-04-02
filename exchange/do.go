@@ -46,7 +46,7 @@ func DeadlineExceededError(t any) bool {
 	return false
 }
 
-// Do - process a request, checking for overrides of file://, and a registered endpoint.
+// Do - process a request, checking for overrides of file://, and a registered controller.
 func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
@@ -62,15 +62,6 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if status1.OK() {
 		return ctrl.Do(DoHttp, req)
 	}
-	/*handler, status1 := httpProxy.Lookup(req.URL.Path)
-	if status1.OK() {
-		w := NewResponseWriter()
-		handler(w, req)
-		resp = w.Response()
-		return resp, runtime.NewStatus(resp.StatusCode)
-	}
-
-	*/
 	return DoHttp(req)
 }
 
