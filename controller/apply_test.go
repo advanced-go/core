@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/advanced-go/core/access"
-	"github.com/advanced-go/core/io2"
 	"github.com/advanced-go/core/runtime"
+	"io"
 	"net/http"
 	"time"
 )
@@ -67,7 +67,7 @@ func ExampleApply_Timeout_1000ms() {
 	defer Apply(nil, &newCtx, access.NewRequest(h, http.MethodGet, uri), &resp, "google-search", time.Millisecond*1000, access.StatusCode(&status))()
 	resp, status = testGet(newCtx, uri, h)
 	if status.OK() {
-		buf, _ := io2.ReadAll(resp.Body, h)
+		buf, _ := io.ReadAll(resp.Body)
 		resp.ContentLength = int64(len(buf))
 	}
 	fmt.Printf("test: Get(\"1000ms\") -> [status:%v] [status-code:%v] [content-type:%v]\n", status, resp.StatusCode, resp.Header.Get("Content-Type"))
