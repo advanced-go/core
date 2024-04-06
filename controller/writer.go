@@ -12,6 +12,7 @@ type ResponseWriter struct {
 	statusCode int32
 	header     http.Header
 	body       *bytes.Buffer
+	written    int64
 }
 
 // NewResponseWriter - create a new response writer
@@ -44,6 +45,7 @@ func (w *ResponseWriter) Body() []byte {
 
 // Write - write the response body
 func (w *ResponseWriter) Write(p []byte) (int, error) {
+	w.written += int64(len(p))
 	return w.body.Write(p)
 }
 

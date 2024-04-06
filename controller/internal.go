@@ -19,5 +19,6 @@ func doInternal(duration time.Duration, handler func(w http.ResponseWriter, r *h
 		handler(w, req)
 	}
 	resp = w.Response()
+	resp.ContentLength = w.written
 	return r2, resp, runtime.NewStatus(resp.StatusCode)
 }

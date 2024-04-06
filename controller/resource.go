@@ -15,18 +15,26 @@ type Resource struct {
 	handler      func(w http.ResponseWriter, r *http.Request)
 }
 
-func NewResource(name, authority, path string, duration time.Duration, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
+func newResource(name, authority, livenessPath string, duration time.Duration, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
 	r := new(Resource)
 	r.internal = false
 	r.Name = name
 	r.Authority = authority
-	r.LivenessPath = path
+	r.LivenessPath = livenessPath
 	r.duration = duration
 	if handler != nil {
 		r.handler = handler
 		r.internal = true
 	}
 	return r
+}
+
+func NewPrimaryResource(authority, livenessPath string, duration time.Duration, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
+	return newResource(PrimaryName, authority, livenessPath, duration, handler)
+}
+
+func NewSecondaryResource(authority, livenessPath string, duration time.Duration, handler func(w http.ResponseWriter, r *http.Request)) *Resource {
+	return newResource(SecondaryName, authority, livenessPath, duration, handler)
 }
 
 func (r *Resource) IsPrimary() bool {
@@ -67,12 +75,20 @@ func (r *Resource) BuildUri(uri *url.URL) *url.URL {
 }
 
 func (r *Resource) timeout(req *http.Request) time.Duration {
-	var duration time.Duration
-	if r.duration > 0 {
-		duration = r.duration
+	duration := r.duration
+	if r.duration < 0 {
+		duration = 0
 	}
-	if ct, ok := req.Context().Deadline(); ok {
-		duration = time.Until(ct) * -1
+	if req == nil || req.Context() == nil {
+		return duration
+	}
+	ct, ok := req.Context().Deadline()
+	if !ok {
+		return duration
+	}
+	until := time.Until(ct)
+	if until <= duration || duration == 0 {
+		return until * -1
 	}
 	return duration
 }

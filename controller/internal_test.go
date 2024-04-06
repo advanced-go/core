@@ -35,7 +35,7 @@ func httpCall(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}
-	fmt.Printf("test: httpCall() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt > 0, err0, err1, err2)
+	fmt.Printf("test: httpCall() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt, err0, err1, err2)
 }
 
 func ExampleDoInternal() {

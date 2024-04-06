@@ -4,9 +4,8 @@ import (
 	"fmt"
 )
 
-var ctrl = NewController("test-route", nil, nil)
-
 func ExampleControls_Add() {
+	ctrl := NewController("test-route", nil, nil)
 	p := NewControls()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
@@ -36,6 +35,7 @@ func ExampleControls_Add() {
 }
 
 func ExampleControls_Get() {
+	ctrl := NewController("test-route", nil, nil)
 	p := NewControls()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
