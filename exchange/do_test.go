@@ -166,7 +166,7 @@ func ExampleDefaultDo_Timeout() {
 }
 
 func exchangeDo(r *http.Request) (*http.Response, *runtime.Status) {
-	resp, status := DoHttp(r)
+	resp, status := Do(r)
 	if !status.OK() {
 		return resp, status
 	}

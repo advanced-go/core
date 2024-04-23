@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"github.com/advanced-go/core/controller"
 	"github.com/advanced-go/core/runtime"
 	"net/http"
 	"time"
@@ -59,14 +58,25 @@ func Do(req *http.Request) (resp *http.Response, status *runtime.Status) {
 		}
 		return resp1, runtime.NewStatus(resp1.StatusCode)
 	}
-	ctrl, status1 := controller.Lookup(req.URL.Path)
-	if status1.OK() {
-		return ctrl.Do(DoHttp, req)
+	var err error
+
+	resp, err = client.Do(req)
+	if err != nil {
+		// catch connectivity error, even with a valid URL
+		if resp == nil {
+			resp = serverErrorResponse()
+		}
+		// check for an error of deadline exceeded
+		if req.Context() != nil && req.Context().Err() == context.DeadlineExceeded {
+			resp.StatusCode = http.StatusGatewayTimeout
+		}
+		return resp, runtime.NewStatusError(resp.StatusCode, err)
 	}
-	return DoHttp(req)
+	return resp, runtime.NewStatus(resp.StatusCode)
 }
 
 // DoHttp - process an HTTP call
+/*
 func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, runtime.NewStatusError(runtime.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
@@ -87,6 +97,9 @@ func DoHttp(req *http.Request) (resp *http.Response, status *runtime.Status) {
 	}
 	return resp, runtime.NewStatus(resp.StatusCode)
 }
+
+
+*/
 
 func serverErrorResponse() *http.Response {
 	resp := new(http.Response)
